@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package core;
+
+message StatusResponse {
+    int32 code = 1;
+    string detail = 3;
+    string message = 2;
+}
+
+message GetCommand {
+    Command command = 1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+
+enum Command {
+    DEFAULT = 0;
+    GET_PARTIAL = 2;
+    GET_ALL = 3;
+}
+
+message Id {
+    string id = 1;
+}

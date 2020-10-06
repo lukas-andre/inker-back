@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package inker.user.service;
+
+import "Core.proto";
+import "CoreUser.proto";
+
+option java_multiple_files = true;
+
+service UserService {
+    rpc create(core.user.UserCreateRequest) returns (core.user.CreateUserResponse);
+    rpc getUsers(core.GetCommand) returns (stream GetUserResponse);
+    rpc updateUser(UserUpdateRequest) returns (UpdateUserResponse);
+    rpc deleteUser(core.Id) returns (DeleteResponse);
+    rpc getUserById(core.Id) returns (GetUserResponse);
+    rpc getUserByUsername(Username) returns (GetUserResponse);
+}
+
+message Username {
+    string username = 1;
+}
+
+message UserResponse {
+    string id = 1;
+    string username = 2;
+    string email = 3;
+}
+
+message DeleteResponse {
+    string id = 1;
+    core.StatusResponse status = 2;
+}
+
+message UserUpdateRequest {
+    UserResponse user = 2;
+}
+
+message GetUserResponse {
+    UserResponse user = 1;
+    core.StatusResponse status = 2;
+}
+
+message UpdateUserResponse {
+    UserResponse user = 1;
+    core.StatusResponse status = 2;
+}
+
+
+
+

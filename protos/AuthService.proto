@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package inker.auth.service;
+
+import "Core.proto";
+import "CoreUser.proto";
+
+service AuthService {
+    rpc createUser(core.user.UserCreateRequest) returns (core.user.CreateUserResponse);
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc verifyUser(VerifyUserReq) returns (VerifyUserRes);
+    rpc sendResetPasswordToken(SendResetPasswordTokenReq) returns (SendResetPasswordTokenRes);
+    rpc resetPassword(ResetPasswordReq) returns (ResetPasswordRes);
+    // Need DB
+    rpc validateUsername(ValidateUsernameRequest) returns (ValidateUsernameResponse);
+    rpc validateEmail(ValidateEmailRequest) returns (ValidateEmailResponse);
+}
+
+message VerifyUserReq {
+    string token = 1;
+    string ip = 2;
+}
+
+message VerifyUserRes {
+    core.StatusResponse statusResponse = 1;
+}
+
+message SendResetPasswordTokenReq {
+    enum SendToOptions {
+        DEFAULT = 0;
+        EMAIL = 1;
+        PHONE_NUMBER = 2;
+    }
+    SendToOptions sendToOptions = 1;
+    string sendTo = 2;
+}
+
+message SendResetPasswordTokenRes {
+    core.StatusResponse statusResponse = 1;
+}
+
+message ResetPasswordReq {
+    string token = 1;
+    string userId = 2;
+    string password = 3;  
+}
+
+message ResetPasswordRes {
+    string userId = 1;
+    core.StatusResponse statusResponse = 2;
+}
+
+message LoginRequest {
+    string identifier = 1;
+    string password = 2;
+    LoginType loginType = 3;
+}
+
+message LoginResponse { 
+    string token = 1;
+    JwtPayload payload = 2;
+    core.StatusResponse statusResponse =3;
+}
+
+message JwtPayload {
+    string id = 1;
+    string email = 2;
+    string username = 3;
+}
+
+enum LoginType {
+    DEFAULT = 0;
+    USERNAME = 1;
+    EMAIL = 2;
+}
+
+message VerifyUserRequest {
+    string userId = 1;
+}
+
+message VerifyUserResponse {
+    core.StatusResponse statusResponse = 1;
+}
+
+message ValidateUsernameRequest {
+    string username = 1;
+}
+
+message ValidateEmailRequest {
+    string email = 1;
+}
+
+message AuthUserResponse {
+    string id = 1;
+    string username = 2;
+    string email = 3;
+    string password = 4;
+}
+
+message ValidateUsernameResponse {
+    AuthUserResponse userResponse = 1;
+    core.StatusResponse status = 2;
+}
+
+message ValidateEmailResponse {
+    AuthUserResponse userResponse = 1;
+    core.StatusResponse status = 2;
+}
+
+message ValidateUserResponse {
+    bool valid = 1;
+    core.StatusResponse status = 2;
+}
