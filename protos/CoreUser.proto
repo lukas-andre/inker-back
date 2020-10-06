@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package core.user;
+
+import "Core.proto";
+
+
+message User {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message UserCreateRequest {
+    User user = 1;
+}
+
+message CreateUserResponse {
+    message UserResponse {
+        string id = 1;
+        string username = 2;
+        string email = 3;
+    }
+    UserResponse user = 1;
+    core.StatusResponse status = 2;
+}
+
