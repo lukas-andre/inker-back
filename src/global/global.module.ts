@@ -8,15 +8,16 @@ import {
 
 import * as path from 'path';
 import { ConfigService, ConfigModule } from '@nestjs/config';
-import userDatabase from '../config/userDatabase';
+import userDb from '../config/userDatabase';
 import app from '../config/app';
+import auth from '../config/auth';
 
 @Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [app, userDatabase],
+      load: [app, userDb, auth],
     }),
     // TODO: Agregar Auth !
     // JwtModule.registerAsync({
@@ -31,6 +32,6 @@ import app from '../config/app';
   ],
   controllers: [],
   providers: [],
-  exports: [],
+  exports: [ConfigModule],
 })
 export class GlobalModule {}

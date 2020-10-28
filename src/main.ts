@@ -35,14 +35,14 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.use(helmet());
-  app.use(csurf());
+  // app.use(csurf());
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
       max: 100, // limit each IP to 100 requests per windowMs
     }),
   );
-
+  console.log(configService.get('userDb'));
   const port = configService.get('app.port', 3000);
 
   await app.listen(port);
