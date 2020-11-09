@@ -18,7 +18,7 @@ export class RolesHandler {
   }
 
   async findOne(id: number) {
-    return await this.rolesService.findOne({ id });
+    return await this.rolesService.findOne({ where: { id } });
   }
   async findAll(query: any) {
     return await this.rolesService.findAll(query);

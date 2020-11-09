@@ -5,8 +5,15 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  HttpException,
 } from '@nestjs/common';
-import { ApiParam, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiParam,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { Permission } from '../entities/permission.entity';
 import { PermissionsHandler } from '../handlers/permissions.handler';
 
@@ -16,25 +23,33 @@ export class PermissionsController {
   constructor(private readonly permissionsHandler: PermissionsHandler) {}
 
   @ApiOperation({ summary: 'Find Permissions' })
-  @ApiResponse({ status: 200 })
+  @ApiOkResponse({
+    description: 'The permissions exists.',
+    isArray: true,
+    type: Permission,
+  })
   @Get()
   async findAll(@Query() query: any): Promise<Permission[]> {
     return await this.permissionsHandler.findAll(query);
   }
 
   @Get('/initial')
-  async initial(@Query() query: any): Promise<any> {
+  async initial(): Promise<Permission[] | HttpException> {
     return await this.permissionsHandler.handleInitial();
   }
 
   @Get('/routes')
-  async findRoutes(@Query() query: any): Promise<any> {
+  async findRoutes(): Promise<any> {
     return await this.permissionsHandler.findRoutes();
   }
 
   @ApiOperation({ summary: 'Get Permissions By Id' })
   @ApiParam({ name: 'id', required: true })
-  @ApiResponse({ status: 200, description: 'The permissions exists.' })
+  @ApiOkResponse({
+    description: 'The permissions exists.',
+    isArray: true,
+    type: Permission,
+  })
   @ApiResponse({ status: 404, description: 'Permission does not exist.' })
   @Get(':id')
   async findOne(

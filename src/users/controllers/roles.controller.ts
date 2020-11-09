@@ -6,7 +6,13 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import { ApiParam, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiParam,
+  ApiOperation,
+  ApiTags,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger';
 import { Role } from '../entities/role.entity';
 import { RolesHandler } from '../handlers/roles.handler';
 
@@ -16,14 +22,14 @@ export class RolesController {
   constructor(private readonly rolesHandler: RolesHandler) {}
 
   @ApiOperation({ summary: 'Init Roles (Init Permissions first)' })
-  @ApiResponse({ status: 200 })
+  @ApiOkResponse({ description: 'Init roles ok', isArray: true, type: Role })
   @Get('init-roles')
-  async initRoles(@Query() query: any): Promise<Role[]> {
+  async initRoles(): Promise<Role[]> {
     return await this.rolesHandler.initRoles();
   }
 
   @ApiOperation({ summary: 'Find Roles' })
-  @ApiResponse({ status: 200 })
+  @ApiOkResponse({ isArray: true, type: Role })
   @Get()
   async findAll(@Query() query: any): Promise<Role[]> {
     return await this.rolesHandler.findAll(query);
@@ -31,8 +37,8 @@ export class RolesController {
 
   @ApiOperation({ summary: 'Get Role By Id' })
   @ApiParam({ name: 'id', required: true })
-  @ApiResponse({ status: 200, description: 'The role exists.' })
-  @ApiResponse({ status: 404, description: 'Role does not exist.' })
+  @ApiOkResponse({ description: 'The role exists.', type: Role })
+  @ApiNotFoundResponse({ status: 404, description: 'Role does not exist.' })
   @Get(':id')
   async findOne(@Param('id', new ParseIntPipe()) id: number): Promise<Role> {
     const role = await this.rolesHandler.findOne(id);

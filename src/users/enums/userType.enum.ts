@@ -1,4 +1,4 @@
-export enum userTypes {
+export enum UserType {
   ARTIST = 'ARTIST',
   CUSTOMER = 'CUSTOMER',
 }
