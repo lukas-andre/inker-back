@@ -28,7 +28,11 @@ let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
     common_1.Module({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, role_entity_1.Role, permission_entity_1.Permission], 'user-db'), customers_module_1.CustomersModule, artists_module_1.ArtistsModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, role_entity_1.Role, permission_entity_1.Permission], 'user-db'),
+            customers_module_1.CustomersModule,
+            artists_module_1.ArtistsModule,
+        ],
         providers: [
             users_service_1.UsersService,
             users_handler_1.UsersHandler,
@@ -39,7 +43,7 @@ UsersModule = __decorate([
             initialPermissions_service_1.InitialPermissionsService,
         ],
         controllers: [users_controller_1.UsersController, permissions_controller_1.PermissionsController, roles_controller_1.RolesController],
-        exports: [users_service_1.UsersService, roles_service_1.RolesService]
+        exports: [users_service_1.UsersService, roles_service_1.RolesService],
     })
 ], UsersModule);
 exports.UsersModule = UsersModule;
