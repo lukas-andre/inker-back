@@ -10,6 +10,8 @@ import { serviceErrorStringify } from '../../global/utils/serviceErrorStringify'
 import { CreateArtistDto } from '../../artists/dtos/createArtist.dto';
 import { ArtistsService } from '../../artists/services/artists.service';
 import { RolesService } from '../services/roles.service';
+import { Customer } from '../../customers/entities/customer.entity';
+import { Artist } from '../../artists/entities/artist.entity';
 
 @Injectable()
 export class UsersHandler {
@@ -47,7 +49,10 @@ export class UsersHandler {
     return created;
   }
 
-  private async handleCreateByUserType(userId: string, dto: CreateUserDto) {
+  private async handleCreateByUserType(
+    userId: string,
+    dto: CreateUserDto,
+  ): Promise<Customer | Artist | ServiceError> {
     const createByType = {
       [UserType.CUSTOMER]: async () => {
         const createCustomerDto = Object.assign(new CreateCustomerDto(), {
