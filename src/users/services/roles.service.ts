@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindOneOptions } from 'typeorm';
 import { Role } from '../entities/role.entity';
 import { initRolePermissions } from '../data/initRolePermission.data';
 import { initRoles } from '../data/initRoles.data';
@@ -48,7 +48,7 @@ export class RolesService {
     });
   }
 
-  async findOne(query: any): Promise<Role> {
+  async findOne(query: FindOneOptions<Role>): Promise<Role> {
     return await this.rolesRepository.findOne(query);
   }
 }

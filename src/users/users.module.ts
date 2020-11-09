@@ -13,9 +13,15 @@ import { PermissionsController } from './controllers/permissions.controller';
 import { RolesController } from './controllers/roles.controller';
 import { PermissionsHandler } from './handlers/permissions.handler';
 import { RolesHandler } from './handlers/roles.handler';
+import { CustomersModule } from 'src/customers/customers.module';
+import { ArtistsModule } from 'src/artists/artists.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Role, Permission], 'user-db')],
+  imports: [
+    TypeOrmModule.forFeature([User, Role, Permission], 'user-db'),
+    CustomersModule,
+    ArtistsModule,
+  ],
   providers: [
     UsersService,
     UsersHandler,
@@ -26,5 +32,6 @@ import { RolesHandler } from './handlers/roles.handler';
     InitialPermissionsService,
   ],
   controllers: [UsersController, PermissionsController, RolesController],
+  exports: [UsersService, RolesService],
 })
 export class UsersModule {}

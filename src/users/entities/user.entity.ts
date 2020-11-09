@@ -1,30 +1,35 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryColumn,
+  Index,
 } from 'typeorm';
 import { Role } from './role.entity';
+import { UserType } from '../enums/userType.enum';
 
 @Entity()
 export class User {
   @PrimaryColumn({ generated: 'uuid' })
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   username: string;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  isPublished: boolean;
+  @Column({ nullable: true, default: true })
+  active: boolean;
+
+  @Column({ enum: UserType })
+  @Index()
+  userType: string;
 
   @ManyToOne(type => Role, { cascade: false, nullable: true })
   role: Role;

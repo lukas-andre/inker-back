@@ -3,12 +3,12 @@ import { ModulesContainer } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from '../entities/permission.entity';
 import { Repository } from 'typeorm';
-import { ServiceError } from 'src/global/interfaces/serviceError.interface';
+import { ServiceError } from 'src/global/interfaces/serviceError';
 
 @Injectable()
 export class InitialPermissionsService {
   private readonly serviceName = InitialPermissionsService.name;
-  private readonly logger = new Logger(InitialPermissionsService.name);
+  private readonly logger = new Logger(this.serviceName);
 
   constructor(
     @Inject('ModulesContainer') private readonly container: ModulesContainer,

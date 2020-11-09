@@ -1,9 +1,13 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { CreateUserDto } from '../dtos/createUser.dto';
+import {
+  Injectable,
+  ConflictException,
+  HttpException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PermissionsService } from '../services/permissions.service';
 import { InitialPermissionsService } from '../services/initialPermissions.service';
-import { ServiceError } from '../../global/interfaces/serviceError.interface';
+import { ServiceError } from '../../global/interfaces/serviceError';
+import { Permission } from '../entities/permission.entity';
 
 @Injectable()
 export class PermissionsHandler {
@@ -13,14 +17,15 @@ export class PermissionsHandler {
     private readonly configService: ConfigService,
   ) {}
 
-  async handleInitial() {
+  async handleInitial(): Promise<Permission[] | HttpException> {
     const result = await this.initialPermissionsService.initPermissions();
     if (result.hasOwnProperty('error')) {
-      const error = result as ServiceError;
-      throw new ConflictException(`Controller ${error.subject} already exists`);
+      throw new ConflictException(
+        `Controller ${(result as ServiceError).subject} already exists`,
+      );
     }
 
-    return result;
+    return result as Permission[];
   }
 
   async findRoutes() {
