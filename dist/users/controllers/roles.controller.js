@@ -22,7 +22,7 @@ let RolesController = class RolesController {
     constructor(rolesHandler) {
         this.rolesHandler = rolesHandler;
     }
-    async initRoles(query) {
+    async initRoles() {
         return await this.rolesHandler.initRoles();
     }
     async findAll(query) {
@@ -41,9 +41,8 @@ __decorate([
     swagger_1.ApiOkResponse({ description: 'Init roles ok', isArray: true, type: role_entity_1.Role }),
     common_1.Get('init-roles'),
     openapi.ApiResponse({ status: 200, type: [require("../entities/role.entity").Role] }),
-    __param(0, common_1.Query()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], RolesController.prototype, "initRoles", null);
 __decorate([

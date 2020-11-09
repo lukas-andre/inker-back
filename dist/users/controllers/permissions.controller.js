@@ -25,10 +25,10 @@ let PermissionsController = class PermissionsController {
     async findAll(query) {
         return await this.permissionsHandler.findAll(query);
     }
-    async initial(query) {
+    async initial() {
         return await this.permissionsHandler.handleInitial();
     }
-    async findRoutes(query) {
+    async findRoutes() {
         return await this.permissionsHandler.findRoutes();
     }
     async findOne(id) {
@@ -56,17 +56,15 @@ __decorate([
 __decorate([
     common_1.Get('/initial'),
     openapi.ApiResponse({ status: 200, type: Object }),
-    __param(0, common_1.Query()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PermissionsController.prototype, "initial", null);
 __decorate([
     common_1.Get('/routes'),
     openapi.ApiResponse({ status: 200, type: Object }),
-    __param(0, common_1.Query()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PermissionsController.prototype, "findRoutes", null);
 __decorate([

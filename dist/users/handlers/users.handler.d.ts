@@ -7,6 +7,7 @@ import { ServiceError } from '../../global/interfaces/serviceError';
 import { CreateArtistDto } from '../../artists/dtos/createArtist.dto';
 import { ArtistsService } from '../../artists/services/artists.service';
 import { RolesService } from '../services/roles.service';
+import { Artist } from '../../artists/entities/artist.entity';
 export declare class UsersHandler {
     private readonly usersService;
     private readonly artistsService;
@@ -28,7 +29,7 @@ export declare class UsersHandler {
         phoneNumber?: string;
     }>;
     private handleCreateByUserType;
-    createArtist(createArtistDto: CreateArtistDto): Promise<ServiceError | import("../../artists/entities/artist.entity").Artist>;
+    createArtist(createArtistDto: CreateArtistDto): Promise<Artist | ServiceError>;
     private createCustomer;
     private rollbackCreate;
     private handleCreateError;

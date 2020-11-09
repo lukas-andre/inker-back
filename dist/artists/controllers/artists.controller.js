@@ -49,7 +49,10 @@ __decorate([
 __decorate([
     swagger_1.ApiConsumes('multipart/form-data'),
     swagger_1.ApiBody({ description: 'profile picture', type: fileUpload_dto_1.FileUploadDto }),
-    swagger_1.ApiCreatedResponse({ description: 'Artist profile picture was uploaded', type: artist_entity_1.Artist }),
+    swagger_1.ApiCreatedResponse({
+        description: 'Artist profile picture was uploaded',
+        type: artist_entity_1.Artist,
+    }),
     common_1.Post('/:id/profile-picture'),
     common_1.UseInterceptors(platform_express_1.FileInterceptor('file')),
     openapi.ApiResponse({ status: 201, type: require("../entities/artist.entity").Artist }),
@@ -60,7 +63,11 @@ __decorate([
 ], ArtistsController.prototype, "setProfileProflePicture", null);
 __decorate([
     swagger_1.ApiOperation({ summary: 'Get all Artists' }),
-    swagger_1.ApiOkResponse({ description: 'Get all artists ok', isArray: true, type: artist_entity_1.Artist }),
+    swagger_1.ApiOkResponse({
+        description: 'Get all artists ok',
+        isArray: true,
+        type: artist_entity_1.Artist,
+    }),
     common_1.Get(),
     openapi.ApiResponse({ status: 200, type: [require("../entities/artist.entity").Artist] }),
     __metadata("design:type", Function),

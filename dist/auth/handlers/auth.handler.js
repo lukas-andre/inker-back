@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthHandler = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("../../users/services/users.service");
-const serviceError_1 = require("../../global/interfaces/serviceError");
 const auth_service_1 = require("../services/auth.service");
 const loginType_enum_1 = require("../enums/loginType.enum");
 const userType_enum_1 = require("../../users/enums/userType.enum");
@@ -20,7 +19,6 @@ const artists_service_1 = require("../../artists/services/artists.service");
 const customers_service_1 = require("../../customers/services/customers.service");
 const customer_entity_1 = require("../../customers/entities/customer.entity");
 const artist_entity_1 = require("../../artists/entities/artist.entity");
-const userDatabase_1 = require("../../config/userDatabase");
 let AuthHandler = class AuthHandler {
     constructor(authService, usersService, artistsService, customersService) {
         this.authService = authService;
@@ -37,7 +35,7 @@ let AuthHandler = class AuthHandler {
         let isValid = false;
         switch (loginDto.loginType) {
             case loginType_enum_1.LoginType.FACEBOOK:
-                isValid = false;
+                isValid = true;
                 break;
             case loginType_enum_1.LoginType.GOOGLE:
                 isValid = false;
