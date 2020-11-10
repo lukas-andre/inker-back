@@ -18,6 +18,7 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const login_dto_1 = require("../dtos/login.dto");
+const loginResponse_dto_1 = require("../dtos/loginResponse.dto");
 const auth_handler_1 = require("../handlers/auth.handler");
 let AuthController = AuthController_1 = class AuthController {
     constructor(authHandler) {
@@ -32,10 +33,10 @@ let AuthController = AuthController_1 = class AuthController {
 __decorate([
     swagger_1.ApiOperation({ summary: 'Login User' }),
     common_1.HttpCode(200),
-    swagger_1.ApiResponse({ status: 200, description: 'Login successful.' }),
-    swagger_1.ApiResponse({ status: 401, description: 'Invalid credentials.' }),
+    swagger_1.ApiOkResponse({ description: 'Login successful.', type: loginResponse_dto_1.LoginResponseDto }),
+    swagger_1.ApiConflictResponse({ description: 'Invalid credentials.' }),
     common_1.Post('login'),
-    openapi.ApiResponse({ status: 200, type: Object }),
+    openapi.ApiResponse({ status: 200, type: require("../dtos/loginResponse.dto").LoginResponseDto }),
     __param(0, common_1.Body()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),

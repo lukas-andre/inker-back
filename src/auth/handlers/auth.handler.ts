@@ -12,9 +12,9 @@ import { LoginDto } from '../dtos/login.dto';
 import { UserType } from '../../users/enums/userType.enum';
 import { ArtistsService } from '../../artists/services/artists.service';
 import { CustomersService } from '../../customers/services/customers.service';
-import { JwtPayload } from '../interfaces/jwtPayload.interface';
 import { Customer } from 'src/customers/entities/customer.entity';
 import { Artist } from 'src/artists/entities/artist.entity';
+import { LoginResponseDto } from '../dtos/loginResponse.dto';
 
 @Injectable()
 export class AuthHandler {
@@ -25,8 +25,8 @@ export class AuthHandler {
     private customersService: CustomersService,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<JwtPayload> {
-    let response: JwtPayload | HttpException;
+  async login(loginDto: LoginDto): Promise<LoginResponseDto> {
+    let response: LoginResponseDto | HttpException;
 
     const user = await this.usersService.findByType(
       loginDto.loginType,
@@ -58,7 +58,7 @@ export class AuthHandler {
   async defaultLogin(
     user: User,
     loginDto: LoginDto,
-  ): Promise<JwtPayload | HttpException> {
+  ): Promise<LoginResponseDto | HttpException> {
     const result = await this.usersService.validatePassword(
       loginDto.password,
       user.password,
