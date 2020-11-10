@@ -13,7 +13,7 @@ const artist_entity_1 = require("../../artists/entities/artist.entity");
 const userType_enum_1 = require("../../users/enums/userType.enum");
 let AuthService = class AuthService {
     generateJwtByUserType(userType, user, entity) {
-        console.log(`entity: ${entity}`);
+        console.log(`entity: ${JSON.stringify(entity)}`);
         return {
             id: user.id,
             email: user.email,

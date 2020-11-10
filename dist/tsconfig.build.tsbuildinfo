@@ -3272,8 +3272,8 @@
         "affectsGlobalScope": false
       },
       "../src/auth/enums/logintype.enum.ts": {
-        "version": "f1c0ae9fae6d0be2f361d9d12bdf5a8349d75e14b8b3200ba5e59435292f636d",
-        "signature": "58fc202e1f5e20649182b9a9d6fa2b7cbb9d04f7aac73033f2d0bec770cb6152",
+        "version": "7dcf7b9c188d65ddc49aebea422ba10523a74afb8f555eea8198c96baaf24cb8",
+        "signature": "38d933964a1ce5b2682fd1f3eed34e0d165961467d79c777f25f4534b6302c79",
         "affectsGlobalScope": false
       },
       "../src/auth/dtos/login.dto.ts": {
@@ -3397,7 +3397,7 @@
         "affectsGlobalScope": false
       },
       "../src/auth/services/auth.service.ts": {
-        "version": "d6cebf1910403b58662ce84ac00273558d72b605269dea6377ab08f9dcb00a10",
+        "version": "3ba6c226ba21b21d4b834174c040fdfb0b50139ec60c1aa08399c981492067e0",
         "signature": "6845285aaeb4f5c6ff60fb5fefcb42f6d249cb7a7275135efd07bdedb51016d8",
         "affectsGlobalScope": false
       },
