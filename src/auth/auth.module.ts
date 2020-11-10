@@ -5,6 +5,7 @@ import { UsersModule } from '../users/users.module';
 import { ArtistsModule } from '../artists/artists.module';
 import { CustomersModule } from '../customers/customers.module';
 import { AuthHandler } from './handlers/auth.handler';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [UsersModule, ArtistsModule, CustomersModule],

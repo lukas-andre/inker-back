@@ -30,7 +30,7 @@ GlobalModule = __decorate([
             jwt_1.JwtModule.registerAsync({
                 inject: [config_1.ConfigService],
                 useFactory: (config) => ({
-                    secretOrPrivateKey: config.get('auth.jwtSecretKey'),
+                    secret: config.get('auth.jwtSecretKey'),
                     signOptions: {
                         expiresIn: config.get('auth.jwtExpiration'),
                     },
@@ -39,7 +39,7 @@ GlobalModule = __decorate([
         ],
         controllers: [],
         providers: [s3_client_1.S3Client],
-        exports: [config_1.ConfigModule, s3_client_1.S3Client],
+        exports: [config_1.ConfigModule, s3_client_1.S3Client, jwt_1.JwtModule],
     })
 ], GlobalModule);
 exports.GlobalModule = GlobalModule;

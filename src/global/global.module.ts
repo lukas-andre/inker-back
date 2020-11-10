@@ -19,7 +19,7 @@ import { S3Client } from './clients/s3.client';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secretOrPrivateKey: config.get('auth.jwtSecretKey'),
+        secret: config.get('auth.jwtSecretKey'),
         signOptions: {
           expiresIn: config.get('auth.jwtExpiration'),
         },
@@ -28,6 +28,6 @@ import { S3Client } from './clients/s3.client';
   ],
   controllers: [],
   providers: [S3Client],
-  exports: [ConfigModule, S3Client],
+  exports: [ConfigModule, S3Client, JwtModule],
 })
 export class GlobalModule {}
