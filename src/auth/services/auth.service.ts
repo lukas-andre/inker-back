@@ -12,7 +12,7 @@ export class AuthService {
     user: User,
     entity: Customer | Artist,
   ): JwtPayload {
-    console.log(`entity: ${entity}`)
+    console.log(`entity: ${JSON.stringify(entity)}`)
     return {
       id: user.id,
       email: user.email,
