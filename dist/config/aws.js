@@ -7,5 +7,6 @@ exports.default = config_1.registerAs('aws', () => ({
     bucketImageZipSize: 31457280,
     accessKey: process.env.AWS_ACCESS_KEY,
     secretKey: process.env.AWS_ACCESS_SECRET,
+    cloudFrontUrl: process.env.CLOUD_FRONT_URL,
 }));
 //# sourceMappingURL=aws.js.map

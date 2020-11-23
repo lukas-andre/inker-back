@@ -7,4 +7,5 @@ export declare class ArtistsController {
     create(createArtistDto: CreateArtistDto): Promise<Artist>;
     setProfileProflePicture(file: any, id: string): Promise<Artist>;
     getAllArtists(): Promise<Artist[]>;
+    getArtistById(id: string): Promise<Artist>;
 }

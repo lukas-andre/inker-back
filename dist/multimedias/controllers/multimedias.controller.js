@@ -30,7 +30,7 @@ let MultimediasController = class MultimediasController {
 __decorate([
     common_1.Post('upload'),
     common_1.UseInterceptors(platform_express_1.FileInterceptor('file')),
-    openapi.ApiResponse({ status: 201, type: Object }),
+    openapi.ApiResponse({ status: 201 }),
     __param(0, common_1.UploadedFile()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

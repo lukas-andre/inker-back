@@ -70,7 +70,7 @@ __decorate([
 __decorate([
     swagger_1.ApiProperty({
         example: userType_enum_1.UserType.ARTIST,
-        enum: [Object.keys(userType_enum_1.UserType)],
+        enum: [userType_enum_1.UserType.ARTIST, userType_enum_1.UserType.CUSTOMER],
         description: 'User Type',
     }),
     class_validator_1.IsEnum(userType_enum_1.UserType),

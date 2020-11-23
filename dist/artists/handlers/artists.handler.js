@@ -30,14 +30,21 @@ let ArtistsHandler = class ArtistsHandler {
         return created;
     }
     async handleSetProfileProflePicture(id, file) {
+        if (!file)
+            throw new common_1.NotFoundException('Not valid file to upload');
         const artist = await this.artistsService.findById(id);
         if (!artist)
             throw new common_1.NotFoundException('Artists not found');
-        const source = `artist/${artist.id}`;
-        const fileName = 'profile-picture';
-        const result = await this.multimediasService.upload(file, source, fileName);
-        artist.profileThumbnail = result.Key;
+        const source = `artist/${id}`;
+        const fileName = `profile-picture_${new Date()}`;
+        console.time("uploadFile");
+        const { aws, cloudFrontUrl } = await this.multimediasService.upload(file, source, fileName);
+        console.timeEnd("uploadFile");
+        artist.profileThumbnail = cloudFrontUrl;
         return await this.artistsService.save(artist);
+    }
+    async handleFindById(id) {
+        return await this.artistsService.findById(id);
     }
     async handleGetAll() {
         return await this.artistsService.find({});

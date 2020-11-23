@@ -6,4 +6,5 @@ export default registerAs('aws', () => ({
   bucketImageZipSize: 31457280, // 30 MB
   accessKey: process.env.AWS_ACCESS_KEY,
   secretKey: process.env.AWS_ACCESS_SECRET,
+  cloudFrontUrl: process.env.CLOUD_FRONT_URL,
 }));

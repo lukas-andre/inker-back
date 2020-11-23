@@ -15,6 +15,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiConflictResponse,
+  ApiParam,
 } from '@nestjs/swagger';
 import { ArtistsHandler } from '../handlers/artists.handler';
 import { CreateArtistDto } from '../dtos/createArtist.dto';
@@ -56,5 +57,17 @@ export class ArtistsController {
   @Get()
   async getAllArtists() {
     return this.artistHandler.handleGetAll();
+  }
+
+  @ApiOperation({ summary: 'Get Artist by Id' })
+  @ApiOkResponse({
+    description: 'Get artist ok',
+    type: Artist,
+  })
+  @ApiParam({ name: 'id', required: true })
+  @Get(':id')
+  async getArtistById(@Param('id') id: string) {
+    console.log(id);
+    return this.artistHandler.handleFindById(id);
   }
 }

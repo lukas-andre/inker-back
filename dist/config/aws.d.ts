@@ -4,5 +4,6 @@ declare const _default: (() => {
     bucketImageZipSize: number;
     accessKey: string;
     secretKey: string;
+    cloudFrontUrl: string;
 }) & import("@nestjs/config").ConfigFactoryKeyHost;
 export default _default;
