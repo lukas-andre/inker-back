@@ -28,6 +28,7 @@ let AuthService = class AuthService {
             email: user.email,
             username: user.username,
             userType: userType_enum_1.UserType[userType],
+            userTypeId: entity.id,
             permision: user.role.permissions.map(permission => ({
                 c: permission.controller,
                 a: permission.action,

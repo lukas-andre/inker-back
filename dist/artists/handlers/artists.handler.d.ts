@@ -10,5 +10,6 @@ export declare class ArtistsHandler {
     constructor(artistsService: ArtistsService, multimediasService: MultimediasService, configService: ConfigService);
     handleCreate(createArtistdto: CreateArtistDto): Promise<Artist>;
     handleSetProfileProflePicture(id: string, file: any): Promise<Artist>;
+    handleFindById(id: string): Promise<Artist>;
     handleGetAll(): Promise<Artist[]>;
 }

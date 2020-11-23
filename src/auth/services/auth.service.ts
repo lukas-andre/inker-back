@@ -6,6 +6,7 @@ import { UserType } from 'src/users/enums/userType.enum';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LoginResponseDto } from '../dtos/loginResponse.dto';
+import { JwtPayload } from '../interfaces/jwtPayload.interface';
 
 @Injectable()
 export class AuthService {
@@ -19,11 +20,12 @@ export class AuthService {
     entity: Customer | Artist,
   ): LoginResponseDto {
     console.log(`entity: ${JSON.stringify(entity)}`);
-    const jwtPayload = {
+    const jwtPayload: JwtPayload = {
       id: user.id,
       email: user.email,
       username: user.username,
       userType: UserType[userType],
+      userTypeId: entity.id,
       permision: user.role.permissions.map(permission => ({
         c: permission.controller,
         a: permission.action,

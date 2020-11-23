@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  ConflictException,
-  HttpException,
-} from '@nestjs/common';
+import { Injectable, ConflictException, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PermissionsService } from '../services/permissions.service';
 import { InitialPermissionsService } from '../services/initialPermissions.service';

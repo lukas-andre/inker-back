@@ -48,7 +48,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     example: UserType.ARTIST,
-    enum: [Object.keys(UserType)],
+    enum: [UserType.ARTIST, UserType.CUSTOMER],
     description: 'User Type',
   })
   @IsEnum(UserType)

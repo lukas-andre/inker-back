@@ -14,7 +14,7 @@ const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class LoginResponseDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => String }, username: { required: false, type: () => String }, email: { required: false, type: () => String }, userType: { required: true, type: () => String }, permision: { required: true, type: () => [Object] }, accessToken: { required: true, type: () => String }, expiresIn: { required: true, type: () => String } };
+        return { id: { required: true, type: () => String }, username: { required: false, type: () => String }, email: { required: false, type: () => String }, userTypeId: { required: false, type: () => String }, userType: { required: true, type: () => String }, permision: { required: true, type: () => [Object] }, accessToken: { required: true, type: () => String }, expiresIn: { required: true, type: () => Number } };
     }
 }
 __decorate([
@@ -33,6 +33,11 @@ __decorate([
 ], LoginResponseDto.prototype, "email", void 0);
 __decorate([
     class_validator_1.IsString(),
+    class_validator_1.IsOptional(),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "userTypeId", void 0);
+__decorate([
+    class_validator_1.IsString(),
     __metadata("design:type", String)
 ], LoginResponseDto.prototype, "userType", void 0);
 __decorate([
@@ -40,8 +45,8 @@ __decorate([
     __metadata("design:type", String)
 ], LoginResponseDto.prototype, "accessToken", void 0);
 __decorate([
-    class_validator_1.IsString(),
-    __metadata("design:type", String)
+    class_validator_1.IsNumber(),
+    __metadata("design:type", Number)
 ], LoginResponseDto.prototype, "expiresIn", void 0);
 exports.LoginResponseDto = LoginResponseDto;
 //# sourceMappingURL=loginResponse.dto.js.map

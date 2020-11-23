@@ -34,6 +34,10 @@ let ArtistsController = class ArtistsController {
     async getAllArtists() {
         return this.artistHandler.handleGetAll();
     }
+    async getArtistById(id) {
+        console.log(id);
+        return this.artistHandler.handleFindById(id);
+    }
 };
 __decorate([
     swagger_1.ApiOperation({ summary: 'Create Artist' }),
@@ -74,6 +78,20 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ArtistsController.prototype, "getAllArtists", null);
+__decorate([
+    swagger_1.ApiOperation({ summary: 'Get Artist by Id' }),
+    swagger_1.ApiOkResponse({
+        description: 'Get artist ok',
+        type: artist_entity_1.Artist,
+    }),
+    swagger_1.ApiParam({ name: 'id', required: true }),
+    common_1.Get(':id'),
+    openapi.ApiResponse({ status: 200, type: require("../entities/artist.entity").Artist }),
+    __param(0, common_1.Param('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ArtistsController.prototype, "getArtistById", null);
 ArtistsController = __decorate([
     swagger_1.ApiTags('artists'),
     common_1.Controller('artist'),

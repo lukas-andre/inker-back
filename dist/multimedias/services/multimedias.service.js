@@ -11,21 +11,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MultimediasService = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const s3_client_1 = require("../../global/clients/s3.client");
 let MultimediasService = class MultimediasService {
-    constructor(s3Client) {
+    constructor(s3Client, configService) {
         this.s3Client = s3Client;
+        this.configService = configService;
     }
     async upload(file, source, fileName) {
         source = source ? source : 'inker';
         fileName = fileName ? fileName : file.originalname;
         const urlKey = `${source}/${fileName}`;
-        return await this.s3Client.put(file.buffer, urlKey);
+        return {
+            aws: await this.s3Client.put(file.buffer, urlKey),
+            cloudFrontUrl: [this.configService.get('aws.cloudFrontUrl'), urlKey].join('/'),
+        };
     }
 };
 MultimediasService = __decorate([
     common_1.Injectable(),
-    __metadata("design:paramtypes", [s3_client_1.S3Client])
+    __metadata("design:paramtypes", [s3_client_1.S3Client,
+        config_1.ConfigService])
 ], MultimediasService);
 exports.MultimediasService = MultimediasService;
 //# sourceMappingURL=multimedias.service.js.map

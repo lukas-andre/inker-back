@@ -29,19 +29,29 @@ export class ArtistsHandler {
   }
 
   async handleSetProfileProflePicture(id: string, file: any): Promise<Artist> {
+    if (!file) throw new NotFoundException('Not valid file to upload');
+
     const artist = await this.artistsService.findById(id);
     if (!artist) throw new NotFoundException('Artists not found');
 
-    const source = `artist/${artist.id}`;
-    const fileName = 'profile-picture';
+    const source = `artist/${id}`;
+    const fileName = `profile-picture_${new Date()}`;
+    console.time("uploadFile");
 
-    const result = await this.multimediasService.upload(file, source, fileName);
+    const { aws, cloudFrontUrl } = await this.multimediasService.upload(
+      file,
+      source,
+      fileName,
+    );
+    console.timeEnd("uploadFile");
 
-    artist.profileThumbnail = result.Key;
-
+    artist.profileThumbnail = cloudFrontUrl;
     return await this.artistsService.save(artist);
   }
 
+  async handleFindById(id: string) {
+    return await this.artistsService.findById(id);
+  }
   async handleGetAll(): Promise<Artist[]> {
     return await this.artistsService.find({});
   }
