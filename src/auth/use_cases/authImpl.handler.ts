@@ -25,7 +25,6 @@ export class AuthImplHandler implements AuthHandler {
     private usersService: UsersService,
     private artistsService: ArtistsService,
     private customersService: CustomersService,
-
   ) {}
 
   async login(loginReqDto: LoginReqDto): Promise<LoginResDto> {
