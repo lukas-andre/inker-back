@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CustomersService } from './services/customers.service';
-import { CustomersController } from './controllers/customers.controller';
-import { Customer } from './entities/customer.entity';
+import { CustomersService } from './use_cases/services/customers.service';
+import { CustomersController } from './infrastructure/controllers/customers.controller';
+import { Customer } from './infrastructure/entities/customer.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CustomerHandler } from './handlers/customers.handler';
+import { CustomerHandler } from './use_cases/customers.handler';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Customer], 'customer-db')],
