@@ -7,7 +7,7 @@ import auth from '../config/auth';
 import aws from '../config/aws';
 import customerDb from '../config/customerDatabase';
 import artistDatabase from '../config/artistDatabase';
-import { S3Client } from './clients/s3.client';
+import { S3Client } from './infrastructure/clients/s3.client';
 
 @Global()
 @Module({
