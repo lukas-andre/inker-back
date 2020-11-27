@@ -5,7 +5,6 @@ import { Permission } from '../infrastructure/entities/permission.entity';
 import { InitialPermissionsService } from './services/initialPermissions.service';
 import { PermissionsService } from './services/permissions.service';
 
-
 @Injectable()
 export class PermissionsHandler {
   constructor(

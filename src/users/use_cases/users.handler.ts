@@ -13,7 +13,6 @@ import { UserType } from '../domain/enums/userType.enum';
 import { RolesService } from './services/roles.service';
 import { UsersService } from './services/users.service';
 
-
 @Injectable()
 export class UsersHandler {
   constructor(

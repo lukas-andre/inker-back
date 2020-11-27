@@ -36,14 +36,14 @@ export class ArtistsHandler {
 
     const source = `artist/${id}`;
     const fileName = `profile-picture_${new Date()}`;
-    console.time("uploadFile");
+    console.time('uploadFile');
 
     const { aws, cloudFrontUrl } = await this.multimediasService.upload(
       file,
       source,
       fileName,
     );
-    console.timeEnd("uploadFile");
+    console.timeEnd('uploadFile');
 
     artist.profileThumbnail = cloudFrontUrl;
     return await this.artistsService.save(artist);
