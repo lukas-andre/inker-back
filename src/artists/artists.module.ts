@@ -18,7 +18,7 @@ import { UpdateArtistBasicInfoUseCase } from './usecases/updateArtstBasicInfo.us
     CreateArtistUseCase,
     FindArtistsUseCases,
     UpdateArtistProfilePictureUseCase,
-    UpdateArtistBasicInfoUseCase
+    UpdateArtistBasicInfoUseCase,
   ],
   controllers: [ArtistsController],
   exports: [ArtistsService],

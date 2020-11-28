@@ -1,25 +1,31 @@
-import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn} from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Follower {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    user_id: string;
+  @Column()
+  user_id: string;
 
-    @Column()
-    user_type_id: string;
+  @Column()
+  user_type_id: string;
 
-    @Column()
-    identifier: string;
+  @Column()
+  identifier: string;
 
-    @Column()
-    profileThumbnail: string;
+  @Column()
+  profileThumbnail: string;
 
-    @CreateDateColumn()
-    created_at: Date;
-  
-    @UpdateDateColumn()
-    updated_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

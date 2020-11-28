@@ -49,7 +49,6 @@ import { AuthGuard } from './global/infrastructure/guards/auth.guard';
     // PostsModule,
     // NotificationsModule,
   ],
-  providers: [
-  ],
+  providers: [],
 })
 export class AppModule {}

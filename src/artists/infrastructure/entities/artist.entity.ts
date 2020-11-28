@@ -38,17 +38,16 @@ export class Artist {
   profileThumbnail: string;
 
   @ManyToMany(() => Tag)
-  @JoinTable({name: 'artist_tags'})
+  @JoinTable({ name: 'artist_tags' })
   tags: Tag[];
 
   @ManyToMany(() => Gender)
-  @JoinTable({name: 'artist_genders'})
+  @JoinTable({ name: 'artist_genders' })
   genders: Gender[];
 
   @ManyToMany(() => Follower)
-  @JoinTable({name: 'artist_followers'})
+  @JoinTable({ name: 'artist_followers' })
   followers: Follower[];
-
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;
