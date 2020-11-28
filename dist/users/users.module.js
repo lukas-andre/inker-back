@@ -8,22 +8,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersModule = void 0;
 const common_1 = require("@nestjs/common");
-const users_service_1 = require("./services/users.service");
-const users_controller_1 = require("./controllers/users.controller");
+const users_service_1 = require("./domain/services/users.service");
+const users_controller_1 = require("./infrastructure/controllers/users.controller");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./entities/user.entity");
-const role_entity_1 = require("./entities/role.entity");
-const permission_entity_1 = require("./entities/permission.entity");
-const users_handler_1 = require("./handlers/users.handler");
-const roles_service_1 = require("./services/roles.service");
-const permissions_service_1 = require("./services/permissions.service");
-const initialPermissions_service_1 = require("./services/initialPermissions.service");
-const permissions_controller_1 = require("./controllers/permissions.controller");
-const roles_controller_1 = require("./controllers/roles.controller");
-const permissions_handler_1 = require("./handlers/permissions.handler");
-const roles_handler_1 = require("./handlers/roles.handler");
+const user_entity_1 = require("./infrastructure/entities/user.entity");
+const role_entity_1 = require("./infrastructure/entities/role.entity");
+const permission_entity_1 = require("./infrastructure/entities/permission.entity");
+const roles_service_1 = require("./domain/services/roles.service");
+const permissions_service_1 = require("./domain/services/permissions.service");
+const initialPermissions_service_1 = require("./domain/services/initialPermissions.service");
+const permissions_controller_1 = require("./infrastructure/controllers/permissions.controller");
+const roles_controller_1 = require("./infrastructure/controllers/roles.controller");
 const customers_module_1 = require("../customers/customers.module");
 const artists_module_1 = require("../artists/artists.module");
+const users_handler_1 = require("./infrastructure/handlers/users.handler");
+const roles_handler_1 = require("./infrastructure/handlers/roles.handler");
+const permissions_handler_1 = require("./infrastructure/handlers/permissions.handler");
+const crerateUserByType_usecase_1 = require("./usecases/user/crerateUserByType.usecase");
+const findAllRoles_usecase_1 = require("./usecases/role/findAllRoles.usecase");
+const findOneRole_usecase_1 = require("./usecases/role/findOneRole.usecase");
+const findOnePermission_usecase_1 = require("./usecases/permission/findOnePermission.usecase");
+const findAllPermissions_usecase_1 = require("./usecases/permission/findAllPermissions.usecase");
+const initRoles_usecase_1 = require("./usecases/role/initRoles.usecase");
+const initPermissions_usecase_1 = require("./usecases/permission/initPermissions.usecase");
+const findAllRoutes_usecase_1 = require("./usecases/permission/findAllRoutes.usecase");
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
@@ -41,6 +49,14 @@ UsersModule = __decorate([
             permissions_service_1.PermissionsService,
             permissions_handler_1.PermissionsHandler,
             initialPermissions_service_1.InitialPermissionsService,
+            initRoles_usecase_1.InitRolesUseCase,
+            initPermissions_usecase_1.InitPermissionsUseCase,
+            crerateUserByType_usecase_1.CreateUserByTypeUseCase,
+            findAllRoles_usecase_1.FindAllRolesUseCase,
+            findOneRole_usecase_1.FindOneRoleUseCase,
+            findOnePermission_usecase_1.FindOnePermissionUseCase,
+            findAllPermissions_usecase_1.FindAllPermissionsUseCase,
+            findAllRoutes_usecase_1.FindAllRoutesUseCase
         ],
         controllers: [users_controller_1.UsersController, permissions_controller_1.PermissionsController, roles_controller_1.RolesController],
         exports: [users_service_1.UsersService, roles_service_1.RolesService],

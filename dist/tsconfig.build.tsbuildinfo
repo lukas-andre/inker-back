@@ -3271,48 +3271,93 @@
         "signature": "1d5f30cbd06ffa2aab22346b087e140f069851c17b91189be8d1e168d53f9f93",
         "affectsGlobalScope": false
       },
-      "../src/auth/enums/logintype.enum.ts": {
+      "../src/auth/domain/enums/logintype.enum.ts": {
         "version": "7dcf7b9c188d65ddc49aebea422ba10523a74afb8f555eea8198c96baaf24cb8",
         "signature": "38d933964a1ce5b2682fd1f3eed34e0d165961467d79c777f25f4534b6302c79",
         "affectsGlobalScope": false
       },
-      "../src/auth/dtos/login.dto.ts": {
-        "version": "6bf5b3a28b7efe436b6b509191995fcdb612fbbe9448d74c6cb0f1a833c1a17e",
-        "signature": "165a9cba6826f52af36cf5c8cc8a12f15207f432fdd2aaac07a6ca4b841fefad",
+      "../src/auth/infrasctructure/dtos/loginreq.dto.ts": {
+        "version": "6da06df9ad645e2e9ba26d4bc467c5329fac59f787d2910755c0345d224c2a26",
+        "signature": "4873f801cb9b01f8f6a36fa570ed9a2da7d7dd212d4267aa5757642b26df1019",
         "affectsGlobalScope": false
       },
-      "../src/auth/interfaces/jwtpayload.interface.ts": {
-        "version": "17d9e1efd3b57dba719c99eed026fe46f9d19cc61f7058917d98f4afeab46bb4",
-        "signature": "eeb39e4a1fec6f85d6e363f495f35a7789574d61310d0d2cbe71b56c622aa4ec",
+      "../src/auth/domain/interfaces/jwtpayload.interface.ts": {
+        "version": "6ba35c599fc32e831a36dace1b1e6e302380b6f3e4e5db13c342884952d9bd45",
+        "signature": "40772b02f700e3c46de987a72526d94ebbb55777a9d65d4b9152782e9f070471",
         "affectsGlobalScope": false
       },
-      "../src/auth/dtos/loginresponse.dto.ts": {
-        "version": "251d3b7d3228d9bb419441fad804ecc6d6e1ab5ffce07451a02e4eda7b4cceba",
-        "signature": "219c321cfa767cd88e25392bbf1af154c667cc6824e84a8ee08b135c4014784b",
+      "../src/auth/usecases/interfaces/defaultlogin.result.ts": {
+        "version": "41f25b08c613f9520ee40c77c7c2d820a382e6f62f83295e2ab73f934c9050c8",
+        "signature": "0a7ad0d44c3f12d07e97c0b5ee10ce3d9c10f1bdef357a38252028d130195ee6",
         "affectsGlobalScope": false
       },
-      "../src/users/enums/usertype.enum.ts": {
+      "../src/auth/infrasctructure/dtos/loginres.dto.ts": {
+        "version": "6043191e908f0deaee09541d8ebb7e16b2e82164d4f4d8da377062f5d2aae5f2",
+        "signature": "55b886ad2955b9c28ebe586031cef4ebb898023f161dc7959ccf44ac720f6b7c",
+        "affectsGlobalScope": false
+      },
+      "../src/global/domain/exceptions/domain.exception.ts": {
+        "version": "6bbb32c6a172e7c7265933f7135f957ea5bb688b306a344c122d8752bd965129",
+        "signature": "c24004739a0253d0ed512d160beb132ea0da332facda1f5e2627e570f3816d04",
+        "affectsGlobalScope": false
+      },
+      "../src/global/domain/exceptions/domainconflict.exception.ts": {
+        "version": "b2e3e6d802aa18132eaffc14f03d866ac61becc7513686a2462020aea01778b0",
+        "signature": "a6d2872c3376a336a20bae078f1d68923bc6da31a145cd42896c3a8740520f0b",
+        "affectsGlobalScope": false
+      },
+      "../src/global/domain/exceptions/domainnotfound.exception.ts": {
+        "version": "b4bb95b8cb690a980310400a84f861d5398c8bb890cca2d6371059663d59a4ae",
+        "signature": "e2df6082531a04461f95fec6a9334010e345424232532f60626ed78ae314682d",
+        "affectsGlobalScope": false
+      },
+      "../src/global/infrastructure/exceptions/resolvedomainexception.ts": {
+        "version": "3fc7c0143950123461ddbf493751db395226e44f7166a2feb198a37ea96d3143",
+        "signature": "df57b80abdefa50674d400a7669d53ef7105b29cec74bdfb4688920e4cb365eb",
+        "affectsGlobalScope": false
+      },
+      "../src/auth/usecases/interfaces/defaultlogin.params.ts": {
+        "version": "a0886512e9ae2c5618a2949a8a0776d8745ae9018f9f827a40055f4cc323a9dd",
+        "signature": "a1c355ecf8c11725e8ae60c96accba53f33f32dc6588ffca27d8a1db1d5f5413",
+        "affectsGlobalScope": false
+      },
+      "../src/global/domain/models/base.model.ts": {
+        "version": "b9524c3378105e0ff20432429607ac7433e77e92c007c238938bc2bc17036201",
+        "signature": "2794da62b71171b18395b7285d126c63d2993adf43d99698a4f63f714b66b520",
+        "affectsGlobalScope": false
+      },
+      "../src/users/domain/models/permission.model.ts": {
+        "version": "a1cb8d81d1609ab6c46d44e3bffe5425c1eb30522fb3059e8be0388bb1cc01d3",
+        "signature": "e3e2ea28b5b1bd199c92c4e2e54c105573575e8a1183ccd415a0fb42e98c3441",
+        "affectsGlobalScope": false
+      },
+      "../src/users/domain/models/role.model.ts": {
+        "version": "7120f25977dc23071225bac47614704fe52a442c8889681707deac47e2e54e93",
+        "signature": "bc7bb3a29d99dca8c784337bb74e5f5382922a8a4ea1fb366a94751be1c674ba",
+        "affectsGlobalScope": false
+      },
+      "../src/users/infrastructure/entities/permission.entity.ts": {
+        "version": "d6cf178c914f00822006e53a5fc573d8eb64eda1510768878e46c74830feed17",
+        "signature": "3df153691454ad3b5cb2d5503773494929e4cfced893e01f25af84bb033366e1",
+        "affectsGlobalScope": false
+      },
+      "../src/users/infrastructure/entities/role.entity.ts": {
+        "version": "63e24c8691e3ea917a760e51a2e70bedeef93ff478eaaefe3fcee41ae5fecd50",
+        "signature": "a83d9bf0d2594103bbc96cc684f3f79276794d0143ee085bc19df483450a0053",
+        "affectsGlobalScope": false
+      },
+      "../src/users/domain/enums/usertype.enum.ts": {
         "version": "e1e5e64c76f2276e34f71239b691c0e72637ffe674500bce19cbbdad7bcebe8a",
         "signature": "a5f815d76e160844bbc0ed557108136a4adbe926b92ef4672a3a332810f32e70",
         "affectsGlobalScope": false
       },
-      "../src/users/dtos/createuser.dto.ts": {
-        "version": "508c73fff6ba6c5901167d5cc30764094b48898bfd0893b5273614a4f58c8442",
-        "signature": "f7550d661c8ce6d79ddee4cef38755a63b10465683785c66ad17a03540796c13",
+      "../src/users/domain/models/user.model.ts": {
+        "version": "190bfba42ec21ed2964dcd79acbb51d2c539759425d9788621e783091670663d",
+        "signature": "8b4adfb2fffacd376259d72b977721a2e1210f2329b4d75c18bce180e377025d",
         "affectsGlobalScope": false
       },
-      "../src/users/entities/permission.entity.ts": {
-        "version": "9a91801a201699d59e2edbd1243c17a3ed736ec7594e6703abb87310482877ca",
-        "signature": "7193af3ccc16eb6f8b9aac4460937f1e2a82ec1cc287d28834e9ff8ee9066e7e",
-        "affectsGlobalScope": false
-      },
-      "../src/users/entities/role.entity.ts": {
-        "version": "4724deb987f80c5e3a2464d89a7e0d15bc1a1b0a42a64b96bb79a1d7d0545370",
-        "signature": "0fbceb4d9f5f9f96970a57ab48d6fb0d30155695d181d50f97a91c3f20746315",
-        "affectsGlobalScope": false
-      },
-      "../src/users/entities/user.entity.ts": {
-        "version": "963f296e4e2791f3b5b7726e2be1fb0e38750bd87f80e810d784d361a1ff87d2",
+      "../src/users/infrastructure/entities/user.entity.ts": {
+        "version": "2a55bfad85f893c28f64ecd2a3e4057364c46eb1a541de159b9d2787fa7a2177",
         "signature": "706c1e09c4a0e3dc1dee1c848f1cf4a7b374b6328f67e48efd9ee9f3a4aba321",
         "affectsGlobalScope": false
       },
@@ -3376,29 +3421,64 @@
         "signature": "8f1241f5d9f0d3d72117768b3c974e462840fbd85026fb66685078945404cf2f",
         "affectsGlobalScope": false
       },
-      "../src/users/services/users.service.ts": {
-        "version": "c413cad1b096603a12fd880b7f6f598bf37de4bc03580247037e913e4168de12",
-        "signature": "165bfd0c9ac77de529881f3756999c0b78c129d5bde85a774c0c8926165d58c3",
+      "../src/users/usecases/user/interfaces/createuserbytype.params.ts": {
+        "version": "5068b6848a162d29878fee930510db2c385c286af778e0114798c104e85bbaa0",
+        "signature": "f06f8aa36774e56ce65a8359952356ce71e928e3730e84faaa924eeeef278bf5",
         "affectsGlobalScope": false
       },
-      "../src/customers/interfaces/customerfollows.interface.ts": {
-        "version": "ffb1f43768fb90f02d1b601de9fff324956013868d8b8cea70201036db0d56fa",
-        "signature": "793f53db23c96ea752bb70cc2e3209ba26172274316b1f200751f3f18e0f3c49",
+      "../src/users/domain/services/users.service.ts": {
+        "version": "b02585a6ceb4b764d13de4c5acf7038f3533b11a7465ce607a1ea73e84aa0feb",
+        "signature": "dcf385f08382bb5e25402b02088ca95d445759b2c062bbf887adfd8ac52e9574",
         "affectsGlobalScope": false
       },
-      "../src/customers/entities/customer.entity.ts": {
-        "version": "f021c7798d95ca74ad856ad543fa423dfc065c896dac54c9ca9eeac5b39fd8a1",
-        "signature": "5a6b40f09c25f292b165a8ac31169bc0009d90ac52dd7dff8604a7d6509f908e",
+      "../src/artists/infrastructure/dtos/createartist.dto.ts": {
+        "version": "7e371b18b93f3cb623eb17cbf2ffa09aa041d06ece0d636a8d62d89f63866caf",
+        "signature": "55562fc09551ceb532faebbd672449e20c4b5119cbe3328c8cb045532928251c",
         "affectsGlobalScope": false
       },
-      "../src/artists/interfaces/follower.interface.ts": {
+      "../src/artists/domain/interfaces/follower.interface.ts": {
         "version": "e738b87af38acac84721b37701649dc921d9b0901398f10ae14d9098cebd7323",
         "signature": "0de60492f34eb42f2c18be64aa9df3b1b5957d0603f5b42e735ceaa740b0b016",
         "affectsGlobalScope": false
       },
-      "../src/artists/entities/artist.entity.ts": {
-        "version": "84609bef0676dc5589e883d26ca33b0db31be2598d5d51682bdee2c6c9a94a01",
-        "signature": "39d6712e32594d25f4266ee97efb34ff675fd6d566be8e6a1dc2abdba16b1752",
+      "../src/customers/domain/interfaces/customerfollows.interface.ts": {
+        "version": "ffb1f43768fb90f02d1b601de9fff324956013868d8b8cea70201036db0d56fa",
+        "signature": "793f53db23c96ea752bb70cc2e3209ba26172274316b1f200751f3f18e0f3c49",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/infrastructure/entities/artist.entity.ts": {
+        "version": "2aa3ac94b53ed902ccd06b1c1b143155956e162f4cadf309ead63217efe30e33",
+        "signature": "5f889af524d31180640a3f395414ec0594ea59e19b194219e7f10c54f7863645",
+        "affectsGlobalScope": false
+      },
+      "../src/global/domain/interfaces/serviceerror.ts": {
+        "version": "f229901dea9df96f5ca054e224aa0df8a1e07fc29e4cc012960894f4d1ba3637",
+        "signature": "cac73648fa5213512f4095ca0ef3910f7af570e0090631da890c79ccd66940cc",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/domain/services/artists.service.ts": {
+        "version": "f69265176317b1bda812e36f1075fcf8c2075e254fc83c0d429bc42fdfa0a4f1",
+        "signature": "be0ec89896a8e1c6a166113068ad352dbb09834c5e77ad9d4f13870e2e984c3a",
+        "affectsGlobalScope": false
+      },
+      "../src/customers/infrastructure/entities/customer.entity.ts": {
+        "version": "bb8c89633eeeee88d26b769d5064c8d493b0e6c3a0b71de96decdeeb3b7413fb",
+        "signature": "044b8ad1b9fa093260a63838db014c34841254938857dcb31c060eb61a8d7892",
+        "affectsGlobalScope": false
+      },
+      "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts": {
+        "version": "3fa0f08efdd0ea37576e13b7d17009d1b6e9ca94b5141620e45c7ba34be5401f",
+        "signature": "f1e017c7e8603908600cc9d752651347c31ee382f1d27d62653db9ef747e0bd3",
+        "affectsGlobalScope": false
+      },
+      "../src/customers/usecases/interfaces/createcustomer.params.ts": {
+        "version": "93381a2f4576fd90486bbe7c0a9fba9cf8bcc990c094f7d035324ddcfcd9cab0",
+        "signature": "5ccf81e6924743fd83dd25c7a3a725128db9a1dc0896488145378a9df1899969",
+        "affectsGlobalScope": false
+      },
+      "../src/customers/domain/customers.service.ts": {
+        "version": "43d669cd19d7d48a9dfdc6549998e0c7aef996cf1e4b7bedb5ea1b06130f7708",
+        "signature": "cb0d4fcd4928f2b898fa2a73791b3d39eb30cd2c6bd3f2f3376d6367378c686e",
         "affectsGlobalScope": false
       },
       "../node_modules/@types/node/globals.d.ts": {
@@ -3666,79 +3746,74 @@
         "signature": "8f1241f5d9f0d3d72117768b3c974e462840fbd85026fb66685078945404cf2f",
         "affectsGlobalScope": false
       },
-      "../src/auth/services/auth.service.ts": {
-        "version": "d6494be52f60b503122762a8a5288c24560bd291d9537056dbdbef8baba7bea0",
-        "signature": "6cd96d57ce183c20db2e1ee581140bcf184855f566ed3c9b63f1022fe65526ab",
+      "../src/auth/domain/auth.service.ts": {
+        "version": "b4fc766094d8f9cb5fdd90b7b241b1ad57439224279dd1deac65d236e6a06b8c",
+        "signature": "2f46a2c481fb765b9dfc8839ea526b8aacf11a91c97ce1cf955d7716a8544bc6",
         "affectsGlobalScope": false
       },
-      "../src/artists/dtos/createartist.dto.ts": {
-        "version": "7e371b18b93f3cb623eb17cbf2ffa09aa041d06ece0d636a8d62d89f63866caf",
-        "signature": "55562fc09551ceb532faebbd672449e20c4b5119cbe3328c8cb045532928251c",
+      "../src/auth/usecases/defaultlogin.usecase.ts": {
+        "version": "39972056158e812ae081419e59eb90ab57cd11e8bdcd1063e666fd8e564f5c73",
+        "signature": "9091ac9708acf1f6910a2d2b7cb7347dc73ab590a20b1dd302c72afbd3ade051",
         "affectsGlobalScope": false
       },
-      "../src/global/interfaces/serviceerror.ts": {
-        "version": "f229901dea9df96f5ca054e224aa0df8a1e07fc29e4cc012960894f4d1ba3637",
-        "signature": "cac73648fa5213512f4095ca0ef3910f7af570e0090631da890c79ccd66940cc",
+      "../src/auth/infrasctructure/auth.handler.ts": {
+        "version": "22677364e29b688e4a5fe33ddd4f494159782bdaa3388509ade7bd19ae8caf81",
+        "signature": "209fc22cad8e2a2dd6315a722c171be3ad443b3447b68fb38659ed2ba414058c",
         "affectsGlobalScope": false
       },
-      "../src/artists/services/artists.service.ts": {
-        "version": "e4d5ad5967dcb0c9613549ca68a6d1b9c5d653f7a2468c71dee613df2520b328",
-        "signature": "0ed2a236941b33bbd1302294dc97d16e6abc047ab4df2943438365daefd92061",
+      "../src/auth/infrasctructure/auth.controller.ts": {
+        "version": "a96aa06b24ca2620466de1f755a493af82974e7a68600a51277602478799d037",
+        "signature": "2361fd016a25125fd10f6d42970bdd19fe9499376613fca3d27aea66dc86249e",
         "affectsGlobalScope": false
       },
-      "../src/customers/dtos/createcustomer.dto.ts": {
-        "version": "8527bc62f12062da24cfc535dc185555a8a5de5ff393ac959cd4dff94d6683c8",
-        "signature": "b91ede3013f35a0dd7a704d5956c01409a579a0a2f620c8edc8a5ebd58cfd8bf",
+      "../src/users/infrastructure/dtos/createuserreq.dto.ts": {
+        "version": "8d65e714b4bfdbdd0268974ba3e87bb362e84b04283ea36c05b775b8e3e17da4",
+        "signature": "dfb88240ebd1aaa68d0d79c1ace8a24670a33d996806430a367391a2e572089a",
         "affectsGlobalScope": false
       },
-      "../src/customers/services/customers.service.ts": {
-        "version": "a5fee7b3f1497c36bbb41d1d6a379f60c34a019e976e54b3b46cc8232393fde2",
-        "signature": "fdf921e8af85b7db152c8434bf2b6cfd0344cc56b5e668db26424d8f78fd78a3",
-        "affectsGlobalScope": false
-      },
-      "../src/auth/handlers/auth.handler.ts": {
-        "version": "9d63ad5167aae7df5b707dee364e26c0985e8916be3722a1d0a0024fb8ba0171",
-        "signature": "b3c8275ae8e9f0686bbd6242a6ca792963f23f9b2bfa636d8cbee97027c27447",
-        "affectsGlobalScope": false
-      },
-      "../src/auth/controllers/auth.controller.ts": {
-        "version": "eaa03b70cf88242a718abf8b08a23b5a213826fcd7bd309a00a6911b5e26d212",
-        "signature": "3d96f562ab2248b8b70a37b10ed009e69d518484f2bc5be4f3b54d208339f436",
-        "affectsGlobalScope": false
-      },
-      "../src/global/utils/serviceerrorstringify.ts": {
+      "../src/global/domain/utils/serviceerrorstringify.ts": {
         "version": "2bfdcd0a085955e7643272ec5a16307563c1f930e7c4dce0e403288cdfdf9c45",
         "signature": "dc27419a441b0d971b709288690ff3f2fe11b05038825c1112be9e384fd483e2",
         "affectsGlobalScope": false
       },
-      "../src/users/data/initrolepermission.data.ts": {
+      "../src/users/domain/data/initrolepermission.data.ts": {
         "version": "96400238cb3b8d9dd3b44d01db2e8e9344a0b6ea45b01b2f0d8660b9201cd696",
         "signature": "3163e5b4e508c09ce81dfec47da172a585a0704c8253f1233b5bf7e0c97c245c",
         "affectsGlobalScope": false
       },
-      "../src/users/data/initroles.data.ts": {
-        "version": "d1268178ec9b07e13123330b374c209d0fb1999bdf6bb0657adbaee724d46ab8",
-        "signature": "d20dd77e8b83f1345a12b39b8a20d4ff6a04f23a4e6d2187b79f4a069c703f9f",
+      "../src/users/domain/data/initroles.data.ts": {
+        "version": "de4db5671229b4e1f0820a9b55c86105c1955dc8284e3a3d9c8073c0fe04bfdc",
+        "signature": "31cd84c55df0f8882f733cec34ada0b5156668f393e8ec3f1ea9af091dd20758",
         "affectsGlobalScope": false
       },
-      "../src/users/services/roles.service.ts": {
-        "version": "dc3625c89179ce7d97c65e55db5bf52c37027ce1c6fdff65dc4bd57e262d4074",
-        "signature": "6651587bb7c7c7c447389f8ce5fb10099d5035d658a721f4075cfc3c00c90b72",
+      "../src/users/domain/services/roles.service.ts": {
+        "version": "604a253f72e6ab9e90d2d8abedccf95964cc5f38420bb079d12d4203be45318f",
+        "signature": "af6f27a7440065975689f1cd68066d03b8fb5dca5437064dca40bb7d5fe9b6b6",
         "affectsGlobalScope": false
       },
-      "../src/users/handlers/users.handler.ts": {
-        "version": "635708ff5e60529d7a293f74d97058b13bb940e4accedaacfb697b616f0e78a9",
-        "signature": "6e7de9b694c191d8c5a9d0e31648d727fa640351a794c2092877a7c165f2642e",
+      "../src/users/usecases/user/crerateuserbytype.usecase.ts": {
+        "version": "4cc536bee53e473c9b3de79467d25eda86cbb53e127fd5b0a49cdf53e0417efa",
+        "signature": "0e6ae1345fb394b66f0b6d5a6578250462e95196870a46c6236bc94dace3f2e3",
         "affectsGlobalScope": false
       },
-      "../src/users/controllers/users.controller.ts": {
-        "version": "91ebb44a20367fbe0861ed8f632a3a7f8c1c6c5485f3d53d19a2dc1b4ca91b21",
-        "signature": "e1924c91b0d2e3fa1de7f428b3038e8b5861f9b5bfeb303325e4f0d7b2cd794a",
+      "../src/users/infrastructure/handlers/users.handler.ts": {
+        "version": "f68e0d297e3fd37bd5c36297448ecf94576fce48353e18ff2bf18a81cb7f8f59",
+        "signature": "823ba26b8451deb62b72d3e030ad00423ac20c47c7ecf6a2dba32f2fe756f868",
         "affectsGlobalScope": false
       },
-      "../src/users/services/permissions.service.ts": {
-        "version": "40ab1878e9bb776068c3453dbd44a0ebba9d7a25d43f500ba8a4a096f2a6b504",
-        "signature": "485c59110819e5f4945415e0c6f3f124e47ae57e19f289d529cdfd9a14270922",
+      "../src/users/infrastructure/dtos/createuserres.dto.ts": {
+        "version": "3a14aa325e37f11b162466fad4f72281951863a9f10871151193974cbc861af2",
+        "signature": "ce9a3659b4738a9de29c14865857fb8adbec952d768619c9d4c7db18f8b74c29",
+        "affectsGlobalScope": false
+      },
+      "../src/users/infrastructure/controllers/users.controller.ts": {
+        "version": "1e995b67c940108be0a2ba90b0cb60543c65f059896f6a664d68da715bfa013c",
+        "signature": "46e292c6d37af888338cc5e3424d450f7e452681895371fdd0f6c17cf72e943a",
+        "affectsGlobalScope": false
+      },
+      "../src/users/domain/services/permissions.service.ts": {
+        "version": "958e88a76dbe89dbe32bf151df49f6664d7f63bd20693a5cfe53c5acd6c7d0f0",
+        "signature": "8ecdf734278c473675110951f677efe7e75d4fb91296b3158e1849a17a90a455",
         "affectsGlobalScope": false
       },
       "../node_modules/@nestjs/core/adapters/http-adapter.d.ts": {
@@ -3921,43 +3996,88 @@
         "signature": "7b5ed961a0e03965299591d73de8b8c41e8a68105ff4fc07a240b0dfb94a5a3d",
         "affectsGlobalScope": false
       },
-      "../src/users/services/initialpermissions.service.ts": {
-        "version": "c5a3e52bac808455900e0f4b5250cea9c766e1660426e9752395bea402665822",
-        "signature": "402a709c8be964e284061162f8c4445cf1c6c73fbb5d159a6dcd3fb299fc7117",
+      "../src/users/domain/services/initialpermissions.service.ts": {
+        "version": "cd1a3ff6052399762329e2d6b4d8a170905a7ba92614ed7587cc35d72845de6b",
+        "signature": "0acd38375880cf69447706260e09d537e88f5fff685e3e2847cb95c680e099e9",
         "affectsGlobalScope": false
       },
-      "../src/users/handlers/permissions.handler.ts": {
-        "version": "7d0bb6c334d526be620380b3d3fb946219ebab452498a3b895ddce5969412603",
-        "signature": "8b1dfb85b23ead4105fe083c3090bef95fe7003e9c0be8819be708a91692437b",
+      "../src/users/usecases/permission/findallpermissions.usecase.ts": {
+        "version": "f934e6e3e1277e36a0dd57c137f7ce1f3db7f87784186b4b732a517b5cf1fb0c",
+        "signature": "5a58a94044146ae6f42f91ef5d74c595ccf23fdf27c10cc53b896b952e8bb2b9",
         "affectsGlobalScope": false
       },
-      "../src/users/controllers/permissions.controller.ts": {
-        "version": "0c662fa563b19fba98273a85f2144a6500482d28f8739824fc06c099c267225c",
-        "signature": "d228a8b2d42b0d1863f8119497d28bbd7d7c2b66c12fa48ff3d4433cf484aa3f",
+      "../src/users/usecases/permission/findallroutes.usecase.ts": {
+        "version": "c8bcf868c2e7ea0aa3a20d39688b994682984a659aef2b3f3fa6e7cf9a7467aa",
+        "signature": "38ea96ab72beffae73bfc3ee400bc058d3a2a6efd25618f91ac6ab44f23a4436",
         "affectsGlobalScope": false
       },
-      "../src/users/handlers/roles.handler.ts": {
-        "version": "206ae03b353fbab002188a2dfc1b96ed410aff9d3e0dd14a5063cc44558731b8",
-        "signature": "71011fbb8f95d2bf4607a54d01aa2c9a138da0bc361935d2a12f04204e60d2c9",
+      "../src/users/usecases/permission/findonepermission.usecase.ts": {
+        "version": "b9985ace7537c604aaac7614cced6384ee779a7178e0bbf00e043426feb6c77c",
+        "signature": "e5e7d2913ca3901846532e34ef80abbc2f5ea2252d00bcd4d80a724341c3e053",
         "affectsGlobalScope": false
       },
-      "../src/users/controllers/roles.controller.ts": {
+      "../src/users/usecases/permission/initpermissions.usecase.ts": {
+        "version": "8915a3ce72fedc02c722a531259185ff0d68ddafd325dafd1e558bbcab6512ec",
+        "signature": "0578445140a5ccc800eeeb090441f3f005aacebc6598cc551a15d370d786e77b",
+        "affectsGlobalScope": false
+      },
+      "../src/users/infrastructure/handlers/permissions.handler.ts": {
+        "version": "d614681f1854c14b057a8647936c0b171197332494e222f35baaddf7c6ca40b2",
+        "signature": "dc3fc3e7438b7fc4566998f4a19bfd19b875b7749e754ac23605abdccc0cf292",
+        "affectsGlobalScope": false
+      },
+      "../src/users/infrastructure/controllers/permissions.controller.ts": {
+        "version": "6708317c76aa9abde42a3d2147edc4f57d11d5b6a58bbbbadc977d6bab3b12ce",
+        "signature": "9fd99fb512ba8a68c58015b19cb8a35742a46435d9843cbcb54e5a50f440de15",
+        "affectsGlobalScope": false
+      },
+      "../src/users/usecases/role/findonerole.usecase.ts": {
+        "version": "3e29f7e81c81bb242d5d6910380a7304cfdcafb5542cb9da8690a9079083485e",
+        "signature": "2effb98afddb896808362d4cf8c53cdee4fe0d307e9de37371057e6897869d41",
+        "affectsGlobalScope": false
+      },
+      "../src/users/usecases/role/findallroles.usecase.ts": {
+        "version": "8d413711f9bc2693d02d046cb55156b2bed7bf91aa469f28555230da39f06b5a",
+        "signature": "de798318335fc460853a201d8502879ddfc28dd04311d1847455a44f64839853",
+        "affectsGlobalScope": false
+      },
+      "../src/users/usecases/role/initroles.usecase.ts": {
+        "version": "0579dc701e22ae87f3b5be8f66fea975e7cca8400335cfb887084fb5ab78524a",
+        "signature": "c5b7c41688895e25899a9a84cfce99c6200543e89d8be79a8786005dc205b149",
+        "affectsGlobalScope": false
+      },
+      "../src/users/infrastructure/handlers/roles.handler.ts": {
+        "version": "77e78004c7cdb42d7150c4f62c51b0ae937b466b66574feaba75e7f95e5b9d2b",
+        "signature": "8a9791a068a84b325e009c2e473ff063952dc34dad66d816eadc6649f8f7d2c5",
+        "affectsGlobalScope": false
+      },
+      "../src/users/infrastructure/controllers/roles.controller.ts": {
         "version": "9bd1ceb3e097fbf8708d90fc002c6b64a4c11351f3239f7884cce32b4156975e",
         "signature": "5598dc717017e03bf9b47ddd44457591ce154d24d9647c46df41197d1ec8d0a1",
         "affectsGlobalScope": false
       },
-      "../src/customers/handlers/customers.handler.ts": {
-        "version": "ac6e765ec15b9100fc1f755000af54da45e93d7d3cde3c2e6551602d45ff5cb5",
-        "signature": "b6737c0ec842e8cb8bb8aac2aaeead216680b67c46c3ce6b3ede658640174dae",
+      "../src/customers/usecases/crcustomer.usecase.ts": {
+        "version": "fa3713b3b298c4ecd016bf28ec92de325a7f847bfacc45e503b72d2d4658a24f",
+        "signature": "fabd5a6dc24d3c1e11dd7012eb3c48692572e00ccb504030019ae3bbf9ed03ec",
         "affectsGlobalScope": false
       },
-      "../src/customers/controllers/customers.controller.ts": {
-        "version": "926ab221a76386f39b96d9b4647538249d2628b4e3003050fff72126858d68e6",
-        "signature": "547ef22d09202f4d16d3939a7f450e45054bcc2dfe994614c1f0fc83a9820182",
+      "../src/customers/infrastructure/customers.handler.ts": {
+        "version": "c3e151deb8ac1308a186837c001b4dfa62294b9f93b10452803d35f1e95f1c79",
+        "signature": "d785c85ce73bcbdbae5110d80546e71031eb43ad6b7abd52d1a7fa55bc576b76",
+        "affectsGlobalScope": false
+      },
+      "../src/customers/infrastructure/dtos/createcustomerres.dto.ts": {
+        "version": "5b86939e2dab921b86eaac2a61ee563cf2448e65d2a9b75c6e58f67d44d220e7",
+        "signature": "fe1674ef1b4209190c942c4845ac0b55de9bf6e36859873c49ad677817c912c4",
+        "affectsGlobalScope": false
+      },
+      "../src/customers/infrastructure/customers.controller.ts": {
+        "version": "27fc353e1e30f6ca6fe4a4abdf1a84ed1e327583ae0f8a7d1412e11eb21ce0a8",
+        "signature": "3bfa227e2b6a9926c263f0b07664cc43bad09c28e5080767aad2c36b34c50f10",
         "affectsGlobalScope": false
       },
       "../src/customers/customers.module.ts": {
-        "version": "aa05a609bf8782fcaf354c225aa2ba5f30bc0bf26e4dfc0c73e9842acdb76f81",
+        "version": "fc32337f3d11e06bc3c997d2e0472815342c4214e809ca5f02dfc33d87bca114",
         "signature": "cca3cf840c25f5a1d1f9e2a280c8a8a6f0f5f58e0fe4e1a60bdeed28162acfa2",
         "affectsGlobalScope": false
       },
@@ -5356,19 +5476,34 @@
         "signature": "1b8e2370aa2872687e7ab84dcf4c565ad5515b28c098b11d68a2d67d5e51095f",
         "affectsGlobalScope": false
       },
-      "../src/global/clients/s3.client.ts": {
+      "../src/global/infrastructure/clients/s3.client.ts": {
         "version": "f585c0dd30ea94390e974ad8cd7555cd0eb54a4cfe33066692a3db323ba75b5a",
         "signature": "dd69179ed1fb9dbeceef81bcc07f882145d2c9d5d09ae38197687dafb9bc5349",
         "affectsGlobalScope": false
       },
       "../src/multimedias/services/multimedias.service.ts": {
-        "version": "c1c8349dd07ab7c0f51838ea05ed6e2fc2fe68bc633401da8f183c1bace05af6",
-        "signature": "bf3f1860272ca0be3919d6757d8ca57eda18d3dd1d28324bafa84a40b206a17e",
+        "version": "902c32fe6cefe439ca3d827c4076886153976b6120539a4f52a8b3a9a615b13f",
+        "signature": "08d6f19a6471c5e26b382e9c9a5bc033bed6fb355d18fca9405a5809ad30e271",
         "affectsGlobalScope": false
       },
-      "../src/artists/handlers/artists.handler.ts": {
-        "version": "2b5bfaf3792f706f601c5517df7ae9c0dc91a2b9e3e45bac535f83b9a9e5b949",
-        "signature": "6df8b736d2b003cdb6751d11b957d9b2c6b0cc05c034c8de4dc0ff8b0b778ceb",
+      "../src/artists/usecases/createartist.usecase.ts": {
+        "version": "72dba509f8ae557267258f93cbb7cfdfc3328461c810fb5c302d099cc62b762c",
+        "signature": "915fcb73788ca193e683047efde0d9c794f48ca6bea958848e6c6f2c4a77b139",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/findartist.usecases.ts": {
+        "version": "8caada506f9ae86409d9257e03563352b30cdef5caa1deace37d3026f0a47eb1",
+        "signature": "bc9f60a8ee112bbba47c83aa51678036f96ae2420ed29ec36af090f884ad9dc7",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/updateartistprofilepicture.usecase.ts": {
+        "version": "5e36e69f98c5643e20b8d3e7428cddcbae4f100780223d672003de979ed8d8f6",
+        "signature": "d8ca7bf080ab93fe32a0ba706c172f6a050285eee7b9a5ec14bef78fcb9ac68f",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/infrastructure/artists.handler.ts": {
+        "version": "f3664e02e375011c2aecbf08f67d602d14e50aee04a0962afe053cdc7eeaa723",
+        "signature": "9da1936db25cf4161ecb80c74cec1484cb3d772e65065289c9504112ee4dfbaf",
         "affectsGlobalScope": false
       },
       "../node_modules/@nestjs/platform-express/interfaces/serve-static-options.interface.d.ts": {
@@ -5456,9 +5591,9 @@
         "signature": "076ad2da2c104d6557bb0c42b5363b9d44db3a14d8fe485d2653b55c3c53d41d",
         "affectsGlobalScope": false
       },
-      "../src/artists/controllers/artists.controller.ts": {
-        "version": "b11640b8472f5fe57ace43b340a1da094e5c4bfe0d40059b0d307d94e8182d2e",
-        "signature": "c4b59946899a840ea05de0f3850de97807b1c4abf55e7d4129d564698c56c221",
+      "../src/artists/infrastructure/artists.controller.ts": {
+        "version": "5768e07dddea58a11ce4bc8d13354ab27a1cf3124d2923b6a152f4dc756268f6",
+        "signature": "aa6d487179e225f6572614064822f4d80b6d388a8b1b20e5af554c2158c47ae8",
         "affectsGlobalScope": false
       },
       "../src/multimedias/controllers/multimedias.controller.ts": {
@@ -5472,17 +5607,17 @@
         "affectsGlobalScope": false
       },
       "../src/artists/artists.module.ts": {
-        "version": "225cae87fee931f3da60eb057b0c2ed06d013b97b699c3b0620e22b02afe5653",
+        "version": "6c058be3f0b3e40fea00eae3e4cc2d16464b30481859b7e7bcd4fcbbdfb2d4e0",
         "signature": "30a4f26f9d8aca453eb7164c131bb7d14f88bb9829be8a44b89eb0a70b9b6ab7",
         "affectsGlobalScope": false
       },
       "../src/users/users.module.ts": {
-        "version": "f13106a7ab0eddd5cfb42db59eef3f854d34c960fca9884103fc99006c7842cf",
+        "version": "cc53c842840658a6d1b882dfbc84a724f07db07d9f0f6c8e1b115ee5b19db29d",
         "signature": "aa1725e38b5a0b4009f6a74f296f173e7926c119a60454dbd2e523861735df69",
         "affectsGlobalScope": false
       },
       "../src/auth/auth.module.ts": {
-        "version": "ca4b8a1d80cc697b63cd62e67ce621766c40d61c52d38f68a55f033c8f8d5867",
+        "version": "5036a95aa9f1a9ba129886454831b6dbf4e5b83d4863d6760293dae8372ea631",
         "signature": "a28b5c0c372fb375910b3fe3c3ce4331509bc18ccef7cc39c9ee9d8daf8225d1",
         "affectsGlobalScope": false
       },
@@ -5517,7 +5652,7 @@
         "affectsGlobalScope": false
       },
       "../src/global/global.module.ts": {
-        "version": "72ac41f06e38ac52b3281a18d2017cd4f9bacf2544497b37eedbfcd817f5c5b9",
+        "version": "2a43196e732f277596954a2cac4eec1d6cb93847d8d8c916e3d9eb9e559b748e",
         "signature": "a6c010095298dd08d0673922933112b588d3d993e2fdf2242d770d866eb0bd7a",
         "affectsGlobalScope": false
       },
@@ -5591,6 +5726,21 @@
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
         "affectsGlobalScope": false
       },
+      "../src/artists/usecases/interfaces/createartist.params.ts": {
+        "version": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/interfaces/createartist.result.ts": {
+        "version": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "affectsGlobalScope": false
+      },
+      "../src/customers/usecases/interfaces/createcustomer.result.ts": {
+        "version": "b14b1491a22fc62a685d5158b9f0ca34dfa4f0d30d3e85bee48b401e07734f68",
+        "signature": "d129306607fb072ed92d4331c1dd9e6c82ca593d12595010c6c8b1e4ba2cd4b1",
+        "affectsGlobalScope": false
+      },
       "../src/feed/feed.controller.ts": {
         "version": "0c7e1d3af238834ba736113197c1d9db46e5dcf7c38634ec5b12b4622b152e42",
         "signature": "be78d3bc7b01235bc07d87d1bcc8b9d5aa97a7dc142e87b50d943f95f2d0fb1e",
@@ -5606,7 +5756,7 @@
         "signature": "77eb3ed91683c033b31c2b62ed2b0b4e2d2f46aa46efdeff04e236a752e5feab",
         "affectsGlobalScope": false
       },
-      "../src/global/utils/fileapibodyoptions.ts": {
+      "../src/global/infrastructure/fileapibodyoptions.ts": {
         "version": "e08a7af0b96bd5f32ead4e1e2be4a84213143f25a83cfac27d383f5a34ba06eb",
         "signature": "bdf72f6ad9bc3759de0b8cd4c5413464b1fe68a5f41a02868686990899eb9af0",
         "affectsGlobalScope": false
@@ -5639,6 +5789,11 @@
       "../src/posts/posts.module.ts": {
         "version": "c496d45e529a86fbd29d0de71b9687c9952b7a10321492cc845c21cbd752b02e",
         "signature": "d73d1be1edc2a3da3bf5a4272781d7c793d79993a6f261bb91fa64bb4ad5b57b",
+        "affectsGlobalScope": false
+      },
+      "../src/users/usecases/user/interfaces/createuserbytype.result.ts": {
+        "version": "23b5079d12a7e789548795b5e5439912b74a099ad4e57019b5fd182b49ef4885",
+        "signature": "98972551ebebf0f5de7663e4b50c0dc773cc06ebd5d0d2ac30605f58978632d9",
         "affectsGlobalScope": false
       },
       "../node_modules/@types/anymatch/index.d.ts": {
@@ -11176,99 +11331,149 @@
       "../src/artists/artists.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
-        "../src/artists/controllers/artists.controller.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/handlers/artists.handler.ts",
-        "../src/artists/services/artists.service.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/artists.controller.ts",
+        "../src/artists/infrastructure/artists.handler.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/artists/usecases/createartist.usecase.ts",
+        "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
         "../src/multimedias/multimedias.module.ts"
       ],
-      "../src/artists/controllers/artists.controller.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/platform-express/index.d.ts",
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../src/artists/dtos/createartist.dto.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/handlers/artists.handler.ts",
-        "../src/multimedias/dtos/fileupload.dto.ts"
-      ],
-      "../src/artists/dtos/createartist.dto.ts": [
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../node_modules/class-validator/types/index.d.ts"
-      ],
-      "../src/artists/entities/artist.entity.ts": [
-        "../node_modules/typeorm/index.d.ts",
-        "../src/artists/interfaces/follower.interface.ts",
-        "../src/customers/interfaces/customerfollows.interface.ts"
-      ],
-      "../src/artists/handlers/artists.handler.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/artists/dtos/createartist.dto.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/services/artists.service.ts",
-        "../src/global/interfaces/serviceerror.ts",
-        "../src/global/utils/serviceerrorstringify.ts",
-        "../src/multimedias/services/multimedias.service.ts"
-      ],
-      "../src/artists/services/artists.service.ts": [
+      "../src/artists/domain/services/artists.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
-        "../src/artists/dtos/createartist.dto.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/customers/interfaces/customerfollows.interface.ts",
-        "../src/global/interfaces/serviceerror.ts"
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/customers/domain/interfaces/customerfollows.interface.ts",
+        "../src/global/domain/interfaces/serviceerror.ts"
+      ],
+      "../src/artists/infrastructure/artists.controller.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/platform-express/index.d.ts",
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../src/artists/infrastructure/artists.handler.ts",
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/multimedias/dtos/fileupload.dto.ts"
+      ],
+      "../src/artists/infrastructure/artists.handler.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/config/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/artists/usecases/createartist.usecase.ts",
+        "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/global/domain/utils/serviceerrorstringify.ts",
+        "../src/global/infrastructure/exceptions/resolvedomainexception.ts",
+        "../src/multimedias/services/multimedias.service.ts"
+      ],
+      "../src/artists/infrastructure/dtos/createartist.dto.ts": [
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../node_modules/class-validator/types/index.d.ts"
+      ],
+      "../src/artists/infrastructure/entities/artist.entity.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/artists/domain/interfaces/follower.interface.ts",
+        "../src/customers/domain/interfaces/customerfollows.interface.ts"
+      ],
+      "../src/artists/usecases/createartist.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/exceptions/domainconflict.exception.ts",
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/global/domain/utils/serviceerrorstringify.ts"
+      ],
+      "../src/artists/usecases/findartist.usecases.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts"
+      ],
+      "../src/artists/usecases/updateartistprofilepicture.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/exceptions/domainnotfound.exception.ts",
+        "../src/multimedias/services/multimedias.service.ts"
       ],
       "../src/auth/auth.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/jwt/index.d.ts",
         "../src/artists/artists.module.ts",
-        "../src/auth/controllers/auth.controller.ts",
-        "../src/auth/handlers/auth.handler.ts",
-        "../src/auth/services/auth.service.ts",
+        "../src/auth/domain/auth.service.ts",
+        "../src/auth/infrasctructure/auth.controller.ts",
+        "../src/auth/infrasctructure/auth.handler.ts",
+        "../src/auth/usecases/defaultlogin.usecase.ts",
         "../src/customers/customers.module.ts",
         "../src/users/users.module.ts"
       ],
-      "../src/auth/controllers/auth.controller.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../src/auth/dtos/login.dto.ts",
-        "../src/auth/dtos/loginresponse.dto.ts",
-        "../src/auth/handlers/auth.handler.ts"
-      ],
-      "../src/auth/dtos/login.dto.ts": [
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../node_modules/class-validator/types/index.d.ts",
-        "../src/auth/enums/logintype.enum.ts"
-      ],
-      "../src/auth/dtos/loginresponse.dto.ts": [
-        "../node_modules/class-validator/types/index.d.ts",
-        "../src/auth/interfaces/jwtpayload.interface.ts"
-      ],
-      "../src/auth/handlers/auth.handler.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/services/artists.service.ts",
-        "../src/auth/dtos/login.dto.ts",
-        "../src/auth/dtos/loginresponse.dto.ts",
-        "../src/auth/enums/logintype.enum.ts",
-        "../src/auth/services/auth.service.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/customers/services/customers.service.ts",
-        "../src/users/entities/user.entity.ts",
-        "../src/users/enums/usertype.enum.ts",
-        "../src/users/services/users.service.ts"
-      ],
-      "../src/auth/services/auth.service.ts": [
+      "../src/auth/domain/auth.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/config/index.d.ts",
         "../node_modules/@nestjs/jwt/index.d.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/auth/dtos/loginresponse.dto.ts",
-        "../src/auth/interfaces/jwtpayload.interface.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/users/entities/user.entity.ts",
-        "../src/users/enums/usertype.enum.ts"
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/auth/domain/interfaces/jwtpayload.interface.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/users/domain/enums/usertype.enum.ts",
+        "../src/users/infrastructure/entities/user.entity.ts"
+      ],
+      "../src/auth/infrasctructure/auth.controller.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../src/auth/infrasctructure/auth.handler.ts",
+        "../src/auth/infrasctructure/dtos/loginreq.dto.ts",
+        "../src/auth/infrasctructure/dtos/loginres.dto.ts"
+      ],
+      "../src/auth/infrasctructure/auth.handler.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/auth/domain/enums/logintype.enum.ts",
+        "../src/auth/infrasctructure/dtos/loginreq.dto.ts",
+        "../src/auth/infrasctructure/dtos/loginres.dto.ts",
+        "../src/auth/usecases/defaultlogin.usecase.ts",
+        "../src/auth/usecases/interfaces/defaultlogin.params.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/infrastructure/exceptions/resolvedomainexception.ts"
+      ],
+      "../src/auth/infrasctructure/dtos/loginreq.dto.ts": [
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../node_modules/class-validator/types/index.d.ts",
+        "../src/auth/domain/enums/logintype.enum.ts"
+      ],
+      "../src/auth/infrasctructure/dtos/loginres.dto.ts": [
+        "../src/auth/domain/interfaces/jwtpayload.interface.ts",
+        "../src/auth/usecases/interfaces/defaultlogin.result.ts"
+      ],
+      "../src/auth/usecases/defaultlogin.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/auth/domain/auth.service.ts",
+        "../src/auth/usecases/interfaces/defaultlogin.params.ts",
+        "../src/auth/usecases/interfaces/defaultlogin.result.ts",
+        "../src/customers/domain/customers.service.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/exceptions/domainconflict.exception.ts",
+        "../src/global/domain/exceptions/domainnotfound.exception.ts",
+        "../src/users/domain/enums/usertype.enum.ts",
+        "../src/users/domain/services/users.service.ts",
+        "../src/users/infrastructure/entities/user.entity.ts"
+      ],
+      "../src/auth/usecases/interfaces/defaultlogin.params.ts": [
+        "../node_modules/class-validator/types/index.d.ts"
+      ],
+      "../src/auth/usecases/interfaces/defaultlogin.result.ts": [
+        "../node_modules/class-validator/types/index.d.ts",
+        "../src/auth/domain/interfaces/jwtpayload.interface.ts"
       ],
       "../src/config/app.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
@@ -11288,45 +11493,66 @@
       "../src/config/userdatabase.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
       ],
-      "../src/customers/controllers/customers.controller.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../src/customers/dtos/createcustomer.dto.ts",
-        "../src/customers/handlers/customers.handler.ts",
-        "../src/users/entities/user.entity.ts"
-      ],
       "../src/customers/customers.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
-        "../src/customers/controllers/customers.controller.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/customers/handlers/customers.handler.ts",
-        "../src/customers/services/customers.service.ts"
+        "../src/customers/domain/customers.service.ts",
+        "../src/customers/infrastructure/customers.controller.ts",
+        "../src/customers/infrastructure/customers.handler.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/customers/usecases/crcustomer.usecase.ts"
       ],
-      "../src/customers/dtos/createcustomer.dto.ts": [
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../node_modules/class-validator/types/index.d.ts"
-      ],
-      "../src/customers/entities/customer.entity.ts": [
-        "../node_modules/typeorm/index.d.ts",
-        "../src/customers/interfaces/customerfollows.interface.ts"
-      ],
-      "../src/customers/handlers/customers.handler.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/customers/dtos/createcustomer.dto.ts",
-        "../src/customers/services/customers.service.ts",
-        "../src/global/interfaces/serviceerror.ts",
-        "../src/global/utils/serviceerrorstringify.ts"
-      ],
-      "../src/customers/services/customers.service.ts": [
+      "../src/customers/domain/customers.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
-        "../src/customers/dtos/createcustomer.dto.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/customers/interfaces/customerfollows.interface.ts",
-        "../src/global/interfaces/serviceerror.ts"
+        "../src/customers/domain/interfaces/customerfollows.interface.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/customers/usecases/interfaces/createcustomer.params.ts",
+        "../src/global/domain/interfaces/serviceerror.ts"
+      ],
+      "../src/customers/infrastructure/customers.controller.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../src/customers/infrastructure/customers.handler.ts",
+        "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts",
+        "../src/customers/infrastructure/dtos/createcustomerres.dto.ts"
+      ],
+      "../src/customers/infrastructure/customers.handler.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/customers/usecases/crcustomer.usecase.ts",
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/global/domain/utils/serviceerrorstringify.ts"
+      ],
+      "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts": [
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../node_modules/class-validator/types/index.d.ts"
+      ],
+      "../src/customers/infrastructure/dtos/createcustomerres.dto.ts": [
+        "../src/customers/infrastructure/entities/customer.entity.ts"
+      ],
+      "../src/customers/infrastructure/entities/customer.entity.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/customers/domain/interfaces/customerfollows.interface.ts"
+      ],
+      "../src/customers/usecases/crcustomer.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/config/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/customers/domain/customers.service.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/customers/usecases/interfaces/createcustomer.params.ts",
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/global/domain/utils/serviceerrorstringify.ts"
+      ],
+      "../src/customers/usecases/interfaces/createcustomer.params.ts": [
+        "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts"
+      ],
+      "../src/customers/usecases/interfaces/createcustomer.result.ts": [
+        "../src/customers/infrastructure/dtos/createcustomerres.dto.ts"
       ],
       "../src/feed/feed.controller.ts": [
         "../node_modules/@nestjs/common/index.d.ts"
@@ -11339,11 +11565,14 @@
       "../src/feed/feed.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts"
       ],
-      "../src/global/clients/s3.client.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../node_modules/@types/node/stream.d.ts",
-        "../node_modules/aws-sdk/index.d.ts"
+      "../src/global/domain/exceptions/domainconflict.exception.ts": [
+        "../src/global/domain/exceptions/domain.exception.ts"
+      ],
+      "../src/global/domain/exceptions/domainnotfound.exception.ts": [
+        "../src/global/domain/exceptions/domain.exception.ts"
+      ],
+      "../src/global/domain/utils/serviceerrorstringify.ts": [
+        "../src/global/domain/interfaces/serviceerror.ts"
       ],
       "../src/global/global.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11355,13 +11584,22 @@
         "../src/config/aws.ts",
         "../src/config/customerdatabase.ts",
         "../src/config/userdatabase.ts",
-        "../src/global/clients/s3.client.ts"
+        "../src/global/infrastructure/clients/s3.client.ts"
       ],
-      "../src/global/utils/fileapibodyoptions.ts": [
+      "../src/global/infrastructure/clients/s3.client.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/config/index.d.ts",
+        "../node_modules/@types/node/stream.d.ts",
+        "../node_modules/aws-sdk/index.d.ts"
+      ],
+      "../src/global/infrastructure/exceptions/resolvedomainexception.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/exceptions/domainconflict.exception.ts",
+        "../src/global/domain/exceptions/domainnotfound.exception.ts"
+      ],
+      "../src/global/infrastructure/fileapibodyoptions.ts": [
         "../node_modules/@nestjs/swagger/index.d.ts"
-      ],
-      "../src/global/utils/serviceerrorstringify.ts": [
-        "../src/global/interfaces/serviceerror.ts"
       ],
       "../src/main.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11388,7 +11626,7 @@
       "../src/multimedias/services/multimedias.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/config/index.d.ts",
-        "../src/global/clients/s3.client.ts"
+        "../src/global/infrastructure/clients/s3.client.ts"
       ],
       "../src/notifications/notifications.controller.ts": [
         "../node_modules/@nestjs/common/index.d.ts"
@@ -11412,126 +11650,206 @@
       "../src/posts/posts.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts"
       ],
-      "../src/users/controllers/permissions.controller.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../src/users/entities/permission.entity.ts",
-        "../src/users/handlers/permissions.handler.ts"
+      "../src/users/domain/data/initroles.data.ts": [
+        "../src/users/infrastructure/entities/role.entity.ts"
       ],
-      "../src/users/controllers/roles.controller.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../src/users/entities/role.entity.ts",
-        "../src/users/handlers/roles.handler.ts"
+      "../src/users/domain/models/permission.model.ts": [
+        "../src/global/domain/models/base.model.ts"
       ],
-      "../src/users/controllers/users.controller.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../src/users/dtos/createuser.dto.ts",
-        "../src/users/entities/user.entity.ts",
-        "../src/users/handlers/users.handler.ts"
+      "../src/users/domain/models/role.model.ts": [
+        "../src/global/domain/models/base.model.ts",
+        "../src/users/domain/models/permission.model.ts"
       ],
-      "../src/users/data/initroles.data.ts": [
-        "../src/users/entities/role.entity.ts"
+      "../src/users/domain/models/user.model.ts": [
+        "../src/global/domain/models/base.model.ts",
+        "../src/users/domain/models/role.model.ts"
       ],
-      "../src/users/dtos/createuser.dto.ts": [
-        "../node_modules/@nestjs/swagger/index.d.ts",
-        "../node_modules/class-validator/types/index.d.ts",
-        "../src/users/enums/usertype.enum.ts"
-      ],
-      "../src/users/entities/permission.entity.ts": [
-        "../node_modules/typeorm/index.d.ts"
-      ],
-      "../src/users/entities/role.entity.ts": [
-        "../node_modules/typeorm/index.d.ts",
-        "../src/users/entities/permission.entity.ts"
-      ],
-      "../src/users/entities/user.entity.ts": [
-        "../node_modules/typeorm/index.d.ts",
-        "../src/users/entities/role.entity.ts",
-        "../src/users/enums/usertype.enum.ts"
-      ],
-      "../src/users/handlers/permissions.handler.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/global/interfaces/serviceerror.ts",
-        "../src/users/entities/permission.entity.ts",
-        "../src/users/services/initialpermissions.service.ts",
-        "../src/users/services/permissions.service.ts"
-      ],
-      "../src/users/handlers/roles.handler.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/users/services/permissions.service.ts",
-        "../src/users/services/roles.service.ts"
-      ],
-      "../src/users/handlers/users.handler.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/artists/dtos/createartist.dto.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/services/artists.service.ts",
-        "../src/customers/dtos/createcustomer.dto.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/customers/services/customers.service.ts",
-        "../src/global/interfaces/serviceerror.ts",
-        "../src/global/utils/serviceerrorstringify.ts",
-        "../src/users/dtos/createuser.dto.ts",
-        "../src/users/enums/usertype.enum.ts",
-        "../src/users/services/roles.service.ts",
-        "../src/users/services/users.service.ts"
-      ],
-      "../src/users/services/initialpermissions.service.ts": [
+      "../src/users/domain/services/initialpermissions.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/core/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
-        "../src/global/interfaces/serviceerror.ts",
-        "../src/users/entities/permission.entity.ts"
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
       ],
-      "../src/users/services/permissions.service.ts": [
+      "../src/users/domain/services/permissions.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
-        "../src/users/entities/permission.entity.ts"
+        "../src/users/infrastructure/entities/permission.entity.ts"
       ],
-      "../src/users/services/roles.service.ts": [
+      "../src/users/domain/services/roles.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
-        "../src/users/data/initrolepermission.data.ts",
-        "../src/users/data/initroles.data.ts",
-        "../src/users/entities/permission.entity.ts",
-        "../src/users/entities/role.entity.ts"
+        "../src/users/domain/data/initrolepermission.data.ts",
+        "../src/users/domain/data/initroles.data.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts",
+        "../src/users/infrastructure/entities/role.entity.ts"
       ],
-      "../src/users/services/users.service.ts": [
+      "../src/users/domain/services/users.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/config/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
-        "../src/auth/enums/logintype.enum.ts",
-        "../src/users/dtos/createuser.dto.ts",
-        "../src/users/entities/role.entity.ts",
-        "../src/users/entities/user.entity.ts"
+        "../src/auth/domain/enums/logintype.enum.ts",
+        "../src/users/domain/models/user.model.ts",
+        "../src/users/infrastructure/entities/role.entity.ts",
+        "../src/users/infrastructure/entities/user.entity.ts",
+        "../src/users/usecases/user/interfaces/createuserbytype.params.ts"
+      ],
+      "../src/users/infrastructure/controllers/permissions.controller.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts",
+        "../src/users/infrastructure/handlers/permissions.handler.ts"
+      ],
+      "../src/users/infrastructure/controllers/roles.controller.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../src/users/infrastructure/entities/role.entity.ts",
+        "../src/users/infrastructure/handlers/roles.handler.ts"
+      ],
+      "../src/users/infrastructure/controllers/users.controller.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../src/users/infrastructure/dtos/createuserreq.dto.ts",
+        "../src/users/infrastructure/dtos/createuserres.dto.ts",
+        "../src/users/infrastructure/handlers/users.handler.ts"
+      ],
+      "../src/users/infrastructure/dtos/createuserreq.dto.ts": [
+        "../node_modules/@nestjs/swagger/index.d.ts",
+        "../node_modules/class-validator/types/index.d.ts",
+        "../src/users/domain/enums/usertype.enum.ts"
+      ],
+      "../src/users/infrastructure/dtos/createuserres.dto.ts": [
+        "../src/users/domain/models/role.model.ts"
+      ],
+      "../src/users/infrastructure/entities/permission.entity.ts": [
+        "../node_modules/typeorm/index.d.ts"
+      ],
+      "../src/users/infrastructure/entities/role.entity.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/users/domain/models/role.model.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/infrastructure/entities/user.entity.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/users/domain/enums/usertype.enum.ts",
+        "../src/users/domain/models/user.model.ts",
+        "../src/users/infrastructure/entities/role.entity.ts"
+      ],
+      "../src/users/infrastructure/handlers/permissions.handler.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts",
+        "../src/users/usecases/permission/findallpermissions.usecase.ts",
+        "../src/users/usecases/permission/findallroutes.usecase.ts",
+        "../src/users/usecases/permission/findonepermission.usecase.ts",
+        "../src/users/usecases/permission/initpermissions.usecase.ts"
+      ],
+      "../src/users/infrastructure/handlers/roles.handler.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/users/usecases/role/findallroles.usecase.ts",
+        "../src/users/usecases/role/findonerole.usecase.ts",
+        "../src/users/usecases/role/initroles.usecase.ts"
+      ],
+      "../src/users/infrastructure/handlers/users.handler.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/config/index.d.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/infrastructure/exceptions/resolvedomainexception.ts",
+        "../src/users/domain/models/user.model.ts",
+        "../src/users/infrastructure/dtos/createuserreq.dto.ts",
+        "../src/users/usecases/user/crerateuserbytype.usecase.ts",
+        "../src/users/usecases/user/interfaces/createuserbytype.params.ts"
+      ],
+      "../src/users/usecases/permission/findallpermissions.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/users/domain/services/permissions.service.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/usecases/permission/findallroutes.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/users/domain/services/initialpermissions.service.ts"
+      ],
+      "../src/users/usecases/permission/findonepermission.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/users/domain/services/permissions.service.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/usecases/permission/initpermissions.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/users/domain/services/initialpermissions.service.ts"
+      ],
+      "../src/users/usecases/role/findallroles.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/users/domain/services/roles.service.ts"
+      ],
+      "../src/users/usecases/role/findonerole.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/users/domain/services/roles.service.ts"
+      ],
+      "../src/users/usecases/role/initroles.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/users/domain/services/permissions.service.ts",
+        "../src/users/domain/services/roles.service.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/usecases/user/crerateuserbytype.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/config/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/customers/domain/customers.service.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/customers/usecases/interfaces/createcustomer.params.ts",
+        "../src/global/domain/exceptions/domainconflict.exception.ts",
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/global/domain/utils/serviceerrorstringify.ts",
+        "../src/users/domain/enums/usertype.enum.ts",
+        "../src/users/domain/services/roles.service.ts",
+        "../src/users/domain/services/users.service.ts",
+        "../src/users/usecases/user/interfaces/createuserbytype.params.ts"
+      ],
+      "../src/users/usecases/user/interfaces/createuserbytype.params.ts": [
+        "../node_modules/class-validator/types/index.d.ts",
+        "../src/users/domain/enums/usertype.enum.ts"
+      ],
+      "../src/users/usecases/user/interfaces/createuserbytype.result.ts": [
+        "../node_modules/class-validator/types/index.d.ts",
+        "../src/users/domain/enums/usertype.enum.ts"
       ],
       "../src/users/users.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../src/artists/artists.module.ts",
         "../src/customers/customers.module.ts",
-        "../src/users/controllers/permissions.controller.ts",
-        "../src/users/controllers/roles.controller.ts",
-        "../src/users/controllers/users.controller.ts",
-        "../src/users/entities/permission.entity.ts",
-        "../src/users/entities/role.entity.ts",
-        "../src/users/entities/user.entity.ts",
-        "../src/users/handlers/permissions.handler.ts",
-        "../src/users/handlers/roles.handler.ts",
-        "../src/users/handlers/users.handler.ts",
-        "../src/users/services/initialpermissions.service.ts",
-        "../src/users/services/permissions.service.ts",
-        "../src/users/services/roles.service.ts",
-        "../src/users/services/users.service.ts"
+        "../src/users/domain/services/initialpermissions.service.ts",
+        "../src/users/domain/services/permissions.service.ts",
+        "../src/users/domain/services/roles.service.ts",
+        "../src/users/domain/services/users.service.ts",
+        "../src/users/infrastructure/controllers/permissions.controller.ts",
+        "../src/users/infrastructure/controllers/roles.controller.ts",
+        "../src/users/infrastructure/controllers/users.controller.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts",
+        "../src/users/infrastructure/entities/role.entity.ts",
+        "../src/users/infrastructure/entities/user.entity.ts",
+        "../src/users/infrastructure/handlers/permissions.handler.ts",
+        "../src/users/infrastructure/handlers/roles.handler.ts",
+        "../src/users/infrastructure/handlers/users.handler.ts",
+        "../src/users/usecases/permission/findallpermissions.usecase.ts",
+        "../src/users/usecases/permission/findallroutes.usecase.ts",
+        "../src/users/usecases/permission/findonepermission.usecase.ts",
+        "../src/users/usecases/permission/initpermissions.usecase.ts",
+        "../src/users/usecases/role/findallroles.usecase.ts",
+        "../src/users/usecases/role/findonerole.usecase.ts",
+        "../src/users/usecases/role/initroles.usecase.ts",
+        "../src/users/usecases/user/crerateuserbytype.usecase.ts"
       ]
     },
     "exportedModulesMap": {
@@ -16730,56 +17048,78 @@
         "../node_modules/typeorm/metadata/relationmetadata.d.ts",
         "../node_modules/typeorm/query-runner/queryrunner.d.ts"
       ],
-      "../src/artists/controllers/artists.controller.ts": [
-        "../src/artists/dtos/createartist.dto.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/handlers/artists.handler.ts"
+      "../src/artists/domain/services/artists.service.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/customers/domain/interfaces/customerfollows.interface.ts",
+        "../src/global/domain/interfaces/serviceerror.ts"
       ],
-      "../src/artists/entities/artist.entity.ts": [
-        "../src/artists/interfaces/follower.interface.ts",
-        "../src/customers/interfaces/customerfollows.interface.ts"
+      "../src/artists/infrastructure/artists.controller.ts": [
+        "../src/artists/infrastructure/artists.handler.ts",
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts"
       ],
-      "../src/artists/handlers/artists.handler.ts": [
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/artists/dtos/createartist.dto.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/services/artists.service.ts",
+      "../src/artists/infrastructure/artists.handler.ts": [
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/artists/usecases/createartist.usecase.ts",
+        "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/updateartistprofilepicture.usecase.ts"
+      ],
+      "../src/artists/infrastructure/entities/artist.entity.ts": [
+        "../src/artists/domain/interfaces/follower.interface.ts",
+        "../src/customers/domain/interfaces/customerfollows.interface.ts"
+      ],
+      "../src/artists/usecases/createartist.usecase.ts": [
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/global/domain/exceptions/domain.exception.ts"
+      ],
+      "../src/artists/usecases/findartist.usecases.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts"
+      ],
+      "../src/artists/usecases/updateartistprofilepicture.usecase.ts": [
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
         "../src/multimedias/services/multimedias.service.ts"
       ],
-      "../src/artists/services/artists.service.ts": [
-        "../node_modules/typeorm/index.d.ts",
-        "../src/artists/dtos/createartist.dto.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/customers/interfaces/customerfollows.interface.ts",
-        "../src/global/interfaces/serviceerror.ts"
-      ],
-      "../src/auth/controllers/auth.controller.ts": [
-        "../src/auth/dtos/login.dto.ts",
-        "../src/auth/dtos/loginresponse.dto.ts",
-        "../src/auth/handlers/auth.handler.ts"
-      ],
-      "../src/auth/dtos/loginresponse.dto.ts": [
-        "../src/auth/interfaces/jwtpayload.interface.ts"
-      ],
-      "../src/auth/handlers/auth.handler.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/services/artists.service.ts",
-        "../src/auth/dtos/login.dto.ts",
-        "../src/auth/dtos/loginresponse.dto.ts",
-        "../src/auth/services/auth.service.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/customers/services/customers.service.ts",
-        "../src/users/entities/user.entity.ts",
-        "../src/users/services/users.service.ts"
-      ],
-      "../src/auth/services/auth.service.ts": [
+      "../src/auth/domain/auth.service.ts": [
         "../node_modules/@nestjs/config/index.d.ts",
         "../node_modules/@nestjs/jwt/index.d.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/auth/dtos/loginresponse.dto.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/users/entities/user.entity.ts"
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/auth/domain/interfaces/jwtpayload.interface.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/users/infrastructure/entities/user.entity.ts"
+      ],
+      "../src/auth/infrasctructure/auth.controller.ts": [
+        "../src/auth/infrasctructure/auth.handler.ts",
+        "../src/auth/infrasctructure/dtos/loginreq.dto.ts",
+        "../src/auth/infrasctructure/dtos/loginres.dto.ts"
+      ],
+      "../src/auth/infrasctructure/auth.handler.ts": [
+        "../src/auth/infrasctructure/dtos/loginreq.dto.ts",
+        "../src/auth/infrasctructure/dtos/loginres.dto.ts",
+        "../src/auth/usecases/defaultlogin.usecase.ts"
+      ],
+      "../src/auth/infrasctructure/dtos/loginres.dto.ts": [
+        "../src/auth/usecases/interfaces/defaultlogin.result.ts"
+      ],
+      "../src/auth/usecases/defaultlogin.usecase.ts": [
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/auth/domain/auth.service.ts",
+        "../src/auth/usecases/interfaces/defaultlogin.params.ts",
+        "../src/auth/usecases/interfaces/defaultlogin.result.ts",
+        "../src/customers/domain/customers.service.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/users/domain/services/users.service.ts"
+      ],
+      "../src/auth/usecases/interfaces/defaultlogin.result.ts": [
+        "../src/auth/domain/interfaces/jwtpayload.interface.ts"
       ],
       "../src/config/app.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
@@ -16799,37 +17139,62 @@
       "../src/config/userdatabase.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
       ],
-      "../src/customers/controllers/customers.controller.ts": [
-        "../src/customers/dtos/createcustomer.dto.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/customers/handlers/customers.handler.ts"
-      ],
-      "../src/customers/entities/customer.entity.ts": [
-        "../src/customers/interfaces/customerfollows.interface.ts"
-      ],
-      "../src/customers/handlers/customers.handler.ts": [
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/customers/dtos/createcustomer.dto.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/customers/services/customers.service.ts"
-      ],
-      "../src/customers/services/customers.service.ts": [
+      "../src/customers/domain/customers.service.ts": [
         "../node_modules/typeorm/index.d.ts",
-        "../src/customers/dtos/createcustomer.dto.ts",
-        "../src/customers/entities/customer.entity.ts",
-        "../src/customers/interfaces/customerfollows.interface.ts",
-        "../src/global/interfaces/serviceerror.ts"
+        "../src/customers/domain/interfaces/customerfollows.interface.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/customers/usecases/interfaces/createcustomer.params.ts",
+        "../src/global/domain/interfaces/serviceerror.ts"
       ],
-      "../src/global/clients/s3.client.ts": [
+      "../src/customers/infrastructure/customers.controller.ts": [
+        "../src/customers/infrastructure/customers.handler.ts",
+        "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts"
+      ],
+      "../src/customers/infrastructure/customers.handler.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/customers/usecases/crcustomer.usecase.ts"
+      ],
+      "../src/customers/infrastructure/dtos/createcustomerres.dto.ts": [
+        "../src/customers/infrastructure/entities/customer.entity.ts"
+      ],
+      "../src/customers/infrastructure/entities/customer.entity.ts": [
+        "../src/customers/domain/interfaces/customerfollows.interface.ts"
+      ],
+      "../src/customers/usecases/crcustomer.usecase.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/customers/domain/customers.service.ts",
+        "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/customers/usecases/interfaces/createcustomer.params.ts"
+      ],
+      "../src/customers/usecases/interfaces/createcustomer.params.ts": [
+        "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts"
+      ],
+      "../src/customers/usecases/interfaces/createcustomer.result.ts": [
+        "../src/customers/infrastructure/dtos/createcustomerres.dto.ts"
+      ],
+      "../src/global/domain/exceptions/domainconflict.exception.ts": [
+        "../src/global/domain/exceptions/domain.exception.ts"
+      ],
+      "../src/global/domain/exceptions/domainnotfound.exception.ts": [
+        "../src/global/domain/exceptions/domain.exception.ts"
+      ],
+      "../src/global/domain/utils/serviceerrorstringify.ts": [
+        "../src/global/domain/interfaces/serviceerror.ts"
+      ],
+      "../src/global/infrastructure/clients/s3.client.ts": [
         "../node_modules/@nestjs/config/index.d.ts",
         "../node_modules/@types/node/stream.d.ts",
         "../node_modules/aws-sdk/index.d.ts"
       ],
-      "../src/global/utils/fileapibodyoptions.ts": [
-        "../node_modules/@nestjs/swagger/index.d.ts"
+      "../src/global/infrastructure/exceptions/resolvedomainexception.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/global/domain/exceptions/domain.exception.ts"
       ],
-      "../src/global/utils/serviceerrorstringify.ts": [
-        "../src/global/interfaces/serviceerror.ts"
+      "../src/global/infrastructure/fileapibodyoptions.ts": [
+        "../node_modules/@nestjs/swagger/index.d.ts"
       ],
       "../src/multimedias/controllers/multimedias.controller.ts": [
         "../node_modules/aws-sdk/clients/s3.d.ts",
@@ -16837,84 +17202,137 @@
       ],
       "../src/multimedias/services/multimedias.service.ts": [
         "../node_modules/@nestjs/config/index.d.ts",
-        "../src/global/clients/s3.client.ts"
+        "../src/global/infrastructure/clients/s3.client.ts"
       ],
-      "../src/users/controllers/permissions.controller.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../src/users/entities/permission.entity.ts",
-        "../src/users/handlers/permissions.handler.ts"
+      "../src/users/domain/data/initroles.data.ts": [
+        "../src/users/infrastructure/entities/role.entity.ts"
       ],
-      "../src/users/controllers/roles.controller.ts": [
-        "../src/users/entities/role.entity.ts",
-        "../src/users/handlers/roles.handler.ts"
+      "../src/users/domain/models/permission.model.ts": [
+        "../src/global/domain/models/base.model.ts"
       ],
-      "../src/users/controllers/users.controller.ts": [
-        "../src/users/dtos/createuser.dto.ts",
-        "../src/users/entities/role.entity.ts",
-        "../src/users/enums/usertype.enum.ts",
-        "../src/users/handlers/users.handler.ts"
+      "../src/users/domain/models/role.model.ts": [
+        "../src/global/domain/models/base.model.ts",
+        "../src/users/domain/models/permission.model.ts"
       ],
-      "../src/users/data/initroles.data.ts": [
-        "../src/users/entities/role.entity.ts"
+      "../src/users/domain/models/user.model.ts": [
+        "../src/global/domain/models/base.model.ts",
+        "../src/users/domain/models/role.model.ts"
       ],
-      "../src/users/dtos/createuser.dto.ts": [
-        "../src/users/enums/usertype.enum.ts"
-      ],
-      "../src/users/entities/role.entity.ts": [
-        "../src/users/entities/permission.entity.ts"
-      ],
-      "../src/users/entities/user.entity.ts": [
-        "../src/users/entities/role.entity.ts"
-      ],
-      "../src/users/handlers/permissions.handler.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/global/interfaces/serviceerror.ts",
-        "../src/users/entities/permission.entity.ts",
-        "../src/users/services/initialpermissions.service.ts",
-        "../src/users/services/permissions.service.ts"
-      ],
-      "../src/users/handlers/roles.handler.ts": [
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/users/entities/role.entity.ts",
-        "../src/users/services/permissions.service.ts",
-        "../src/users/services/roles.service.ts"
-      ],
-      "../src/users/handlers/users.handler.ts": [
-        "../node_modules/@nestjs/config/index.d.ts",
-        "../src/artists/dtos/createartist.dto.ts",
-        "../src/artists/entities/artist.entity.ts",
-        "../src/artists/services/artists.service.ts",
-        "../src/customers/services/customers.service.ts",
-        "../src/global/interfaces/serviceerror.ts",
-        "../src/users/dtos/createuser.dto.ts",
-        "../src/users/entities/role.entity.ts",
-        "../src/users/enums/usertype.enum.ts",
-        "../src/users/services/roles.service.ts",
-        "../src/users/services/users.service.ts"
-      ],
-      "../src/users/services/initialpermissions.service.ts": [
+      "../src/users/domain/services/initialpermissions.service.ts": [
         "../node_modules/@nestjs/core/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
-        "../src/global/interfaces/serviceerror.ts",
-        "../src/users/entities/permission.entity.ts"
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
       ],
-      "../src/users/services/permissions.service.ts": [
+      "../src/users/domain/services/permissions.service.ts": [
         "../node_modules/typeorm/index.d.ts",
-        "../src/users/entities/permission.entity.ts"
+        "../src/users/infrastructure/entities/permission.entity.ts"
       ],
-      "../src/users/services/roles.service.ts": [
+      "../src/users/domain/services/roles.service.ts": [
         "../node_modules/typeorm/index.d.ts",
-        "../src/users/entities/permission.entity.ts",
-        "../src/users/entities/role.entity.ts"
+        "../src/users/infrastructure/entities/permission.entity.ts",
+        "../src/users/infrastructure/entities/role.entity.ts"
       ],
-      "../src/users/services/users.service.ts": [
+      "../src/users/domain/services/users.service.ts": [
         "../node_modules/@nestjs/config/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
-        "../src/users/dtos/createuser.dto.ts",
-        "../src/users/entities/role.entity.ts",
-        "../src/users/entities/user.entity.ts",
-        "../src/users/enums/usertype.enum.ts"
+        "../src/users/domain/models/user.model.ts",
+        "../src/users/infrastructure/entities/role.entity.ts",
+        "../src/users/infrastructure/entities/user.entity.ts",
+        "../src/users/usecases/user/interfaces/createuserbytype.params.ts"
+      ],
+      "../src/users/infrastructure/controllers/permissions.controller.ts": [
+        "../src/users/infrastructure/entities/permission.entity.ts",
+        "../src/users/infrastructure/handlers/permissions.handler.ts"
+      ],
+      "../src/users/infrastructure/controllers/roles.controller.ts": [
+        "../src/users/infrastructure/entities/role.entity.ts",
+        "../src/users/infrastructure/handlers/roles.handler.ts"
+      ],
+      "../src/users/infrastructure/controllers/users.controller.ts": [
+        "../src/users/domain/models/user.model.ts",
+        "../src/users/infrastructure/dtos/createuserreq.dto.ts",
+        "../src/users/infrastructure/handlers/users.handler.ts"
+      ],
+      "../src/users/infrastructure/dtos/createuserreq.dto.ts": [
+        "../src/users/domain/enums/usertype.enum.ts"
+      ],
+      "../src/users/infrastructure/dtos/createuserres.dto.ts": [
+        "../src/users/domain/models/role.model.ts"
+      ],
+      "../src/users/infrastructure/entities/role.entity.ts": [
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/infrastructure/entities/user.entity.ts": [
+        "../src/users/infrastructure/entities/role.entity.ts"
+      ],
+      "../src/users/infrastructure/handlers/permissions.handler.ts": [
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts",
+        "../src/users/usecases/permission/findallpermissions.usecase.ts",
+        "../src/users/usecases/permission/findallroutes.usecase.ts",
+        "../src/users/usecases/permission/findonepermission.usecase.ts",
+        "../src/users/usecases/permission/initpermissions.usecase.ts"
+      ],
+      "../src/users/infrastructure/handlers/roles.handler.ts": [
+        "../src/users/infrastructure/entities/role.entity.ts",
+        "../src/users/usecases/role/findallroles.usecase.ts",
+        "../src/users/usecases/role/findonerole.usecase.ts",
+        "../src/users/usecases/role/initroles.usecase.ts"
+      ],
+      "../src/users/infrastructure/handlers/users.handler.ts": [
+        "../node_modules/@nestjs/config/index.d.ts",
+        "../src/users/domain/models/user.model.ts",
+        "../src/users/infrastructure/dtos/createuserreq.dto.ts",
+        "../src/users/usecases/user/crerateuserbytype.usecase.ts"
+      ],
+      "../src/users/usecases/permission/findallpermissions.usecase.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/users/domain/services/permissions.service.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/usecases/permission/findallroutes.usecase.ts": [
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/users/domain/services/initialpermissions.service.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/usecases/permission/findonepermission.usecase.ts": [
+        "../node_modules/typeorm/index.d.ts",
+        "../src/users/domain/services/permissions.service.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/usecases/permission/initpermissions.usecase.ts": [
+        "../src/global/domain/interfaces/serviceerror.ts",
+        "../src/users/domain/services/initialpermissions.service.ts",
+        "../src/users/infrastructure/entities/permission.entity.ts"
+      ],
+      "../src/users/usecases/role/findallroles.usecase.ts": [
+        "../src/users/domain/services/roles.service.ts",
+        "../src/users/infrastructure/entities/role.entity.ts"
+      ],
+      "../src/users/usecases/role/findonerole.usecase.ts": [
+        "../src/users/domain/services/roles.service.ts",
+        "../src/users/infrastructure/entities/role.entity.ts"
+      ],
+      "../src/users/usecases/role/initroles.usecase.ts": [
+        "../src/users/domain/services/permissions.service.ts",
+        "../src/users/domain/services/roles.service.ts",
+        "../src/users/infrastructure/entities/role.entity.ts"
+      ],
+      "../src/users/usecases/user/crerateuserbytype.usecase.ts": [
+        "../node_modules/@nestjs/config/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/customers/domain/customers.service.ts",
+        "../src/users/domain/models/user.model.ts",
+        "../src/users/domain/services/roles.service.ts",
+        "../src/users/domain/services/users.service.ts",
+        "../src/users/usecases/user/interfaces/createuserbytype.params.ts"
+      ],
+      "../src/users/usecases/user/interfaces/createuserbytype.params.ts": [
+        "../src/users/domain/enums/usertype.enum.ts"
+      ],
+      "../src/users/usecases/user/interfaces/createuserbytype.result.ts": [
+        "../src/users/domain/enums/usertype.enum.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -18044,41 +18462,58 @@
       "../node_modules/typescript/lib/lib.webworker.importscripts.d.ts",
       "../src/app.module.ts",
       "../src/artists/artists.module.ts",
-      "../src/artists/controllers/artists.controller.ts",
-      "../src/artists/dtos/createartist.dto.ts",
-      "../src/artists/entities/artist.entity.ts",
-      "../src/artists/handlers/artists.handler.ts",
-      "../src/artists/interfaces/follower.interface.ts",
-      "../src/artists/services/artists.service.ts",
+      "../src/artists/domain/interfaces/follower.interface.ts",
+      "../src/artists/domain/services/artists.service.ts",
+      "../src/artists/infrastructure/artists.controller.ts",
+      "../src/artists/infrastructure/artists.handler.ts",
+      "../src/artists/infrastructure/dtos/createartist.dto.ts",
+      "../src/artists/infrastructure/entities/artist.entity.ts",
+      "../src/artists/usecases/createartist.usecase.ts",
+      "../src/artists/usecases/findartist.usecases.ts",
+      "../src/artists/usecases/interfaces/createartist.params.ts",
+      "../src/artists/usecases/interfaces/createartist.result.ts",
+      "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
       "../src/auth/auth.module.ts",
-      "../src/auth/controllers/auth.controller.ts",
-      "../src/auth/dtos/login.dto.ts",
-      "../src/auth/dtos/loginresponse.dto.ts",
-      "../src/auth/enums/logintype.enum.ts",
-      "../src/auth/handlers/auth.handler.ts",
-      "../src/auth/interfaces/jwtpayload.interface.ts",
-      "../src/auth/services/auth.service.ts",
+      "../src/auth/domain/auth.service.ts",
+      "../src/auth/domain/enums/logintype.enum.ts",
+      "../src/auth/domain/interfaces/jwtpayload.interface.ts",
+      "../src/auth/infrasctructure/auth.controller.ts",
+      "../src/auth/infrasctructure/auth.handler.ts",
+      "../src/auth/infrasctructure/dtos/loginreq.dto.ts",
+      "../src/auth/infrasctructure/dtos/loginres.dto.ts",
+      "../src/auth/usecases/defaultlogin.usecase.ts",
+      "../src/auth/usecases/interfaces/defaultlogin.params.ts",
+      "../src/auth/usecases/interfaces/defaultlogin.result.ts",
       "../src/config/app.ts",
       "../src/config/artistdatabase.ts",
       "../src/config/auth.ts",
       "../src/config/aws.ts",
       "../src/config/customerdatabase.ts",
       "../src/config/userdatabase.ts",
-      "../src/customers/controllers/customers.controller.ts",
       "../src/customers/customers.module.ts",
-      "../src/customers/dtos/createcustomer.dto.ts",
-      "../src/customers/entities/customer.entity.ts",
-      "../src/customers/handlers/customers.handler.ts",
-      "../src/customers/interfaces/customerfollows.interface.ts",
-      "../src/customers/services/customers.service.ts",
+      "../src/customers/domain/customers.service.ts",
+      "../src/customers/domain/interfaces/customerfollows.interface.ts",
+      "../src/customers/infrastructure/customers.controller.ts",
+      "../src/customers/infrastructure/customers.handler.ts",
+      "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts",
+      "../src/customers/infrastructure/dtos/createcustomerres.dto.ts",
+      "../src/customers/infrastructure/entities/customer.entity.ts",
+      "../src/customers/usecases/crcustomer.usecase.ts",
+      "../src/customers/usecases/interfaces/createcustomer.params.ts",
+      "../src/customers/usecases/interfaces/createcustomer.result.ts",
       "../src/feed/feed.controller.ts",
       "../src/feed/feed.module.ts",
       "../src/feed/feed.service.ts",
-      "../src/global/clients/s3.client.ts",
+      "../src/global/domain/exceptions/domain.exception.ts",
+      "../src/global/domain/exceptions/domainconflict.exception.ts",
+      "../src/global/domain/exceptions/domainnotfound.exception.ts",
+      "../src/global/domain/interfaces/serviceerror.ts",
+      "../src/global/domain/models/base.model.ts",
+      "../src/global/domain/utils/serviceerrorstringify.ts",
       "../src/global/global.module.ts",
-      "../src/global/interfaces/serviceerror.ts",
-      "../src/global/utils/fileapibodyoptions.ts",
-      "../src/global/utils/serviceerrorstringify.ts",
+      "../src/global/infrastructure/clients/s3.client.ts",
+      "../src/global/infrastructure/exceptions/resolvedomainexception.ts",
+      "../src/global/infrastructure/fileapibodyoptions.ts",
       "../src/main.ts",
       "../src/multimedias/controllers/multimedias.controller.ts",
       "../src/multimedias/dtos/fileupload.dto.ts",
@@ -18090,23 +18525,37 @@
       "../src/posts/posts.controller.ts",
       "../src/posts/posts.module.ts",
       "../src/posts/posts.service.ts",
-      "../src/users/controllers/permissions.controller.ts",
-      "../src/users/controllers/roles.controller.ts",
-      "../src/users/controllers/users.controller.ts",
-      "../src/users/data/initrolepermission.data.ts",
-      "../src/users/data/initroles.data.ts",
-      "../src/users/dtos/createuser.dto.ts",
-      "../src/users/entities/permission.entity.ts",
-      "../src/users/entities/role.entity.ts",
-      "../src/users/entities/user.entity.ts",
-      "../src/users/enums/usertype.enum.ts",
-      "../src/users/handlers/permissions.handler.ts",
-      "../src/users/handlers/roles.handler.ts",
-      "../src/users/handlers/users.handler.ts",
-      "../src/users/services/initialpermissions.service.ts",
-      "../src/users/services/permissions.service.ts",
-      "../src/users/services/roles.service.ts",
-      "../src/users/services/users.service.ts",
+      "../src/users/domain/data/initrolepermission.data.ts",
+      "../src/users/domain/data/initroles.data.ts",
+      "../src/users/domain/enums/usertype.enum.ts",
+      "../src/users/domain/models/permission.model.ts",
+      "../src/users/domain/models/role.model.ts",
+      "../src/users/domain/models/user.model.ts",
+      "../src/users/domain/services/initialpermissions.service.ts",
+      "../src/users/domain/services/permissions.service.ts",
+      "../src/users/domain/services/roles.service.ts",
+      "../src/users/domain/services/users.service.ts",
+      "../src/users/infrastructure/controllers/permissions.controller.ts",
+      "../src/users/infrastructure/controllers/roles.controller.ts",
+      "../src/users/infrastructure/controllers/users.controller.ts",
+      "../src/users/infrastructure/dtos/createuserreq.dto.ts",
+      "../src/users/infrastructure/dtos/createuserres.dto.ts",
+      "../src/users/infrastructure/entities/permission.entity.ts",
+      "../src/users/infrastructure/entities/role.entity.ts",
+      "../src/users/infrastructure/entities/user.entity.ts",
+      "../src/users/infrastructure/handlers/permissions.handler.ts",
+      "../src/users/infrastructure/handlers/roles.handler.ts",
+      "../src/users/infrastructure/handlers/users.handler.ts",
+      "../src/users/usecases/permission/findallpermissions.usecase.ts",
+      "../src/users/usecases/permission/findallroutes.usecase.ts",
+      "../src/users/usecases/permission/findonepermission.usecase.ts",
+      "../src/users/usecases/permission/initpermissions.usecase.ts",
+      "../src/users/usecases/role/findallroles.usecase.ts",
+      "../src/users/usecases/role/findonerole.usecase.ts",
+      "../src/users/usecases/role/initroles.usecase.ts",
+      "../src/users/usecases/user/crerateuserbytype.usecase.ts",
+      "../src/users/usecases/user/interfaces/createuserbytype.params.ts",
+      "../src/users/usecases/user/interfaces/createuserbytype.result.ts",
       "../src/users/users.module.ts"
     ]
   },

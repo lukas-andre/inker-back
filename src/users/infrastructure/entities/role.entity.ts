@@ -1,3 +1,4 @@
+import { IRole } from '../../domain/models/role.model';
 import {
   Entity,
   Column,
@@ -12,7 +13,7 @@ import { Permission } from './permission.entity';
 @Entity()
 export class Role {
   @PrimaryColumn()
-  id: number;
+  id: string;
 
   @Column()
   name: string;

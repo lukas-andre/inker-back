@@ -1,30 +1,4 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
-import { JwtPermission } from '../../domain/interfaces/jwtPayload.interface';
+import { JwtPermission } from 'src/auth/domain/interfaces/jwtPayload.interface';
+import { DefaultLoginResult } from '../../usecases/interfaces/defaultLogin.result';
 
-export class LoginResDto {
-  @IsString()
-  id: string;
-
-  @IsString()
-  @IsOptional()
-  username?: string;
-
-  @IsString()
-  @IsOptional()
-  email?: string;
-
-  @IsString()
-  @IsOptional()
-  userTypeId?: string;
-
-  @IsString()
-  userType: string;
-
-  permision: JwtPermission[];
-
-  @IsString()
-  accessToken: string;
-
-  @IsNumber()
-  expiresIn: number;
-}
+export class LoginResDto extends DefaultLoginResult {}

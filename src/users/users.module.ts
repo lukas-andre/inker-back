@@ -1,20 +1,28 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './use_cases/services/users.service';
+import { UsersService } from './domain/services/users.service';
 import { UsersController } from './infrastructure/controllers/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './infrastructure/entities/user.entity';
 import { Role } from './infrastructure/entities/role.entity';
 import { Permission } from './infrastructure/entities/permission.entity';
-import { RolesService } from './use_cases/services/roles.service';
-import { PermissionsService } from './use_cases/services/permissions.service';
-import { InitialPermissionsService } from './use_cases/services/initialPermissions.service';
+import { RolesService } from './domain/services/roles.service';
+import { PermissionsService } from './domain/services/permissions.service';
+import { InitialPermissionsService } from './domain/services/initialPermissions.service';
 import { PermissionsController } from './infrastructure/controllers/permissions.controller';
 import { RolesController } from './infrastructure/controllers/roles.controller';
-import { RolesHandler } from './use_cases/roles.handler';
 import { CustomersModule } from '../customers/customers.module';
 import { ArtistsModule } from '../artists/artists.module';
-import { UsersHandler } from './use_cases/users.handler';
-import { PermissionsHandler } from './use_cases/permissions.handler';
+import { UsersHandler } from './infrastructure/handlers/users.handler';
+import { RolesHandler } from './infrastructure/handlers/roles.handler';
+import { PermissionsHandler } from './infrastructure/handlers/permissions.handler';
+import { CreateUserByTypeUseCase } from './usecases/user/crerateUserByType.usecase';
+import { FindAllRolesUseCase } from './usecases/role/findAllRoles.usecase';
+import { FindOneRoleUseCase } from './usecases/role/findOneRole.usecase';
+import { FindOnePermissionUseCase } from './usecases/permission/findOnePermission.usecase';
+import { FindAllPermissionsUseCase } from './usecases/permission/findAllPermissions.usecase';
+import { InitRolesUseCase } from './usecases/role/initRoles.usecase';
+import { InitPermissionsUseCase } from './usecases/permission/initPermissions.usecase';
+import { FindAllRoutesUseCase } from './usecases/permission/findAllRoutes.usecase';
 
 @Module({
   imports: [
@@ -30,6 +38,14 @@ import { PermissionsHandler } from './use_cases/permissions.handler';
     PermissionsService,
     PermissionsHandler,
     InitialPermissionsService,
+    InitRolesUseCase,
+    InitPermissionsUseCase,
+    CreateUserByTypeUseCase,
+    FindAllRolesUseCase,
+    FindOneRoleUseCase,
+    FindOnePermissionUseCase,
+    FindAllPermissionsUseCase,
+    FindAllRoutesUseCase
   ],
   controllers: [UsersController, PermissionsController, RolesController],
   exports: [UsersService, RolesService],

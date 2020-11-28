@@ -1,14 +1,23 @@
 import { Module } from '@nestjs/common';
-import { ArtistsService } from './use_cases/services/artists.service';
-import { ArtistsController } from './infrastructure/controllers/artists.controller';
+import { ArtistsService } from './domain/services/artists.service';
+import { ArtistsController } from './infrastructure/artists.controller';
 import { Artist } from './infrastructure/entities/artist.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ArtistsHandler } from './use_cases/artists.handler';
+import { ArtistsHandler } from './infrastructure/artists.handler';
 import { MultimediasModule } from '../multimedias/multimedias.module';
+import { CreateArtistUseCase } from './usecases/createArtist.usecase';
+import { FindArtistsUseCases } from './usecases/findArtist.usecases';
+import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfilePicture.usecase';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Artist], 'artist-db'), MultimediasModule],
-  providers: [ArtistsService, ArtistsHandler],
+  providers: [
+    ArtistsService,
+    ArtistsHandler,
+    CreateArtistUseCase,
+    FindArtistsUseCases,
+    UpdateArtistProfilePictureUseCase,
+  ],
   controllers: [ArtistsController],
   exports: [ArtistsService],
 })

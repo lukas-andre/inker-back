@@ -7,9 +7,9 @@ import {
   ApiConflictResponse,
 } from '@nestjs/swagger';
 import { Body } from '@nestjs/common';
-import { CreateUserDto } from '../dtos/createUser.dto';
-import { User } from '../entities/user.entity';
-import { UsersHandler } from '../../../users/use_cases/users.handler';
+import { CreateUserReqDto } from '../dtos/createUserReq.dto';
+import { UsersHandler } from '../handlers/users.handler';
+import { CreateUserResDto } from '../dtos/createUserRes.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -17,11 +17,11 @@ export class UsersController {
   constructor(private readonly usersHandler: UsersHandler) {}
 
   @ApiOperation({ summary: 'Create User' })
-  @ApiCreatedResponse({ description: 'Users has been created', type: User })
+  @ApiCreatedResponse({ description: 'Users has been created', type: CreateUserResDto })
   @ApiNotFoundResponse({ description: 'Rol does not exists' })
   @ApiConflictResponse({ description: 'Users already exists' })
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserReqDto) {
     return await this.usersHandler.handleCreate(createUserDto);
   }
 }

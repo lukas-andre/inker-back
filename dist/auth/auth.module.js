@@ -8,19 +8,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
-const auth_controller_1 = require("./controllers/auth.controller");
-const auth_service_1 = require("./services/auth.service");
+const auth_controller_1 = require("./infrasctructure/auth.controller");
 const users_module_1 = require("../users/users.module");
 const artists_module_1 = require("../artists/artists.module");
 const customers_module_1 = require("../customers/customers.module");
-const auth_handler_1 = require("./handlers/auth.handler");
+const auth_handler_1 = require("./infrasctructure/auth.handler");
+const auth_service_1 = require("./domain/auth.service");
+const defaultLogin_usecase_1 = require("./usecases/defaultLogin.usecase");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     common_1.Module({
         imports: [users_module_1.UsersModule, artists_module_1.ArtistsModule, customers_module_1.CustomersModule],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, auth_handler_1.AuthHandler],
+        providers: [
+            auth_handler_1.AuthHandler, auth_service_1.AuthService, defaultLogin_usecase_1.DefaultLoginUseCase,
+        ],
     })
 ], AuthModule);
 exports.AuthModule = AuthModule;

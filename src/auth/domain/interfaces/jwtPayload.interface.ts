@@ -11,3 +11,8 @@ export interface JwtPayload {
   userTypeId: string;
   permision: JwtPermission[];
 }
+
+export interface FullJwtPayload extends JwtPayload {
+  accessToken: string;
+  expiresIn: number;
+}
