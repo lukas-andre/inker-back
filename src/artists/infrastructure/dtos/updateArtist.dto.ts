@@ -3,7 +3,7 @@ import { IsOptional, IsString } from 'class-validator';
 import { CreateArtistDto } from './createArtist.dto';
 
 export class UpdateArtistDto extends PartialType(
-  OmitType(CreateArtistDto, ['userId','phoneNumber'] as const),
+  OmitType(CreateArtistDto, ['userId', 'phoneNumber'] as const),
 ) {
   @ApiProperty({
     example: 'This is my inker studio, wecolme',

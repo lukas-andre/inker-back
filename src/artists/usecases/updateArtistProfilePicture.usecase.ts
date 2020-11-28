@@ -19,12 +19,12 @@ export class UpdateArtistProfilePictureUseCase {
     console.log('file2: ', file);
     let artist: Artist;
     try {
-       artist = await this.artistsService.findById(id);
+      artist = await this.artistsService.findById(id);
     } catch (error) {
-      return new DomainInternalServerErrorException(`Error: ${error}`)
+      return new DomainInternalServerErrorException(`Error: ${error}`);
     }
     console.log('artist: ', artist);
-  
+
     if (!artist) return new DomainNotFoundException('Artists not found');
 
     const source = `artist/${id}`;

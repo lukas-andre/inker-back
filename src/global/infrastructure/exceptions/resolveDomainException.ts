@@ -1,4 +1,8 @@
-import { ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { DomainConflictException } from '../../domain/exceptions/domainConflict.exception';
 import { DomainException } from '../../domain/exceptions/domain.exception';
 import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception copy';

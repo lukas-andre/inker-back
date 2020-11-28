@@ -30,7 +30,6 @@ import { UpdateArtistDto } from './dtos/updateArtist.dto';
 // import { FollowDto } from './dtos/follow.dto';
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 
-
 @ApiBearerAuth()
 @ApiTags('artists')
 @Controller('artist')
@@ -39,7 +38,10 @@ export class ArtistsController {
   constructor(private readonly artistHandler: ArtistsHandler) {}
 
   @ApiOperation({ summary: 'Create Artist' })
-  @ApiCreatedResponse({ description: 'Artist has been created', type: BaseArtistResponse })
+  @ApiCreatedResponse({
+    description: 'Artist has been created',
+    type: BaseArtistResponse,
+  })
   @ApiConflictResponse({ description: 'Artist already exists' })
   @Post()
   async create(@Body() createArtistDto: CreateArtistDto) {
@@ -54,7 +56,10 @@ export class ArtistsController {
   })
   @Post('/:id/profile-picture')
   @UseInterceptors(FileInterceptor('file'))
-  async updateProfileProflePicture(@UploadedFile() file, @Param('id') id: string) {
+  async updateProfileProflePicture(
+    @UploadedFile() file,
+    @Param('id') id: string,
+  ) {
     console.log('file: ', file);
     return this.artistHandler.handleUpdateProfileProflePicture(id, file);
   }
@@ -89,18 +94,21 @@ export class ArtistsController {
   })
   @ApiParam({ name: 'id', required: true })
   @Put(':id')
-  async updateArtistBasicInfo(@Param('id') id: string, @Body() body: UpdateArtistDto) {
+  async updateArtistBasicInfo(
+    @Param('id') id: string,
+    @Body() body: UpdateArtistDto,
+  ) {
     return this.artistHandler.handleUpdateArtistBasicInfo(id, body);
   }
 
   @ApiOperation({ summary: 'Add follow' })
   @ApiOkResponse({
-    description: 'Follow ok', type: Boolean
+    description: 'Follow ok',
+    type: Boolean,
   })
   @ApiParam({ name: 'id', required: true })
   @Post(':id/follow')
   async follow(@Param('id') id: string, @Request() request) {
     return this.artistHandler.handleFollow(id, request);
   }
-
 }
