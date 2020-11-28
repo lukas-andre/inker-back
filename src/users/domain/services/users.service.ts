@@ -23,14 +23,16 @@ export class UsersService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create(createUserParams: CreateUserByTypeParams, role: Role): Promise<IUser | boolean> {
+  async create(
+    createUserParams: CreateUserByTypeParams,
+    role: Role,
+  ): Promise<IUser | boolean> {
     const exists: number = await this.usersRepository.count({
       where: [
         { username: createUserParams.username },
         { email: createUserParams.email },
       ],
     });
-
 
     if (exists) {
       return false;

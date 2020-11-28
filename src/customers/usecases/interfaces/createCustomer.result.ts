@@ -1,3 +1,3 @@
-import { CreateCustomerResDto } from "../../infrastructure/dtos/createCustomerRes.dto";
+import { CreateCustomerResDto } from '../../infrastructure/dtos/createCustomerRes.dto';
 
-export class CreateCustomerResult extends CreateCustomerResDto { }
+export class CreateCustomerResult extends CreateCustomerResDto {}

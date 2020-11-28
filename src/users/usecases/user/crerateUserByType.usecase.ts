@@ -34,7 +34,7 @@ export class CreateUserByTypeUseCase {
     }
 
     const created = await this.usersService.create(createUserParams, role);
-    if (typeof created == 'boolean' ) {
+    if (typeof created == 'boolean') {
       throw new DomainConflictException('User already exists');
     }
 

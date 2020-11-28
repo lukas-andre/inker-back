@@ -45,7 +45,7 @@ import { FindAllRoutesUseCase } from './usecases/permission/findAllRoutes.usecas
     FindOneRoleUseCase,
     FindOnePermissionUseCase,
     FindAllPermissionsUseCase,
-    FindAllRoutesUseCase
+    FindAllRoutesUseCase,
   ],
   controllers: [UsersController, PermissionsController, RolesController],
   exports: [UsersService, RolesService],

@@ -21,7 +21,9 @@ export class CustomersService {
     private readonly customersRepository: Repository<Customer>,
   ) {}
 
-  async create(pararms: CreateCustomerParams): Promise<Customer | ServiceError> {
+  async create(
+    pararms: CreateCustomerParams,
+  ): Promise<Customer | ServiceError> {
     const exists = await this.customersRepository.findOne({
       userId: pararms.userId,
     });

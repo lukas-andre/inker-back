@@ -1,9 +1,7 @@
 export class DomainException {
-    
-    readonly response;
+  readonly response;
 
-    constructor(response: string | Record<string, any>) {
-        this.response = response;
-    }
-
+  constructor(response: string | Record<string, any>) {
+    this.response = response;
+  }
 }

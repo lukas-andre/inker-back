@@ -7,5 +7,5 @@ export class LoginParams {
   @IsString()
   readonly password: string;
 
-  @IsString()  readonly loginType: string;
+  @IsString() readonly loginType: string;
 }
