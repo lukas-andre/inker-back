@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ArtistsService } from '../domain/services/artists.service';
 import { serviceErrorStringify } from '../../global/domain/utils/serviceErrorStringify';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
@@ -11,11 +9,11 @@ import { DomainException } from 'src/global/domain/exceptions/domain.exception';
 
 @Injectable()
 export class CreateArtistUseCase {
-  constructor(
-    private readonly artistsService: ArtistsService,
-  ) {}
+  constructor(private readonly artistsService: ArtistsService) {}
 
-  async execute(createArtistdto: CreateArtistDto): Promise<Artist | DomainException> {
+  async execute(
+    createArtistdto: CreateArtistDto,
+  ): Promise<Artist | DomainException> {
     const created = await this.artistsService.create(createArtistdto);
     if (created instanceof ServiceError) {
       return new DomainConflictException(serviceErrorStringify(created));

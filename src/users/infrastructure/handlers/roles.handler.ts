@@ -3,7 +3,6 @@ import { FindOneRoleUseCase } from '../../usecases/role/findOneRole.usecase';
 import { FindAllRolesUseCase } from '../../usecases/role/findAllRoles.usecase';
 import { InitRolesUseCase } from '../../usecases/role/initRoles.usecase';
 
-
 @Injectable()
 export class RolesHandler {
   constructor(

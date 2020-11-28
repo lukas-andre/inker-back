@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { serviceErrorStringify } from '../../global/domain/utils/serviceErrorStringify';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
@@ -8,9 +12,7 @@ import { Customer } from './entities/customer.entity';
 
 @Injectable()
 export class CustomerHandler {
-  constructor(
-    private readonly CRCustomerUseCase: CRCustomerUseCase,
-  ) {}
+  constructor(private readonly CRCustomerUseCase: CRCustomerUseCase) {}
 
   async handleCreate(createCustomerDto: CreateCustomerReqDto) {
     const created = await this.CRCustomerUseCase.create(createCustomerDto);
@@ -26,7 +28,7 @@ export class CustomerHandler {
   }
 
   async handleFindOne(options: FindOneOptions<Customer>): Promise<Customer> {
-    return this.CRCustomerUseCase.findOne(options)
+    return this.CRCustomerUseCase.findOne(options);
   }
 
   async handleFindById(id: string): Promise<Customer> {

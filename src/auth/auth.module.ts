@@ -7,12 +7,9 @@ import { AuthHandler } from './infrasctructure/auth.handler';
 import { AuthService } from './domain/auth.service';
 import { DefaultLoginUseCase } from './usecases/defaultLogin.usecase';
 
-
 @Module({
   imports: [UsersModule, ArtistsModule, CustomersModule],
   controllers: [AuthController],
-  providers: [
-    AuthHandler, AuthService, DefaultLoginUseCase, 
-  ],
+  providers: [AuthHandler, AuthService, DefaultLoginUseCase],
 })
 export class AuthModule {}

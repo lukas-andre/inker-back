@@ -17,7 +17,10 @@ export class UsersController {
   constructor(private readonly usersHandler: UsersHandler) {}
 
   @ApiOperation({ summary: 'Create User' })
-  @ApiCreatedResponse({ description: 'Users has been created', type: CreateUserResDto })
+  @ApiCreatedResponse({
+    description: 'Users has been created',
+    type: CreateUserResDto,
+  })
   @ApiNotFoundResponse({ description: 'Rol does not exists' })
   @ApiConflictResponse({ description: 'Users already exists' })
   @Post()

@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../../users/domain/services/users.service';
 import { User } from '../../users/infrastructure/entities/user.entity';
 import { UserType } from '../../users/domain/enums/userType.enum';
@@ -16,7 +14,7 @@ import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 import { LoginParams } from './interfaces/defaultLogin.params';
 
 @Injectable()
-export class DefaultLoginUseCase  {
+export class DefaultLoginUseCase {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
@@ -24,7 +22,9 @@ export class DefaultLoginUseCase  {
     private customersService: CustomersService,
   ) {}
 
-  async execute(loginParams: LoginParams): Promise<DefaultLoginResult | DomainException> {
+  async execute(
+    loginParams: LoginParams,
+  ): Promise<DefaultLoginResult | DomainException> {
     let response: DefaultLoginResult | DomainException;
 
     const user = await this.usersService.findByType(

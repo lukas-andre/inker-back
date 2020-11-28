@@ -12,7 +12,7 @@ export class AuthHandler {
   constructor(private readonly loginUseCase: DefaultLoginUseCase) {}
 
   async handleLogin(dto: LoginReqDto): Promise<LoginResDto> {
-    let result: LoginResDto| DomainException;
+    let result: LoginResDto | DomainException;
 
     switch (dto.loginType) {
       case LoginType.FACEBOOK:

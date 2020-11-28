@@ -9,9 +9,7 @@ import { Customer } from '../infrastructure/entities/customer.entity';
 
 @Injectable()
 export class CRCustomerUseCase {
-  constructor(
-    private readonly customersService: CustomersService,
-  ) {}
+  constructor(private readonly customersService: CustomersService) {}
 
   async create(params: CreateCustomerParams): Promise<Customer> {
     const created = await this.customersService.create(params);
@@ -21,16 +19,16 @@ export class CRCustomerUseCase {
 
     return created;
   }
-  
-  async findOne(options: FindOneOptions<Customer>) : Promise<Customer> {
+
+  async findOne(options: FindOneOptions<Customer>): Promise<Customer> {
     return this.customersService.findOne(options);
   }
 
-  async findAll(options: FindOneOptions<Customer>) : Promise<Customer[]> {
+  async findAll(options: FindOneOptions<Customer>): Promise<Customer[]> {
     return this.customersService.find(options);
   }
 
-  async findById(id: string) : Promise<Customer> {
+  async findById(id: string): Promise<Customer> {
     return this.customersService.findById(id);
   }
 }

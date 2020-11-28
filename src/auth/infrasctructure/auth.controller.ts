@@ -1,10 +1,4 @@
-import {
-  Controller,
-  HttpCode,
-  Post,
-  Body,
-  Logger,
-} from '@nestjs/common';
+import { Controller, HttpCode, Post, Body, Logger } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiOkResponse,
@@ -21,9 +15,7 @@ export class AuthController {
   private readonly serviceName = AuthController.name;
   private readonly logger = new Logger(this.serviceName);
 
-  constructor(
-    private readonly authHandler: AuthHandler,
-  ) {}
+  constructor(private readonly authHandler: AuthHandler) {}
 
   @ApiOperation({ summary: 'Login User' })
   @HttpCode(200)

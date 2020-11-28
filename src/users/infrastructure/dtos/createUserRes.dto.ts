@@ -1,10 +1,10 @@
-import { IRole } from "../../domain/models/role.model";
+import { IRole } from '../../domain/models/role.model';
 
-export class CreateUserResDto  {
+export class CreateUserResDto {
   id: string;
   username?: string;
   email?: string;
   active?: boolean;
   userType?: string;
-  role?: IRole
+  role?: IRole;
 }
