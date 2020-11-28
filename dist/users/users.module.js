@@ -56,7 +56,7 @@ UsersModule = __decorate([
             findOneRole_usecase_1.FindOneRoleUseCase,
             findOnePermission_usecase_1.FindOnePermissionUseCase,
             findAllPermissions_usecase_1.FindAllPermissionsUseCase,
-            findAllRoutes_usecase_1.FindAllRoutesUseCase
+            findAllRoutes_usecase_1.FindAllRoutesUseCase,
         ],
         controllers: [users_controller_1.UsersController, permissions_controller_1.PermissionsController, roles_controller_1.RolesController],
         exports: [users_service_1.UsersService, roles_service_1.RolesService],

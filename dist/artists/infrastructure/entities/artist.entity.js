@@ -12,13 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Artist = void 0;
 const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
+const tag_entity_1 = require("./tag.entity");
+const genders_entity_1 = require("./genders.entity");
+const follower_entity_1 = require("./follower.entity");
 let Artist = class Artist {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => String }, userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, follows: { required: true, type: () => [Object] }, followers: { required: true, type: () => [Object] }, rating: { required: true, type: () => Number }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { id: { required: true, type: () => String }, userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, tags: { required: true, type: () => [require("./tag.entity").Tag] }, genders: { required: true, type: () => [require("./genders.entity").Gender] }, followers: { required: true, type: () => [require("./follower.entity").Follower] }, rating: { required: true, type: () => Number }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
     }
 };
 __decorate([
-    typeorm_1.PrimaryColumn({ generated: 'uuid' }),
+    typeorm_1.PrimaryGeneratedColumn(),
     __metadata("design:type", String)
 ], Artist.prototype, "id", void 0);
 __decorate([
@@ -50,11 +53,18 @@ __decorate([
     __metadata("design:type", String)
 ], Artist.prototype, "profileThumbnail", void 0);
 __decorate([
-    typeorm_1.Column({ type: 'jsonb', nullable: true }),
+    typeorm_1.ManyToMany(() => tag_entity_1.Tag),
+    typeorm_1.JoinTable({ name: 'artist_tags' }),
     __metadata("design:type", Array)
-], Artist.prototype, "follows", void 0);
+], Artist.prototype, "tags", void 0);
 __decorate([
-    typeorm_1.Column({ type: 'jsonb', nullable: true }),
+    typeorm_1.ManyToMany(() => genders_entity_1.Gender),
+    typeorm_1.JoinTable({ name: 'artist_genders' }),
+    __metadata("design:type", Array)
+], Artist.prototype, "genders", void 0);
+__decorate([
+    typeorm_1.ManyToMany(() => follower_entity_1.Follower),
+    typeorm_1.JoinTable({ name: 'artist_followers' }),
     __metadata("design:type", Array)
 ], Artist.prototype, "followers", void 0);
 __decorate([

@@ -38,7 +38,6 @@ let ArtistsService = ArtistsService_1 = class ArtistsService {
         return await this.artistsRepository.save(artists);
     }
     async addFollow(artists, topic, newFollow) {
-        artists.follows.map(follow => (follow[topic] = [...follow[topic], newFollow]));
         return await this.artistsRepository.save(artists);
     }
     async findById(id) {

@@ -7,6 +7,8 @@ import { ArtistsModule } from './artists/artists.module';
 import { GlobalModule } from './global/global.module';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { MultimediasModule } from './multimedias/multimedias.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './global/infrastructure/guards/auth.guard';
 
 @Module({
   imports: [
@@ -47,6 +49,7 @@ import { MultimediasModule } from './multimedias/multimedias.module';
     // PostsModule,
     // NotificationsModule,
   ],
-  providers: [],
+  providers: [
+  ],
 })
 export class AppModule {}

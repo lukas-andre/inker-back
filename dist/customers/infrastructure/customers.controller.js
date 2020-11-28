@@ -29,7 +29,10 @@ let CustomersController = class CustomersController {
 };
 __decorate([
     swagger_1.ApiOperation({ summary: 'Create Customer' }),
-    swagger_1.ApiCreatedResponse({ description: 'Users has been created', type: createCustomerRes_dto_1.CreateCustomerResDto }),
+    swagger_1.ApiCreatedResponse({
+        description: 'Users has been created',
+        type: createCustomerRes_dto_1.CreateCustomerResDto,
+    }),
     swagger_1.ApiNotFoundResponse({ description: 'Rolo does not exists' }),
     swagger_1.ApiConflictResponse({ description: 'Users already exists' }),
     common_1.Post(),

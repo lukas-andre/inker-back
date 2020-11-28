@@ -1,4 +1,4 @@
-import { IRole } from "../../domain/models/role.model";
+import { IRole } from '../../domain/models/role.model';
 export declare class CreateUserResDto {
     id: string;
     username?: string;

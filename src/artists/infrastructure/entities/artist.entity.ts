@@ -3,14 +3,17 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn,
+  ManyToMany,
+  JoinTable,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Follower } from '../../domain/interfaces/follower.interface';
-import { CustomerFollows } from '../../../customers/domain/interfaces/customerFollows.interface';
+import { Tag } from './tag.entity';
+import { Gender } from './genders.entity';
+import { Follower } from './follower.entity';
 
 @Entity()
 export class Artist {
-  @PrimaryColumn({ generated: 'uuid' })
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column({ name: 'user_id' })
@@ -34,12 +37,18 @@ export class Artist {
   @Column({ name: 'profile_thumbnail', nullable: true })
   profileThumbnail: string;
 
-  @Column({ type: 'jsonb', nullable: true })
-  // TODO: Considerar cambiar a una inferfaz globar Follow[] y listo.
-  follows: CustomerFollows[];
+  @ManyToMany(() => Tag)
+  @JoinTable({name: 'artist_tags'})
+  tags: Tag[];
 
-  @Column({ type: 'jsonb', nullable: true })
+  @ManyToMany(() => Gender)
+  @JoinTable({name: 'artist_genders'})
+  genders: Gender[];
+
+  @ManyToMany(() => Follower)
+  @JoinTable({name: 'artist_followers'})
   followers: Follower[];
+
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;

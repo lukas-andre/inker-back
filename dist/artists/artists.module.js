@@ -17,6 +17,7 @@ const multimedias_module_1 = require("../multimedias/multimedias.module");
 const createArtist_usecase_1 = require("./usecases/createArtist.usecase");
 const findArtist_usecases_1 = require("./usecases/findArtist.usecases");
 const updateArtistProfilePicture_usecase_1 = require("./usecases/updateArtistProfilePicture.usecase");
+const updateArtstBasicInfo_usecase_1 = require("./usecases/updateArtstBasicInfo.usecase");
 let ArtistsModule = class ArtistsModule {
 };
 ArtistsModule = __decorate([
@@ -28,6 +29,7 @@ ArtistsModule = __decorate([
             createArtist_usecase_1.CreateArtistUseCase,
             findArtist_usecases_1.FindArtistsUseCases,
             updateArtistProfilePicture_usecase_1.UpdateArtistProfilePictureUseCase,
+            updateArtstBasicInfo_usecase_1.UpdateArtistBasicInfoUseCase
         ],
         controllers: [artists_controller_1.ArtistsController],
         exports: [artists_service_1.ArtistsService],

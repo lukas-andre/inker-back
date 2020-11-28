@@ -21,9 +21,7 @@ AuthModule = __decorate([
     common_1.Module({
         imports: [users_module_1.UsersModule, artists_module_1.ArtistsModule, customers_module_1.CustomersModule],
         controllers: [auth_controller_1.AuthController],
-        providers: [
-            auth_handler_1.AuthHandler, auth_service_1.AuthService, defaultLogin_usecase_1.DefaultLoginUseCase,
-        ],
+        providers: [auth_handler_1.AuthHandler, auth_service_1.AuthService, defaultLogin_usecase_1.DefaultLoginUseCase],
     })
 ], AuthModule);
 exports.AuthModule = AuthModule;

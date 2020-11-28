@@ -16,37 +16,51 @@ const findArtist_usecases_1 = require("../usecases/findArtist.usecases");
 const updateArtistProfilePicture_usecase_1 = require("../usecases/updateArtistProfilePicture.usecase");
 const domain_exception_1 = require("../../global/domain/exceptions/domain.exception");
 const resolveDomainException_1 = require("../../global/infrastructure/exceptions/resolveDomainException");
+const updateArtstBasicInfo_usecase_1 = require("../usecases/updateArtstBasicInfo.usecase");
+const jwt_1 = require("@nestjs/jwt");
+const passport_jwt_1 = require("passport-jwt");
+const jwtPayload_interface_1 = require("../../auth/domain/interfaces/jwtPayload.interface");
 let ArtistsHandler = class ArtistsHandler {
-    constructor(createArtistUseCase, findArtistsUseCases, updateArtistProfilePictureUseCase) {
+    constructor(createArtistUseCase, findArtistsUseCases, updateArtistProfilePictureUseCase, updateArtistBasicInfoUseCase, jwtService) {
         this.createArtistUseCase = createArtistUseCase;
         this.findArtistsUseCases = findArtistsUseCases;
         this.updateArtistProfilePictureUseCase = updateArtistProfilePictureUseCase;
+        this.updateArtistBasicInfoUseCase = updateArtistBasicInfoUseCase;
+        this.jwtService = jwtService;
     }
-    async handleCreate(createArtistdto) {
-        const created = await this.createArtistUseCase.execute(createArtistdto);
-        if (created instanceof domain_exception_1.DomainException) {
-            throw resolveDomainException_1.resolveDomainException(created);
-        }
-        return created;
+    async handleCreate(dto) {
+        return this.resolve(await this.createArtistUseCase.execute(dto));
     }
-    async handleSetProfileProflePicture(id, file) {
-        const result = await this.updateArtistProfilePictureUseCase.execute(id, file);
+    async handleUpdateProfileProflePicture(id, file) {
+        return this.resolve(await this.updateArtistProfilePictureUseCase.execute(id, file));
+    }
+    async handleFindById(id) {
+        return this.findArtistsUseCases.findById(id);
+    }
+    async handleGetAll() {
+        return this.findArtistsUseCases.findAll({});
+    }
+    async handleUpdateArtistBasicInfo(id, dto) {
+        return this.resolve(await this.updateArtistBasicInfoUseCase.execute(id, dto));
+    }
+    resolve(result) {
         if (result instanceof domain_exception_1.DomainException)
             throw resolveDomainException_1.resolveDomainException(result);
         return result;
     }
-    async handleFindById(id) {
-        return await this.findArtistsUseCases.findById(id);
-    }
-    async handleGetAll() {
-        return await this.findArtistsUseCases.findAll({});
+    async handleFollow(id, request) {
+        const jwt = passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+        const payload = this.jwtService.verify(jwt);
+        console.log('payload: ', payload);
     }
 };
 ArtistsHandler = __decorate([
     common_1.Injectable(),
     __metadata("design:paramtypes", [createArtist_usecase_1.CreateArtistUseCase,
         findArtist_usecases_1.FindArtistsUseCases,
-        updateArtistProfilePicture_usecase_1.UpdateArtistProfilePictureUseCase])
+        updateArtistProfilePicture_usecase_1.UpdateArtistProfilePictureUseCase,
+        updateArtstBasicInfo_usecase_1.UpdateArtistBasicInfoUseCase,
+        jwt_1.JwtService])
 ], ArtistsHandler);
 exports.ArtistsHandler = ArtistsHandler;
 //# sourceMappingURL=artists.handler.js.map
