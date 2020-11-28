@@ -16,7 +16,7 @@ const auth_1 = require("../config/auth");
 const aws_1 = require("../config/aws");
 const customerDatabase_1 = require("../config/customerDatabase");
 const artistDatabase_1 = require("../config/artistDatabase");
-const s3_client_1 = require("./clients/s3.client");
+const s3_client_1 = require("./infrastructure/clients/s3.client");
 let GlobalModule = class GlobalModule {
 };
 GlobalModule = __decorate([

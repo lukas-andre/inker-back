@@ -9,7 +9,7 @@ import {
 @Entity()
 export class Permission {
   @PrimaryColumn()
-  id: number;
+  id: string;
 
   @Column({ unique: true })
   controller: string;

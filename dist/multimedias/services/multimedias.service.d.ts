@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { S3Client } from '../../global/clients/s3.client';
+import { S3Client } from '../../global/infrastructure/clients/s3.client';
 export declare class MultimediasService {
     private readonly s3Client;
     private readonly configService;

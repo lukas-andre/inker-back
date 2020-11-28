@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MultimediasService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const s3_client_1 = require("../../global/clients/s3.client");
+const s3_client_1 = require("../../global/infrastructure/clients/s3.client");
 let MultimediasService = class MultimediasService {
     constructor(s3Client, configService) {
         this.s3Client = s3Client;

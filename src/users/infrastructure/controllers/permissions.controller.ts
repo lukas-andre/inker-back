@@ -5,7 +5,6 @@ import {
   Param,
   ParseIntPipe,
   Query,
-  HttpException,
 } from '@nestjs/common';
 import {
   ApiParam,
@@ -14,8 +13,8 @@ import {
   ApiTags,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { PermissionsHandler } from '../../../users/use_cases/permissions.handler';
 import { Permission } from '../entities/permission.entity';
+import { PermissionsHandler } from '../handlers/permissions.handler';
 
 @ApiTags('permissions')
 @Controller('permissions')
@@ -34,7 +33,7 @@ export class PermissionsController {
   }
 
   @Get('/initial')
-  async initial(): Promise<Permission[] | HttpException> {
+  async initial(): Promise<Permission[]> {
     return await this.permissionsHandler.handleInitial();
   }
 
@@ -44,7 +43,7 @@ export class PermissionsController {
   }
 
   @ApiOperation({ summary: 'Get Permissions By Id' })
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ name: 'id', required: true, type: String})
   @ApiOkResponse({
     description: 'The permissions exists.',
     isArray: true,
@@ -53,7 +52,7 @@ export class PermissionsController {
   @ApiResponse({ status: 404, description: 'Permission does not exist.' })
   @Get(':id')
   async findOne(
-    @Param('id', new ParseIntPipe()) id: number,
+    @Param('id') id: string,
   ): Promise<Permission> {
     const role = await this.permissionsHandler.findOne(id);
     if (!role) {

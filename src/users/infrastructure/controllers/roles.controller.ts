@@ -14,7 +14,7 @@ import {
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { Role } from '../entities/role.entity';
-import { RolesHandler } from '../../use_cases/roles.handler';
+import { RolesHandler } from '../handlers/roles.handler';
 
 @ApiTags('roles')
 @Controller('roles')

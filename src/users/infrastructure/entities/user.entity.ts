@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 import { UserType } from '../../domain/enums/userType.enum';
+import { IUser } from '../../domain/models/user.model';
 
 @Entity()
 export class User {
