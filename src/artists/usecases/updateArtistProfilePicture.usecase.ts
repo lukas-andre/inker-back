@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ArtistsService } from '../domain/services/artists.service';
 import { MultimediasService } from '../../multimedias/services/multimedias.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception';
+import { DomainInternalServerErrorException } from 'src/global/domain/exceptions/domainInternalServerError.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception copy';
 
 @Injectable()
 export class UpdateArtistProfilePictureUseCase {
@@ -14,9 +15,17 @@ export class UpdateArtistProfilePictureUseCase {
 
   async execute(id: string, file: any): Promise<Artist | DomainException> {
     if (!file) return new DomainNotFoundException('Not valid file to upload');
-
-    const artist = await this.artistsService.findById(id);
-    if (!artist) throw new DomainNotFoundException('Artists not found');
+    console.log('id: ', id);
+    console.log('file2: ', file);
+    let artist: Artist;
+    try {
+       artist = await this.artistsService.findById(id);
+    } catch (error) {
+      return new DomainInternalServerErrorException(`Error: ${error}`)
+    }
+    console.log('artist: ', artist);
+  
+    if (!artist) return new DomainNotFoundException('Artists not found');
 
     const source = `artist/${id}`;
     const fileName = `profile-picture_${new Date()}`;

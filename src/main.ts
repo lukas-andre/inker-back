@@ -29,7 +29,10 @@ async function bootstrap() {
     .setTitle('Inker Backend Service')
     .setDescription('Backend manager for Inker')
     .setVersion('0.0.1')
+    .addBearerAuth()
     .build();
+
+
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 

@@ -9,9 +9,9 @@ import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { AuthService } from '../domain/auth.service';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 import { LoginParams } from './interfaces/defaultLogin.params';
+import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception copy';
 
 @Injectable()
 export class DefaultLoginUseCase {

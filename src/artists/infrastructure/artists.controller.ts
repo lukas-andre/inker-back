@@ -6,6 +6,9 @@ import {
   UploadedFile,
   Param,
   Get,
+  Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,58 +19,88 @@ import {
   ApiOkResponse,
   ApiConflictResponse,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { ArtistsHandler } from './artists.handler';
 import { CreateArtistDto } from './dtos/createArtist.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Artist } from './entities/artist.entity';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
+import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
+import { UpdateArtistDto } from './dtos/updateArtist.dto';
+// import { FollowDto } from './dtos/follow.dto';
+import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 
+
+@ApiBearerAuth()
 @ApiTags('artists')
 @Controller('artist')
+@UseGuards(AuthGuard)
 export class ArtistsController {
   constructor(private readonly artistHandler: ArtistsHandler) {}
 
   @ApiOperation({ summary: 'Create Artist' })
-  @ApiCreatedResponse({ description: 'Artist has been created', type: Artist })
+  @ApiCreatedResponse({ description: 'Artist has been created', type: BaseArtistResponse })
   @ApiConflictResponse({ description: 'Artist already exists' })
   @Post()
   async create(@Body() createArtistDto: CreateArtistDto) {
-    return await this.artistHandler.handleCreate(createArtistDto);
+    return this.artistHandler.handleCreate(createArtistDto);
   }
 
   @ApiConsumes('multipart/form-data')
   @ApiBody({ description: 'profile picture', type: FileUploadDto })
   @ApiCreatedResponse({
     description: 'Artist profile picture was uploaded',
-    type: Artist,
+    type: BaseArtistResponse,
   })
   @Post('/:id/profile-picture')
   @UseInterceptors(FileInterceptor('file'))
-  async setProfileProflePicture(@UploadedFile() file, @Param('id') id: string) {
-    return await this.artistHandler.handleSetProfileProflePicture(id, file);
+  async updateProfileProflePicture(@UploadedFile() file, @Param('id') id: string) {
+    console.log('file: ', file);
+    return this.artistHandler.handleUpdateProfileProflePicture(id, file);
   }
 
-  @ApiOperation({ summary: 'Get all Artists' })
+  @ApiOperation({ summary: 'Find all Artists' })
   @ApiOkResponse({
     description: 'Get all artists ok',
     isArray: true,
-    type: Artist,
+    type: BaseArtistResponse,
   })
   @Get()
-  async getAllArtists() {
+  async findAllArtists() {
     return this.artistHandler.handleGetAll();
   }
 
-  @ApiOperation({ summary: 'Get Artist by Id' })
+  @ApiOperation({ summary: 'Find Artist by Id' })
   @ApiOkResponse({
-    description: 'Get artist ok',
-    type: Artist,
+    description: 'Find artist ok',
+    type: BaseArtistResponse,
   })
   @ApiParam({ name: 'id', required: true })
   @Get(':id')
-  async getArtistById(@Param('id') id: string) {
+  async findArtistById(@Param('id') id: string) {
     console.log(id);
     return this.artistHandler.handleFindById(id);
   }
+
+  @ApiOperation({ summary: 'Update Artist Basic by Id' })
+  @ApiOkResponse({
+    description: 'Update artist ok',
+    type: BaseArtistResponse,
+  })
+  @ApiParam({ name: 'id', required: true })
+  @Put(':id')
+  async updateArtistBasicInfo(@Param('id') id: string, @Body() body: UpdateArtistDto) {
+    return this.artistHandler.handleUpdateArtistBasicInfo(id, body);
+  }
+
+  @ApiOperation({ summary: 'Add follow' })
+  @ApiOkResponse({
+    description: 'Follow ok', type: Boolean
+  })
+  @ApiParam({ name: 'id', required: true })
+  @Post(':id/follow')
+  async follow(@Param('id') id: string, @Request() request) {
+    return this.artistHandler.handleFollow(id, request);
+  }
+
 }

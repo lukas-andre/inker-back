@@ -40,9 +40,6 @@ export class ArtistsService {
   }
 
   async addFollow(artists: Artist, topic: string, newFollow: FollowTopic) {
-    artists.follows.map(
-      follow => (follow[topic] = [...follow[topic], newFollow]),
-    );
     return await this.artistsRepository.save(artists);
   }
 

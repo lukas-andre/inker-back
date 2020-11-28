@@ -8,6 +8,7 @@ import { MultimediasModule } from '../multimedias/multimedias.module';
 import { CreateArtistUseCase } from './usecases/createArtist.usecase';
 import { FindArtistsUseCases } from './usecases/findArtist.usecases';
 import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfilePicture.usecase';
+import { UpdateArtistBasicInfoUseCase } from './usecases/updateArtstBasicInfo.usecase';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Artist], 'artist-db'), MultimediasModule],
@@ -17,6 +18,7 @@ import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfil
     CreateArtistUseCase,
     FindArtistsUseCases,
     UpdateArtistProfilePictureUseCase,
+    UpdateArtistBasicInfoUseCase
   ],
   controllers: [ArtistsController],
   exports: [ArtistsService],

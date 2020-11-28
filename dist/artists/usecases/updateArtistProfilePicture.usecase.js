@@ -13,7 +13,8 @@ exports.UpdateArtistProfilePictureUseCase = void 0;
 const common_1 = require("@nestjs/common");
 const artists_service_1 = require("../domain/services/artists.service");
 const multimedias_service_1 = require("../../multimedias/services/multimedias.service");
-const domainNotFound_exception_1 = require("../../global/domain/exceptions/domainNotFound.exception");
+const domainInternalServerError_exception_1 = require("../../global/domain/exceptions/domainInternalServerError.exception");
+const domainNotFound_exception_copy_1 = require("../../global/domain/exceptions/domainNotFound.exception copy");
 let UpdateArtistProfilePictureUseCase = class UpdateArtistProfilePictureUseCase {
     constructor(artistsService, multimediasService) {
         this.artistsService = artistsService;
@@ -21,10 +22,19 @@ let UpdateArtistProfilePictureUseCase = class UpdateArtistProfilePictureUseCase 
     }
     async execute(id, file) {
         if (!file)
-            return new domainNotFound_exception_1.DomainNotFoundException('Not valid file to upload');
-        const artist = await this.artistsService.findById(id);
+            return new domainNotFound_exception_copy_1.DomainNotFoundException('Not valid file to upload');
+        console.log('id: ', id);
+        console.log('file2: ', file);
+        let artist;
+        try {
+            artist = await this.artistsService.findById(id);
+        }
+        catch (error) {
+            return new domainInternalServerError_exception_1.DomainInternalServerErrorException(`Error: ${error}`);
+        }
+        console.log('artist: ', artist);
         if (!artist)
-            throw new domainNotFound_exception_1.DomainNotFoundException('Artists not found');
+            return new domainNotFound_exception_copy_1.DomainNotFoundException('Artists not found');
         const source = `artist/${id}`;
         const fileName = `profile-picture_${new Date()}`;
         console.time('uploadFile');
