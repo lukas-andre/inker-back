@@ -1,7 +1,7 @@
 import { Tag } from './tag.entity';
 import { Gender } from './genders.entity';
-export declare class Artist {
-    id: string;
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+export declare class Artist extends BaseEntity {
     userId: string;
     firstName: string;
     lastName: string;
@@ -12,6 +12,4 @@ export declare class Artist {
     tags: Tag[];
     genders: Gender[];
     rating: number;
-    created_at: Date;
-    updated_at: Date;
 }

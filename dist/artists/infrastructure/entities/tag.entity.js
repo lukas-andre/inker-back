@@ -12,27 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tag = void 0;
 const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
-let Tag = class Tag {
+const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
+let Tag = class Tag extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { name: { required: true, type: () => String } };
     }
 };
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], Tag.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], Tag.prototype, "name", void 0);
-__decorate([
-    typeorm_1.CreateDateColumn(),
-    __metadata("design:type", Date)
-], Tag.prototype, "created_at", void 0);
-__decorate([
-    typeorm_1.UpdateDateColumn(),
-    __metadata("design:type", Date)
-], Tag.prototype, "updated_at", void 0);
 Tag = __decorate([
     typeorm_1.Entity()
 ], Tag);

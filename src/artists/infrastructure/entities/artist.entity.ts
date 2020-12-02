@@ -1,20 +1,15 @@
 import {
   Entity,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   ManyToMany,
   JoinTable,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Tag } from './tag.entity';
 import { Gender } from './genders.entity';
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Artist {
-  @PrimaryGeneratedColumn()
-  id: string;
-
+export class Artist extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: string;
 
@@ -46,10 +41,4 @@ export class Artist {
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }

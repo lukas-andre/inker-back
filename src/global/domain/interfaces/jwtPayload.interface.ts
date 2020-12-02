@@ -6,6 +6,7 @@ export interface JwtPermission {
 export interface JwtPayload {
   id: string;
   username: string;
+  fullname: string;
   email?: string;
   userType: string;
   userTypeId: string;

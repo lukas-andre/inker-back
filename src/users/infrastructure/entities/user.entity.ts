@@ -2,20 +2,14 @@ import {
   Entity,
   Column,
   ManyToOne,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryColumn,
   Index,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { UserType } from '../../domain/enums/userType.enum';
-import { IUser } from '../../domain/models/user.model';
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class User {
-  @PrimaryColumn({ generated: 'uuid' })
-  id: string;
-
+export class User extends BaseEntity {
   @Column({ nullable: true })
   username: string;
 
@@ -34,10 +28,4 @@ export class User {
 
   @ManyToOne(type => Role, { cascade: false, nullable: true })
   role: Role;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }

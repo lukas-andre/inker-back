@@ -3,15 +3,11 @@ import { CreateArtistDto } from './dtos/createArtist.dto';
 import { CreateArtistUseCase } from '../usecases/createArtist.usecase';
 import { FindArtistsUseCases } from '../usecases/findArtist.usecases';
 import { UpdateArtistProfilePictureUseCase } from '../usecases/updateArtistProfilePicture.usecase';
-import { DomainException } from 'src/global/domain/exceptions/domain.exception';
-import { resolveDomainException } from 'src/global/infrastructure/exceptions/resolveDomainException';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { UpdateArtistBasicInfoUseCase } from '../usecases/updateArtstBasicInfo.usecase';
-// import { FollowDto } from './dtos/follow.dto';
 import { JwtService } from '@nestjs/jwt';
-import { ExtractJwt } from 'passport-jwt';
-import { JwtPayload } from 'src/global/domain/interfaces/jwtPayload.interface';
+import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import { FollowerDto } from './dtos/follow.dto';
 import { FollowUseCase } from '../usecases/followArtist.usecase';
 import { UnfollowArtistUseCase } from '../usecases/unfollowArtist.usecase';
@@ -44,7 +40,7 @@ export class ArtistsHandler extends BaseHandler {
   }
 
   async handleFindById(id: string): Promise<BaseArtistResponse> {
-    return this.findArtistsUseCases.findById(id);
+    return this.resolve(await this.findArtistsUseCases.findById(id));
   }
   async handleGetAll(): Promise<BaseArtistResponse[]> {
     return this.findArtistsUseCases.findAll({});
@@ -59,8 +55,6 @@ export class ArtistsHandler extends BaseHandler {
     );
   }
 
-
-
   async handleFollow(id: string, request): Promise<boolean> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
     const params: FollowerDto = {
@@ -72,12 +66,9 @@ export class ArtistsHandler extends BaseHandler {
         : '',
     };
 
-    return this.resolve(
-      await this.followUseCase.execute(id, params),
-    );
+    return this.resolve(await this.followUseCase.execute(id, params));
   }
 
-  
   async handleUnfollow(id: string, request): Promise<boolean> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
     return this.resolve(

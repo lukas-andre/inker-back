@@ -1,6 +1,4 @@
-export declare class Tag {
-    id: number;
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+export declare class Tag extends BaseEntity {
     name: string;
-    created_at: Date;
-    updated_at: Date;
 }
