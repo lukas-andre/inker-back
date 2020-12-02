@@ -11,57 +11,54 @@ import {
 } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { FollowTopic } from '../../../customers/domain/interfaces/customerFollows.interface';
-import { Follower } from 'src/artists/infrastructure/entities/follower.entity';
+import { Follower } from '../../infrastructure/entities/follower.entity';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 // import { FollowDto } from 'src/artists/infrastructure/dtos/follow.dto';
 
 @Injectable()
-export class FolllowersService {
-  private readonly serviceName: string = FolllowersService.name;
+export class FollowersService {
+  private readonly serviceName: string = FollowersService.name;
 
   constructor(
     @InjectRepository(Follower, 'artist-db')
     private readonly followersRepository: Repository<Follower>,
   ) {}
 
-  // async create(follower: FollowDto): Promise<Artist | ServiceError> {
-  //   const exists = await this.followersRepository.findOne({
-  //     userId: dto.userId,
-  //   });
+  async findById(id: string) {
+    return await this.followersRepository.findOne(id);
+  }
 
-  //   if (exists) {
-  //     return {
-  //       error: `Artists with user id: ${dto.userId} already exist`,
-  //       subject: this.serviceName,
-  //       method: this.create.name,
-  //     } as ServiceError;
-  //   }
+  async find(options: FindManyOptions<Follower>) {
+    return await this.followersRepository.find(options);
+  }
 
-  //   const artists = Object.assign(new Artist(), dto);
+  async findOne(
+    options?: FindOneOptions<Follower>,
+  ): Promise<Follower | undefined> {
+    return await this.followersRepository.findOne(options);
+  }
 
-  //   return await this.artistsRepository.save(artists);
-  // }
+  async save(artist: DeepPartial<Follower>): Promise<Follower> {
+    return await this.followersRepository.save(artist);
+  }
 
-  // async addFollow(artists: Artist, topic: string, newFollow: FollowTopic) {
-  //   return await this.artistsRepository.save(artists);
-  // }
+  async existFollower(
+    artistId: string,
+    userId: string,
+  ): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.followersRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM follower f WHERE f.artist_id = $1 AND f.user_id = $2)`,
+      [artistId, userId],
+    );
 
-  // async findById(id: string) {
-  //   return await this.artistsRepository.findOne(id);
-  // }
+    return result.pop().exists;
+  }
 
-  // async find(options: FindManyOptions<Artist>) {
-  //   return await this.artistsRepository.find(options);
-  // }
+  async countFollowers(id: string): Promise<number> {
+    return this.followersRepository.count({ where: { artistId: id } });
+  }
 
-  // async findOne(options?: FindOneOptions<Artist>): Promise<Artist | undefined> {
-  //   return await this.artistsRepository.findOne(options);
-  // }
-
-  // async save(artist: DeepPartial<Artist>): Promise<Artist> {
-  //   return await this.artistsRepository.save(artist);
-  // }
-
-  // async delete(id: string): Promise<DeleteResult> {
-  //   return await this.artistsRepository.delete(id);
-  // }
+  async delete(id: string): Promise<DeleteResult> {
+    return await this.followersRepository.delete(id);
+  }
 }

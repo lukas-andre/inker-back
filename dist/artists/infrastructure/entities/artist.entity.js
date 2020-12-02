@@ -14,10 +14,9 @@ const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const tag_entity_1 = require("./tag.entity");
 const genders_entity_1 = require("./genders.entity");
-const follower_entity_1 = require("./follower.entity");
 let Artist = class Artist {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => String }, userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, tags: { required: true, type: () => [require("./tag.entity").Tag] }, genders: { required: true, type: () => [require("./genders.entity").Gender] }, followers: { required: true, type: () => [require("./follower.entity").Follower] }, rating: { required: true, type: () => Number }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { id: { required: true, type: () => String }, userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, tags: { required: true, type: () => [require("./tag.entity").Tag] }, genders: { required: true, type: () => [require("./genders.entity").Gender] }, rating: { required: true, type: () => Number }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
     }
 };
 __decorate([
@@ -62,11 +61,6 @@ __decorate([
     typeorm_1.JoinTable({ name: 'artist_genders' }),
     __metadata("design:type", Array)
 ], Artist.prototype, "genders", void 0);
-__decorate([
-    typeorm_1.ManyToMany(() => follower_entity_1.Follower),
-    typeorm_1.JoinTable({ name: 'artist_followers' }),
-    __metadata("design:type", Array)
-], Artist.prototype, "followers", void 0);
 __decorate([
     typeorm_1.Column({ type: 'float', default: 0.0 }),
     __metadata("design:type", Number)

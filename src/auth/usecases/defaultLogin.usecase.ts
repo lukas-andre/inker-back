@@ -37,7 +37,7 @@ export class DefaultLoginUseCase {
     }
 
     response = await this.defaultLogin(user, loginParams);
-
+    
     if (response instanceof DomainException) return response;
 
     return response;

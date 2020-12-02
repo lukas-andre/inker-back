@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity()
@@ -11,16 +12,18 @@ export class Follower {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  user_id: string;
+  @Index()
+  @Column({ name: 'artist_id' })
+  artistId: string;
+
+  @Index()
+  @Column({ name: 'user_id' })
+  userId: string;
 
   @Column()
-  user_type_id: string;
+  username: string;
 
-  @Column()
-  identifier: string;
-
-  @Column()
+  @Column({ name: 'profile_thumbnail', nullable: true })
   profileThumbnail: string;
 
   @CreateDateColumn()

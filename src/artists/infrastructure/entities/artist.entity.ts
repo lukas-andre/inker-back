@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { Tag } from './tag.entity';
 import { Gender } from './genders.entity';
-import { Follower } from './follower.entity';
 
 @Entity()
 export class Artist {
@@ -44,10 +43,6 @@ export class Artist {
   @ManyToMany(() => Gender)
   @JoinTable({ name: 'artist_genders' })
   genders: Gender[];
-
-  @ManyToMany(() => Follower)
-  @JoinTable({ name: 'artist_followers' })
-  followers: Follower[];
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;

@@ -10,5 +10,6 @@ export declare class ArtistsController {
     findAllArtists(): Promise<BaseArtistResponse[]>;
     findArtistById(id: string): Promise<BaseArtistResponse>;
     updateArtistBasicInfo(id: string, body: UpdateArtistDto): Promise<BaseArtistResponse>;
-    follow(id: string, request: any): Promise<void>;
+    follow(id: string, request: any): Promise<boolean>;
+    unfollow(id: string, request: any): Promise<boolean>;
 }

@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ExtractJwt } from 'passport-jwt';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from '../../../auth/domain/interfaces/jwtPayload.interface';
+import { JwtPayload } from '../../domain/interfaces/jwtPayload.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

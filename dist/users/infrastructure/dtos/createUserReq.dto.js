@@ -26,7 +26,6 @@ __decorate([
         required: false,
     }),
     class_validator_1.IsString(),
-    class_validator_1.IsOptional(),
     __metadata("design:type", String)
 ], CreateUserReqDto.prototype, "username", void 0);
 __decorate([

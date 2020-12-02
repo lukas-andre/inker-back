@@ -18,14 +18,19 @@ const domain_exception_1 = require("../../global/domain/exceptions/domain.except
 const resolveDomainException_1 = require("../../global/infrastructure/exceptions/resolveDomainException");
 const updateArtstBasicInfo_usecase_1 = require("../usecases/updateArtstBasicInfo.usecase");
 const jwt_1 = require("@nestjs/jwt");
-const passport_jwt_1 = require("passport-jwt");
-const jwtPayload_interface_1 = require("../../auth/domain/interfaces/jwtPayload.interface");
-let ArtistsHandler = class ArtistsHandler {
-    constructor(createArtistUseCase, findArtistsUseCases, updateArtistProfilePictureUseCase, updateArtistBasicInfoUseCase, jwtService) {
+const jwtPayload_interface_1 = require("../../global/domain/interfaces/jwtPayload.interface");
+const followArtist_usecase_1 = require("../usecases/followArtist.usecase");
+const unfollowArtist_usecase_1 = require("../usecases/unfollowArtist.usecase");
+const base_handler_1 = require("../../global/infrastructure/base.handler");
+let ArtistsHandler = class ArtistsHandler extends base_handler_1.BaseHandler {
+    constructor(createArtistUseCase, findArtistsUseCases, updateArtistProfilePictureUseCase, updateArtistBasicInfoUseCase, followUseCase, unfollowArtistUseCase, jwtService) {
+        super(jwtService);
         this.createArtistUseCase = createArtistUseCase;
         this.findArtistsUseCases = findArtistsUseCases;
         this.updateArtistProfilePictureUseCase = updateArtistProfilePictureUseCase;
         this.updateArtistBasicInfoUseCase = updateArtistBasicInfoUseCase;
+        this.followUseCase = followUseCase;
+        this.unfollowArtistUseCase = unfollowArtistUseCase;
         this.jwtService = jwtService;
     }
     async handleCreate(dto) {
@@ -43,15 +48,21 @@ let ArtistsHandler = class ArtistsHandler {
     async handleUpdateArtistBasicInfo(id, dto) {
         return this.resolve(await this.updateArtistBasicInfoUseCase.execute(id, dto));
     }
-    resolve(result) {
-        if (result instanceof domain_exception_1.DomainException)
-            throw resolveDomainException_1.resolveDomainException(result);
-        return result;
-    }
     async handleFollow(id, request) {
-        const jwt = passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-        const payload = this.jwtService.verify(jwt);
-        console.log('payload: ', payload);
+        const jwtPayload = this.getJwtPayloadFromRequest(request);
+        const params = {
+            userId: jwtPayload.id,
+            userTypeId: jwtPayload.userTypeId,
+            username: jwtPayload.username,
+            profileThumbnail: jwtPayload.profileThumbnail
+                ? jwtPayload.profileThumbnail
+                : '',
+        };
+        return this.resolve(await this.followUseCase.execute(id, params));
+    }
+    async handleUnfollow(id, request) {
+        const jwtPayload = this.getJwtPayloadFromRequest(request);
+        return this.resolve(await this.unfollowArtistUseCase.execute(id, jwtPayload.id));
     }
 };
 ArtistsHandler = __decorate([
@@ -60,6 +71,8 @@ ArtistsHandler = __decorate([
         findArtist_usecases_1.FindArtistsUseCases,
         updateArtistProfilePicture_usecase_1.UpdateArtistProfilePictureUseCase,
         updateArtstBasicInfo_usecase_1.UpdateArtistBasicInfoUseCase,
+        followArtist_usecase_1.FollowUseCase,
+        unfollowArtist_usecase_1.UnfollowArtistUseCase,
         jwt_1.JwtService])
 ], ArtistsHandler);
 exports.ArtistsHandler = ArtistsHandler;

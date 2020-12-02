@@ -111,4 +111,15 @@ export class ArtistsController {
   async follow(@Param('id') id: string, @Request() request) {
     return this.artistHandler.handleFollow(id, request);
   }
+
+  @ApiOperation({ summary: 'Unfollow' })
+  @ApiOkResponse({
+    description: 'Unfollow ok',
+    type: Boolean,
+  })
+  @ApiParam({ name: 'id', required: true })
+  @Post(':id/unfollow')
+  async unfollow(@Param('id') id: string, @Request() request) {
+    return this.artistHandler.handleUnfollow(id, request);
+  }
 }

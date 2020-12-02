@@ -4,17 +4,24 @@ import { IsString } from 'class-validator';
 export class FollowerDto {
   @ApiProperty({
     example: '415604a6-6db4-4a3b-a1dc-470193485b91',
-    description: 'Customer Id',
+    description: 'User Id',
   })
   @IsString()
-  readonly customerId: string;
+  userId: string;
+
+  @ApiProperty({
+    example: '415604a6-6db4-4a3b-a1dc-470193485b91',
+    description: 'UserType Id, artist or customer Id',
+  })
+  @IsString()
+  readonly userTypeId: string;
 
   @ApiProperty({
     example: 'lucas@gmail.com',
     description: 'User identifier',
   })
   @IsString()
-  readonly identifier: string;
+  readonly username: string;
 
   @ApiProperty({
     example:

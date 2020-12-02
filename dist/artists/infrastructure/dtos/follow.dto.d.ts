@@ -1,5 +1,6 @@
 export declare class FollowerDto {
-    readonly customerId: string;
-    readonly identifier: string;
+    userId: string;
+    readonly userTypeId: string;
+    readonly username: string;
     readonly profileThumbnail: string;
 }

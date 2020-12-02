@@ -3,7 +3,7 @@ import { Customer } from '../../customers/infrastructure/entities/customer.entit
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { FullJwtPayload } from './interfaces/jwtPayload.interface';
+import { FullJwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 export declare class AuthService {
     private readonly jwtService;
     private readonly configService;

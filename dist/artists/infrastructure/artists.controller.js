@@ -47,10 +47,16 @@ let ArtistsController = class ArtistsController {
     async follow(id, request) {
         return this.artistHandler.handleFollow(id, request);
     }
+    async unfollow(id, request) {
+        return this.artistHandler.handleUnfollow(id, request);
+    }
 };
 __decorate([
     swagger_1.ApiOperation({ summary: 'Create Artist' }),
-    swagger_1.ApiCreatedResponse({ description: 'Artist has been created', type: baseArtistResponse_dto_1.BaseArtistResponse }),
+    swagger_1.ApiCreatedResponse({
+        description: 'Artist has been created',
+        type: baseArtistResponse_dto_1.BaseArtistResponse,
+    }),
     swagger_1.ApiConflictResponse({ description: 'Artist already exists' }),
     common_1.Post(),
     openapi.ApiResponse({ status: 201, type: require("./dtos/baseArtistResponse.dto").BaseArtistResponse }),
@@ -69,7 +75,8 @@ __decorate([
     common_1.Post('/:id/profile-picture'),
     common_1.UseInterceptors(platform_express_1.FileInterceptor('file')),
     openapi.ApiResponse({ status: 201, type: require("./dtos/baseArtistResponse.dto").BaseArtistResponse }),
-    __param(0, common_1.UploadedFile()), __param(1, common_1.Param('id')),
+    __param(0, common_1.UploadedFile()),
+    __param(1, common_1.Param('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
@@ -110,7 +117,8 @@ __decorate([
     swagger_1.ApiParam({ name: 'id', required: true }),
     common_1.Put(':id'),
     openapi.ApiResponse({ status: 200, type: require("./dtos/baseArtistResponse.dto").BaseArtistResponse }),
-    __param(0, common_1.Param('id')), __param(1, common_1.Body()),
+    __param(0, common_1.Param('id')),
+    __param(1, common_1.Body()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, updateArtist_dto_1.UpdateArtistDto]),
     __metadata("design:returntype", Promise)
@@ -118,16 +126,31 @@ __decorate([
 __decorate([
     swagger_1.ApiOperation({ summary: 'Add follow' }),
     swagger_1.ApiOkResponse({
-        description: 'Follow ok', type: Boolean
+        description: 'Follow ok',
+        type: Boolean,
     }),
     swagger_1.ApiParam({ name: 'id', required: true }),
     common_1.Post(':id/follow'),
-    openapi.ApiResponse({ status: 201 }),
+    openapi.ApiResponse({ status: 201, type: Boolean }),
     __param(0, common_1.Param('id')), __param(1, common_1.Request()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ArtistsController.prototype, "follow", null);
+__decorate([
+    swagger_1.ApiOperation({ summary: 'Unfollow' }),
+    swagger_1.ApiOkResponse({
+        description: 'Unfollow ok',
+        type: Boolean,
+    }),
+    swagger_1.ApiParam({ name: 'id', required: true }),
+    common_1.Post(':id/unfollow'),
+    openapi.ApiResponse({ status: 201, type: Boolean }),
+    __param(0, common_1.Param('id')), __param(1, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ArtistsController.prototype, "unfollow", null);
 ArtistsController = __decorate([
     swagger_1.ApiBearerAuth(),
     swagger_1.ApiTags('artists'),

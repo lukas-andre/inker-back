@@ -35,15 +35,16 @@ let CreateUserByTypeUseCase = class CreateUserByTypeUseCase {
             where: { name: createUserParams.userType.toLocaleLowerCase() },
         });
         if (!role) {
-            throw new domainConflict_exception_1.DomainConflictException('Role not exists');
+            return new domainConflict_exception_1.DomainConflictException('Role not exists');
         }
         const created = await this.usersService.create(createUserParams, role);
         if (typeof created == 'boolean') {
-            throw new domainConflict_exception_1.DomainConflictException('User already exists');
+            return new domainConflict_exception_1.DomainConflictException('User already exists');
         }
         const response = await this.handleCreateByUserType(created.id, createUserParams);
+        console.log('response: ', response);
         if (response instanceof serviceError_1.ServiceError) {
-            this.handleCreateError(created.id, response);
+            return this.handleCreateError(created.id, response);
         }
         return created;
     }
@@ -73,7 +74,7 @@ let CreateUserByTypeUseCase = class CreateUserByTypeUseCase {
     }
     async handleCreateError(userId, error) {
         await this.rollbackCreate(userId);
-        throw new common_1.ConflictException(serviceErrorStringify_1.serviceErrorStringify(error));
+        return new domainConflict_exception_1.DomainConflictException(serviceErrorStringify_1.serviceErrorStringify(error));
     }
 };
 CreateUserByTypeUseCase = __decorate([
