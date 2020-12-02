@@ -14,11 +14,8 @@ const common_1 = require("@nestjs/common");
 const createArtist_usecase_1 = require("../usecases/createArtist.usecase");
 const findArtist_usecases_1 = require("../usecases/findArtist.usecases");
 const updateArtistProfilePicture_usecase_1 = require("../usecases/updateArtistProfilePicture.usecase");
-const domain_exception_1 = require("../../global/domain/exceptions/domain.exception");
-const resolveDomainException_1 = require("../../global/infrastructure/exceptions/resolveDomainException");
 const updateArtstBasicInfo_usecase_1 = require("../usecases/updateArtstBasicInfo.usecase");
 const jwt_1 = require("@nestjs/jwt");
-const jwtPayload_interface_1 = require("../../global/domain/interfaces/jwtPayload.interface");
 const followArtist_usecase_1 = require("../usecases/followArtist.usecase");
 const unfollowArtist_usecase_1 = require("../usecases/unfollowArtist.usecase");
 const base_handler_1 = require("../../global/infrastructure/base.handler");
@@ -40,7 +37,7 @@ let ArtistsHandler = class ArtistsHandler extends base_handler_1.BaseHandler {
         return this.resolve(await this.updateArtistProfilePictureUseCase.execute(id, file));
     }
     async handleFindById(id) {
-        return this.findArtistsUseCases.findById(id);
+        return this.resolve(await this.findArtistsUseCases.findById(id));
     }
     async handleGetAll() {
         return this.findArtistsUseCases.findAll({});

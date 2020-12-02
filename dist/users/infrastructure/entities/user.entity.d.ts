@@ -1,12 +1,10 @@
 import { Role } from './role.entity';
-export declare class User {
-    id: string;
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+export declare class User extends BaseEntity {
     username: string;
     email: string;
     password: string;
     active: boolean;
     userType: string;
     role: Role;
-    created_at: Date;
-    updated_at: Date;
 }

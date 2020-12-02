@@ -14,15 +14,12 @@ const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const tag_entity_1 = require("./tag.entity");
 const genders_entity_1 = require("./genders.entity");
-let Artist = class Artist {
+const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
+let Artist = class Artist extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => String }, userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, tags: { required: true, type: () => [require("./tag.entity").Tag] }, genders: { required: true, type: () => [require("./genders.entity").Gender] }, rating: { required: true, type: () => Number }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, tags: { required: true, type: () => [require("./tag.entity").Tag] }, genders: { required: true, type: () => [require("./genders.entity").Gender] }, rating: { required: true, type: () => Number } };
     }
 };
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", String)
-], Artist.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column({ name: 'user_id' }),
     __metadata("design:type", String)
@@ -65,14 +62,6 @@ __decorate([
     typeorm_1.Column({ type: 'float', default: 0.0 }),
     __metadata("design:type", Number)
 ], Artist.prototype, "rating", void 0);
-__decorate([
-    typeorm_1.CreateDateColumn(),
-    __metadata("design:type", Date)
-], Artist.prototype, "created_at", void 0);
-__decorate([
-    typeorm_1.UpdateDateColumn(),
-    __metadata("design:type", Date)
-], Artist.prototype, "updated_at", void 0);
 Artist = __decorate([
     typeorm_1.Entity()
 ], Artist);

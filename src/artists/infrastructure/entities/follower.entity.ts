@@ -1,17 +1,9 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Index,
-} from 'typeorm';
+import { UserType } from '../../../users/domain/enums/userType.enum';
+import { Entity, Column, Index } from 'typeorm';
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Follower {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Follower extends BaseEntity {
   @Index()
   @Column({ name: 'artist_id' })
   artistId: string;
@@ -20,15 +12,19 @@ export class Follower {
   @Column({ name: 'user_id' })
   userId: string;
 
+  @Index()
+  @Column({ name: 'user_type_id' })
+  userTypeId: string;
+
+  @Column({ name: 'user_type', enum: UserType })
+  userType: string;
+
   @Column()
   username: string;
 
+  @Column()
+  fullname: string;
+
   @Column({ name: 'profile_thumbnail', nullable: true })
   profileThumbnail: string;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }

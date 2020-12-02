@@ -24,6 +24,7 @@ let AuthService = class AuthService {
             id: user.id,
             email: user.email,
             username: user.username,
+            fullname: [entity.firstName, entity.lastName].join(' '),
             userType: userType_enum_1.UserType[userType],
             userTypeId: entity.id,
             profileThumbnail: entity.profileThumbnail,

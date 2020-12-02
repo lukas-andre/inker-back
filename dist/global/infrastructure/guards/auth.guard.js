@@ -8,14 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var AuthGuard_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const passport_jwt_1 = require("passport-jwt");
 const jwt_1 = require("@nestjs/jwt");
-let AuthGuard = class AuthGuard {
+let AuthGuard = AuthGuard_1 = class AuthGuard {
     constructor(jwtService) {
         this.jwtService = jwtService;
+        this.logger = new common_1.Logger(AuthGuard_1.name);
     }
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
@@ -27,20 +29,25 @@ let AuthGuard = class AuthGuard {
         if (!jwt) {
             return false;
         }
-        const verify = this.jwtService.verify(jwt);
-        console.log('verify: ', verify);
-        if (!verify) {
+        let verifyJwt;
+        try {
+            verifyJwt = this.jwtService.verify(jwt);
+        }
+        catch (error) {
+            this.logger.error(error);
             return false;
         }
-        const permission = verify.permision.find(p => p.c == calledController);
-        console.log('permission: ', permission);
+        if (!verifyJwt) {
+            return false;
+        }
+        const permission = verifyJwt.permision.find(p => p.c == calledController);
         if (!permission) {
             return false;
         }
         return true;
     }
 };
-AuthGuard = __decorate([
+AuthGuard = AuthGuard_1 = __decorate([
     common_1.Injectable(),
     __metadata("design:paramtypes", [jwt_1.JwtService])
 ], AuthGuard);

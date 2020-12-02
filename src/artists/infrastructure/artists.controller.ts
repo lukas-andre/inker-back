@@ -27,7 +27,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
-// import { FollowDto } from './dtos/follow.dto';
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 
 @ApiBearerAuth()

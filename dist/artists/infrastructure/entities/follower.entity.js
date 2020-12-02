@@ -11,16 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Follower = void 0;
 const openapi = require("@nestjs/swagger");
+const userType_enum_1 = require("../../../users/domain/enums/userType.enum");
 const typeorm_1 = require("typeorm");
-let Follower = class Follower {
+const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
+let Follower = class Follower extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, artistId: { required: true, type: () => String }, userId: { required: true, type: () => String }, username: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { artistId: { required: true, type: () => String }, userId: { required: true, type: () => String }, userTypeId: { required: true, type: () => String }, userType: { required: true, type: () => String }, username: { required: true, type: () => String }, fullname: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String } };
     }
 };
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], Follower.prototype, "id", void 0);
 __decorate([
     typeorm_1.Index(),
     typeorm_1.Column({ name: 'artist_id' }),
@@ -32,21 +30,26 @@ __decorate([
     __metadata("design:type", String)
 ], Follower.prototype, "userId", void 0);
 __decorate([
+    typeorm_1.Index(),
+    typeorm_1.Column({ name: 'user_type_id' }),
+    __metadata("design:type", String)
+], Follower.prototype, "userTypeId", void 0);
+__decorate([
+    typeorm_1.Column({ name: 'user_type', enum: userType_enum_1.UserType }),
+    __metadata("design:type", String)
+], Follower.prototype, "userType", void 0);
+__decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], Follower.prototype, "username", void 0);
 __decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], Follower.prototype, "fullname", void 0);
+__decorate([
     typeorm_1.Column({ name: 'profile_thumbnail', nullable: true }),
     __metadata("design:type", String)
 ], Follower.prototype, "profileThumbnail", void 0);
-__decorate([
-    typeorm_1.CreateDateColumn(),
-    __metadata("design:type", Date)
-], Follower.prototype, "created_at", void 0);
-__decorate([
-    typeorm_1.UpdateDateColumn(),
-    __metadata("design:type", Date)
-], Follower.prototype, "updated_at", void 0);
 Follower = __decorate([
     typeorm_1.Entity()
 ], Follower);

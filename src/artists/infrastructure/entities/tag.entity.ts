@@ -1,22 +1,8 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Tag {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Tag extends BaseEntity {
   @Column()
   name: string;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }

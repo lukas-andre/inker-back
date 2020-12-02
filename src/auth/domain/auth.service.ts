@@ -5,7 +5,10 @@ import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { FullJwtPayload, JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
+import {
+  FullJwtPayload,
+  JwtPayload,
+} from '../../global/domain/interfaces/jwtPayload.interface';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +25,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       username: user.username,
+      fullname: [entity.firstName, entity.lastName].join(' '),
       userType: UserType[userType],
       userTypeId: entity.id,
       profileThumbnail: entity.profileThumbnail,

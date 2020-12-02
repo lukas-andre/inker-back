@@ -12,15 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Gender = void 0;
 const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
-let Gender = class Gender {
+const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
+let Gender = class Gender extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, createdBy: { required: true, type: () => String }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { name: { required: true, type: () => String }, createdBy: { required: true, type: () => String } };
     }
 };
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], Gender.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
@@ -29,14 +26,6 @@ __decorate([
     typeorm_1.Column('text', { name: 'created_by', nullable: true }),
     __metadata("design:type", String)
 ], Gender.prototype, "createdBy", void 0);
-__decorate([
-    typeorm_1.CreateDateColumn(),
-    __metadata("design:type", Date)
-], Gender.prototype, "created_at", void 0);
-__decorate([
-    typeorm_1.UpdateDateColumn(),
-    __metadata("design:type", Date)
-], Gender.prototype, "updated_at", void 0);
 Gender = __decorate([
     typeorm_1.Entity()
 ], Gender);

@@ -1,6 +1,6 @@
 # compiled output
 /node_modules
-
+/dist
 # Logs
 logs
 *.log
@@ -31,3 +31,31 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+dist/tsconfig.build.tsbuildinfo
+dist/artists/infrastructure/artists.handler.js
+dist/artists/infrastructure/artists.handler.js.map
+dist/artists/infrastructure/entities/artist.entity.d.ts
+dist/artists/infrastructure/entities/artist.entity.js
+dist/artists/infrastructure/entities/artist.entity.js.map
+dist/artists/infrastructure/entities/follower.entity.d.ts
+dist/artists/infrastructure/entities/follower.entity.js
+dist/artists/infrastructure/entities/follower.entity.js.map
+dist/artists/infrastructure/entities/genders.entity.d.ts
+dist/artists/infrastructure/entities/genders.entity.js
+dist/artists/infrastructure/entities/genders.entity.js.map
+dist/artists/infrastructure/entities/tag.entity.d.ts
+dist/artists/infrastructure/entities/tag.entity.js
+dist/artists/infrastructure/entities/tag.entity.js.map
+dist/artists/usecases/findArtist.usecases.d.ts
+dist/artists/usecases/findArtist.usecases.js
+dist/artists/usecases/findArtist.usecases.js.map
+dist/auth/domain/auth.service.js
+dist/auth/domain/auth.service.js.map
+dist/global/domain/interfaces/jwtPayload.interface.d.ts
+dist/global/infrastructure/guards/auth.guard.d.ts
+dist/global/infrastructure/guards/auth.guard.js
+dist/global/infrastructure/guards/auth.guard.js.map
+dist/users/infrastructure/entities/user.entity.d.ts
+dist/users/infrastructure/entities/user.entity.js
+dist/users/infrastructure/entities/user.entity.js.map
+dist/users/usecases/user/crerateUserByType.usecase.d.ts
