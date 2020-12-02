@@ -18,18 +18,30 @@ const createArtist_usecase_1 = require("./usecases/createArtist.usecase");
 const findArtist_usecases_1 = require("./usecases/findArtist.usecases");
 const updateArtistProfilePicture_usecase_1 = require("./usecases/updateArtistProfilePicture.usecase");
 const updateArtstBasicInfo_usecase_1 = require("./usecases/updateArtstBasicInfo.usecase");
+const follower_entity_1 = require("./infrastructure/entities/follower.entity");
+const genders_entity_1 = require("./infrastructure/entities/genders.entity");
+const tag_entity_1 = require("./infrastructure/entities/tag.entity");
+const followArtist_usecase_1 = require("./usecases/followArtist.usecase");
+const unfollowArtist_usecase_1 = require("./usecases/unfollowArtist.usecase");
+const followers_service_1 = require("./domain/services/followers.service");
 let ArtistsModule = class ArtistsModule {
 };
 ArtistsModule = __decorate([
     common_1.Module({
-        imports: [typeorm_1.TypeOrmModule.forFeature([artist_entity_1.Artist], 'artist-db'), multimedias_module_1.MultimediasModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([artist_entity_1.Artist, follower_entity_1.Follower, genders_entity_1.Gender, tag_entity_1.Tag], 'artist-db'),
+            multimedias_module_1.MultimediasModule,
+        ],
         providers: [
             artists_service_1.ArtistsService,
             artists_handler_1.ArtistsHandler,
+            followers_service_1.FollowersService,
             createArtist_usecase_1.CreateArtistUseCase,
             findArtist_usecases_1.FindArtistsUseCases,
             updateArtistProfilePicture_usecase_1.UpdateArtistProfilePictureUseCase,
-            updateArtstBasicInfo_usecase_1.UpdateArtistBasicInfoUseCase
+            updateArtstBasicInfo_usecase_1.UpdateArtistBasicInfoUseCase,
+            followArtist_usecase_1.FollowUseCase,
+            unfollowArtist_usecase_1.UnfollowArtistUseCase
         ],
         controllers: [artists_controller_1.ArtistsController],
         exports: [artists_service_1.ArtistsService],

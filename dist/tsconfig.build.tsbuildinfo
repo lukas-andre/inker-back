@@ -3281,18 +3281,18 @@
         "signature": "4873f801cb9b01f8f6a36fa570ed9a2da7d7dd212d4267aa5757642b26df1019",
         "affectsGlobalScope": false
       },
-      "../src/auth/domain/interfaces/jwtpayload.interface.ts": {
-        "version": "6ba35c599fc32e831a36dace1b1e6e302380b6f3e4e5db13c342884952d9bd45",
-        "signature": "40772b02f700e3c46de987a72526d94ebbb55777a9d65d4b9152782e9f070471",
+      "../src/global/domain/interfaces/jwtpayload.interface.ts": {
+        "version": "a1f0ce972e298b1d496f2dde10f8d03f4204cf7798d8565d1aa0a0dc87c8133e",
+        "signature": "a641db0e78bd87e647b5babe222ac474d245707754fc3513fcdbdf3dea898f79",
         "affectsGlobalScope": false
       },
       "../src/auth/usecases/interfaces/defaultlogin.result.ts": {
-        "version": "41f25b08c613f9520ee40c77c7c2d820a382e6f62f83295e2ab73f934c9050c8",
-        "signature": "0a7ad0d44c3f12d07e97c0b5ee10ce3d9c10f1bdef357a38252028d130195ee6",
+        "version": "07969e9474a8f4b2e6ed025244fd5507918edde9e84478c3ffc1994a903e6524",
+        "signature": "fca79428738b13a944546ba0e0e45ba1debe6f916dc3096a81ca95b05eac158a",
         "affectsGlobalScope": false
       },
       "../src/auth/infrasctructure/dtos/loginres.dto.ts": {
-        "version": "6043191e908f0deaee09541d8ebb7e16b2e82164d4f4d8da377062f5d2aae5f2",
+        "version": "2b93c648419baf91d2f5eb9956943955f8c9e7a84bbf604bb8cb0fb22e3322cf",
         "signature": "55b886ad2955b9c28ebe586031cef4ebb898023f161dc7959ccf44ac720f6b7c",
         "affectsGlobalScope": false
       },
@@ -3317,8 +3317,8 @@
         "affectsGlobalScope": false
       },
       "../src/global/infrastructure/exceptions/resolvedomainexception.ts": {
-        "version": "851548ed42f5f0d76456d03e0d3b236a76680963573a20a36065b77cc9f1b0f1",
-        "signature": "1dd7ec4a6bc8ceb4a680a499bc42f0f19e76631d5e369a8ce7789a670bd50c25",
+        "version": "4a7ed48f45c2a43df8bd2370c38e35a01482f6e40b4b21bf34980bd7aaa0584c",
+        "signature": "1c62beb686e8f353b11f84beafa57e06c22b2892e597bca31997a7d3fe37aa11",
         "affectsGlobalScope": false
       },
       "../src/auth/usecases/interfaces/defaultlogin.params.ts": {
@@ -3442,7 +3442,7 @@
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/entities/tag.entity.ts": {
-        "version": "ce02b084179f3c11d6c32afec66fe500f54606fef641835a8c0f9a4419902580",
+        "version": "2c3a9dcf2e8529543f8d1b6e3ed54117e6c5f9380ed1582fc874d639f847985d",
         "signature": "f8c807e092c4e32c82b86a5c632aec915d4668847c93142fc20d2a2c6294c59a",
         "affectsGlobalScope": false
       },
@@ -3451,14 +3451,9 @@
         "signature": "e2bc2bc7dac8ab83317235069686134dee9263bcdb8b4b7eee58a0fecf5d25d6",
         "affectsGlobalScope": false
       },
-      "../src/artists/infrastructure/entities/follower.entity.ts": {
-        "version": "29461cfdd5025409f17f111864171c30d3b8fae6cf4d528a0df939b42e56f281",
-        "signature": "d6a21b0fd59ad754bf89a3ccb4df461ec6ae4e0ff2a7c4edf34f147dbe349709",
-        "affectsGlobalScope": false
-      },
       "../src/artists/infrastructure/entities/artist.entity.ts": {
-        "version": "e4fb1d9870c75529e4f7c05fe1a7ae8d34c203a36f9d2064b3c76873b3495ac4",
-        "signature": "1676b791a8e7fd293f162455822dd4f5c728a13f5c55c45f4b13609b2ae33092",
+        "version": "2630eb0625384f92f5985798e77f0dee6a0defac9e2eb2dd64aab20c9d448768",
+        "signature": "47dd6a57442cf3bd84509c26f3d6574aac7e8884addd1a0404e2dd9be10b4ca4",
         "affectsGlobalScope": false
       },
       "../src/global/domain/interfaces/serviceerror.ts": {
@@ -3762,12 +3757,12 @@
         "affectsGlobalScope": false
       },
       "../src/auth/domain/auth.service.ts": {
-        "version": "b4fc766094d8f9cb5fdd90b7b241b1ad57439224279dd1deac65d236e6a06b8c",
-        "signature": "2f46a2c481fb765b9dfc8839ea526b8aacf11a91c97ce1cf955d7716a8544bc6",
+        "version": "8374b956fab036f07cd4b849bb33eab4d18aa758614c745645a27f9ae86f3a8f",
+        "signature": "f93724ef6a97f7b7ad8c9a3850c11ebd410108488ccd340498eae920d2b17ebc",
         "affectsGlobalScope": false
       },
       "../src/auth/usecases/defaultlogin.usecase.ts": {
-        "version": "0e856aa932bb1217ae076bdaedb2d1215915f56609f67fe6fec49896b9f08ea2",
+        "version": "e5f140d02f96d0033c954fc806b4d594d5e75d7e374ea9ac9d7b8b7d14d9a45d",
         "signature": "9091ac9708acf1f6910a2d2b7cb7347dc73ab590a20b1dd302c72afbd3ade051",
         "affectsGlobalScope": false
       },
@@ -3777,12 +3772,12 @@
         "affectsGlobalScope": false
       },
       "../src/auth/infrasctructure/auth.controller.ts": {
-        "version": "c04a088588438cf764eec9b28d89ce1c5638e461f6894e65f13448814314bd45",
+        "version": "b75f9d8a98d402d2a9a82fa3ad014bd6a0740a402746bfd9e1d344fec3b7c1ad",
         "signature": "2361fd016a25125fd10f6d42970bdd19fe9499376613fca3d27aea66dc86249e",
         "affectsGlobalScope": false
       },
       "../src/users/infrastructure/dtos/createuserreq.dto.ts": {
-        "version": "8d65e714b4bfdbdd0268974ba3e87bb362e84b04283ea36c05b775b8e3e17da4",
+        "version": "9d507dc785039600076a546e2afd14e57cce041ece41b25336963b1ad5a01656",
         "signature": "dfb88240ebd1aaa68d0d79c1ace8a24670a33d996806430a367391a2e572089a",
         "affectsGlobalScope": false
       },
@@ -3807,8 +3802,8 @@
         "affectsGlobalScope": false
       },
       "../src/users/usecases/user/crerateuserbytype.usecase.ts": {
-        "version": "00112c87a91ad021ff0c20e798e07f889ad8bb593bd3984ce4a1915498c5ba2e",
-        "signature": "0e6ae1345fb394b66f0b6d5a6578250462e95196870a46c6236bc94dace3f2e3",
+        "version": "74877d3e9d4e5649cc2e9316ecaef021f974d4dc45d1bc6f406dbccf403c1f0e",
+        "signature": "2033d62df873e83ecc9000e17def9e9b98c6721c4180a9c2f8d149a2b79b367d",
         "affectsGlobalScope": false
       },
       "../src/users/infrastructure/handlers/users.handler.ts": {
@@ -4023,7 +4018,7 @@
       },
       "../src/users/usecases/permission/findallroutes.usecase.ts": {
         "version": "ea85a59e076d0aeb9b59ce88a0d2f8958e11696bb149c87d527678b4240067f1",
-        "signature": "92fce94f8a62db2c856e32492badc638992c8779dd97d4455a486c66c3f8bb4c",
+        "signature": "38ea96ab72beffae73bfc3ee400bc058d3a2a6efd25618f91ac6ab44f23a4436",
         "affectsGlobalScope": false
       },
       "../src/users/usecases/permission/findonepermission.usecase.ts": {
@@ -4033,12 +4028,12 @@
       },
       "../src/users/usecases/permission/initpermissions.usecase.ts": {
         "version": "cc21e01435adaf9d484b940ae841e1a26f02420490941c8b8ca531b2128559c1",
-        "signature": "f339676dae3c1859c227bf78d55d10a1b8537412ceb7497d7d7e906768e69f63",
+        "signature": "0578445140a5ccc800eeeb090441f3f005aacebc6598cc551a15d370d786e77b",
         "affectsGlobalScope": false
       },
       "../src/users/infrastructure/handlers/permissions.handler.ts": {
         "version": "d614681f1854c14b057a8647936c0b171197332494e222f35baaddf7c6ca40b2",
-        "signature": "53b42b8e291bd5315f4bba9c4070014e4c811da14061149d9ae25523b4cb4700",
+        "signature": "dc3fc3e7438b7fc4566998f4a19bfd19b875b7749e754ac23605abdccc0cf292",
         "affectsGlobalScope": false
       },
       "../src/users/infrastructure/controllers/permissions.controller.ts": {
@@ -4101,9 +4096,34 @@
         "signature": "915fcb73788ca193e683047efde0d9c794f48ca6bea958848e6c6f2c4a77b139",
         "affectsGlobalScope": false
       },
+      "../src/artists/infrastructure/entities/follower.entity.ts": {
+        "version": "4d773cec35eb7efe321ad35389eb7aa17d46e8a27909908e00939f1c55e12821",
+        "signature": "4670ee097ada27d79e11213198683530d40df27abc77dfbd5b9666635691e309",
+        "affectsGlobalScope": false
+      },
+      "../src/global/domain/interfaces/existsqueryresult.interface.ts": {
+        "version": "883cd28da7791713a905354de8e6e3e629922ca0ce8f8d9aab8dbb2d980546a7",
+        "signature": "20df52bfcfcc0f9d2fc2d59cf7f62dcc4f9c9c1c88b303188af9831b5d0a4930",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/domain/services/followers.service.ts": {
+        "version": "ae957f5d890126952ce38f2d1e7577ec55dfbdacdc0fe025c02cb3e552011312",
+        "signature": "45b219f03578e36e2b1570cc26b68373398b78901ff31fcd31c2277055b44778",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/domain/artisttype.ts": {
+        "version": "03cd57d25216ea946bf517bb8b7c0be4f8a7988497cf7feda2b9e69338c1132a",
+        "signature": "d15085699214426298c61269fd8059851d0378a4e86aa2d27f40157adc8a78ef",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/interfaces/findartistbyid.result.ts": {
+        "version": "12630954bdd3eb67f88cd1166df478522e71ec2f5a7aa5bedc3acdb4a792785e",
+        "signature": "1e4e781504eb681dfee2383268f5f3fb2780123aa8937ded432f9cf7d0616113",
+        "affectsGlobalScope": false
+      },
       "../src/artists/usecases/findartist.usecases.ts": {
-        "version": "fa2ba6cef1b1fdbf56a01e9279b3381ddbf2f18cf999356c2ffe74f5c8a23df8",
-        "signature": "bc9f60a8ee112bbba47c83aa51678036f96ae2420ed29ec36af090f884ad9dc7",
+        "version": "23906de5fbd95ad669462eca2bf74d2fc7bb3e7f0858a83f207317e60e5b78c1",
+        "signature": "4f3e599e2380fe579ed958f117238578a119aae07dd11c19123aca5d1c525e8f",
         "affectsGlobalScope": false
       },
       "../node_modules/aws-sdk/lib/error.d.ts": {
@@ -5512,28 +5532,53 @@
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/updateartistprofilepicture.usecase.ts": {
-        "version": "3c7da79c04747ccf93eef349c050e253cd37d0fbd0c04666cfd4add6191b1842",
+        "version": "6e44e00eb29cf12c50443b542519eea0c9fa8896b3728e76504f9845e303362a",
         "signature": "d8ca7bf080ab93fe32a0ba706c172f6a050285eee7b9a5ec14bef78fcb9ac68f",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts": {
-        "version": "68394857b8207d9e34e0175372853eb0c4d3d0feade7f094ace6a2d5bc74e79d",
-        "signature": "8d93a3d8b9d89261109473f75af87ec4a45cd0dfc704348ef9c0d9603aa07c2e",
+        "version": "7a52983c9e49dc035b580c5398daaefaa6df2ebb17702dffb6c885141c34d49c",
+        "signature": "7f0a79dc5fa0cf38829a532da1071a9d4157593a943e1b9f6014ea82bb0df453",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/dtos/updateartist.dto.ts": {
-        "version": "a827f791e268df13e6700d3a8ef5fc8fcffae40880147677406c85e426ae07c4",
+        "version": "1bb290a746efe3c212a1258aeb9da758f02b5c8ce75c4e5005afc34e39ea1388",
         "signature": "478f5e8e73421c9ee995977c2093c116710b596b4b5a69e77c69a0c99a7e0239",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/updateartstbasicinfo.usecase.ts": {
-        "version": "92c292a69ec577cf3cdb74b29aa85a24720939be65c313fe90f154c2450bb87a",
-        "signature": "2c323d83f5133c58ab73726d31be6ec9cb78d27876e6717b2be34a403322b76f",
+        "version": "0d4937029add44e3766b83071fce3877249a613e13fb72e4f84a2002a7427340",
+        "signature": "e39a36dff74e084f6029f0a873565af74da285554132e097ec1c5bea30c113a4",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/infrastructure/dtos/follow.dto.ts": {
+        "version": "26dc125a8bbd7e1466468df2f05aff4ae2df0f9d11200dedc27cf6eac8956cd8",
+        "signature": "6b7852531f58c8ae8b99a196ad1e2b59f14fc3dd77c49b8f8dea944bffdc1a1f",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/interfaces/addfollowtoartist.param.ts": {
+        "version": "607d4639a9fcd3cd4e02ee3bd094eaf5f83084b4401664c2a4ee2c7aa6654660",
+        "signature": "390d4987940ae076b062f2ea6d07dd88d1bccaaa90c77342d80f1f4f3276c68b",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/followartist.usecase.ts": {
+        "version": "bdb3cfc3459c26b1aac983ee486040b8a125cdfd3a772007e184239186a06ad7",
+        "signature": "4986201b443ede38a9b3541643d5322abe1e39dea330ed271ffa4df0a1056a61",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/unfollowartist.usecase.ts": {
+        "version": "57c0ac279b71a710174576d5dbc26666a34a690f17531eb5a793896ed6666afe",
+        "signature": "cd611754b4256f89fd37bf40cb368ef08007a14685fedb672566821008ea8f02",
+        "affectsGlobalScope": false
+      },
+      "../src/global/infrastructure/base.handler.ts": {
+        "version": "0f7cd44c786ca7d257fe1878f491f627b7ad1d5e22a82ee761fa81a856a5f2dd",
+        "signature": "95a07738f40af071da84eebcebeb264d4aa7aebc050b5147de9d7d47ee9a0678",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/artists.handler.ts": {
-        "version": "d81d0a4903250127ad83fc71a4c31b1ef9006106758510eebd3380f5fc636727",
-        "signature": "48af8885cdfcddc89fd09bf348640dbef060f9fb6e4e453c0dbe9d3e60882af6",
+        "version": "279092b2e09fe2f94f9d6f68ebf09337c161074c59956ecec7e103e7f2693c52",
+        "signature": "7c05c6b7f7d19086e833099dca3ae58aa9680c08441079fcbd2d0db4200155fa",
         "affectsGlobalScope": false
       },
       "../node_modules/@nestjs/platform-express/interfaces/serve-static-options.interface.d.ts": {
@@ -5622,13 +5667,13 @@
         "affectsGlobalScope": false
       },
       "../src/global/infrastructure/guards/auth.guard.ts": {
-        "version": "8039e8ff03c79316de18d0301ba7534e98ca41fa30281bd10eca0412e46b426d",
+        "version": "b027ae51a0c86fdc72eb7d09d6c31913664e6ae869e820775368e66adf4a9a22",
         "signature": "2c728e646b0896251dce35d2410c8784a57fedcabd3ab8ec17b0a54b1b9c88db",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/artists.controller.ts": {
-        "version": "fc8d94505b50d4d118255cb3e033d2dddbb56717a30c9bc1ed26f6e91f6c1cef",
-        "signature": "44c6a9fd8855ff4aa84b65b90a4aaf97b9c6e42c6970a22001a73f9e5970ea4e",
+        "version": "851864272f46081bedf8b45bcd6b035e56b7cc8e91744c850a15b187bee9c8b3",
+        "signature": "4325e734b6a028ecf3027402222fd15aa6f64560517d58d8d1c7b8086b63e8dc",
         "affectsGlobalScope": false
       },
       "../src/multimedias/controllers/multimedias.controller.ts": {
@@ -5642,7 +5687,7 @@
         "affectsGlobalScope": false
       },
       "../src/artists/artists.module.ts": {
-        "version": "9d84fa745f873068cd372cb8d423887e45c4aaa7030d36cdff309e1cea6d184d",
+        "version": "fbd7aa10b6227841aa14e86846b74d05023881aa15c501c802d8e8df99c9e924",
         "signature": "30a4f26f9d8aca453eb7164c131bb7d14f88bb9829be8a44b89eb0a70b9b6ab7",
         "affectsGlobalScope": false
       },
@@ -5687,12 +5732,12 @@
         "affectsGlobalScope": false
       },
       "../src/global/global.module.ts": {
-        "version": "2a43196e732f277596954a2cac4eec1d6cb93847d8d8c916e3d9eb9e559b748e",
+        "version": "2e87b5813fc8d2cea711852c31b16342ace5ce48561ab24a45342497abff7172",
         "signature": "a6c010095298dd08d0673922933112b588d3d993e2fdf2242d770d866eb0bd7a",
         "affectsGlobalScope": false
       },
       "../src/app.module.ts": {
-        "version": "5f544a72f1a2168d88ae82d508bf3a3bbd48157ba0043ac13fd2afa1750fc6b7",
+        "version": "0603bd8289e2b6e02668a67a4c456c27ff7be8f724401a361ca9c1354b6bad11",
         "signature": "b82491e2990291580288c5602d4c017238977749d52b17391f0e45d9a29be644",
         "affectsGlobalScope": false
       },
@@ -5757,23 +5802,8 @@
         "affectsGlobalScope": false
       },
       "../src/main.ts": {
-        "version": "493a0b428545c5a44f007d85fac89ad221f5ae0dba9a1540bd5e7e088a28bd97",
+        "version": "6e10b26783ad55a2c818507a1bdbe87ac6c534de2577c351e3fb92556c40d82f",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
-        "affectsGlobalScope": false
-      },
-      "../src/artists/domain/services/followers.service.ts": {
-        "version": "04a49e8fb220c7fc737c89e088f1930967673dbdcc9fdb6c1a727de53393d57f",
-        "signature": "18d100fcba44813f7ba77bb2af530e19a9e8dbc4449d32e9020f1745366e5187",
-        "affectsGlobalScope": false
-      },
-      "../src/artists/infrastructure/dtos/follow.dto.ts": {
-        "version": "2d1a3414620a911eff2f610a0b50599264b6774b9996a531eabca26cbf6e7c93",
-        "signature": "2ecb9190f4c43713e367d2d553fef2a2bf68a308607bac0b11d1fcc95711414a",
-        "affectsGlobalScope": false
-      },
-      "../src/artists/usecases/addfollowtoartist.usecase.ts": {
-        "version": "b3d6712fd257234fa23198aa69eb589621d4af1a210ee6f91ee27c387fa5c6ea",
-        "signature": "82f47aa940ca1b2dc27bf081044b12680688d38fa5a92edf2d884f62e8d9b722",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/interfaces/createartist.params.ts": {
@@ -11384,14 +11414,24 @@
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/domain/services/followers.service.ts",
         "../src/artists/infrastructure/artists.controller.ts",
         "../src/artists/infrastructure/artists.handler.ts",
         "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/artists/infrastructure/entities/follower.entity.ts",
+        "../src/artists/infrastructure/entities/genders.entity.ts",
+        "../src/artists/infrastructure/entities/tag.entity.ts",
         "../src/artists/usecases/createartist.usecase.ts",
         "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/followartist.usecase.ts",
+        "../src/artists/usecases/unfollowartist.usecase.ts",
         "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
         "../src/artists/usecases/updateartstbasicinfo.usecase.ts",
         "../src/multimedias/multimedias.module.ts"
+      ],
+      "../src/artists/domain/artisttype.ts": [
+        "../src/artists/infrastructure/entities/genders.entity.ts",
+        "../src/artists/infrastructure/entities/tag.entity.ts"
       ],
       "../src/artists/domain/services/artists.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11410,6 +11450,7 @@
         "../src/artists/infrastructure/entities/artist.entity.ts",
         "../src/artists/infrastructure/entities/follower.entity.ts",
         "../src/customers/domain/interfaces/customerfollows.interface.ts",
+        "../src/global/domain/interfaces/existsqueryresult.interface.ts",
         "../src/global/domain/interfaces/serviceerror.ts"
       ],
       "../src/artists/infrastructure/artists.controller.ts": [
@@ -11428,13 +11469,17 @@
         "../node_modules/@nestjs/jwt/index.d.ts",
         "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts",
         "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/dtos/follow.dto.ts",
         "../src/artists/infrastructure/dtos/updateartist.dto.ts",
         "../src/artists/usecases/createartist.usecase.ts",
         "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/followartist.usecase.ts",
+        "../src/artists/usecases/unfollowartist.usecase.ts",
         "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
         "../src/artists/usecases/updateartstbasicinfo.usecase.ts",
-        "../src/auth/domain/interfaces/jwtpayload.interface.ts",
         "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/interfaces/jwtpayload.interface.ts",
+        "../src/global/infrastructure/base.handler.ts",
         "../src/global/infrastructure/exceptions/resolvedomainexception.ts"
       ],
       "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts": [
@@ -11458,7 +11503,6 @@
       ],
       "../src/artists/infrastructure/entities/artist.entity.ts": [
         "../node_modules/typeorm/index.d.ts",
-        "../src/artists/infrastructure/entities/follower.entity.ts",
         "../src/artists/infrastructure/entities/genders.entity.ts",
         "../src/artists/infrastructure/entities/tag.entity.ts"
       ],
@@ -11470,13 +11514,6 @@
       ],
       "../src/artists/infrastructure/entities/tag.entity.ts": [
         "../node_modules/typeorm/index.d.ts"
-      ],
-      "../src/artists/usecases/addfollowtoartist.usecase.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../src/artists/domain/services/artists.service.ts",
-        "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts",
-        "../src/artists/infrastructure/dtos/updateartist.dto.ts",
-        "../src/global/domain/exceptions/domain.exception.ts"
       ],
       "../src/artists/usecases/createartist.usecase.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11491,8 +11528,36 @@
       "../src/artists/usecases/findartist.usecases.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
+        "../src/artists/domain/artisttype.ts",
         "../src/artists/domain/services/artists.service.ts",
-        "../src/artists/infrastructure/entities/artist.entity.ts"
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/artists/infrastructure/entities/artist.entity.ts",
+        "../src/artists/usecases/interfaces/findartistbyid.result.ts"
+      ],
+      "../src/artists/usecases/followartist.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/artists/infrastructure/entities/follower.entity.ts",
+        "../src/artists/usecases/interfaces/addfollowtoartist.param.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/exceptions/domainconflict.exception.ts",
+        "../src/global/domain/exceptions/domaininternalservererror.exception.ts"
+      ],
+      "../src/artists/usecases/interfaces/addfollowtoartist.param.ts": [
+        "../node_modules/class-validator/types/index.d.ts"
+      ],
+      "../src/artists/usecases/interfaces/findartistbyid.result.ts": [
+        "../src/artists/domain/artisttype.ts"
+      ],
+      "../src/artists/usecases/unfollowartist.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/artists/infrastructure/entities/follower.entity.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/exceptions/domainconflict.exception.ts",
+        "../src/global/domain/exceptions/domaininternalservererror.exception.ts"
       ],
       "../src/artists/usecases/updateartistprofilepicture.usecase.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11526,8 +11591,8 @@
         "../node_modules/@nestjs/config/index.d.ts",
         "../node_modules/@nestjs/jwt/index.d.ts",
         "../src/artists/infrastructure/entities/artist.entity.ts",
-        "../src/auth/domain/interfaces/jwtpayload.interface.ts",
         "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/global/domain/interfaces/jwtpayload.interface.ts",
         "../src/users/domain/enums/usertype.enum.ts",
         "../src/users/infrastructure/entities/user.entity.ts"
       ],
@@ -11554,8 +11619,8 @@
         "../src/auth/domain/enums/logintype.enum.ts"
       ],
       "../src/auth/infrasctructure/dtos/loginres.dto.ts": [
-        "../src/auth/domain/interfaces/jwtpayload.interface.ts",
-        "../src/auth/usecases/interfaces/defaultlogin.result.ts"
+        "../src/auth/usecases/interfaces/defaultlogin.result.ts",
+        "../src/global/domain/interfaces/jwtpayload.interface.ts"
       ],
       "../src/auth/usecases/defaultlogin.usecase.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11578,7 +11643,7 @@
       ],
       "../src/auth/usecases/interfaces/defaultlogin.result.ts": [
         "../node_modules/class-validator/types/index.d.ts",
-        "../src/auth/domain/interfaces/jwtpayload.interface.ts"
+        "../src/global/domain/interfaces/jwtpayload.interface.ts"
       ],
       "../src/config/app.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
@@ -11692,7 +11757,15 @@
         "../src/config/aws.ts",
         "../src/config/customerdatabase.ts",
         "../src/config/userdatabase.ts",
+        "../src/global/infrastructure/base.handler.ts",
         "../src/global/infrastructure/clients/s3.client.ts"
+      ],
+      "../src/global/infrastructure/base.handler.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/jwt/index.d.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/interfaces/jwtpayload.interface.ts",
+        "../src/global/infrastructure/exceptions/resolvedomainexception.ts"
       ],
       "../src/global/infrastructure/clients/s3.client.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11714,7 +11787,7 @@
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/jwt/index.d.ts",
         "../node_modules/rxjs/index.d.ts",
-        "../src/auth/domain/interfaces/jwtpayload.interface.ts"
+        "../src/global/domain/interfaces/jwtpayload.interface.ts"
       ],
       "../src/main.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -17163,6 +17236,10 @@
         "../node_modules/typeorm/metadata/relationmetadata.d.ts",
         "../node_modules/typeorm/query-runner/queryrunner.d.ts"
       ],
+      "../src/artists/domain/artisttype.ts": [
+        "../src/artists/infrastructure/entities/genders.entity.ts",
+        "../src/artists/infrastructure/entities/tag.entity.ts"
+      ],
       "../src/artists/domain/services/artists.service.ts": [
         "../node_modules/typeorm/index.d.ts",
         "../src/artists/infrastructure/dtos/createartist.dto.ts",
@@ -17187,11 +17264,13 @@
         "../src/artists/infrastructure/dtos/updateartist.dto.ts",
         "../src/artists/usecases/createartist.usecase.ts",
         "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/followartist.usecase.ts",
+        "../src/artists/usecases/unfollowartist.usecase.ts",
         "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
-        "../src/artists/usecases/updateartstbasicinfo.usecase.ts"
+        "../src/artists/usecases/updateartstbasicinfo.usecase.ts",
+        "../src/global/infrastructure/base.handler.ts"
       ],
       "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts": [
-        "../src/artists/infrastructure/entities/follower.entity.ts",
         "../src/artists/infrastructure/entities/genders.entity.ts",
         "../src/artists/infrastructure/entities/tag.entity.ts"
       ],
@@ -17200,14 +17279,8 @@
         "../src/artists/infrastructure/dtos/createartist.dto.ts"
       ],
       "../src/artists/infrastructure/entities/artist.entity.ts": [
-        "../src/artists/infrastructure/entities/follower.entity.ts",
         "../src/artists/infrastructure/entities/genders.entity.ts",
         "../src/artists/infrastructure/entities/tag.entity.ts"
-      ],
-      "../src/artists/usecases/addfollowtoartist.usecase.ts": [
-        "../src/artists/domain/services/artists.service.ts",
-        "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts",
-        "../src/global/domain/exceptions/domain.exception.ts"
       ],
       "../src/artists/usecases/createartist.usecase.ts": [
         "../src/artists/domain/services/artists.service.ts",
@@ -17217,8 +17290,22 @@
       ],
       "../src/artists/usecases/findartist.usecases.ts": [
         "../node_modules/typeorm/index.d.ts",
+        "../src/artists/domain/artisttype.ts",
         "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/domain/services/followers.service.ts",
         "../src/artists/infrastructure/entities/artist.entity.ts"
+      ],
+      "../src/artists/usecases/followartist.usecase.ts": [
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/artists/usecases/interfaces/addfollowtoartist.param.ts",
+        "../src/global/domain/exceptions/domain.exception.ts"
+      ],
+      "../src/artists/usecases/interfaces/findartistbyid.result.ts": [
+        "../src/artists/domain/artisttype.ts"
+      ],
+      "../src/artists/usecases/unfollowartist.usecase.ts": [
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/global/domain/exceptions/domain.exception.ts"
       ],
       "../src/artists/usecases/updateartistprofilepicture.usecase.ts": [
         "../src/artists/domain/services/artists.service.ts",
@@ -17236,8 +17323,8 @@
         "../node_modules/@nestjs/config/index.d.ts",
         "../node_modules/@nestjs/jwt/index.d.ts",
         "../src/artists/infrastructure/entities/artist.entity.ts",
-        "../src/auth/domain/interfaces/jwtpayload.interface.ts",
         "../src/customers/infrastructure/entities/customer.entity.ts",
+        "../src/global/domain/interfaces/jwtpayload.interface.ts",
         "../src/users/infrastructure/entities/user.entity.ts"
       ],
       "../src/auth/infrasctructure/auth.controller.ts": [
@@ -17263,7 +17350,7 @@
         "../src/users/domain/services/users.service.ts"
       ],
       "../src/auth/usecases/interfaces/defaultlogin.result.ts": [
-        "../src/auth/domain/interfaces/jwtpayload.interface.ts"
+        "../src/global/domain/interfaces/jwtpayload.interface.ts"
       ],
       "../src/config/app.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
@@ -17330,6 +17417,11 @@
       ],
       "../src/global/domain/utils/serviceerrorstringify.ts": [
         "../src/global/domain/interfaces/serviceerror.ts"
+      ],
+      "../src/global/infrastructure/base.handler.ts": [
+        "../node_modules/@nestjs/jwt/index.d.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/interfaces/jwtpayload.interface.ts"
       ],
       "../src/global/infrastructure/clients/s3.client.ts": [
         "../node_modules/@nestjs/config/index.d.ts",
@@ -17475,6 +17567,7 @@
         "../node_modules/@nestjs/config/index.d.ts",
         "../src/artists/domain/services/artists.service.ts",
         "../src/customers/domain/customers.service.ts",
+        "../src/global/domain/exceptions/domainconflict.exception.ts",
         "../src/users/domain/models/user.model.ts",
         "../src/users/domain/services/roles.service.ts",
         "../src/users/domain/services/users.service.ts",
@@ -18614,6 +18707,7 @@
       "../node_modules/typescript/lib/lib.webworker.importscripts.d.ts",
       "../src/app.module.ts",
       "../src/artists/artists.module.ts",
+      "../src/artists/domain/artisttype.ts",
       "../src/artists/domain/services/artists.service.ts",
       "../src/artists/domain/services/followers.service.ts",
       "../src/artists/infrastructure/artists.controller.ts",
@@ -18626,17 +18720,19 @@
       "../src/artists/infrastructure/entities/follower.entity.ts",
       "../src/artists/infrastructure/entities/genders.entity.ts",
       "../src/artists/infrastructure/entities/tag.entity.ts",
-      "../src/artists/usecases/addfollowtoartist.usecase.ts",
       "../src/artists/usecases/createartist.usecase.ts",
       "../src/artists/usecases/findartist.usecases.ts",
+      "../src/artists/usecases/followartist.usecase.ts",
+      "../src/artists/usecases/interfaces/addfollowtoartist.param.ts",
       "../src/artists/usecases/interfaces/createartist.params.ts",
       "../src/artists/usecases/interfaces/createartist.result.ts",
+      "../src/artists/usecases/interfaces/findartistbyid.result.ts",
+      "../src/artists/usecases/unfollowartist.usecase.ts",
       "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
       "../src/artists/usecases/updateartstbasicinfo.usecase.ts",
       "../src/auth/auth.module.ts",
       "../src/auth/domain/auth.service.ts",
       "../src/auth/domain/enums/logintype.enum.ts",
-      "../src/auth/domain/interfaces/jwtpayload.interface.ts",
       "../src/auth/infrasctructure/auth.controller.ts",
       "../src/auth/infrasctructure/auth.handler.ts",
       "../src/auth/infrasctructure/dtos/loginreq.dto.ts",
@@ -18668,10 +18764,13 @@
       "../src/global/domain/exceptions/domainconflict.exception.ts",
       "../src/global/domain/exceptions/domaininternalservererror.exception.ts",
       "../src/global/domain/exceptions/domainnotfound.exception copy.ts",
+      "../src/global/domain/interfaces/existsqueryresult.interface.ts",
+      "../src/global/domain/interfaces/jwtpayload.interface.ts",
       "../src/global/domain/interfaces/serviceerror.ts",
       "../src/global/domain/models/base.model.ts",
       "../src/global/domain/utils/serviceerrorstringify.ts",
       "../src/global/global.module.ts",
+      "../src/global/infrastructure/base.handler.ts",
       "../src/global/infrastructure/clients/s3.client.ts",
       "../src/global/infrastructure/exceptions/resolvedomainexception.ts",
       "../src/global/infrastructure/fileapibodyoptions.ts",

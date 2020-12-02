@@ -5,7 +5,7 @@ import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { FullJwtPayload, JwtPayload } from './interfaces/jwtPayload.interface';
+import { FullJwtPayload, JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +24,7 @@ export class AuthService {
       username: user.username,
       userType: UserType[userType],
       userTypeId: entity.id,
+      profileThumbnail: entity.profileThumbnail,
       permision: user.role.permissions.map(permission => ({
         c: permission.controller,
         a: permission.action,

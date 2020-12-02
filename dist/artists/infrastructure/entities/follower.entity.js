@@ -14,7 +14,7 @@ const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 let Follower = class Follower {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, user_id: { required: true, type: () => String }, user_type_id: { required: true, type: () => String }, identifier: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { id: { required: true, type: () => Number }, artistId: { required: true, type: () => String }, userId: { required: true, type: () => String }, username: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
     }
 };
 __decorate([
@@ -22,19 +22,21 @@ __decorate([
     __metadata("design:type", Number)
 ], Follower.prototype, "id", void 0);
 __decorate([
-    typeorm_1.Column(),
+    typeorm_1.Index(),
+    typeorm_1.Column({ name: 'artist_id' }),
     __metadata("design:type", String)
-], Follower.prototype, "user_id", void 0);
+], Follower.prototype, "artistId", void 0);
+__decorate([
+    typeorm_1.Index(),
+    typeorm_1.Column({ name: 'user_id' }),
+    __metadata("design:type", String)
+], Follower.prototype, "userId", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
-], Follower.prototype, "user_type_id", void 0);
+], Follower.prototype, "username", void 0);
 __decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", String)
-], Follower.prototype, "identifier", void 0);
-__decorate([
-    typeorm_1.Column(),
+    typeorm_1.Column({ name: 'profile_thumbnail', nullable: true }),
     __metadata("design:type", String)
 ], Follower.prototype, "profileThumbnail", void 0);
 __decorate([

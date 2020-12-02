@@ -17,6 +17,7 @@ const aws_1 = require("../config/aws");
 const customerDatabase_1 = require("../config/customerDatabase");
 const artistDatabase_1 = require("../config/artistDatabase");
 const s3_client_1 = require("./infrastructure/clients/s3.client");
+const base_handler_1 = require("./infrastructure/base.handler");
 let GlobalModule = class GlobalModule {
 };
 GlobalModule = __decorate([
@@ -38,7 +39,7 @@ GlobalModule = __decorate([
             }),
         ],
         controllers: [],
-        providers: [s3_client_1.S3Client],
+        providers: [base_handler_1.BaseHandler, s3_client_1.S3Client],
         exports: [config_1.ConfigModule, s3_client_1.S3Client, jwt_1.JwtModule],
     })
 ], GlobalModule);

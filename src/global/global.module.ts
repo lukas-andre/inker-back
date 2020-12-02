@@ -8,6 +8,7 @@ import aws from '../config/aws';
 import customerDb from '../config/customerDatabase';
 import artistDatabase from '../config/artistDatabase';
 import { S3Client } from './infrastructure/clients/s3.client';
+import { BaseHandler } from './infrastructure/base.handler';
 
 @Global()
 @Module({
@@ -27,7 +28,7 @@ import { S3Client } from './infrastructure/clients/s3.client';
     }),
   ],
   controllers: [],
-  providers: [S3Client],
+  providers: [BaseHandler, S3Client],
   exports: [ConfigModule, S3Client, JwtModule],
 })
 export class GlobalModule {}

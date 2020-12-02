@@ -9,7 +9,6 @@ export class CreateUserReqDto {
     required: false,
   })
   @IsString()
-  @IsOptional()
   readonly username: string;
 
   @ApiProperty({

@@ -11,7 +11,7 @@ export declare class PermissionsHandler {
     private readonly findAllPermissionsUseCase;
     constructor(initPermissionsUseCase: InitPermissionsUseCase, findAllRoutesUseCase: FindAllRoutesUseCase, findOnePermissionUseCase: FindOnePermissionUseCase, findAllPermissionsUseCase: FindAllPermissionsUseCase);
     handleInitial(): Promise<Permission[]>;
-    findRoutes(): Promise<ServiceError | Permission[]>;
+    findRoutes(): Promise<Permission[] | ServiceError>;
     findOne(id: string): Promise<Permission>;
     findAll(query: any): Promise<Permission[]>;
 }

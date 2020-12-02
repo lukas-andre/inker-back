@@ -11,23 +11,45 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var FolllowersService_1;
+var FollowersService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FolllowersService = void 0;
+exports.FollowersService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const follower_entity_1 = require("../../infrastructure/entities/follower.entity");
-let FolllowersService = FolllowersService_1 = class FolllowersService {
+let FollowersService = FollowersService_1 = class FollowersService {
     constructor(followersRepository) {
         this.followersRepository = followersRepository;
-        this.serviceName = FolllowersService_1.name;
+        this.serviceName = FollowersService_1.name;
+    }
+    async findById(id) {
+        return await this.followersRepository.findOne(id);
+    }
+    async find(options) {
+        return await this.followersRepository.find(options);
+    }
+    async findOne(options) {
+        return await this.followersRepository.findOne(options);
+    }
+    async save(artist) {
+        return await this.followersRepository.save(artist);
+    }
+    async existFollower(artistId, userId) {
+        const result = await this.followersRepository.query(`SELECT EXISTS(SELECT 1 FROM follower f WHERE f.artist_id = $1 AND f.user_id = $2)`, [artistId, userId]);
+        return result.pop().exists;
+    }
+    async countFollowers(id) {
+        return this.followersRepository.count({ where: { artistId: id } });
+    }
+    async delete(id) {
+        return await this.followersRepository.delete(id);
     }
 };
-FolllowersService = FolllowersService_1 = __decorate([
+FollowersService = FollowersService_1 = __decorate([
     common_1.Injectable(),
     __param(0, typeorm_1.InjectRepository(follower_entity_1.Follower, 'artist-db')),
     __metadata("design:paramtypes", [typeorm_2.Repository])
-], FolllowersService);
-exports.FolllowersService = FolllowersService;
+], FollowersService);
+exports.FollowersService = FollowersService;
 //# sourceMappingURL=followers.service.js.map

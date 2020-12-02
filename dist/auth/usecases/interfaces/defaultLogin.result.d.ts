@@ -1,4 +1,4 @@
-import { JwtPermission } from '../../domain/interfaces/jwtPayload.interface';
+import { JwtPermission } from '../../../global/domain/interfaces/jwtPayload.interface';
 export declare class DefaultLoginResult {
     id: string;
     username?: string;

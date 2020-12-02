@@ -11,16 +11,24 @@ import { UpdateArtistBasicInfoUseCase } from '../usecases/updateArtstBasicInfo.u
 // import { FollowDto } from './dtos/follow.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ExtractJwt } from 'passport-jwt';
-import { JwtPayload } from 'src/auth/domain/interfaces/jwtPayload.interface';
+import { JwtPayload } from 'src/global/domain/interfaces/jwtPayload.interface';
+import { FollowerDto } from './dtos/follow.dto';
+import { FollowUseCase } from '../usecases/followArtist.usecase';
+import { UnfollowArtistUseCase } from '../usecases/unfollowArtist.usecase';
+import { BaseHandler } from 'src/global/infrastructure/base.handler';
 @Injectable()
-export class ArtistsHandler {
+export class ArtistsHandler extends BaseHandler {
   constructor(
     private readonly createArtistUseCase: CreateArtistUseCase,
     private readonly findArtistsUseCases: FindArtistsUseCases,
     private readonly updateArtistProfilePictureUseCase: UpdateArtistProfilePictureUseCase,
     private readonly updateArtistBasicInfoUseCase: UpdateArtistBasicInfoUseCase,
+    private readonly followUseCase: FollowUseCase,
+    private readonly unfollowArtistUseCase: UnfollowArtistUseCase,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+    super(jwtService);
+  }
 
   async handleCreate(dto: CreateArtistDto): Promise<BaseArtistResponse> {
     return this.resolve(await this.createArtistUseCase.execute(dto));
@@ -51,16 +59,29 @@ export class ArtistsHandler {
     );
   }
 
-  private resolve(result: DomainException | BaseArtistResponse) {
-    if (result instanceof DomainException) throw resolveDomainException(result);
 
-    return result;
+
+  async handleFollow(id: string, request): Promise<boolean> {
+    const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
+    const params: FollowerDto = {
+      userId: jwtPayload.id,
+      userTypeId: jwtPayload.userTypeId,
+      username: jwtPayload.username,
+      profileThumbnail: jwtPayload.profileThumbnail
+        ? jwtPayload.profileThumbnail
+        : '',
+    };
+
+    return this.resolve(
+      await this.followUseCase.execute(id, params),
+    );
   }
 
-  async handleFollow(id: string, request) {
-    const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-    const payload: JwtPayload = this.jwtService.verify(jwt);
-    console.log('payload: ', payload);
-    // this.
+  
+  async handleUnfollow(id: string, request): Promise<boolean> {
+    const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
+    return this.resolve(
+      await this.unfollowArtistUseCase.execute(id, jwtPayload.id),
+    );
   }
 }

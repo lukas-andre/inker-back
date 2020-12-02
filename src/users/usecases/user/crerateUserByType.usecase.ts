@@ -30,12 +30,12 @@ export class CreateUserByTypeUseCase {
     });
 
     if (!role) {
-      throw new DomainConflictException('Role not exists');
+      return new DomainConflictException('Role not exists');
     }
 
     const created = await this.usersService.create(createUserParams, role);
     if (typeof created == 'boolean') {
-      throw new DomainConflictException('User already exists');
+      return new DomainConflictException('User already exists');
     }
 
     const response = await this.handleCreateByUserType(
@@ -43,8 +43,10 @@ export class CreateUserByTypeUseCase {
       createUserParams,
     );
 
+    console.log('response: ', response);
+
     if (response instanceof ServiceError) {
-      this.handleCreateError(created.id, response);
+      return this.handleCreateError(created.id, response);
     }
 
     return created;
@@ -92,6 +94,6 @@ export class CreateUserByTypeUseCase {
 
   private async handleCreateError(userId: string, error: ServiceError) {
     await this.rollbackCreate(userId);
-    throw new ConflictException(serviceErrorStringify(error));
+    return new DomainConflictException(serviceErrorStringify(error));
   }
 }
