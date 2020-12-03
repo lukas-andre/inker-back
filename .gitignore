@@ -1,7 +1,6 @@
 # compiled output
-.DS_Store
- node_modules
- dist/
+node_modules
+dist/
 # Logs
 logs
 *.log
@@ -32,4 +31,3 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-node_modules
