@@ -15,6 +15,7 @@ import { Tag } from './infrastructure/entities/tag.entity';
 import { FollowUseCase } from './usecases/followArtist.usecase';
 import { UnfollowArtistUseCase } from './usecases/unfollowArtist.usecase';
 import { FollowersService } from './domain/services/followers.service';
+import { FindArtistFollowersUseCase } from './usecases/findArtistFollowers.usecase';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { FollowersService } from './domain/services/followers.service';
     FollowersService,
     CreateArtistUseCase,
     FindArtistsUseCases,
+    FindArtistFollowersUseCase,
     UpdateArtistProfilePictureUseCase,
     UpdateArtistBasicInfoUseCase,
     FollowUseCase,

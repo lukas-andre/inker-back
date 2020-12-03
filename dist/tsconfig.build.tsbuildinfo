@@ -3306,7 +3306,7 @@
         "signature": "bb77d6d4713d6f77c0f4d92c0974483c1390a7af9f3dfc8fb4976f328395cf89",
         "affectsGlobalScope": false
       },
-      "../src/global/domain/exceptions/domainnotfound.exception copy.ts": {
+      "../src/global/domain/exceptions/domainnotfound.exception.ts": {
         "version": "c1df43d81425d68ff35f08b2b74c508d594cdf18ffc9d7084316945958251a65",
         "signature": "748bd375d67ac469dff3b179daaab6e6224f5b78f01303a8d9324944f1320d73",
         "affectsGlobalScope": false
@@ -3317,8 +3317,8 @@
         "affectsGlobalScope": false
       },
       "../src/global/infrastructure/exceptions/resolvedomainexception.ts": {
-        "version": "4a7ed48f45c2a43df8bd2370c38e35a01482f6e40b4b21bf34980bd7aaa0584c",
-        "signature": "1c62beb686e8f353b11f84beafa57e06c22b2892e597bca31997a7d3fe37aa11",
+        "version": "931943da2b8ac3d295865c392c8e45ad0d574e39b850eebab19b1792d4df486c",
+        "signature": "1dd7ec4a6bc8ceb4a680a499bc42f0f19e76631d5e369a8ce7789a670bd50c25",
         "affectsGlobalScope": false
       },
       "../src/auth/usecases/interfaces/defaultlogin.params.ts": {
@@ -3477,8 +3477,8 @@
         "affectsGlobalScope": false
       },
       "../src/artists/domain/services/artists.service.ts": {
-        "version": "a811c4289bbab6e6cbda77d13abc8859a88fda4b911fab385f24baa4f867060c",
-        "signature": "46be85a8cbbde7ed9983e0fe1b0a4e6ea6b9bb85f8bb527337cdc9d299fbb8ca",
+        "version": "b341514ea2224bf75363a4ea6cddf27fa506acd2caa4c35bb97182155e273306",
+        "signature": "fb4ff3c90662d9d885d3e51a196da550f13c152680d96970694185559113ffab",
         "affectsGlobalScope": false
       },
       "../src/customers/infrastructure/entities/customer.entity.ts": {
@@ -3772,7 +3772,7 @@
         "affectsGlobalScope": false
       },
       "../src/auth/usecases/defaultlogin.usecase.ts": {
-        "version": "00d0d5d66f76dcb681aebec4dabfe25283a65dadf5edb25d79844ccd17ee3b34",
+        "version": "68ce0d783304f5a501226e059dad0da56bb4bb8e69ec1da6aea90415aae3b028",
         "signature": "9091ac9708acf1f6910a2d2b7cb7347dc73ab590a20b1dd302c72afbd3ade051",
         "affectsGlobalScope": false
       },
@@ -4112,8 +4112,8 @@
         "affectsGlobalScope": false
       },
       "../src/artists/domain/services/followers.service.ts": {
-        "version": "cd4c5c663668f1d6696e64fb0d642eddba8477d6bf76f9a15a5575bb306b8d4c",
-        "signature": "fcfc741584b8870282501d2350c8091add6f5288356752df808d6529a6555990",
+        "version": "0d40758d09bf837178a161f6ca0b4e5bf6d33fbecf6b0eebc638e3ec79cff8cc",
+        "signature": "70883929133b28e26e6e56bb077179ebded2515a61b7bc09c19b7e1ee919da6d",
         "affectsGlobalScope": false
       },
       "../src/artists/domain/artisttype.ts": {
@@ -4121,13 +4121,8 @@
         "signature": "cc25d86b84ea4d781ad09ef022244a91337aa71be5d4d87cc428ad1595aeadf5",
         "affectsGlobalScope": false
       },
-      "../src/artists/usecases/interfaces/findartistbyid.result.ts": {
-        "version": "12630954bdd3eb67f88cd1166df478522e71ec2f5a7aa5bedc3acdb4a792785e",
-        "signature": "1e4e781504eb681dfee2383268f5f3fb2780123aa8937ded432f9cf7d0616113",
-        "affectsGlobalScope": false
-      },
       "../src/artists/usecases/findartist.usecases.ts": {
-        "version": "c75e36bfa6f17afb2feb87829bdf0d25dcce164c95a84fe01c974fe6666f04f5",
+        "version": "226856f0283ee89193f1ba45ad2c6ea13fc06b4267c379ffca73132b063ff1f1",
         "signature": "edca9a3a9c804f4627c32b5950a81f52787e50052d5a1cb9beaba4298164a705",
         "affectsGlobalScope": false
       },
@@ -5537,7 +5532,7 @@
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/updateartistprofilepicture.usecase.ts": {
-        "version": "51ad1ad79d5ba4c54aeaf3005170db82c2d89ee0af2b4b5833f5a496e8ef7e5b",
+        "version": "f7f760eb0a1d674c5a4c701c882f113790937dacb6f8c40595ec4e3c8dd0927f",
         "signature": "395c2b701632a4db425a11cf87b50837505206e595cb2b11693fabc16ff01794",
         "affectsGlobalScope": false
       },
@@ -5552,23 +5547,23 @@
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/updateartstbasicinfo.usecase.ts": {
-        "version": "faa89353d274ac352edc0cabc16c765a2761162e0fc2a8917c7595584fd2b46e",
+        "version": "154117fa985f66d8564aa0f59de0ca20715f8f8ffc9368cfa6d9e745698c9150",
         "signature": "3a5c30ae177f81c423384444c6ec62695f5444b310a0a8aedf2fccd267e99995",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/dtos/follow.dto.ts": {
-        "version": "d38c5d83d4fbf9bc35ea1fbccefc7d1ba0b1bfa6a1d905396b9f6433b8a1c21c",
-        "signature": "5aa8e00afb55fefe00821f2ba9477d708745cc58105af267c89a01d7ac05fc67",
+        "version": "0d68695c787588da253936839cee604c64a3e3451e01b5fbc8b25453f1f83563",
+        "signature": "40b11ba8c2a2661143157ee1be14ed9566656e50867a64fb72be61d538f0d0ac",
         "affectsGlobalScope": false
       },
-      "../src/artists/usecases/interfaces/addfollowtoartist.param.ts": {
-        "version": "e2b41a69a767e3b5e7cd0bbf5c8f7fbd51e1a998d62be678e6e1fd8afdda2a94",
-        "signature": "8510c05657793572cf40d69f287c72978345ffae126ad1316e5135ce2044e151",
+      "../src/artists/usecases/interfaces/followartist.param.ts": {
+        "version": "e83f87b886b04443f62c039f06d68c1591c88cb9f045285a8e46a7c7b3b449f6",
+        "signature": "180b6dabce9eea0b8da80f127ae6d6be81fb86014da1592134a4238ef9fe4d62",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/followartist.usecase.ts": {
-        "version": "30efd0712e34d59ec3eef128ae9d6d90d3f0115b25759078d9c5a6e93c6a3ed0",
-        "signature": "cc96052532ae2f7dc4ea4de59c9b3ebadb8bf2fa71267f06999a42cea1944df0",
+        "version": "2f98d0d24d44f64c602a138dd8585b8696b5cecdcd652cfb23061b32276cf54f",
+        "signature": "54d0c09116eb3d7f63f30304c0b71e9ce0255c46354c21e79ac5943f18d06f0a",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/unfollowartist.usecase.ts": {
@@ -5581,9 +5576,19 @@
         "signature": "95a07738f40af071da84eebcebeb264d4aa7aebc050b5147de9d7d47ee9a0678",
         "affectsGlobalScope": false
       },
+      "../src/artists/domain/followertype.ts": {
+        "version": "edde68fbcd7a204833a729aee28471dac2b190feaf12e4f3d0396da668bcc834",
+        "signature": "89a70bf0cd0d012b03d7ef18b762a5ec718749b9bfc3e6758e0917ab4e5c8117",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/findartistfollowers.usecase.ts": {
+        "version": "f5b80a72cb02aaf7a358e5741e59cc8c188a36c87fdb1ae1bd9ea67912ef4536",
+        "signature": "78b9dd2b15e813d171a1254f169f583bd56fbbe349bffa960dabe12c0622e0d8",
+        "affectsGlobalScope": false
+      },
       "../src/artists/infrastructure/artists.handler.ts": {
-        "version": "a606131f733a171343b0e3a13ddac6d001155937f256dbffb48dd9b2580ba5ab",
-        "signature": "428c4d07ea29c6c05c54ccad30be659ff86cbf376584da2385a0d697baddade8",
+        "version": "31746c246458cedb7cf97b740b8d4ffa7606cd0108c2d7c46a0ece45ccc93e7a",
+        "signature": "03102f200220b7b4c39ddbea1ab04bf8cab53eee50cf6b200a43650be849602a",
         "affectsGlobalScope": false
       },
       "../node_modules/@nestjs/platform-express/interfaces/serve-static-options.interface.d.ts": {
@@ -5672,13 +5677,13 @@
         "affectsGlobalScope": false
       },
       "../src/global/infrastructure/guards/auth.guard.ts": {
-        "version": "c2a24357859482e9b0f2c0dcec8ce684b11729f58d4771730b00f938ac192ce9",
+        "version": "796f1f599db6d3b63f368fdb30fa6b9d0deefd5134ec5868cd98d48ec8801d91",
         "signature": "fbab6e0d257c66b05d2c63c80cf352d440c555b60642ea6444b45427f7596af2",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/artists.controller.ts": {
-        "version": "83c9969277ff44ab618618e317ca3371d409cbf9a2eb664c59d8295a9f460118",
-        "signature": "290e7348a352d2fe0c0130488ade31b54bfbd2c8f552642c9ec3350414427753",
+        "version": "54ab46a23705e6574c89a954ed4e20ed1e4570fea99e2f9f9e3a05698b3a9d49",
+        "signature": "dde07f30851374f7bb405db10f0e1cd4c9d54bfa69d6ce2b54f7131e83600cd1",
         "affectsGlobalScope": false
       },
       "../src/multimedias/controllers/multimedias.controller.ts": {
@@ -5692,7 +5697,7 @@
         "affectsGlobalScope": false
       },
       "../src/artists/artists.module.ts": {
-        "version": "fbd7aa10b6227841aa14e86846b74d05023881aa15c501c802d8e8df99c9e924",
+        "version": "8ff18c5e998953655a00140e291a2b8b31b1fdca9ae0cf8c73c1748f70835d86",
         "signature": "30a4f26f9d8aca453eb7164c131bb7d14f88bb9829be8a44b89eb0a70b9b6ab7",
         "affectsGlobalScope": false
       },
@@ -5811,14 +5816,9 @@
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
         "affectsGlobalScope": false
       },
-      "../src/artists/domain/followertype.ts": {
-        "version": "50a7ecba4559b6575bde55b307b9de7b946edb5a67e28378ffc00ad8af13e5fa",
-        "signature": "d8d80e6fd95606433b3d7eb85387e4abeac775f33d85cfdea621080a8bd9bba2",
-        "affectsGlobalScope": false
-      },
-      "../src/artists/usecases/findartistfollowers.usecases.ts": {
-        "version": "2ce71d2b7ecf25b8be9c94ffb83d6cb4e67ab3a98bced23ea1304562a6f9056b",
-        "signature": "b2e0cd8a962283cb6d43ca2504edfd15261c9cd0bd22d0ab906bb4d2372b3d73",
+      "../src/artists/usecases/findartistfollows.usecase.ts": {
+        "version": "d51b3f705e67eb60125483b470d65325c96cb5c7196d3420a220dbc10f8a9a9c",
+        "signature": "600d9de864437937e264583dfd351c533d21cfe9e22912d622940160b9d363d1",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/interfaces/createartist.params.ts": {
@@ -5829,6 +5829,11 @@
       "../src/artists/usecases/interfaces/createartist.result.ts": {
         "version": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "affectsGlobalScope": false
+      },
+      "../src/artists/usecases/interfaces/findartistbyid.result.ts": {
+        "version": "12630954bdd3eb67f88cd1166df478522e71ec2f5a7aa5bedc3acdb4a792785e",
+        "signature": "1e4e781504eb681dfee2383268f5f3fb2780123aa8937ded432f9cf7d0616113",
         "affectsGlobalScope": false
       },
       "../src/customers/usecases/interfaces/createcustomer.result.ts": {
@@ -11438,6 +11443,7 @@
         "../src/artists/infrastructure/entities/tag.entity.ts",
         "../src/artists/usecases/createartist.usecase.ts",
         "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/findartistfollowers.usecase.ts",
         "../src/artists/usecases/followartist.usecase.ts",
         "../src/artists/usecases/unfollowartist.usecase.ts",
         "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
@@ -11476,6 +11482,7 @@
         "../src/artists/infrastructure/artists.handler.ts",
         "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts",
         "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/dtos/follow.dto.ts",
         "../src/artists/infrastructure/dtos/updateartist.dto.ts",
         "../src/global/infrastructure/guards/auth.guard.ts",
         "../src/multimedias/dtos/fileupload.dto.ts"
@@ -11489,6 +11496,7 @@
         "../src/artists/infrastructure/dtos/updateartist.dto.ts",
         "../src/artists/usecases/createartist.usecase.ts",
         "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/findartistfollowers.usecase.ts",
         "../src/artists/usecases/followartist.usecase.ts",
         "../src/artists/usecases/unfollowartist.usecase.ts",
         "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
@@ -11551,34 +11559,41 @@
         "../src/artists/domain/services/artists.service.ts",
         "../src/artists/domain/services/followers.service.ts",
         "../src/artists/infrastructure/entities/artist.entity.ts",
-        "../src/artists/usecases/interfaces/findartistbyid.result.ts",
         "../src/global/domain/exceptions/domain.exception.ts",
-        "../src/global/domain/exceptions/domainnotfound.exception copy.ts"
+        "../src/global/domain/exceptions/domainnotfound.exception.ts"
       ],
-      "../src/artists/usecases/findartistfollowers.usecases.ts": [
+      "../src/artists/usecases/findartistfollowers.usecase.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
-        "../src/artists/domain/artisttype.ts",
         "../src/artists/domain/followertype.ts",
         "../src/artists/domain/services/artists.service.ts",
         "../src/artists/domain/services/followers.service.ts",
         "../src/global/domain/exceptions/domain.exception.ts",
-        "../src/global/domain/exceptions/domainnotfound.exception copy.ts"
+        "../src/global/domain/exceptions/domainnotfound.exception.ts"
+      ],
+      "../src/artists/usecases/findartistfollows.usecase.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/artists/domain/followertype.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/exceptions/domainnotfound.exception.ts"
       ],
       "../src/artists/usecases/followartist.usecase.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
+        "../src/artists/domain/services/artists.service.ts",
         "../src/artists/domain/services/followers.service.ts",
         "../src/artists/infrastructure/entities/follower.entity.ts",
-        "../src/artists/usecases/interfaces/addfollowtoartist.param.ts",
+        "../src/artists/usecases/interfaces/followartist.param.ts",
         "../src/global/domain/exceptions/domain.exception.ts",
         "../src/global/domain/exceptions/domainconflict.exception.ts",
         "../src/global/domain/exceptions/domaininternalservererror.exception.ts"
       ],
-      "../src/artists/usecases/interfaces/addfollowtoartist.param.ts": [
-        "../node_modules/class-validator/types/index.d.ts"
-      ],
       "../src/artists/usecases/interfaces/findartistbyid.result.ts": [
         "../src/artists/domain/artisttype.ts"
+      ],
+      "../src/artists/usecases/interfaces/followartist.param.ts": [
+        "../node_modules/class-validator/types/index.d.ts"
       ],
       "../src/artists/usecases/unfollowartist.usecase.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11595,7 +11610,7 @@
         "../src/artists/infrastructure/entities/artist.entity.ts",
         "../src/global/domain/exceptions/domain.exception.ts",
         "../src/global/domain/exceptions/domaininternalservererror.exception.ts",
-        "../src/global/domain/exceptions/domainnotfound.exception copy.ts",
+        "../src/global/domain/exceptions/domainnotfound.exception.ts",
         "../src/multimedias/services/multimedias.service.ts"
       ],
       "../src/artists/usecases/updateartstbasicinfo.usecase.ts": [
@@ -11604,7 +11619,7 @@
         "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts",
         "../src/artists/infrastructure/dtos/updateartist.dto.ts",
         "../src/global/domain/exceptions/domain.exception.ts",
-        "../src/global/domain/exceptions/domainnotfound.exception copy.ts"
+        "../src/global/domain/exceptions/domainnotfound.exception.ts"
       ],
       "../src/auth/auth.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11663,7 +11678,7 @@
         "../src/customers/infrastructure/entities/customer.entity.ts",
         "../src/global/domain/exceptions/domain.exception.ts",
         "../src/global/domain/exceptions/domainconflict.exception.ts",
-        "../src/global/domain/exceptions/domainnotfound.exception copy.ts",
+        "../src/global/domain/exceptions/domainnotfound.exception.ts",
         "../src/users/domain/enums/usertype.enum.ts",
         "../src/users/domain/services/users.service.ts",
         "../src/users/infrastructure/entities/user.entity.ts"
@@ -11772,7 +11787,7 @@
       "../src/global/domain/exceptions/domaininternalservererror.exception.ts": [
         "../src/global/domain/exceptions/domain.exception.ts"
       ],
-      "../src/global/domain/exceptions/domainnotfound.exception copy.ts": [
+      "../src/global/domain/exceptions/domainnotfound.exception.ts": [
         "../src/global/domain/exceptions/domain.exception.ts"
       ],
       "../src/global/domain/utils/serviceerrorstringify.ts": [
@@ -11812,7 +11827,7 @@
         "../src/global/domain/exceptions/domain.exception.ts",
         "../src/global/domain/exceptions/domainconflict.exception.ts",
         "../src/global/domain/exceptions/domaininternalservererror.exception.ts",
-        "../src/global/domain/exceptions/domainnotfound.exception copy.ts"
+        "../src/global/domain/exceptions/domainnotfound.exception.ts"
       ],
       "../src/global/infrastructure/fileapibodyoptions.ts": [
         "../node_modules/@nestjs/swagger/index.d.ts"
@@ -17290,15 +17305,18 @@
         "../src/artists/infrastructure/artists.handler.ts",
         "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts",
         "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/dtos/follow.dto.ts",
         "../src/artists/infrastructure/dtos/updateartist.dto.ts"
       ],
       "../src/artists/infrastructure/artists.handler.ts": [
         "../node_modules/@nestjs/jwt/index.d.ts",
         "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts",
         "../src/artists/infrastructure/dtos/createartist.dto.ts",
+        "../src/artists/infrastructure/dtos/follow.dto.ts",
         "../src/artists/infrastructure/dtos/updateartist.dto.ts",
         "../src/artists/usecases/createartist.usecase.ts",
         "../src/artists/usecases/findartist.usecases.ts",
+        "../src/artists/usecases/findartistfollowers.usecase.ts",
         "../src/artists/usecases/followartist.usecase.ts",
         "../src/artists/usecases/unfollowartist.usecase.ts",
         "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
@@ -17341,14 +17359,22 @@
         "../src/artists/infrastructure/entities/artist.entity.ts",
         "../src/global/domain/exceptions/domain.exception.ts"
       ],
-      "../src/artists/usecases/findartistfollowers.usecases.ts": [
+      "../src/artists/usecases/findartistfollowers.usecase.ts": [
+        "../src/artists/domain/followertype.ts",
+        "../src/artists/domain/services/artists.service.ts",
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/global/domain/exceptions/domain.exception.ts"
+      ],
+      "../src/artists/usecases/findartistfollows.usecase.ts": [
+        "../src/artists/domain/followertype.ts",
         "../src/artists/domain/services/artists.service.ts",
         "../src/artists/domain/services/followers.service.ts",
         "../src/global/domain/exceptions/domain.exception.ts"
       ],
       "../src/artists/usecases/followartist.usecase.ts": [
+        "../src/artists/domain/services/artists.service.ts",
         "../src/artists/domain/services/followers.service.ts",
-        "../src/artists/usecases/interfaces/addfollowtoartist.param.ts",
+        "../src/artists/usecases/interfaces/followartist.param.ts",
         "../src/global/domain/exceptions/domain.exception.ts"
       ],
       "../src/artists/usecases/interfaces/findartistbyid.result.ts": [
@@ -17464,7 +17490,7 @@
       "../src/global/domain/exceptions/domaininternalservererror.exception.ts": [
         "../src/global/domain/exceptions/domain.exception.ts"
       ],
-      "../src/global/domain/exceptions/domainnotfound.exception copy.ts": [
+      "../src/global/domain/exceptions/domainnotfound.exception.ts": [
         "../src/global/domain/exceptions/domain.exception.ts"
       ],
       "../src/global/domain/utils/serviceerrorstringify.ts": [
@@ -18780,12 +18806,13 @@
       "../src/artists/infrastructure/entities/tag.entity.ts",
       "../src/artists/usecases/createartist.usecase.ts",
       "../src/artists/usecases/findartist.usecases.ts",
-      "../src/artists/usecases/findartistfollowers.usecases.ts",
+      "../src/artists/usecases/findartistfollowers.usecase.ts",
+      "../src/artists/usecases/findartistfollows.usecase.ts",
       "../src/artists/usecases/followartist.usecase.ts",
-      "../src/artists/usecases/interfaces/addfollowtoartist.param.ts",
       "../src/artists/usecases/interfaces/createartist.params.ts",
       "../src/artists/usecases/interfaces/createartist.result.ts",
       "../src/artists/usecases/interfaces/findartistbyid.result.ts",
+      "../src/artists/usecases/interfaces/followartist.param.ts",
       "../src/artists/usecases/unfollowartist.usecase.ts",
       "../src/artists/usecases/updateartistprofilepicture.usecase.ts",
       "../src/artists/usecases/updateartstbasicinfo.usecase.ts",
@@ -18822,7 +18849,7 @@
       "../src/global/domain/exceptions/domain.exception.ts",
       "../src/global/domain/exceptions/domainconflict.exception.ts",
       "../src/global/domain/exceptions/domaininternalservererror.exception.ts",
-      "../src/global/domain/exceptions/domainnotfound.exception copy.ts",
+      "../src/global/domain/exceptions/domainnotfound.exception.ts",
       "../src/global/domain/interfaces/existsqueryresult.interface.ts",
       "../src/global/domain/interfaces/jwtpayload.interface.ts",
       "../src/global/domain/interfaces/serviceerror.ts",

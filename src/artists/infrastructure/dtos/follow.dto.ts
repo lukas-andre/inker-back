@@ -16,12 +16,27 @@ export class FollowerDto {
   @IsString()
   readonly userTypeId: number;
 
+
+  @ApiProperty({
+    example: 'ARTIST',
+    description: 'UserType',
+  })
+  @IsString()
+  readonly userType: string;
+
   @ApiProperty({
     example: 'lucas@gmail.com',
     description: 'User identifier',
   })
   @IsString()
   readonly username: string;
+
+  @ApiProperty({
+    example: 'lucas henry',
+    description: 'full name',
+  })
+  @IsString()
+  readonly fullname: string;
 
   @ApiProperty({
     example:

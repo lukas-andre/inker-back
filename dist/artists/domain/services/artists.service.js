@@ -38,7 +38,7 @@ let ArtistsService = ArtistsService_1 = class ArtistsService {
         return await this.artistsRepository.save(artists);
     }
     async existArtist(artistId) {
-        const result = await this.artistsRepository.query(`SELECT EXISTS(SELECT 1 FROM artist f WHERE artist.id = $1)`, [artistId]);
+        const result = await this.artistsRepository.query(`SELECT EXISTS(SELECT 1 FROM artist a WHERE a.id = $1)`, [artistId]);
         return result.pop().exists;
     }
     async addFollow(artists, topic, newFollow) {
@@ -49,6 +49,9 @@ let ArtistsService = ArtistsService_1 = class ArtistsService {
     }
     async find(options) {
         return await this.artistsRepository.find(options);
+    }
+    async findAndCount(options) {
+        return await this.artistsRepository.findAndCount(options);
     }
     async findOne(options) {
         return await this.artistsRepository.findOne(options);

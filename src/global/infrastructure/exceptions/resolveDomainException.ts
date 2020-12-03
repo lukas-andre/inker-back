@@ -3,10 +3,10 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { DomainConflictException } from '../../domain/exceptions/domainConflict.exception';
 import { DomainException } from '../../domain/exceptions/domain.exception';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception';
-import { DomainInternalServerErrorException } from 'src/global/domain/exceptions/domainInternalServerError.exception';
+import { DomainConflictException } from '../../domain/exceptions/domainConflict.exception';
+import { DomainNotFoundException } from '../../domain/exceptions/domainNotFound.exception';
+import { DomainInternalServerErrorException } from '../../domain/exceptions/domainInternalServerError.exception';
 
 export const resolveDomainException = (domainException: DomainException) => {
   if (domainException instanceof DomainConflictException)

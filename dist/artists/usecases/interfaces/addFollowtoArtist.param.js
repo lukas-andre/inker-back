@@ -14,17 +14,25 @@ const class_validator_1 = require("class-validator");
 class AddFollowToArtistParams {
 }
 __decorate([
-    class_validator_1.IsString(),
+    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], AddFollowToArtistParams.prototype, "userId", void 0);
 __decorate([
-    class_validator_1.IsString(),
+    class_validator_1.IsNumber(),
     __metadata("design:type", Number)
 ], AddFollowToArtistParams.prototype, "userTypeId", void 0);
 __decorate([
     class_validator_1.IsString(),
     __metadata("design:type", String)
+], AddFollowToArtistParams.prototype, "userType", void 0);
+__decorate([
+    class_validator_1.IsString(),
+    __metadata("design:type", String)
 ], AddFollowToArtistParams.prototype, "username", void 0);
+__decorate([
+    class_validator_1.IsString(),
+    __metadata("design:type", String)
+], AddFollowToArtistParams.prototype, "fullname", void 0);
 __decorate([
     class_validator_1.IsString(),
     __metadata("design:type", String)

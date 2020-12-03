@@ -12,6 +12,7 @@ export declare class ArtistsService {
     addFollow(artists: Artist, topic: string, newFollow: FollowTopic): Promise<Artist>;
     findById(id: number): Promise<Artist>;
     find(options: FindManyOptions<Artist>): Promise<Artist[]>;
+    findAndCount(options: FindManyOptions<Artist>): Promise<[Artist[], number]>;
     findOne(options?: FindOneOptions<Artist>): Promise<Artist | undefined>;
     save(artist: DeepPartial<Artist>): Promise<Artist>;
     delete(id: number): Promise<DeleteResult>;

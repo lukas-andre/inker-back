@@ -12,6 +12,7 @@ import { FollowerDto } from './dtos/follow.dto';
 import { FollowUseCase } from '../usecases/followArtist.usecase';
 import { UnfollowArtistUseCase } from '../usecases/unfollowArtist.usecase';
 import { BaseHandler } from 'src/global/infrastructure/base.handler';
+import { FindArtistFollowersUseCase } from '../usecases/findArtistFollowers.usecase';
 @Injectable()
 export class ArtistsHandler extends BaseHandler {
   constructor(
@@ -21,6 +22,7 @@ export class ArtistsHandler extends BaseHandler {
     private readonly updateArtistBasicInfoUseCase: UpdateArtistBasicInfoUseCase,
     private readonly followUseCase: FollowUseCase,
     private readonly unfollowArtistUseCase: UnfollowArtistUseCase,
+    private readonly findArtistFollowersUseCase: FindArtistFollowersUseCase,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);
@@ -60,7 +62,9 @@ export class ArtistsHandler extends BaseHandler {
     const params: FollowerDto = {
       userId: jwtPayload.id,
       userTypeId: jwtPayload.userTypeId,
+      userType: jwtPayload.userType,
       username: jwtPayload.username,
+      fullname: jwtPayload.fullname,
       profileThumbnail: jwtPayload.profileThumbnail
         ? jwtPayload.profileThumbnail
         : '',
@@ -73,6 +77,12 @@ export class ArtistsHandler extends BaseHandler {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
     return this.resolve(
       await this.unfollowArtistUseCase.execute(id, jwtPayload.id),
+    );
+  }
+
+  async handleFindArtistFollowers(id: number): Promise<FollowerDto[]> {
+    return this.resolve(
+      await this.findArtistFollowersUseCase.execute(id),
     );
   }
 }

@@ -29,6 +29,9 @@ let FollowersService = FollowersService_1 = class FollowersService {
     async find(options) {
         return await this.followersRepository.find(options);
     }
+    async findAndCount(options) {
+        return await this.followersRepository.findAndCount(options);
+    }
     async findOne(options) {
         return await this.followersRepository.findOne(options);
     }

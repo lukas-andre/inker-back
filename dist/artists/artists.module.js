@@ -24,6 +24,7 @@ const tag_entity_1 = require("./infrastructure/entities/tag.entity");
 const followArtist_usecase_1 = require("./usecases/followArtist.usecase");
 const unfollowArtist_usecase_1 = require("./usecases/unfollowArtist.usecase");
 const followers_service_1 = require("./domain/services/followers.service");
+const findArtistFollowers_usecase_1 = require("./usecases/findArtistFollowers.usecase");
 let ArtistsModule = class ArtistsModule {
 };
 ArtistsModule = __decorate([
@@ -38,6 +39,7 @@ ArtistsModule = __decorate([
             followers_service_1.FollowersService,
             createArtist_usecase_1.CreateArtistUseCase,
             findArtist_usecases_1.FindArtistsUseCases,
+            findArtistFollowers_usecase_1.FindArtistFollowersUseCase,
             updateArtistProfilePicture_usecase_1.UpdateArtistProfilePictureUseCase,
             updateArtstBasicInfo_usecase_1.UpdateArtistBasicInfoUseCase,
             followArtist_usecase_1.FollowUseCase,

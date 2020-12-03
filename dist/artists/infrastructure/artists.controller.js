@@ -23,6 +23,7 @@ const fileUpload_dto_1 = require("../../multimedias/dtos/fileUpload.dto");
 const baseArtistResponse_dto_1 = require("./dtos/baseArtistResponse.dto");
 const updateArtist_dto_1 = require("./dtos/updateArtist.dto");
 const auth_guard_1 = require("../../global/infrastructure/guards/auth.guard");
+const follow_dto_1 = require("./dtos/follow.dto");
 let ArtistsController = class ArtistsController {
     constructor(artistHandler) {
         this.artistHandler = artistHandler;
@@ -49,6 +50,9 @@ let ArtistsController = class ArtistsController {
     }
     async unfollow(id, request) {
         return this.artistHandler.handleUnfollow(id, request);
+    }
+    async findArtistFollowers(id) {
+        return this.artistHandler.handleFindArtistFollowers(id);
     }
 };
 __decorate([
@@ -152,6 +156,21 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ArtistsController.prototype, "unfollow", null);
+__decorate([
+    swagger_1.ApiOperation({ summary: 'Find artist followers' }),
+    swagger_1.ApiOkResponse({
+        description: 'Find followers ok',
+        type: follow_dto_1.FollowerDto,
+        isArray: true
+    }),
+    swagger_1.ApiParam({ name: 'id', required: true, type: Number }),
+    common_1.Get(':id/followers'),
+    openapi.ApiResponse({ status: 200, type: [require("./dtos/follow.dto").FollowerDto] }),
+    __param(0, common_1.Param('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ArtistsController.prototype, "findArtistFollowers", null);
 ArtistsController = __decorate([
     swagger_1.ApiBearerAuth(),
     swagger_1.ApiTags('artists'),

@@ -15,7 +15,7 @@ const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class FollowerDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { userId: { required: true, type: () => Number }, userTypeId: { required: true, type: () => Number }, username: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String } };
+        return { userId: { required: true, type: () => Number }, userTypeId: { required: true, type: () => Number }, userType: { required: true, type: () => String }, username: { required: true, type: () => String }, fullname: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String } };
     }
 }
 __decorate([
@@ -36,12 +36,28 @@ __decorate([
 ], FollowerDto.prototype, "userTypeId", void 0);
 __decorate([
     swagger_1.ApiProperty({
+        example: 'ARTIST',
+        description: 'UserType',
+    }),
+    class_validator_1.IsString(),
+    __metadata("design:type", String)
+], FollowerDto.prototype, "userType", void 0);
+__decorate([
+    swagger_1.ApiProperty({
         example: 'lucas@gmail.com',
         description: 'User identifier',
     }),
     class_validator_1.IsString(),
     __metadata("design:type", String)
 ], FollowerDto.prototype, "username", void 0);
+__decorate([
+    swagger_1.ApiProperty({
+        example: 'lucas henry',
+        description: 'full name',
+    }),
+    class_validator_1.IsString(),
+    __metadata("design:type", String)
+], FollowerDto.prototype, "fullname", void 0);
 __decorate([
     swagger_1.ApiProperty({
         example: 'http://d2e2zqk24pso8s.cloudfront.net/artist/34dd0b7f-0846-4c31-9d83-8ea513e8a3fa/profile-picture_Sun',

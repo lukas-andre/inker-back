@@ -23,9 +23,9 @@ let AuthGuard = AuthGuard_1 = class AuthGuard {
         const request = context.switchToHttp().getRequest();
         const calledController = context.getClass().name;
         const calledAction = context.getHandler().name;
+        console.log('calledAction: ', calledAction);
         console.log('calledController: ', calledController);
         const jwt = passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-        console.log('jwt: ', jwt);
         if (!jwt) {
             return false;
         }
@@ -41,6 +41,7 @@ let AuthGuard = AuthGuard_1 = class AuthGuard {
             return false;
         }
         const permission = verifyJwt.permision.find(p => p.c == calledController);
+        console.log('permission: ', permission);
         if (!permission) {
             return false;
         }

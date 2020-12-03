@@ -32,6 +32,10 @@ export class FollowersService {
     return await this.followersRepository.find(options);
   }
 
+  async findAndCount(options: FindManyOptions<Follower>) {
+    return await this.followersRepository.findAndCount(options);
+  }
+
   async findOne(
     options?: FindOneOptions<Follower>,
   ): Promise<Follower | undefined> {
