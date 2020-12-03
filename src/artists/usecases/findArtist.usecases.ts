@@ -3,16 +3,15 @@ import { ArtistsService } from '../domain/services/artists.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { FindManyOptions } from 'typeorm';
 import { FollowersService } from '../domain/services/followers.service';
-import { findArtistById } from './interfaces/findArtistById.result';
 import { ArtistType } from '../domain/artistType';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception copy';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 
 @Injectable()
 export class FindArtistsUseCases {
   constructor(private readonly artistsService: ArtistsService, private readonly followersService: FollowersService) {}
 
-  async findById(id: string): Promise<ArtistType | DomainException> {
+  async findById(id: number): Promise<ArtistType | DomainException> {
     let result: ArtistType | DomainException
     result = await this.artistsService.findById(id);
   

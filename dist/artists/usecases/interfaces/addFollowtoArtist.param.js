@@ -15,11 +15,11 @@ class AddFollowToArtistParams {
 }
 __decorate([
     class_validator_1.IsString(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], AddFollowToArtistParams.prototype, "userId", void 0);
 __decorate([
     class_validator_1.IsString(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], AddFollowToArtistParams.prototype, "userTypeId", void 0);
 __decorate([
     class_validator_1.IsString(),

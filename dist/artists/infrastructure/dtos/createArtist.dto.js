@@ -15,16 +15,16 @@ const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class CreateArtistDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: false, type: () => String }, phoneNumber: { required: false, type: () => String } };
+        return { userId: { required: true, type: () => Number }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: false, type: () => String }, phoneNumber: { required: false, type: () => String } };
     }
 }
 __decorate([
     swagger_1.ApiProperty({
-        example: '415604a6-6db4-4a3b-a1dc-470193485b91',
+        example: '12345',
         description: 'User Id',
     }),
     class_validator_1.IsString(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], CreateArtistDto.prototype, "userId", void 0);
 __decorate([
     swagger_1.ApiProperty({

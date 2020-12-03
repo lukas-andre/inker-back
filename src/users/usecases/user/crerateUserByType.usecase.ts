@@ -53,7 +53,7 @@ export class CreateUserByTypeUseCase {
   }
 
   private async handleCreateByUserType(
-    userId: string,
+    userId: number,
     dto: CreateUserByTypeParams,
   ): Promise<Customer | Artist | ServiceError> {
     const createByType = {
@@ -88,11 +88,11 @@ export class CreateUserByTypeUseCase {
     return result;
   }
 
-  private async rollbackCreate(userId: string) {
+  private async rollbackCreate(userId: number) {
     await this.usersService.delete(userId);
   }
 
-  private async handleCreateError(userId: string, error: ServiceError) {
+  private async handleCreateError(userId: number, error: ServiceError) {
     await this.rollbackCreate(userId);
     return new DomainConflictException(serviceErrorStringify(error));
   }

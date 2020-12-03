@@ -9,13 +9,13 @@ export declare class UsersService {
     private readonly configService;
     constructor(usersRepository: Repository<User>, configService: ConfigService);
     create(createUserParams: CreateUserByTypeParams, role: Role): Promise<IUser | boolean>;
-    findById(id: string): Promise<User>;
+    findById(id: number): Promise<User>;
     findByType(type: string, identifier: string): Promise<User>;
     find(options: FindManyOptions<User>): Promise<User[]>;
     findOne(options?: FindOneOptions<User>): Promise<User | undefined>;
-    delete(id: string): Promise<DeleteResult>;
+    delete(id: number): Promise<DeleteResult>;
     findAndCount(options: FindManyOptions<User>): Promise<[User[], number]>;
-    edit(id: string, update: DeepPartial<User> | User): Promise<User>;
+    edit(id: number, update: DeepPartial<User> | User): Promise<User>;
     hashPasword(password: string): Promise<string>;
     validatePassword(incomingPassword: string, databaseUserPassword: string): Promise<boolean>;
 }

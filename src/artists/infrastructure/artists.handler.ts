@@ -31,7 +31,7 @@ export class ArtistsHandler extends BaseHandler {
   }
 
   async handleUpdateProfileProflePicture(
-    id: string,
+    id: number,
     file: any,
   ): Promise<BaseArtistResponse> {
     return this.resolve(
@@ -39,7 +39,7 @@ export class ArtistsHandler extends BaseHandler {
     );
   }
 
-  async handleFindById(id: string): Promise<BaseArtistResponse> {
+  async handleFindById(id: number): Promise<BaseArtistResponse> {
     return this.resolve(await this.findArtistsUseCases.findById(id));
   }
   async handleGetAll(): Promise<BaseArtistResponse[]> {
@@ -47,7 +47,7 @@ export class ArtistsHandler extends BaseHandler {
   }
 
   async handleUpdateArtistBasicInfo(
-    id: string,
+    id: number,
     dto: UpdateArtistDto,
   ): Promise<BaseArtistResponse> {
     return this.resolve(
@@ -55,7 +55,7 @@ export class ArtistsHandler extends BaseHandler {
     );
   }
 
-  async handleFollow(id: string, request): Promise<boolean> {
+  async handleFollow(id: number, request): Promise<boolean> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
     const params: FollowerDto = {
       userId: jwtPayload.id,
@@ -69,7 +69,7 @@ export class ArtistsHandler extends BaseHandler {
     return this.resolve(await this.followUseCase.execute(id, params));
   }
 
-  async handleUnfollow(id: string, request): Promise<boolean> {
+  async handleUnfollow(id: number, request): Promise<boolean> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
     return this.resolve(
       await this.unfollowArtistUseCase.execute(id, jwtPayload.id),

@@ -11,8 +11,8 @@ export class UnfollowArtistUseCase {
   constructor(private readonly followersService: FollowersService) {}
 
   async execute(
-    id: string,
-    userId: string,
+    id: number,
+    userId: number,
   ): Promise<boolean | DomainException> {
     let result: boolean | DomainException;
     const connection = getConnection('artist-db');

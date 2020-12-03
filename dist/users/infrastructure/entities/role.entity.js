@@ -13,15 +13,12 @@ exports.Role = void 0;
 const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const permission_entity_1 = require("./permission.entity");
-let Role = class Role {
+const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
+let Role = class Role extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => String }, name: { required: true, type: () => String }, description: { required: true, type: () => String }, permissions: { required: true, type: () => [require("./permission.entity").Permission] }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { name: { required: true, type: () => String }, description: { required: true, type: () => String }, permissions: { required: true, type: () => [require("./permission.entity").Permission] } };
     }
 };
-__decorate([
-    typeorm_1.PrimaryColumn(),
-    __metadata("design:type", String)
-], Role.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
@@ -35,14 +32,6 @@ __decorate([
     typeorm_1.JoinTable({ name: 'role_permission' }),
     __metadata("design:type", Array)
 ], Role.prototype, "permissions", void 0);
-__decorate([
-    typeorm_1.CreateDateColumn(),
-    __metadata("design:type", Date)
-], Role.prototype, "created_at", void 0);
-__decorate([
-    typeorm_1.UpdateDateColumn(),
-    __metadata("design:type", Date)
-], Role.prototype, "updated_at", void 0);
 Role = __decorate([
     typeorm_1.Entity()
 ], Role);

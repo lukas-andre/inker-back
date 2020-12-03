@@ -16,23 +16,23 @@ const typeorm_1 = require("typeorm");
 const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
 let Follower = class Follower extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { artistId: { required: true, type: () => String }, userId: { required: true, type: () => String }, userTypeId: { required: true, type: () => String }, userType: { required: true, type: () => String }, username: { required: true, type: () => String }, fullname: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String } };
+        return { artistId: { required: true, type: () => Number }, userId: { required: true, type: () => Number }, userTypeId: { required: true, type: () => Number }, userType: { required: true, type: () => String }, username: { required: true, type: () => String }, fullname: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String } };
     }
 };
 __decorate([
     typeorm_1.Index(),
     typeorm_1.Column({ name: 'artist_id' }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Follower.prototype, "artistId", void 0);
 __decorate([
     typeorm_1.Index(),
     typeorm_1.Column({ name: 'user_id' }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Follower.prototype, "userId", void 0);
 __decorate([
     typeorm_1.Index(),
     typeorm_1.Column({ name: 'user_type_id' }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Follower.prototype, "userTypeId", void 0);
 __decorate([
     typeorm_1.Column({ name: 'user_type', enum: userType_enum_1.UserType }),

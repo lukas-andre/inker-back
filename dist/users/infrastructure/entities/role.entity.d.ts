@@ -1,9 +1,7 @@
 import { Permission } from './permission.entity';
-export declare class Role {
-    id: string;
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+export declare class Role extends BaseEntity {
     name: string;
     description: string;
     permissions: Permission[];
-    created_at: Date;
-    updated_at: Date;
 }

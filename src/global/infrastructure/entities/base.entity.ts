@@ -8,7 +8,7 @@ import {
 @Entity()
 export class BaseEntity {
   @PrimaryColumn({ generated: 'increment', primary: true, type: 'integer' })
-  id: string;
+  id: number;
 
   @CreateDateColumn()
   created_at: Date;

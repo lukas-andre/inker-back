@@ -9,6 +9,7 @@ import {
   Put,
   Request,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -53,11 +54,12 @@ export class ArtistsController {
     description: 'Artist profile picture was uploaded',
     type: BaseArtistResponse,
   })
+  @ApiParam({ name: 'id', required: true, type: Number })
   @Post('/:id/profile-picture')
   @UseInterceptors(FileInterceptor('file'))
   async updateProfileProflePicture(
     @UploadedFile() file,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     console.log('file: ', file);
     return this.artistHandler.handleUpdateProfileProflePicture(id, file);
@@ -79,9 +81,9 @@ export class ArtistsController {
     description: 'Find artist ok',
     type: BaseArtistResponse,
   })
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ name: 'id', required: true, type: Number })
   @Get(':id')
-  async findArtistById(@Param('id') id: string) {
+  async findArtistById(@Param('id', ParseIntPipe) id: number) {
     console.log(id);
     return this.artistHandler.handleFindById(id);
   }
@@ -91,10 +93,10 @@ export class ArtistsController {
     description: 'Update artist ok',
     type: BaseArtistResponse,
   })
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ name: 'id', required: true, type: Number })
   @Put(':id')
   async updateArtistBasicInfo(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateArtistDto,
   ) {
     return this.artistHandler.handleUpdateArtistBasicInfo(id, body);
@@ -105,9 +107,9 @@ export class ArtistsController {
     description: 'Follow ok',
     type: Boolean,
   })
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ name: 'id', required: true, type: Number })
   @Post(':id/follow')
-  async follow(@Param('id') id: string, @Request() request) {
+  async follow(@Param('id', ParseIntPipe) id: number, @Request() request) {
     return this.artistHandler.handleFollow(id, request);
   }
 
@@ -116,9 +118,9 @@ export class ArtistsController {
     description: 'Unfollow ok',
     type: Boolean,
   })
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ name: 'id', required: true, type: Number })
   @Post(':id/unfollow')
-  async unfollow(@Param('id') id: string, @Request() request) {
+  async unfollow(@Param('id', ParseIntPipe) id: number, @Request() request) {
     return this.artistHandler.handleUnfollow(id, request);
   }
 }

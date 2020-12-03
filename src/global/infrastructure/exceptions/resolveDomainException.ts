@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { DomainConflictException } from '../../domain/exceptions/domainConflict.exception';
 import { DomainException } from '../../domain/exceptions/domain.exception';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception copy';
+import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception';
 import { DomainInternalServerErrorException } from 'src/global/domain/exceptions/domainInternalServerError.exception';
 
 export const resolveDomainException = (domainException: DomainException) => {

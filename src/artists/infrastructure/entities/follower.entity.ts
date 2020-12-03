@@ -6,15 +6,15 @@ import { BaseEntity } from '../../../global/infrastructure/entities/base.entity'
 export class Follower extends BaseEntity {
   @Index()
   @Column({ name: 'artist_id' })
-  artistId: string;
+  artistId: number;
 
   @Index()
   @Column({ name: 'user_id' })
-  userId: string;
+  userId: number;
 
   @Index()
   @Column({ name: 'user_type_id' })
-  userTypeId: string;
+  userTypeId: number;
 
   @Column({ name: 'user_type', enum: UserType })
   userType: string;

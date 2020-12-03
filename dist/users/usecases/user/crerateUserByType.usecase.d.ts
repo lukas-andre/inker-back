@@ -12,7 +12,7 @@ export declare class CreateUserByTypeUseCase {
     private readonly rolesService;
     private readonly configService;
     constructor(usersService: UsersService, artistsService: ArtistsService, customerService: CustomersService, rolesService: RolesService, configService: ConfigService);
-    execute(createUserParams: CreateUserByTypeParams): Promise<import("../../domain/models/user.model").IUser | DomainConflictException>;
+    execute(createUserParams: CreateUserByTypeParams): Promise<DomainConflictException | import("../../domain/models/user.model").IUser>;
     private handleCreateByUserType;
     private createArtist;
     private createCustomer;

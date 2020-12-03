@@ -37,6 +37,10 @@ let ArtistsService = ArtistsService_1 = class ArtistsService {
         const artists = Object.assign(new artist_entity_1.Artist(), dto);
         return await this.artistsRepository.save(artists);
     }
+    async existArtist(artistId) {
+        const result = await this.artistsRepository.query(`SELECT EXISTS(SELECT 1 FROM artist f WHERE artist.id = $1)`, [artistId]);
+        return result.pop().exists;
+    }
     async addFollow(artists, topic, newFollow) {
         return await this.artistsRepository.save(artists);
     }

@@ -6,5 +6,5 @@ export declare class UpdateArtistProfilePictureUseCase {
     private readonly artistsService;
     private readonly multimediasService;
     constructor(artistsService: ArtistsService, multimediasService: MultimediasService);
-    execute(id: string, file: any): Promise<Artist | DomainException>;
+    execute(id: number, file: any): Promise<Artist | DomainException>;
 }

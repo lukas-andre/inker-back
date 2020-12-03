@@ -8,7 +8,7 @@ export declare class FindArtistsUseCases {
     private readonly artistsService;
     private readonly followersService;
     constructor(artistsService: ArtistsService, followersService: FollowersService);
-    findById(id: string): Promise<ArtistType | DomainException>;
+    findById(id: number): Promise<ArtistType | DomainException>;
     findOne(options: FindManyOptions<Artist>): Promise<Artist>;
     findAll(options: FindManyOptions<Artist>): Promise<Artist[]>;
 }

@@ -1,6 +1,6 @@
 export type FollowerType = {
-    id: number;
-    userId: string;
+    userId: number;
+    userTypeId: number;
     username: string;
     profileThumbnail: string;
 }

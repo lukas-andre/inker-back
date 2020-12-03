@@ -4,7 +4,7 @@ import { MultimediasService } from '../../multimedias/services/multimedias.servi
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { DomainInternalServerErrorException } from 'src/global/domain/exceptions/domainInternalServerError.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception copy';
+import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception';
 
 @Injectable()
 export class UpdateArtistProfilePictureUseCase {
@@ -13,7 +13,7 @@ export class UpdateArtistProfilePictureUseCase {
     private readonly multimediasService: MultimediasService,
   ) {}
 
-  async execute(id: string, file: any): Promise<Artist | DomainException> {
+  async execute(id: number, file: any): Promise<Artist | DomainException> {
     if (!file) return new DomainNotFoundException('Not valid file to upload');
     console.log('id: ', id);
     console.log('file2: ', file);

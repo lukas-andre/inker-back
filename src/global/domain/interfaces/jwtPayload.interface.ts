@@ -4,12 +4,12 @@ export interface JwtPermission {
 }
 
 export interface JwtPayload {
-  id: string;
+  id: number;
   username: string;
   fullname: string;
   email?: string;
   userType: string;
-  userTypeId: string;
+  userTypeId: number;
   profileThumbnail: string;
   permision: JwtPermission[];
 }

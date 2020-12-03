@@ -2,10 +2,10 @@ import { IsString } from 'class-validator';
 
 export class AddFollowToArtistParams {
   @IsString()
-  readonly userId: string;
+  readonly userId: number;
 
   @IsString()
-  readonly userTypeId: string;
+  readonly userTypeId: number;
 
   @IsString()
   readonly username: string;

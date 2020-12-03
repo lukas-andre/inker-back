@@ -12,15 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Permission = void 0;
 const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
-let Permission = class Permission {
+const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
+let Permission = class Permission extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => String }, controller: { required: true, type: () => String }, action: { required: true, type: () => String }, description: { required: true, type: () => String }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { controller: { required: true, type: () => String }, action: { required: true, type: () => String }, description: { required: true, type: () => String } };
     }
 };
-__decorate([
-    typeorm_1.PrimaryColumn(),
-    __metadata("design:type", String)
-], Permission.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column({ unique: true }),
     __metadata("design:type", String)
@@ -33,14 +30,6 @@ __decorate([
     typeorm_1.Column({ nullable: true }),
     __metadata("design:type", String)
 ], Permission.prototype, "description", void 0);
-__decorate([
-    typeorm_1.CreateDateColumn(),
-    __metadata("design:type", Date)
-], Permission.prototype, "created_at", void 0);
-__decorate([
-    typeorm_1.UpdateDateColumn(),
-    __metadata("design:type", Date)
-], Permission.prototype, "updated_at", void 0);
 Permission = __decorate([
     typeorm_1.Entity()
 ], Permission);

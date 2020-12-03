@@ -1,4 +1,4 @@
 type Properties = 'id';
 export type BaseModelType = {
-  [P in Properties]: string;
+  [P in Properties]: number;
 };

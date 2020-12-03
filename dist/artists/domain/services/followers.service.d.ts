@@ -8,7 +8,7 @@ export declare class FollowersService {
     find(options: FindManyOptions<Follower>): Promise<Follower[]>;
     findOne(options?: FindOneOptions<Follower>): Promise<Follower | undefined>;
     save(artist: DeepPartial<Follower>): Promise<Follower>;
-    existFollower(artistId: string, userId: string): Promise<boolean | undefined>;
-    countFollowers(id: string): Promise<number>;
+    existFollower(artistId: number, userId: number): Promise<boolean | undefined>;
+    countFollowers(id: number): Promise<number>;
     delete(id: string): Promise<DeleteResult>;
 }
