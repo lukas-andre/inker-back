@@ -1,6 +1,6 @@
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { CustomerFollows } from '../../domain/interfaces/customerFollows.interface';
-export declare class Customer {
-    id: string;
+export declare class Customer extends BaseEntity {
     userId: string;
     firstName: string;
     lastName: string;
@@ -10,6 +10,4 @@ export declare class Customer {
     profileThumbnail: string;
     follows: CustomerFollows[];
     rating: number;
-    created_at: Date;
-    updated_at: Date;
 }

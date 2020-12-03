@@ -1,17 +1,12 @@
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import {
   Entity,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryColumn,
 } from 'typeorm';
 import { CustomerFollows } from '../../domain/interfaces/customerFollows.interface';
 
 @Entity()
-export class Customer {
-  @PrimaryColumn({ generated: 'uuid' })
-  id: string;
-
+export class Customer extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: string;
 
@@ -38,10 +33,4 @@ export class Customer {
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }

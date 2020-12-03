@@ -1,6 +1,6 @@
 export declare class AddFollowToArtistParams {
-    readonly userId: string;
-    readonly userTypeId: string;
+    readonly userId: number;
+    readonly userTypeId: number;
     readonly username: string;
     readonly profileThumbnail: string;
 }

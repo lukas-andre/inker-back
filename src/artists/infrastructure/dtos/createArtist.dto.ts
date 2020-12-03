@@ -3,11 +3,11 @@ import { IsString } from 'class-validator';
 
 export class CreateArtistDto {
   @ApiProperty({
-    example: '415604a6-6db4-4a3b-a1dc-470193485b91',
+    example: '12345',
     description: 'User Id',
   })
   @IsString()
-  readonly userId: string;
+  readonly userId: number;
 
   @ApiProperty({
     example: 'Lucas',

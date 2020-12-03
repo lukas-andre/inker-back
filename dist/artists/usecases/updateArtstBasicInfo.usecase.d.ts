@@ -5,5 +5,5 @@ import { UpdateArtistDto } from '../infrastructure/dtos/updateArtist.dto';
 export declare class UpdateArtistBasicInfoUseCase {
     private readonly aristsService;
     constructor(aristsService: ArtistsService);
-    execute(id: string, updateArtistDto: UpdateArtistDto): Promise<BaseArtistResponse | DomainException>;
+    execute(id: number, updateArtistDto: UpdateArtistDto): Promise<BaseArtistResponse | DomainException>;
 }

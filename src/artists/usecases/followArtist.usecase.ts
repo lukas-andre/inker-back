@@ -12,7 +12,7 @@ export class FollowUseCase {
   constructor(private readonly followersService: FollowersService) {}
 
   async execute(
-    id: string,
+    id: number,
     followParams: AddFollowToArtistParams,
   ): Promise<boolean | DomainException> {
     let result: boolean | DomainException;

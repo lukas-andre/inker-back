@@ -43,8 +43,8 @@ export class FollowersService {
   }
 
   async existFollower(
-    artistId: string,
-    userId: string,
+    artistId: number,
+    userId: number,
   ): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.followersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM follower f WHERE f.artist_id = $1 AND f.user_id = $2)`,
@@ -54,7 +54,7 @@ export class FollowersService {
     return result.pop().exists;
   }
 
-  async countFollowers(id: string): Promise<number> {
+  async countFollowers(id: number): Promise<number> {
     return this.followersRepository.count({ where: { artistId: id } });
   }
 

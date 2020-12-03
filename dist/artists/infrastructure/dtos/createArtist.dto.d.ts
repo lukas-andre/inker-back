@@ -1,5 +1,5 @@
 export declare class CreateArtistDto {
-    readonly userId: string;
+    readonly userId: number;
     readonly firstName: string;
     readonly lastName: string;
     readonly contactEmail?: string;

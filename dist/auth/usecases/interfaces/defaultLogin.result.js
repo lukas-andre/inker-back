@@ -15,7 +15,7 @@ class DefaultLoginResult {
 }
 __decorate([
     class_validator_1.IsString(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], DefaultLoginResult.prototype, "id", void 0);
 __decorate([
     class_validator_1.IsString(),
@@ -28,9 +28,9 @@ __decorate([
     __metadata("design:type", String)
 ], DefaultLoginResult.prototype, "email", void 0);
 __decorate([
-    class_validator_1.IsString(),
+    class_validator_1.IsNumber(),
     class_validator_1.IsOptional(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], DefaultLoginResult.prototype, "userTypeId", void 0);
 __decorate([
     class_validator_1.IsString(),

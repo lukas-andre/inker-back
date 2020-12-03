@@ -2,8 +2,9 @@ import { Gender } from "../infrastructure/entities/genders.entity";
 import { Tag } from "../infrastructure/entities/tag.entity";
 export declare type ArtistTypeProps = 'id' | 'userId' | 'firstName' | 'lastName' | 'contactEmail' | 'contactPhoneNumber' | 'shortDescription' | 'profileThumbnail' | 'tags' | 'genders' | 'rating' | 'followers' | 'created_at' | 'updated_at';
 export declare type ArtistType = {
-    id?: string;
-    userId?: string;
+    id?: number;
+    userId?: number;
+    userTypeId?: number;
     firstName?: string;
     lastName?: string;
     contactEmail?: string;

@@ -72,13 +72,14 @@ __decorate([
         description: 'Artist profile picture was uploaded',
         type: baseArtistResponse_dto_1.BaseArtistResponse,
     }),
+    swagger_1.ApiParam({ name: 'id', required: true, type: Number }),
     common_1.Post('/:id/profile-picture'),
     common_1.UseInterceptors(platform_express_1.FileInterceptor('file')),
     openapi.ApiResponse({ status: 201, type: require("./dtos/baseArtistResponse.dto").BaseArtistResponse }),
     __param(0, common_1.UploadedFile()),
-    __param(1, common_1.Param('id')),
+    __param(1, common_1.Param('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], ArtistsController.prototype, "updateProfileProflePicture", null);
 __decorate([
@@ -100,12 +101,12 @@ __decorate([
         description: 'Find artist ok',
         type: baseArtistResponse_dto_1.BaseArtistResponse,
     }),
-    swagger_1.ApiParam({ name: 'id', required: true }),
+    swagger_1.ApiParam({ name: 'id', required: true, type: Number }),
     common_1.Get(':id'),
     openapi.ApiResponse({ status: 200, type: require("./dtos/baseArtistResponse.dto").BaseArtistResponse }),
-    __param(0, common_1.Param('id')),
+    __param(0, common_1.Param('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], ArtistsController.prototype, "findArtistById", null);
 __decorate([
@@ -114,13 +115,13 @@ __decorate([
         description: 'Update artist ok',
         type: baseArtistResponse_dto_1.BaseArtistResponse,
     }),
-    swagger_1.ApiParam({ name: 'id', required: true }),
+    swagger_1.ApiParam({ name: 'id', required: true, type: Number }),
     common_1.Put(':id'),
     openapi.ApiResponse({ status: 200, type: require("./dtos/baseArtistResponse.dto").BaseArtistResponse }),
-    __param(0, common_1.Param('id')),
+    __param(0, common_1.Param('id', common_1.ParseIntPipe)),
     __param(1, common_1.Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, updateArtist_dto_1.UpdateArtistDto]),
+    __metadata("design:paramtypes", [Number, updateArtist_dto_1.UpdateArtistDto]),
     __metadata("design:returntype", Promise)
 ], ArtistsController.prototype, "updateArtistBasicInfo", null);
 __decorate([
@@ -129,12 +130,12 @@ __decorate([
         description: 'Follow ok',
         type: Boolean,
     }),
-    swagger_1.ApiParam({ name: 'id', required: true }),
+    swagger_1.ApiParam({ name: 'id', required: true, type: Number }),
     common_1.Post(':id/follow'),
     openapi.ApiResponse({ status: 201, type: Boolean }),
-    __param(0, common_1.Param('id')), __param(1, common_1.Request()),
+    __param(0, common_1.Param('id', common_1.ParseIntPipe)), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ArtistsController.prototype, "follow", null);
 __decorate([
@@ -143,12 +144,12 @@ __decorate([
         description: 'Unfollow ok',
         type: Boolean,
     }),
-    swagger_1.ApiParam({ name: 'id', required: true }),
+    swagger_1.ApiParam({ name: 'id', required: true, type: Number }),
     common_1.Post(':id/unfollow'),
     openapi.ApiResponse({ status: 201, type: Boolean }),
-    __param(0, common_1.Param('id')), __param(1, common_1.Request()),
+    __param(0, common_1.Param('id', common_1.ParseIntPipe)), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ArtistsController.prototype, "unfollow", null);
 ArtistsController = __decorate([

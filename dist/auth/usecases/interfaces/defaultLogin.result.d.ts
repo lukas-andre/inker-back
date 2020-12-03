@@ -1,9 +1,9 @@
 import { JwtPermission } from '../../../global/domain/interfaces/jwtPayload.interface';
 export declare class DefaultLoginResult {
-    id: string;
+    id: number;
     username?: string;
     email?: string;
-    userTypeId?: string;
+    userTypeId?: number;
     userType: string;
     permision: JwtPermission[];
     accessToken: string;

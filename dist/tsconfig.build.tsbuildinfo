@@ -3282,13 +3282,13 @@
         "affectsGlobalScope": false
       },
       "../src/global/domain/interfaces/jwtpayload.interface.ts": {
-        "version": "6275809931512c5385d52a7d15e9dcf45fcc0591377c3c744f6b2d96a980fd5a",
-        "signature": "94321187772b050271ebd1f631717b9921e671eb59419dd02ac515f0e58270c7",
+        "version": "487aa3f2142a6c47a670056dd44c55b30a6a202277734f27d8b6bd6a000c6aea",
+        "signature": "ba8e7cedbed1f1ec3e7fbc016356108a631d9200293a911257234b1561aba645",
         "affectsGlobalScope": false
       },
       "../src/auth/usecases/interfaces/defaultlogin.result.ts": {
-        "version": "07969e9474a8f4b2e6ed025244fd5507918edde9e84478c3ffc1994a903e6524",
-        "signature": "fca79428738b13a944546ba0e0e45ba1debe6f916dc3096a81ca95b05eac158a",
+        "version": "9c6bf5764f7f1c91d5cc74c9bcd14aa698d6f9e47b9688853da79b398fac584d",
+        "signature": "9b2dc4e2e61469cb4daeb18471a3371eeefe8d31ae6d01e3ca34ff1389fb4266",
         "affectsGlobalScope": false
       },
       "../src/auth/infrasctructure/dtos/loginres.dto.ts": {
@@ -3326,39 +3326,24 @@
         "signature": "a1c355ecf8c11725e8ae60c96accba53f33f32dc6588ffca27d8a1db1d5f5413",
         "affectsGlobalScope": false
       },
-      "../src/global/domain/models/base.model.ts": {
-        "version": "f39f564a7cde71ee6b9cf198cbb25be7a63f2ae998af35c9a9ad294c752cad8a",
-        "signature": "2794da62b71171b18395b7285d126c63d2993adf43d99698a4f63f714b66b520",
-        "affectsGlobalScope": false
-      },
-      "../src/users/domain/models/permission.model.ts": {
-        "version": "1d189031c893acdcf3d7b7fad06a89b83cf4da7b6d2c8f08398caaab5fc167b1",
-        "signature": "74d67e55f97d1beb516c9620975bfc4931450037d25cc130681d292317298702",
-        "affectsGlobalScope": false
-      },
-      "../src/users/domain/models/role.model.ts": {
-        "version": "c447cef62448bab6c0527f4d3154cad9f3bb0af14dc46ae7dcd6bf1251d012fc",
-        "signature": "3193f97c0a3673b7227afa3ee547973e1e3217ad888f832b5740195ece32af3e",
+      "../src/global/infrastructure/entities/base.entity.ts": {
+        "version": "86528030f8e4b77ede4f4b03fd79583908a0458d51cb9d3706af7c69c971841d",
+        "signature": "329643b62076ac7d1916b7ace127059b42e7d33e04c6142eb15e0f644a1a8400",
         "affectsGlobalScope": false
       },
       "../src/users/infrastructure/entities/permission.entity.ts": {
-        "version": "d6cf178c914f00822006e53a5fc573d8eb64eda1510768878e46c74830feed17",
-        "signature": "3df153691454ad3b5cb2d5503773494929e4cfced893e01f25af84bb033366e1",
+        "version": "bfc2e85b0ca9ae6730ee728aa3d7e3976ed0109ce714da96fc72e602d153a428",
+        "signature": "c3392f815c31165b009c4b0db92ff6b58deb00dea44276b13857f9facb7bb37b",
         "affectsGlobalScope": false
       },
       "../src/users/infrastructure/entities/role.entity.ts": {
-        "version": "63e24c8691e3ea917a760e51a2e70bedeef93ff478eaaefe3fcee41ae5fecd50",
-        "signature": "a83d9bf0d2594103bbc96cc684f3f79276794d0143ee085bc19df483450a0053",
+        "version": "3cb1b1cce2c53ae734a4e8e4b56cf008706dd59bdf93be1993709d529ee26eed",
+        "signature": "8308a2842a08651fe01dc072449fac0696c8041ab0f6eb33504647e3238746e6",
         "affectsGlobalScope": false
       },
       "../src/users/domain/enums/usertype.enum.ts": {
         "version": "e1e5e64c76f2276e34f71239b691c0e72637ffe674500bce19cbbdad7bcebe8a",
         "signature": "a5f815d76e160844bbc0ed557108136a4adbe926b92ef4672a3a332810f32e70",
-        "affectsGlobalScope": false
-      },
-      "../src/global/infrastructure/entities/base.entity.ts": {
-        "version": "9d466b549dff9c71aa94c51f485e50993f175b4264ab55a3a0614369e24e8537",
-        "signature": "ed9f2e6b84411b7a29d504868153613bb369eff87dae8e32ab29dbdc4e0fd873",
         "affectsGlobalScope": false
       },
       "../src/users/infrastructure/entities/user.entity.ts": {
@@ -3431,19 +3416,34 @@
         "signature": "f06f8aa36774e56ce65a8359952356ce71e928e3730e84faaa924eeeef278bf5",
         "affectsGlobalScope": false
       },
+      "../src/global/domain/models/base.model.ts": {
+        "version": "b99048d6559370f30bb24808405dda91353bc49ebba3efbe2ccb1af193952340",
+        "signature": "509a6739d2b4954028e43f7ad3476160eff4d2abd032070e711895699b1dcaff",
+        "affectsGlobalScope": false
+      },
+      "../src/users/domain/models/permission.model.ts": {
+        "version": "1d189031c893acdcf3d7b7fad06a89b83cf4da7b6d2c8f08398caaab5fc167b1",
+        "signature": "74d67e55f97d1beb516c9620975bfc4931450037d25cc130681d292317298702",
+        "affectsGlobalScope": false
+      },
+      "../src/users/domain/models/role.model.ts": {
+        "version": "c447cef62448bab6c0527f4d3154cad9f3bb0af14dc46ae7dcd6bf1251d012fc",
+        "signature": "3193f97c0a3673b7227afa3ee547973e1e3217ad888f832b5740195ece32af3e",
+        "affectsGlobalScope": false
+      },
       "../src/users/domain/models/user.model.ts": {
         "version": "81fbf1fea9596f24328680d921ab6d7ef226895048689a064852731a106b60aa",
         "signature": "dbf7904144f6dc2d43b4ad64ad230785aa645d1da45fcd38527ba20007a3b47c",
         "affectsGlobalScope": false
       },
       "../src/users/domain/services/users.service.ts": {
-        "version": "b7b83bfa9f2171b4e4d45fd6633ad719bb0558180fd91be0e109ab14465db6c0",
-        "signature": "dcf385f08382bb5e25402b02088ca95d445759b2c062bbf887adfd8ac52e9574",
+        "version": "b6b441329426b9f286b72ea798b347ac88b5bd15825e465ac05c9d87666b53b1",
+        "signature": "f6102d55bf748b3be3fc43bf18f83bc775c2a14657609d6be304d0a6c6dd948c",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/dtos/createartist.dto.ts": {
-        "version": "7e371b18b93f3cb623eb17cbf2ffa09aa041d06ece0d636a8d62d89f63866caf",
-        "signature": "55562fc09551ceb532faebbd672449e20c4b5119cbe3328c8cb045532928251c",
+        "version": "be6eb8d227ee5527ac90b3d022341713ccb6577671088328edc9c89fc86ec8a7",
+        "signature": "5a5fddd4a76f88d5c3c207520d4f48d231e7e5dabf11fb8a24af964ce015956b",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/entities/tag.entity.ts": {
@@ -3457,8 +3457,8 @@
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/entities/artist.entity.ts": {
-        "version": "d33944954f4858cd0364c4e9e6cf991f32e032414be932833b3f0d0679f13570",
-        "signature": "6192adf1d2d44fc3d585d107399c261a84b053e02519002983b8b32a845777ed",
+        "version": "919efa2065c95a8ae85449183e62167671a73463c07c59144598352e61ab9eef",
+        "signature": "075365ffb298e1b0da357072101b1d5429487913240dc27f51094429ea5e566c",
         "affectsGlobalScope": false
       },
       "../src/global/domain/interfaces/serviceerror.ts": {
@@ -3471,14 +3471,19 @@
         "signature": "793f53db23c96ea752bb70cc2e3209ba26172274316b1f200751f3f18e0f3c49",
         "affectsGlobalScope": false
       },
+      "../src/global/domain/interfaces/existsqueryresult.interface.ts": {
+        "version": "883cd28da7791713a905354de8e6e3e629922ca0ce8f8d9aab8dbb2d980546a7",
+        "signature": "20df52bfcfcc0f9d2fc2d59cf7f62dcc4f9c9c1c88b303188af9831b5d0a4930",
+        "affectsGlobalScope": false
+      },
       "../src/artists/domain/services/artists.service.ts": {
-        "version": "a8f99b565974b00fa6e498a7de45b2f86f4dcbdaf754ec42735731af51b70078",
-        "signature": "be0ec89896a8e1c6a166113068ad352dbb09834c5e77ad9d4f13870e2e984c3a",
+        "version": "a811c4289bbab6e6cbda77d13abc8859a88fda4b911fab385f24baa4f867060c",
+        "signature": "46be85a8cbbde7ed9983e0fe1b0a4e6ea6b9bb85f8bb527337cdc9d299fbb8ca",
         "affectsGlobalScope": false
       },
       "../src/customers/infrastructure/entities/customer.entity.ts": {
-        "version": "bb8c89633eeeee88d26b769d5064c8d493b0e6c3a0b71de96decdeeb3b7413fb",
-        "signature": "044b8ad1b9fa093260a63838db014c34841254938857dcb31c060eb61a8d7892",
+        "version": "20cd28e29ffede5b89c7c240f9da2918a897eede82941de63d7618567df01453",
+        "signature": "7a9f014bb678265c7bb5e05e1a09ce875a520b3df476aeb5b134d6878f42e2e4",
         "affectsGlobalScope": false
       },
       "../src/customers/infrastructure/dtos/createcustomerreq.dto.ts": {
@@ -3762,12 +3767,12 @@
         "affectsGlobalScope": false
       },
       "../src/auth/domain/auth.service.ts": {
-        "version": "804afd6a3a93b9757db005612fbf6058234997ef75215945b33363686df2b2f9",
+        "version": "413797ad53affd0f2d4c5695dea102aef1ea9a24108d5228d2c7337d57597edd",
         "signature": "f93724ef6a97f7b7ad8c9a3850c11ebd410108488ccd340498eae920d2b17ebc",
         "affectsGlobalScope": false
       },
       "../src/auth/usecases/defaultlogin.usecase.ts": {
-        "version": "e5f140d02f96d0033c954fc806b4d594d5e75d7e374ea9ac9d7b8b7d14d9a45d",
+        "version": "00d0d5d66f76dcb681aebec4dabfe25283a65dadf5edb25d79844ccd17ee3b34",
         "signature": "9091ac9708acf1f6910a2d2b7cb7347dc73ab590a20b1dd302c72afbd3ade051",
         "affectsGlobalScope": false
       },
@@ -3797,7 +3802,7 @@
         "affectsGlobalScope": false
       },
       "../src/users/domain/data/initroles.data.ts": {
-        "version": "de4db5671229b4e1f0820a9b55c86105c1955dc8284e3a3d9c8073c0fe04bfdc",
+        "version": "0398d6152ca6594faaa1e55988c3d84064453bc84a4aee8d022f97737bf7b9e1",
         "signature": "31cd84c55df0f8882f733cec34ada0b5156668f393e8ec3f1ea9af091dd20758",
         "affectsGlobalScope": false
       },
@@ -3807,8 +3812,8 @@
         "affectsGlobalScope": false
       },
       "../src/users/usecases/user/crerateuserbytype.usecase.ts": {
-        "version": "74877d3e9d4e5649cc2e9316ecaef021f974d4dc45d1bc6f406dbccf403c1f0e",
-        "signature": "bf03627b5d14cb5ea14184420b90d19da52af6daf940f5ddc9c9686c659d5e50",
+        "version": "6bcf306674fc737df2d55c26835a89e306afebc9acdad43e38fd1145915f78c2",
+        "signature": "2033d62df873e83ecc9000e17def9e9b98c6721c4180a9c2f8d149a2b79b367d",
         "affectsGlobalScope": false
       },
       "../src/users/infrastructure/handlers/users.handler.ts": {
@@ -4102,23 +4107,18 @@
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/entities/follower.entity.ts": {
-        "version": "2328d2b5429a9d9e188442237dc89513ac73c34f38a2689e45782ea5fed2ba77",
-        "signature": "3c80031a154aab820baf4f3aaca4c581cc68db1d830f35627c4c0be940a2e3df",
-        "affectsGlobalScope": false
-      },
-      "../src/global/domain/interfaces/existsqueryresult.interface.ts": {
-        "version": "883cd28da7791713a905354de8e6e3e629922ca0ce8f8d9aab8dbb2d980546a7",
-        "signature": "20df52bfcfcc0f9d2fc2d59cf7f62dcc4f9c9c1c88b303188af9831b5d0a4930",
+        "version": "2c4f25b45df46bf0e31ffc21434b430f731192675dba5bbe4777de4d9b733d25",
+        "signature": "4c1612018c8bfb93e63bb5c29700ab2762607fb47b13d96453e6d7af39f9836b",
         "affectsGlobalScope": false
       },
       "../src/artists/domain/services/followers.service.ts": {
-        "version": "ae957f5d890126952ce38f2d1e7577ec55dfbdacdc0fe025c02cb3e552011312",
-        "signature": "45b219f03578e36e2b1570cc26b68373398b78901ff31fcd31c2277055b44778",
+        "version": "cd4c5c663668f1d6696e64fb0d642eddba8477d6bf76f9a15a5575bb306b8d4c",
+        "signature": "fcfc741584b8870282501d2350c8091add6f5288356752df808d6529a6555990",
         "affectsGlobalScope": false
       },
       "../src/artists/domain/artisttype.ts": {
-        "version": "03cd57d25216ea946bf517bb8b7c0be4f8a7988497cf7feda2b9e69338c1132a",
-        "signature": "d15085699214426298c61269fd8059851d0378a4e86aa2d27f40157adc8a78ef",
+        "version": "3ae9dd37494afaadc7d5cdd21a693de4059c2116787248b2a64c86d09b3cbdfc",
+        "signature": "cc25d86b84ea4d781ad09ef022244a91337aa71be5d4d87cc428ad1595aeadf5",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/interfaces/findartistbyid.result.ts": {
@@ -4127,8 +4127,8 @@
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/findartist.usecases.ts": {
-        "version": "6c2f65df93a194e7069fba8d061ae554a6fd571fc4d0faf40e2b754cb5adab05",
-        "signature": "99a6f5a7812e245dce250991b4c0f79ddf8a16fd2aa4de2acc5c8eb0c5ba7b03",
+        "version": "c75e36bfa6f17afb2feb87829bdf0d25dcce164c95a84fe01c974fe6666f04f5",
+        "signature": "edca9a3a9c804f4627c32b5950a81f52787e50052d5a1cb9beaba4298164a705",
         "affectsGlobalScope": false
       },
       "../node_modules/aws-sdk/lib/error.d.ts": {
@@ -5537,13 +5537,13 @@
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/updateartistprofilepicture.usecase.ts": {
-        "version": "6e44e00eb29cf12c50443b542519eea0c9fa8896b3728e76504f9845e303362a",
-        "signature": "d8ca7bf080ab93fe32a0ba706c172f6a050285eee7b9a5ec14bef78fcb9ac68f",
+        "version": "51ad1ad79d5ba4c54aeaf3005170db82c2d89ee0af2b4b5833f5a496e8ef7e5b",
+        "signature": "395c2b701632a4db425a11cf87b50837505206e595cb2b11693fabc16ff01794",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/dtos/baseartistresponse.dto.ts": {
-        "version": "7a52983c9e49dc035b580c5398daaefaa6df2ebb17702dffb6c885141c34d49c",
-        "signature": "7f0a79dc5fa0cf38829a532da1071a9d4157593a943e1b9f6014ea82bb0df453",
+        "version": "5b5e1ba358a5b60691b8ed187ec8ba4da5ed651493d35c98f67977460d527f30",
+        "signature": "be63ef83572a919dae6a1ec8b570b3a9049d57631263e718f5feed832ceb0c4b",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/dtos/updateartist.dto.ts": {
@@ -5552,28 +5552,28 @@
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/updateartstbasicinfo.usecase.ts": {
-        "version": "0d4937029add44e3766b83071fce3877249a613e13fb72e4f84a2002a7427340",
-        "signature": "e39a36dff74e084f6029f0a873565af74da285554132e097ec1c5bea30c113a4",
+        "version": "faa89353d274ac352edc0cabc16c765a2761162e0fc2a8917c7595584fd2b46e",
+        "signature": "3a5c30ae177f81c423384444c6ec62695f5444b310a0a8aedf2fccd267e99995",
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/dtos/follow.dto.ts": {
-        "version": "26dc125a8bbd7e1466468df2f05aff4ae2df0f9d11200dedc27cf6eac8956cd8",
-        "signature": "6b7852531f58c8ae8b99a196ad1e2b59f14fc3dd77c49b8f8dea944bffdc1a1f",
+        "version": "d38c5d83d4fbf9bc35ea1fbccefc7d1ba0b1bfa6a1d905396b9f6433b8a1c21c",
+        "signature": "5aa8e00afb55fefe00821f2ba9477d708745cc58105af267c89a01d7ac05fc67",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/interfaces/addfollowtoartist.param.ts": {
-        "version": "607d4639a9fcd3cd4e02ee3bd094eaf5f83084b4401664c2a4ee2c7aa6654660",
-        "signature": "390d4987940ae076b062f2ea6d07dd88d1bccaaa90c77342d80f1f4f3276c68b",
+        "version": "e2b41a69a767e3b5e7cd0bbf5c8f7fbd51e1a998d62be678e6e1fd8afdda2a94",
+        "signature": "8510c05657793572cf40d69f287c72978345ffae126ad1316e5135ce2044e151",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/followartist.usecase.ts": {
-        "version": "bdb3cfc3459c26b1aac983ee486040b8a125cdfd3a772007e184239186a06ad7",
-        "signature": "4986201b443ede38a9b3541643d5322abe1e39dea330ed271ffa4df0a1056a61",
+        "version": "30efd0712e34d59ec3eef128ae9d6d90d3f0115b25759078d9c5a6e93c6a3ed0",
+        "signature": "cc96052532ae2f7dc4ea4de59c9b3ebadb8bf2fa71267f06999a42cea1944df0",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/unfollowartist.usecase.ts": {
-        "version": "57c0ac279b71a710174576d5dbc26666a34a690f17531eb5a793896ed6666afe",
-        "signature": "cd611754b4256f89fd37bf40cb368ef08007a14685fedb672566821008ea8f02",
+        "version": "041ed61ccfb725e5f8cde9236c0715dfc39c78513b811b850a17cb938a2cf614",
+        "signature": "7d2683a31e14fef4c9df5bd81c84cdca9773e300aaf9b8afabbc3cb043a1b06f",
         "affectsGlobalScope": false
       },
       "../src/global/infrastructure/base.handler.ts": {
@@ -5582,8 +5582,8 @@
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/artists.handler.ts": {
-        "version": "8a3f0bee65b9de26b381c643583807170e9160dc09587250a3a71bdf574f3450",
-        "signature": "7c05c6b7f7d19086e833099dca3ae58aa9680c08441079fcbd2d0db4200155fa",
+        "version": "a606131f733a171343b0e3a13ddac6d001155937f256dbffb48dd9b2580ba5ab",
+        "signature": "428c4d07ea29c6c05c54ccad30be659ff86cbf376584da2385a0d697baddade8",
         "affectsGlobalScope": false
       },
       "../node_modules/@nestjs/platform-express/interfaces/serve-static-options.interface.d.ts": {
@@ -5677,8 +5677,8 @@
         "affectsGlobalScope": false
       },
       "../src/artists/infrastructure/artists.controller.ts": {
-        "version": "851864272f46081bedf8b45bcd6b035e56b7cc8e91744c850a15b187bee9c8b3",
-        "signature": "4325e734b6a028ecf3027402222fd15aa6f64560517d58d8d1c7b8086b63e8dc",
+        "version": "83c9969277ff44ab618618e317ca3371d409cbf9a2eb664c59d8295a9f460118",
+        "signature": "290e7348a352d2fe0c0130488ade31b54bfbd2c8f552642c9ec3350414427753",
         "affectsGlobalScope": false
       },
       "../src/multimedias/controllers/multimedias.controller.ts": {
@@ -5812,13 +5812,13 @@
         "affectsGlobalScope": false
       },
       "../src/artists/domain/followertype.ts": {
-        "version": "20ccb55c78774313c0d6ffab74904168cace3c68e2e7175d3fb94ea300adc99e",
-        "signature": "a438974aa2179b991f99cb6987a2d106d0c3c0f9032f1bf4d9f7f4978a2e9ea4",
+        "version": "50a7ecba4559b6575bde55b307b9de7b946edb5a67e28378ffc00ad8af13e5fa",
+        "signature": "d8d80e6fd95606433b3d7eb85387e4abeac775f33d85cfdea621080a8bd9bba2",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/findartistfollowers.usecases.ts": {
-        "version": "ee68105b8bcee67d251c75acff32472aa88eec9a638e19d318c95426d94d0f12",
-        "signature": "52785c0ff3dfb97c8dcbd33f0235bbc836a8fb5386cc5768f6c2f70a9f03ef4d",
+        "version": "2ce71d2b7ecf25b8be9c94ffb83d6cb4e67ab3a98bced23ea1304562a6f9056b",
+        "signature": "b2e0cd8a962283cb6d43ca2504edfd15261c9cd0bd22d0ab906bb4d2372b3d73",
         "affectsGlobalScope": false
       },
       "../src/artists/usecases/interfaces/createartist.params.ts": {
@@ -11455,6 +11455,7 @@
         "../src/artists/infrastructure/dtos/createartist.dto.ts",
         "../src/artists/infrastructure/entities/artist.entity.ts",
         "../src/customers/domain/interfaces/customerfollows.interface.ts",
+        "../src/global/domain/interfaces/existsqueryresult.interface.ts",
         "../src/global/domain/interfaces/serviceerror.ts"
       ],
       "../src/artists/domain/services/followers.service.ts": [
@@ -11556,8 +11557,12 @@
       ],
       "../src/artists/usecases/findartistfollowers.usecases.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
+        "../src/artists/domain/artisttype.ts",
+        "../src/artists/domain/followertype.ts",
         "../src/artists/domain/services/artists.service.ts",
-        "../src/artists/domain/services/followers.service.ts"
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/global/domain/exceptions/domain.exception.ts",
+        "../src/global/domain/exceptions/domainnotfound.exception copy.ts"
       ],
       "../src/artists/usecases/followartist.usecase.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11731,7 +11736,8 @@
       ],
       "../src/customers/infrastructure/entities/customer.entity.ts": [
         "../node_modules/typeorm/index.d.ts",
-        "../src/customers/domain/interfaces/customerfollows.interface.ts"
+        "../src/customers/domain/interfaces/customerfollows.interface.ts",
+        "../src/global/infrastructure/entities/base.entity.ts"
       ],
       "../src/customers/usecases/crcustomer.usecase.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11942,11 +11948,12 @@
         "../src/users/domain/models/role.model.ts"
       ],
       "../src/users/infrastructure/entities/permission.entity.ts": [
-        "../node_modules/typeorm/index.d.ts"
+        "../node_modules/typeorm/index.d.ts",
+        "../src/global/infrastructure/entities/base.entity.ts"
       ],
       "../src/users/infrastructure/entities/role.entity.ts": [
         "../node_modules/typeorm/index.d.ts",
-        "../src/users/domain/models/role.model.ts",
+        "../src/global/infrastructure/entities/base.entity.ts",
         "../src/users/infrastructure/entities/permission.entity.ts"
       ],
       "../src/users/infrastructure/entities/user.entity.ts": [
@@ -17336,7 +17343,8 @@
       ],
       "../src/artists/usecases/findartistfollowers.usecases.ts": [
         "../src/artists/domain/services/artists.service.ts",
-        "../src/artists/domain/services/followers.service.ts"
+        "../src/artists/domain/services/followers.service.ts",
+        "../src/global/domain/exceptions/domain.exception.ts"
       ],
       "../src/artists/usecases/followartist.usecase.ts": [
         "../src/artists/domain/services/followers.service.ts",
@@ -17435,7 +17443,8 @@
         "../src/customers/infrastructure/entities/customer.entity.ts"
       ],
       "../src/customers/infrastructure/entities/customer.entity.ts": [
-        "../src/customers/domain/interfaces/customerfollows.interface.ts"
+        "../src/customers/domain/interfaces/customerfollows.interface.ts",
+        "../src/global/infrastructure/entities/base.entity.ts"
       ],
       "../src/customers/usecases/crcustomer.usecase.ts": [
         "../node_modules/typeorm/index.d.ts",
@@ -17547,7 +17556,11 @@
       "../src/users/infrastructure/dtos/createuserres.dto.ts": [
         "../src/users/domain/models/role.model.ts"
       ],
+      "../src/users/infrastructure/entities/permission.entity.ts": [
+        "../src/global/infrastructure/entities/base.entity.ts"
+      ],
       "../src/users/infrastructure/entities/role.entity.ts": [
+        "../src/global/infrastructure/entities/base.entity.ts",
         "../src/users/infrastructure/entities/permission.entity.ts"
       ],
       "../src/users/infrastructure/entities/user.entity.ts": [

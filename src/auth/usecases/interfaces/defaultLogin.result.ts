@@ -3,7 +3,7 @@ import { JwtPermission } from '../../../global/domain/interfaces/jwtPayload.inte
 
 export class DefaultLoginResult {
   @IsString()
-  id: string;
+  id: number;
 
   @IsString()
   @IsOptional()
@@ -13,9 +13,9 @@ export class DefaultLoginResult {
   @IsOptional()
   email?: string;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  userTypeId?: string;
+  userTypeId?: number;
 
   @IsString()
   userType: string;

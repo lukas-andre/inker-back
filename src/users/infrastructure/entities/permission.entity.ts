@@ -1,16 +1,11 @@
 import {
   Entity,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryColumn,
 } from 'typeorm';
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Permission {
-  @PrimaryColumn()
-  id: string;
-
+export class Permission extends BaseEntity{
   @Column({ unique: true })
   controller: string;
 
@@ -19,10 +14,4 @@ export class Permission {
 
   @Column({ nullable: true })
   description: string;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }

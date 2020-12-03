@@ -1,20 +1,14 @@
-import { IRole } from '../../domain/models/role.model';
 import {
   Entity,
   Column,
   ManyToMany,
-  JoinTable,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryColumn,
+  JoinTable
 } from 'typeorm';
 import { Permission } from './permission.entity';
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Role {
-  @PrimaryColumn()
-  id: string;
-
+export class Role extends BaseEntity {
   @Column()
   name: string;
 
@@ -24,10 +18,4 @@ export class Role {
   @ManyToMany(type => Permission, { cascade: false })
   @JoinTable({ name: 'role_permission' })
   permissions: Permission[];
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }

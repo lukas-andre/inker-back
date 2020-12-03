@@ -3,18 +3,18 @@ import { IsString } from 'class-validator';
 
 export class FollowerDto {
   @ApiProperty({
-    example: '415604a6-6db4-4a3b-a1dc-470193485b91',
+    example: '41560',
     description: 'User Id',
   })
   @IsString()
-  userId: string;
+  userId: number;
 
   @ApiProperty({
-    example: '415604a6-6db4-4a3b-a1dc-470193485b91',
+    example: '415604',
     description: 'UserType Id, artist or customer Id',
   })
   @IsString()
-  readonly userTypeId: string;
+  readonly userTypeId: number;
 
   @ApiProperty({
     example: 'lucas@gmail.com',

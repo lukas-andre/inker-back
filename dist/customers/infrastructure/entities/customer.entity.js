@@ -11,16 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Customer = void 0;
 const openapi = require("@nestjs/swagger");
+const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
 const typeorm_1 = require("typeorm");
-let Customer = class Customer {
+let Customer = class Customer extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => String }, userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, follows: { required: true, type: () => [Object] }, rating: { required: true, type: () => Number }, created_at: { required: true, type: () => Date }, updated_at: { required: true, type: () => Date } };
+        return { userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, follows: { required: true, type: () => [Object] }, rating: { required: true, type: () => Number } };
     }
 };
-__decorate([
-    typeorm_1.PrimaryColumn({ generated: 'uuid' }),
-    __metadata("design:type", String)
-], Customer.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column({ name: 'user_id' }),
     __metadata("design:type", String)
@@ -57,14 +54,6 @@ __decorate([
     typeorm_1.Column({ type: 'float', default: 0.0 }),
     __metadata("design:type", Number)
 ], Customer.prototype, "rating", void 0);
-__decorate([
-    typeorm_1.CreateDateColumn(),
-    __metadata("design:type", Date)
-], Customer.prototype, "created_at", void 0);
-__decorate([
-    typeorm_1.UpdateDateColumn(),
-    __metadata("design:type", Date)
-], Customer.prototype, "updated_at", void 0);
 Customer = __decorate([
     typeorm_1.Entity()
 ], Customer);

@@ -1,8 +1,8 @@
 import { Gender } from '../entities/genders.entity';
 import { Tag } from '../entities/tag.entity';
 export declare class BaseArtistResponse {
-    id?: string;
-    userId?: string;
+    id?: number;
+    userId?: number;
     firstName?: string;
     lastName?: string;
     contactEmail?: string;

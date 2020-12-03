@@ -48,7 +48,7 @@ export class UsersService {
     return result as IUser;
   }
 
-  async findById(id: string) {
+  async findById(id: number) {
     return await this.usersRepository.findOne(id);
   }
 
@@ -67,7 +67,7 @@ export class UsersService {
     return await this.usersRepository.findOne(options);
   }
 
-  async delete(id: string): Promise<DeleteResult> {
+  async delete(id: number): Promise<DeleteResult> {
     return await this.usersRepository.delete(id);
   }
 
@@ -77,7 +77,7 @@ export class UsersService {
     return await this.usersRepository.findAndCount(options);
   }
 
-  async edit(id: string, update: DeepPartial<User> | User): Promise<User> {
+  async edit(id: number, update: DeepPartial<User> | User): Promise<User> {
     return await this.usersRepository.save(
       Object.assign(await this.findById(id), update),
     );

@@ -19,10 +19,10 @@ export declare class ArtistsHandler extends BaseHandler {
     private readonly jwtService;
     constructor(createArtistUseCase: CreateArtistUseCase, findArtistsUseCases: FindArtistsUseCases, updateArtistProfilePictureUseCase: UpdateArtistProfilePictureUseCase, updateArtistBasicInfoUseCase: UpdateArtistBasicInfoUseCase, followUseCase: FollowUseCase, unfollowArtistUseCase: UnfollowArtistUseCase, jwtService: JwtService);
     handleCreate(dto: CreateArtistDto): Promise<BaseArtistResponse>;
-    handleUpdateProfileProflePicture(id: string, file: any): Promise<BaseArtistResponse>;
-    handleFindById(id: string): Promise<BaseArtistResponse>;
+    handleUpdateProfileProflePicture(id: number, file: any): Promise<BaseArtistResponse>;
+    handleFindById(id: number): Promise<BaseArtistResponse>;
     handleGetAll(): Promise<BaseArtistResponse[]>;
-    handleUpdateArtistBasicInfo(id: string, dto: UpdateArtistDto): Promise<BaseArtistResponse>;
-    handleFollow(id: string, request: any): Promise<boolean>;
-    handleUnfollow(id: string, request: any): Promise<boolean>;
+    handleUpdateArtistBasicInfo(id: number, dto: UpdateArtistDto): Promise<BaseArtistResponse>;
+    handleFollow(id: number, request: any): Promise<boolean>;
+    handleUnfollow(id: number, request: any): Promise<boolean>;
 }

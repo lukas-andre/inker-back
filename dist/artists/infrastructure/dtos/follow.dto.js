@@ -15,24 +15,24 @@ const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class FollowerDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { userId: { required: true, type: () => String }, userTypeId: { required: true, type: () => String }, username: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String } };
+        return { userId: { required: true, type: () => Number }, userTypeId: { required: true, type: () => Number }, username: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String } };
     }
 }
 __decorate([
     swagger_1.ApiProperty({
-        example: '415604a6-6db4-4a3b-a1dc-470193485b91',
+        example: '41560',
         description: 'User Id',
     }),
     class_validator_1.IsString(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], FollowerDto.prototype, "userId", void 0);
 __decorate([
     swagger_1.ApiProperty({
-        example: '415604a6-6db4-4a3b-a1dc-470193485b91',
+        example: '415604',
         description: 'UserType Id, artist or customer Id',
     }),
     class_validator_1.IsString(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], FollowerDto.prototype, "userTypeId", void 0);
 __decorate([
     swagger_1.ApiProperty({

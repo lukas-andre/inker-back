@@ -11,7 +11,7 @@ import { BaseEntity } from '../../../global/infrastructure/entities/base.entity'
 @Entity()
 export class Artist extends BaseEntity {
   @Column({ name: 'user_id' })
-  userId: string;
+  userId: number;
 
   @Column({ name: 'first_name', nullable: true })
   firstName: string;

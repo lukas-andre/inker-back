@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { FollowTopic } from '../../../customers/domain/interfaces/customerFollows.interface';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 
 @Injectable()
 export class ArtistsService {
@@ -39,11 +40,22 @@ export class ArtistsService {
     return await this.artistsRepository.save(artists);
   }
 
+  async existArtist(
+    artistId: number,
+  ): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.artistsRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM artist f WHERE artist.id = $1)`,
+      [artistId],
+    );
+
+    return result.pop().exists;
+  }
+
   async addFollow(artists: Artist, topic: string, newFollow: FollowTopic) {
     return await this.artistsRepository.save(artists);
   }
 
-  async findById(id: string) {
+  async findById(id: number) {
     return await this.artistsRepository.findOne(id);
   }
 
@@ -59,7 +71,7 @@ export class ArtistsService {
     return await this.artistsRepository.save(artist);
   }
 
-  async delete(id: string): Promise<DeleteResult> {
+  async delete(id: number): Promise<DeleteResult> {
     return await this.artistsRepository.delete(id);
   }
 }

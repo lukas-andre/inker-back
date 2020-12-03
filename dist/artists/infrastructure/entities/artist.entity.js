@@ -17,12 +17,12 @@ const genders_entity_1 = require("./genders.entity");
 const base_entity_1 = require("../../../global/infrastructure/entities/base.entity");
 let Artist = class Artist extends base_entity_1.BaseEntity {
     static _OPENAPI_METADATA_FACTORY() {
-        return { userId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, tags: { required: true, type: () => [require("./tag.entity").Tag] }, genders: { required: true, type: () => [require("./genders.entity").Gender] }, rating: { required: true, type: () => Number } };
+        return { userId: { required: true, type: () => Number }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, contactEmail: { required: true, type: () => String }, contactPhoneNumber: { required: true, type: () => String }, shortDescription: { required: true, type: () => String }, profileThumbnail: { required: true, type: () => String }, tags: { required: true, type: () => [require("./tag.entity").Tag] }, genders: { required: true, type: () => [require("./genders.entity").Gender] }, rating: { required: true, type: () => Number } };
     }
 };
 __decorate([
     typeorm_1.Column({ name: 'user_id' }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Artist.prototype, "userId", void 0);
 __decorate([
     typeorm_1.Column({ name: 'first_name', nullable: true }),

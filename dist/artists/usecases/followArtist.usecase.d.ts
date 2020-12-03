@@ -4,5 +4,5 @@ import { AddFollowToArtistParams } from './interfaces/addFollowtoArtist.param';
 export declare class FollowUseCase {
     private readonly followersService;
     constructor(followersService: FollowersService);
-    execute(id: string, followParams: AddFollowToArtistParams): Promise<boolean | DomainException>;
+    execute(id: number, followParams: AddFollowToArtistParams): Promise<boolean | DomainException>;
 }

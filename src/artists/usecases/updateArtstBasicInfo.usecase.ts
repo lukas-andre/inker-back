@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception copy';
+import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { ArtistsService } from '../domain/services/artists.service';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';
@@ -10,7 +10,7 @@ export class UpdateArtistBasicInfoUseCase {
   constructor(private readonly aristsService: ArtistsService) {}
 
   async execute(
-    id: string,
+    id: number,
     updateArtistDto: UpdateArtistDto,
   ): Promise<BaseArtistResponse | DomainException> {
     const result = await this.aristsService.findById(id);
