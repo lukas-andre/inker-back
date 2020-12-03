@@ -15,19 +15,23 @@ const domainConflict_exception_1 = require("../../global/domain/exceptions/domai
 const domainInternalServerError_exception_1 = require("../../global/domain/exceptions/domainInternalServerError.exception");
 const typeorm_1 = require("typeorm");
 const domain_exception_1 = require("../../global/domain/exceptions/domain.exception");
+const artists_service_1 = require("../domain/services/artists.service");
 const followers_service_1 = require("../domain/services/followers.service");
 const follower_entity_1 = require("../infrastructure/entities/follower.entity");
 let FollowUseCase = class FollowUseCase {
-    constructor(followersService) {
+    constructor(followersService, artistsService) {
         this.followersService = followersService;
+        this.artistsService = artistsService;
     }
     async execute(id, followParams) {
         let result;
         const connection = typeorm_1.getConnection('artist-db');
         const queryRunner = connection.createQueryRunner();
         await queryRunner.connect();
-        const existsFollower = await this.followersService.existFollower(id, followParams.userId);
-        if (existsFollower) {
+        if (!(await this.artistsService.existArtist(id))) {
+            return new domainConflict_exception_1.DomainConflictException('Artist not exists');
+        }
+        if (await this.followersService.existFollower(id, followParams.userId)) {
             return new domainConflict_exception_1.DomainConflictException('Follower already exists');
         }
         await queryRunner.startTransaction();
@@ -47,7 +51,8 @@ let FollowUseCase = class FollowUseCase {
 };
 FollowUseCase = __decorate([
     common_1.Injectable(),
-    __metadata("design:paramtypes", [followers_service_1.FollowersService])
+    __metadata("design:paramtypes", [followers_service_1.FollowersService,
+        artists_service_1.ArtistsService])
 ], FollowUseCase);
 exports.FollowUseCase = FollowUseCase;
 //# sourceMappingURL=followArtist.usecase.js.map

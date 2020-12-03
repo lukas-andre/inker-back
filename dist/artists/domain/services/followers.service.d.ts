@@ -6,6 +6,7 @@ export declare class FollowersService {
     constructor(followersRepository: Repository<Follower>);
     findById(id: string): Promise<Follower>;
     find(options: FindManyOptions<Follower>): Promise<Follower[]>;
+    findAndCount(options: FindManyOptions<Follower>): Promise<[Follower[], number]>;
     findOne(options?: FindOneOptions<Follower>): Promise<Follower | undefined>;
     save(artist: DeepPartial<Follower>): Promise<Follower>;
     existFollower(artistId: number, userId: number): Promise<boolean | undefined>;

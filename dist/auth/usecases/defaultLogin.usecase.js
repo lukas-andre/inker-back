@@ -18,7 +18,7 @@ const customers_service_1 = require("../../customers/domain/customers.service");
 const auth_service_1 = require("../domain/auth.service");
 const domainConflict_exception_1 = require("../../global/domain/exceptions/domainConflict.exception");
 const domain_exception_1 = require("../../global/domain/exceptions/domain.exception");
-const domainNotFound_exception_copy_1 = require("../../global/domain/exceptions/domainNotFound.exception copy");
+const domainNotFound_exception_1 = require("../../global/domain/exceptions/domainNotFound.exception");
 let DefaultLoginUseCase = class DefaultLoginUseCase {
     constructor(authService, usersService, artistsService, customersService) {
         this.authService = authService;
@@ -44,7 +44,7 @@ let DefaultLoginUseCase = class DefaultLoginUseCase {
         }
         const entity = await this.findUserEntityByType(user.userType, user.id);
         if (!entity) {
-            return new domainNotFound_exception_copy_1.DomainNotFoundException(`User not found`);
+            return new domainNotFound_exception_1.DomainNotFoundException(`User not found`);
         }
         return this.authService.generateJwtByUserType(user.userType, user, entity);
     }

@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateArtistBasicInfoUseCase = void 0;
 const common_1 = require("@nestjs/common");
-const domainNotFound_exception_copy_1 = require("../../global/domain/exceptions/domainNotFound.exception copy");
+const domainNotFound_exception_1 = require("../../global/domain/exceptions/domainNotFound.exception");
 const artists_service_1 = require("../domain/services/artists.service");
 let UpdateArtistBasicInfoUseCase = class UpdateArtistBasicInfoUseCase {
     constructor(aristsService) {
@@ -20,7 +20,7 @@ let UpdateArtistBasicInfoUseCase = class UpdateArtistBasicInfoUseCase {
     async execute(id, updateArtistDto) {
         const result = await this.aristsService.findById(id);
         if (!result) {
-            return new domainNotFound_exception_copy_1.DomainNotFoundException('Artist not found');
+            return new domainNotFound_exception_1.DomainNotFoundException('Artist not found');
         }
         Object.assign(result, updateArtistDto);
         return this.aristsService.save(result);

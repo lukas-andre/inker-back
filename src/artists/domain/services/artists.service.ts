@@ -44,7 +44,7 @@ export class ArtistsService {
     artistId: number,
   ): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.artistsRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM artist f WHERE artist.id = $1)`,
+      `SELECT EXISTS(SELECT 1 FROM artist a WHERE a.id = $1)`,
       [artistId],
     );
 
@@ -61,6 +61,10 @@ export class ArtistsService {
 
   async find(options: FindManyOptions<Artist>) {
     return await this.artistsRepository.find(options);
+  }
+
+  async findAndCount(options: FindManyOptions<Artist>) {
+    return await this.artistsRepository.findAndCount(options);
   }
 
   async findOne(options?: FindOneOptions<Artist>): Promise<Artist | undefined> {

@@ -6,9 +6,11 @@ import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { UpdateArtistBasicInfoUseCase } from '../usecases/updateArtstBasicInfo.usecase';
 import { JwtService } from '@nestjs/jwt';
+import { FollowerDto } from './dtos/follow.dto';
 import { FollowUseCase } from '../usecases/followArtist.usecase';
 import { UnfollowArtistUseCase } from '../usecases/unfollowArtist.usecase';
 import { BaseHandler } from 'src/global/infrastructure/base.handler';
+import { FindArtistFollowersUseCase } from '../usecases/findArtistFollowers.usecase';
 export declare class ArtistsHandler extends BaseHandler {
     private readonly createArtistUseCase;
     private readonly findArtistsUseCases;
@@ -16,8 +18,9 @@ export declare class ArtistsHandler extends BaseHandler {
     private readonly updateArtistBasicInfoUseCase;
     private readonly followUseCase;
     private readonly unfollowArtistUseCase;
+    private readonly findArtistFollowersUseCase;
     private readonly jwtService;
-    constructor(createArtistUseCase: CreateArtistUseCase, findArtistsUseCases: FindArtistsUseCases, updateArtistProfilePictureUseCase: UpdateArtistProfilePictureUseCase, updateArtistBasicInfoUseCase: UpdateArtistBasicInfoUseCase, followUseCase: FollowUseCase, unfollowArtistUseCase: UnfollowArtistUseCase, jwtService: JwtService);
+    constructor(createArtistUseCase: CreateArtistUseCase, findArtistsUseCases: FindArtistsUseCases, updateArtistProfilePictureUseCase: UpdateArtistProfilePictureUseCase, updateArtistBasicInfoUseCase: UpdateArtistBasicInfoUseCase, followUseCase: FollowUseCase, unfollowArtistUseCase: UnfollowArtistUseCase, findArtistFollowersUseCase: FindArtistFollowersUseCase, jwtService: JwtService);
     handleCreate(dto: CreateArtistDto): Promise<BaseArtistResponse>;
     handleUpdateProfileProflePicture(id: number, file: any): Promise<BaseArtistResponse>;
     handleFindById(id: number): Promise<BaseArtistResponse>;
@@ -25,4 +28,5 @@ export declare class ArtistsHandler extends BaseHandler {
     handleUpdateArtistBasicInfo(id: number, dto: UpdateArtistDto): Promise<BaseArtistResponse>;
     handleFollow(id: number, request: any): Promise<boolean>;
     handleUnfollow(id: number, request: any): Promise<boolean>;
+    handleFindArtistFollowers(id: number): Promise<FollowerDto[]>;
 }

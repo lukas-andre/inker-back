@@ -19,8 +19,9 @@ const jwt_1 = require("@nestjs/jwt");
 const followArtist_usecase_1 = require("../usecases/followArtist.usecase");
 const unfollowArtist_usecase_1 = require("../usecases/unfollowArtist.usecase");
 const base_handler_1 = require("../../global/infrastructure/base.handler");
+const findArtistFollowers_usecase_1 = require("../usecases/findArtistFollowers.usecase");
 let ArtistsHandler = class ArtistsHandler extends base_handler_1.BaseHandler {
-    constructor(createArtistUseCase, findArtistsUseCases, updateArtistProfilePictureUseCase, updateArtistBasicInfoUseCase, followUseCase, unfollowArtistUseCase, jwtService) {
+    constructor(createArtistUseCase, findArtistsUseCases, updateArtistProfilePictureUseCase, updateArtistBasicInfoUseCase, followUseCase, unfollowArtistUseCase, findArtistFollowersUseCase, jwtService) {
         super(jwtService);
         this.createArtistUseCase = createArtistUseCase;
         this.findArtistsUseCases = findArtistsUseCases;
@@ -28,6 +29,7 @@ let ArtistsHandler = class ArtistsHandler extends base_handler_1.BaseHandler {
         this.updateArtistBasicInfoUseCase = updateArtistBasicInfoUseCase;
         this.followUseCase = followUseCase;
         this.unfollowArtistUseCase = unfollowArtistUseCase;
+        this.findArtistFollowersUseCase = findArtistFollowersUseCase;
         this.jwtService = jwtService;
     }
     async handleCreate(dto) {
@@ -50,7 +52,9 @@ let ArtistsHandler = class ArtistsHandler extends base_handler_1.BaseHandler {
         const params = {
             userId: jwtPayload.id,
             userTypeId: jwtPayload.userTypeId,
+            userType: jwtPayload.userType,
             username: jwtPayload.username,
+            fullname: jwtPayload.fullname,
             profileThumbnail: jwtPayload.profileThumbnail
                 ? jwtPayload.profileThumbnail
                 : '',
@@ -61,6 +65,9 @@ let ArtistsHandler = class ArtistsHandler extends base_handler_1.BaseHandler {
         const jwtPayload = this.getJwtPayloadFromRequest(request);
         return this.resolve(await this.unfollowArtistUseCase.execute(id, jwtPayload.id));
     }
+    async handleFindArtistFollowers(id) {
+        return this.resolve(await this.findArtistFollowersUseCase.execute(id));
+    }
 };
 ArtistsHandler = __decorate([
     common_1.Injectable(),
@@ -70,6 +77,7 @@ ArtistsHandler = __decorate([
         updateArtstBasicInfo_usecase_1.UpdateArtistBasicInfoUseCase,
         followArtist_usecase_1.FollowUseCase,
         unfollowArtist_usecase_1.UnfollowArtistUseCase,
+        findArtistFollowers_usecase_1.FindArtistFollowersUseCase,
         jwt_1.JwtService])
 ], ArtistsHandler);
 exports.ArtistsHandler = ArtistsHandler;

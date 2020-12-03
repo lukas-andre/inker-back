@@ -1,8 +1,10 @@
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { ArtistsService } from '../domain/services/artists.service';
 import { FollowersService } from '../domain/services/followers.service';
-import { AddFollowToArtistParams } from './interfaces/addFollowtoArtist.param';
+import { FollowArtistParams } from './interfaces/followArtist.param';
 export declare class FollowUseCase {
     private readonly followersService;
-    constructor(followersService: FollowersService);
-    execute(id: number, followParams: AddFollowToArtistParams): Promise<boolean | DomainException>;
+    private readonly artistsService;
+    constructor(followersService: FollowersService, artistsService: ArtistsService);
+    execute(id: number, followParams: FollowArtistParams): Promise<boolean | DomainException>;
 }

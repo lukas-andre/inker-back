@@ -29,6 +29,7 @@ import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
+import { FollowerDto } from './dtos/follow.dto';
 
 @ApiBearerAuth()
 @ApiTags('artists')
@@ -122,5 +123,17 @@ export class ArtistsController {
   @Post(':id/unfollow')
   async unfollow(@Param('id', ParseIntPipe) id: number, @Request() request) {
     return this.artistHandler.handleUnfollow(id, request);
+  }
+
+  @ApiOperation({ summary: 'Find artist followers' })
+  @ApiOkResponse({
+    description: 'Find followers ok',
+    type: FollowerDto,
+    isArray: true
+  })
+  @ApiParam({ name: 'id', required: true, type: Number })
+  @Get(':id/followers')
+  async findArtistFollowers(@Param('id', ParseIntPipe) id: number) {
+    return this.artistHandler.handleFindArtistFollowers(id);
   }
 }

@@ -13,7 +13,7 @@ exports.FindArtistsUseCases = void 0;
 const common_1 = require("@nestjs/common");
 const artists_service_1 = require("../domain/services/artists.service");
 const followers_service_1 = require("../domain/services/followers.service");
-const domainNotFound_exception_copy_1 = require("../../global/domain/exceptions/domainNotFound.exception copy");
+const domainNotFound_exception_1 = require("../../global/domain/exceptions/domainNotFound.exception");
 let FindArtistsUseCases = class FindArtistsUseCases {
     constructor(artistsService, followersService) {
         this.artistsService = artistsService;
@@ -23,7 +23,7 @@ let FindArtistsUseCases = class FindArtistsUseCases {
         let result;
         result = await this.artistsService.findById(id);
         if (!result) {
-            return new domainNotFound_exception_copy_1.DomainNotFoundException('Artist not found');
+            return new domainNotFound_exception_1.DomainNotFoundException('Artist not found');
         }
         result.followers = await this.followersService.countFollowers(result.id);
         return result;

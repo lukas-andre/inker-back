@@ -16,14 +16,14 @@ export class AuthGuard implements CanActivate {
 
     const calledController = context.getClass().name;
     const calledAction = context.getHandler().name;
+    console.log('calledAction: ', calledAction);
     console.log('calledController: ', calledController);
-    const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-
-    console.log('jwt: ', jwt);
-
+    
+    const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(request)
     if (!jwt) {
       return false;
     }
+    
     let verifyJwt: JwtPayload;
     try {
       verifyJwt = this.jwtService.verify(jwt);
@@ -39,6 +39,7 @@ export class AuthGuard implements CanActivate {
     const permission = verifyJwt.permision.find(
       p => p.c == calledController,
     );
+    console.log('permission: ', permission);
 
     if (!permission) {
       return false;
