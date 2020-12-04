@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { FollowerType } from '../domain/followerType';
 import { ArtistsService } from '../domain/services/artists.service';
-import { FollowersService } from '../domain/services/followers.service';
+import { FollowsService } from '../domain/services/follows.service';
+import { FollowType } from '../domain/followType';
 
 @Injectable()
 export class FindArtistFollowsUseCase {
@@ -11,31 +11,20 @@ export class FindArtistFollowsUseCase {
 
   constructor(
     private readonly artistsService: ArtistsService,
-    private readonly followersService: FollowersService,
+    private readonly followsService: FollowsService,
   ) {}
 
-  async execute(artistId: number): Promise<FollowerType[] | DomainException> {
-    let result: FollowerType[] | DomainException;
+  async execute(artistUserId: number): Promise<FollowType[] | DomainException> {
+    let result: FollowType[] | DomainException;
 
-    if (!await this.artistsService.existArtist(artistId)) {
+    if (!(await this.artistsService.existArtistByUserId(artistUserId))) {
       result = new DomainNotFoundException('Artist not found');
     }
 
-    result = await this.followersService.find({
-      select: [
-        'artistId',
-        'fullname',
-        'profileThumbnail',
-        'userId',
-        'userType',
-        'userTypeId',
-        'username',
-      ],
-      where: {
-        artistId,
-      },
-    });
-    this.logger.log(`FindArtistFollowersUseCases result: ${JSON.stringify(result)}`);
+    result = await this.followsService.findByKey({ followerUserId: artistUserId });
+    this.logger.log(
+      `FindArtistFollowsUseCase result: ${JSON.stringify(result)}`,
+    );
     return result;
   }
 }

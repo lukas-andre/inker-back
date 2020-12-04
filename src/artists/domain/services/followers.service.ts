@@ -1,6 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { CreateArtistDto } from '../../infrastructure/dtos/createArtist.dto';
-import { Artist } from '../../infrastructure/entities/artist.entity';
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Repository,
@@ -8,12 +6,10 @@ import {
   FindManyOptions,
   FindOneOptions,
   DeepPartial,
+  FindConditions,
 } from 'typeorm';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { FollowTopic } from '../../../customers/domain/interfaces/customerFollows.interface';
 import { Follower } from '../../infrastructure/entities/follower.entity';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-// import { FollowDto } from 'src/artists/infrastructure/dtos/follow.dto';
 
 @Injectable()
 export class FollowersService {
@@ -32,6 +28,23 @@ export class FollowersService {
     return await this.followersRepository.find(options);
   }
 
+  async findByKey(findConditions: FindConditions<Follower>) {
+    return await this.followersRepository.find({
+      select: [
+        'followedUserId',
+        'fullname',
+        'profileThumbnail',
+        'userId',
+        'userType',
+        'userTypeId',
+        'username',
+      ],
+      where: {
+        ...findConditions,
+      },
+    });
+  }
+
   async findAndCount(options: FindManyOptions<Follower>) {
     return await this.followersRepository.findAndCount(options);
   }
@@ -46,20 +59,20 @@ export class FollowersService {
     return await this.followersRepository.save(artist);
   }
 
-  async existFollower(
-    artistId: number,
+  async existsFollowerInArtist(
+    artistUserId: number,
     userId: number,
   ): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.followersRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM follower f WHERE f.artist_id = $1 AND f.user_id = $2)`,
-      [artistId, userId],
+      `SELECT EXISTS(SELECT 1 FROM follower f WHERE f.followed_user_id = $1 AND f.user_id = $2)`,
+      [artistUserId, userId],
     );
 
     return result.pop().exists;
   }
 
-  async countFollowers(id: number): Promise<number> {
-    return this.followersRepository.count({ where: { artistId: id } });
+  async countFollowers(followedUserId: number): Promise<number> {
+    return this.followersRepository.count({ where: { followedUserId} });
   }
 
   async delete(id: string): Promise<DeleteResult> {

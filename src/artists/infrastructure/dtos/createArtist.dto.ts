@@ -1,13 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateArtistDto {
   @ApiProperty({
     example: '12345',
     description: 'User Id',
   })
-  @IsString()
+  @IsNumber()
   readonly userId: number;
+
+  @ApiProperty({
+    example: 'noname_eter',
+    description: 'Username',
+  })
+  @IsString()
+  readonly username: string;
 
   @ApiProperty({
     example: 'Lucas',

@@ -4,6 +4,7 @@ import { DomainInternalServerErrorException } from 'src/global/domain/exceptions
 import { getConnection } from 'typeorm';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { FollowersService } from '../domain/services/followers.service';
+import { Follow } from '../infrastructure/entities/follow.entity';
 import { Follower } from '../infrastructure/entities/follower.entity';
 
 @Injectable()
@@ -11,7 +12,7 @@ export class UnfollowArtistUseCase {
   constructor(private readonly followersService: FollowersService) {}
 
   async execute(
-    id: number,
+    artistUserId: number,
     userId: number,
   ): Promise<boolean | DomainException> {
     let result: boolean | DomainException;
@@ -19,15 +20,25 @@ export class UnfollowArtistUseCase {
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
 
-    const existsFollower = await this.followersService.existFollower(id, userId);
+    const existsFollower = await this.followersService.existsFollowerInArtist(
+      artistUserId,
+      userId,
+    );
     if (!existsFollower) {
-      result = new DomainConflictException('Follower not exist');
+      return new DomainConflictException('Follower not exist');
     }
 
     await queryRunner.startTransaction();
 
     try {
-      await queryRunner.manager.getRepository(Follower).delete({ userId });
+      await queryRunner.manager
+        .getRepository(Follower)
+        .delete({ followedUserId: artistUserId, userId });
+
+      await queryRunner.manager
+        .getRepository(Follow)
+        .delete({ followerUserId: userId, userId: artistUserId });
+
       await queryRunner.commitTransaction();
     } catch (error) {
       result = new DomainInternalServerErrorException(

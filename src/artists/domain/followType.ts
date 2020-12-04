@@ -1,5 +1,5 @@
-export type FollowerType = {
-    followedUserId: number;
+export type FollowType = {
+    followerUserId: number;
     userId: number;
     userTypeId: number;
     userType: string;
