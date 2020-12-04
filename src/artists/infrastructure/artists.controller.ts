@@ -136,4 +136,16 @@ export class ArtistsController {
   async findArtistFollowers(@Param('id', ParseIntPipe) id: number) {
     return this.artistHandler.handleFindArtistFollowers(id);
   }
+
+  @ApiOperation({ summary: 'Find artist follows' })
+  @ApiOkResponse({
+    description: 'Find follows ok',
+    type: FollowerDto,
+    isArray: true
+  })
+  @ApiParam({ name: 'id', required: true, type: Number })
+  @Get(':id/follows')
+  async findArtistFollows(@Param('id', ParseIntPipe) id: number) {
+    return this.artistHandler.findArtistFollows(id);
+  }
 }

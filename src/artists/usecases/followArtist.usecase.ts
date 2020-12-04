@@ -7,6 +7,9 @@ import { ArtistsService } from '../domain/services/artists.service';
 import { FollowersService } from '../domain/services/followers.service';
 import { Follower } from '../infrastructure/entities/follower.entity';
 import { FollowArtistParams } from './interfaces/followArtist.param';
+import { Follow } from '../infrastructure/entities/follow.entity';
+import { FollowType } from '../domain/followType';
+import { UserType } from 'src/users/domain/enums/userType.enum';
 
 @Injectable()
 export class FollowUseCase {
@@ -16,8 +19,8 @@ export class FollowUseCase {
   ) {}
 
   async execute(
-    id: number,
-    followParams: FollowArtistParams,
+    followedArtistUserId: number,
+    follower: FollowArtistParams,
   ): Promise<boolean | DomainException> {
     let result: boolean | DomainException;
 
@@ -25,20 +28,52 @@ export class FollowUseCase {
     const queryRunner = connection.createQueryRunner();
 
     await queryRunner.connect();
-    if (!(await this.artistsService.existArtist(id))) {
+    if (
+      !(await this.artistsService.existArtistByUserId(followedArtistUserId))
+    ) {
       return new DomainConflictException('Artist not exists');
     }
 
-    if (await this.followersService.existFollower(id, followParams.userId)) {
+    if (
+      await this.followersService.existsFollowerInArtist(
+        followedArtistUserId,
+        follower.userId,
+      )
+    ) {
       return new DomainConflictException('Follower already exists');
     }
+    const artistData = await this.artistsService.findOne({
+      select: [
+        'id',
+        'userId',
+        'username',
+        'firstName',
+        'lastName',
+        'profileThumbnail',
+      ],
+      where: { userId: followedArtistUserId },
+    });
+
+    console.log('artistData: ', artistData);
 
     await queryRunner.startTransaction();
 
     try {
       await queryRunner.manager.save(Follower, {
-        artistId: id,
-        ...Object.assign(new Follower(), followParams),
+        followedUserId: artistData.userId,
+        ...Object.assign(new Follower(), follower),
+      });
+
+      await queryRunner.manager.save(Follow, {
+        ...Object.assign(new Follow(), {
+          followerUserId: follower.userId,
+          userType: UserType.ARTIST,
+          userId: artistData.userId,
+          fullname: [artistData.firstName, artistData.lastName].join(' '),
+          profileThumbnail: artistData.profileThumbnail,
+          userTypeId: artistData.id,
+          username: artistData.username,
+        }),
       });
 
       await queryRunner.commitTransaction();

@@ -16,19 +16,24 @@ import { FollowUseCase } from './usecases/followArtist.usecase';
 import { UnfollowArtistUseCase } from './usecases/unfollowArtist.usecase';
 import { FollowersService } from './domain/services/followers.service';
 import { FindArtistFollowersUseCase } from './usecases/findArtistFollowers.usecase';
+import { FindArtistFollowsUseCase } from './usecases/findArtistFollows.usecase';
+import { FollowsService } from './domain/services/follows.service';
+import { Follow } from './infrastructure/entities/follow.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Artist, Follower, Gender, Tag], 'artist-db'),
+    TypeOrmModule.forFeature([Artist, Follower, Follow, Gender, Tag], 'artist-db'),
     MultimediasModule,
   ],
   providers: [
-    ArtistsService,
     ArtistsHandler,
+    ArtistsService,
     FollowersService,
+    FollowsService,
     CreateArtistUseCase,
     FindArtistsUseCases,
     FindArtistFollowersUseCase,
+    FindArtistFollowsUseCase,
     UpdateArtistProfilePictureUseCase,
     UpdateArtistBasicInfoUseCase,
     FollowUseCase,

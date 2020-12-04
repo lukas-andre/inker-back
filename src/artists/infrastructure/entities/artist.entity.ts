@@ -9,9 +9,12 @@ import { Gender } from './genders.entity';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Artist extends BaseEntity {
+export class Artist extends BaseEntity  {
   @Column({ name: 'user_id' })
   userId: number;
+
+  @Column({ name: 'username' })
+  username: string;
 
   @Column({ name: 'first_name', nullable: true })
   firstName: string;

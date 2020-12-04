@@ -11,4 +11,5 @@ export default registerAs('artistDb', () => ({
   entities: [__dirname + '/../artists/**/*.entity{.ts,.js}'],
   synchronize: process.env.TYPEORM_SYNC,
   logging: true,
+  cache: true,
 }));

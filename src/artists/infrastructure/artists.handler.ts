@@ -13,6 +13,7 @@ import { FollowUseCase } from '../usecases/followArtist.usecase';
 import { UnfollowArtistUseCase } from '../usecases/unfollowArtist.usecase';
 import { BaseHandler } from 'src/global/infrastructure/base.handler';
 import { FindArtistFollowersUseCase } from '../usecases/findArtistFollowers.usecase';
+import { FindArtistFollowsUseCase } from '../usecases/findArtistFollows.usecase';
 @Injectable()
 export class ArtistsHandler extends BaseHandler {
   constructor(
@@ -23,6 +24,7 @@ export class ArtistsHandler extends BaseHandler {
     private readonly followUseCase: FollowUseCase,
     private readonly unfollowArtistUseCase: UnfollowArtistUseCase,
     private readonly findArtistFollowersUseCase: FindArtistFollowersUseCase,
+    private readonly findArtistFollowsUseCase: FindArtistFollowsUseCase,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);
@@ -57,9 +59,9 @@ export class ArtistsHandler extends BaseHandler {
     );
   }
 
-  async handleFollow(id: number, request): Promise<boolean> {
+  async handleFollow(followedArtistId: number, request): Promise<boolean> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    const params: FollowerDto = {
+    const follower: FollowerDto = {
       userId: jwtPayload.id,
       userTypeId: jwtPayload.userTypeId,
       userType: jwtPayload.userType,
@@ -70,7 +72,7 @@ export class ArtistsHandler extends BaseHandler {
         : '',
     };
 
-    return this.resolve(await this.followUseCase.execute(id, params));
+    return this.resolve(await this.followUseCase.execute(followedArtistId, follower));
   }
 
   async handleUnfollow(id: number, request): Promise<boolean> {
@@ -80,9 +82,11 @@ export class ArtistsHandler extends BaseHandler {
     );
   }
 
-  async handleFindArtistFollowers(id: number): Promise<FollowerDto[]> {
-    return this.resolve(
-      await this.findArtistFollowersUseCase.execute(id),
-    );
+  async handleFindArtistFollowers(artistUserId: number): Promise<FollowerDto[]> {
+    return this.resolve(await this.findArtistFollowersUseCase.execute(artistUserId));
+  }
+
+  async findArtistFollows(artistUserId: number) {
+    return this.resolve(await this.findArtistFollowsUseCase.execute(artistUserId));
   }
 }

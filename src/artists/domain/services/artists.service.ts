@@ -8,6 +8,7 @@ import {
   FindManyOptions,
   FindOneOptions,
   DeepPartial,
+  FindConditions,
 } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { FollowTopic } from '../../../customers/domain/interfaces/customerFollows.interface';
@@ -15,6 +16,7 @@ import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQuery
 
 @Injectable()
 export class ArtistsService {
+
   private readonly serviceName: string = ArtistsService.name;
 
   constructor(
@@ -40,15 +42,42 @@ export class ArtistsService {
     return await this.artistsRepository.save(artists);
   }
 
-  async existArtist(
-    artistId: number,
-  ): Promise<boolean | undefined> {
+  async existArtist(artistId: number): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.artistsRepository.query(
       `SELECT EXISTS(SELECT 1 FROM artist a WHERE a.id = $1)`,
       [artistId],
     );
 
     return result.pop().exists;
+  }
+
+  async existArtistByUserId(userId: number): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.artistsRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM artist a WHERE a.user_id = $1)`,
+      [userId],
+    );
+
+    return result.pop().exists;
+  }
+
+  async findByKey(options: FindConditions<Artist>) {
+    return await this.artistsRepository.find({
+      select: [
+        'id',
+        'genders',
+        'lastName',
+        'profileThumbnail',
+        'shortDescription',
+        'tags',
+        'userId',
+        'contactEmail',
+        'contactPhoneNumber',
+        'firstName',
+      ],
+      where: {
+        ...options,
+      },
+    });
   }
 
   async addFollow(artists: Artist, topic: string, newFollow: FollowTopic) {

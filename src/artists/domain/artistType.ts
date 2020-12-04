@@ -14,12 +14,14 @@ export type ArtistTypeProps =
 | 'genders'
 | 'rating'
 | 'followers'
+| 'follows'
 | 'created_at'
 | 'updated_at';
 
 
 export type ArtistType = {
     id?: number;
+    username?: string;
     userId?: number;
     userTypeId?: number;
     firstName?: string;
@@ -32,6 +34,7 @@ export type ArtistType = {
     genders?: string[] | Gender[];
     rating?: number;
     followers?: number;
+    follows?: number;
     created_at?: Date;
     updated_at?: Date;
 };
