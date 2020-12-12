@@ -1,21 +1,15 @@
 import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService, ConfigModule } from '@nestjs/config';
-import userDb from '../config/userDatabase';
-import app from '../config/app';
-import auth from '../config/auth';
-import aws from '../config/aws';
-import customerDb from '../config/customerDatabase';
-import artistDatabase from '../config/artistDatabase';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { BaseHandler } from './infrastructure/base.handler';
-
+import config from '../config'
 @Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [app, userDb, customerDb, artistDatabase, auth, aws],
+      load: config,
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ArtistsService } from '../domain/services/artists.service';
 import { MultimediasService } from '../../multimedias/services/multimedias.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
-import { DomainInternalServerErrorException } from 'src/global/domain/exceptions/domainInternalServerError.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 
 @Injectable()
 export class UpdateArtistProfilePictureUseCase {

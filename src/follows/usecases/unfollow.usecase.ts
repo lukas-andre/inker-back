@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { DomainConflictException } from 'src/global/domain/exceptions/domainConflict.exception';
-import { DomainInternalServerErrorException } from 'src/global/domain/exceptions/domainInternalServerError.exception';
+import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { getConnection } from 'typeorm';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { FollowersService } from '../domain/services/followers.service';
-import { Follow } from '../infrastructure/entities/follow.entity';
-import { Follower } from '../infrastructure/entities/follower.entity';
+import { FollowedsService } from '../domain/services/followeds.service';
+import { Followed } from '../infrastructure/entities/followed.entity';
+import { Following } from '../infrastructure/entities/following.entity';
 
 @Injectable()
-export class UnfollowArtistUseCase {
-  constructor(private readonly followersService: FollowersService) {}
+export class UnfollowUseCase {
+  constructor(private readonly followedsService: FollowedsService) {}
 
   async execute(
     artistUserId: number,
@@ -20,24 +20,24 @@ export class UnfollowArtistUseCase {
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
 
-    const existsFollower = await this.followersService.existsFollowerInArtist(
+    const existsFollower = await this.followedsService.existsFollowerInArtist(
       artistUserId,
       userId,
     );
     if (!existsFollower) {
-      return new DomainConflictException('Follower not exist');
+      return new DomainNotFoundException('Follower not exist');
     }
 
     await queryRunner.startTransaction();
 
     try {
       await queryRunner.manager
-        .getRepository(Follower)
-        .delete({ followedUserId: artistUserId, userId });
+        .getRepository(Followed)
+        .delete({ userFollowedId: artistUserId, userId });
 
       await queryRunner.manager
-        .getRepository(Follow)
-        .delete({ followerUserId: userId, userId: artistUserId });
+        .getRepository(Following)
+        .delete({ userFollowingId: userId, userId: artistUserId });
 
       await queryRunner.commitTransaction();
     } catch (error) {

@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { ArtistsService } from '../domain/services/artists.service';
-import { Artist } from '../infrastructure/entities/artist.entity';
 import { FindManyOptions } from 'typeorm';
-import { FollowersService } from '../domain/services/followers.service';
+import { ArtistsService } from '../domain/services/artists.service';
 import { ArtistType } from '../domain/artistType';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { FollowsService } from '../domain/services/follows.service';
+import { FollowedsService } from '../../follows/domain/services/followeds.service';
+import { FollowingsService } from '../../follows/domain/services/followings.service';
+import { Artist } from '../infrastructure/entities/artist.entity';
 
 @Injectable()
 export class FindArtistsUseCases {
   constructor(
     private readonly artistsService: ArtistsService,
-    private readonly followersService: FollowersService,
-    private readonly followsService: FollowsService,
+    private readonly followedsService: FollowedsService,
+    private readonly followingService: FollowingsService,
   ) {}
 
   async findById(id: number): Promise<ArtistType | DomainException> {
@@ -24,8 +24,8 @@ export class FindArtistsUseCases {
       return new DomainNotFoundException('Artist not found');
     }
 
-    artist.followers = await this.followersService.countFollowers(artist.userId);
-    artist.follows = await this.followsService.countFollows(artist.userId);
+    artist.followers = await this.followedsService.countFollowers(artist.userId);
+    artist.follows = await this.followingService.countFollows(artist.userId);
     return artist;
   }
 

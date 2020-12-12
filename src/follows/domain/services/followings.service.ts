@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Following } from '../../infrastructure/entities/following.entity';
 import {
   Repository,
   DeleteResult,
@@ -9,34 +10,34 @@ import {
   FindConditions,
 } from 'typeorm';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-import { Follow } from '../../infrastructure/entities/follow.entity';
 
 @Injectable()
-export class FollowsService {
-  private readonly serviceName: string = FollowsService.name;
+export class FollowingsService {
+  private readonly serviceName: string = FollowingsService.name;
 
   constructor(
-    @InjectRepository(Follow, 'artist-db')
-    private readonly followsRepository: Repository<Follow>,
+    @InjectRepository(Following, 'follow-db')
+    private readonly followsRepository: Repository<Following>,
   ) {}
 
   async findById(id: string) {
     return await this.followsRepository.findOne(id);
   }
 
-  async find(options: FindManyOptions<Follow>) {
+  async find(options: FindManyOptions<Following>) {
     return await this.followsRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<Follow>) {
+  async findByKey(findConditions: FindConditions<Following>) {
     return await this.followsRepository.find({
       select: [
-        'followerUserId',
-        'fullname',
-        'profileThumbnail',
+        'userFollowingId',
         'userType',
         'userTypeId',
+        'userId',
         'username',
+        'fullname',
+        'profileThumbnail',
       ],
       where: {
         ...findConditions,
@@ -44,34 +45,34 @@ export class FollowsService {
     });
   }
 
-  async findAndCount(options: FindManyOptions<Follow>) {
+  async findAndCount(options: FindManyOptions<Following>) {
     return await this.followsRepository.findAndCount(options);
   }
 
   async findOne(
-    options?: FindOneOptions<Follow>,
-  ): Promise<Follow | undefined> {
+    options?: FindOneOptions<Following>,
+  ): Promise<Following | undefined> {
     return await this.followsRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Follow>): Promise<Follow> {
+  async save(artist: DeepPartial<Following>): Promise<Following> {
     return await this.followsRepository.save(artist);
   }
 
   async existFollower(
-    artistId: number,
+    userFollowingId: number,
     userId: number,
   ): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.followsRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM follow f WHERE f.follower_user_id = $1 AND f.user_id = $2)`,
-      [artistId, userId],
+      `SELECT EXISTS(SELECT 1 FROM following f WHERE f.user_following_id = $1 AND f.user_id = $2)`,
+      [userFollowingId, userId],
     );
 
     return result.pop().exists;
   }
 
-  async countFollows(id: number): Promise<number> {
-    return this.followsRepository.count({ where: { followerUserId: id } });
+  async countFollows(followerUserId: number): Promise<number> {
+    return this.followsRepository.count({ where: { followerUserId } });
   }
 
   async delete(id: string): Promise<DeleteResult> {
