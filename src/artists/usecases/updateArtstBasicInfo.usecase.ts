@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { ArtistsService } from '../domain/services/artists.service';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';

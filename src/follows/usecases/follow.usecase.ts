@@ -1,25 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { getConnection } from 'typeorm';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { ArtistsService } from '../domain/services/artists.service';
-import { FollowersService } from '../domain/services/followers.service';
-import { Follower } from '../infrastructure/entities/follower.entity';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
+import { UserType } from '../../users/domain/enums/userType.enum';
+import { UsersService } from '../../users/domain/services/users.service';
+import { FollowedsService } from '../domain/services/followeds.service';
+import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { Followed } from '../infrastructure/entities/followed.entity';
+import { Following } from '../infrastructure/entities/following.entity';
 import { FollowArtistParams } from './interfaces/followArtist.param';
-import { Follow } from '../infrastructure/entities/follow.entity';
-import { FollowType } from '../domain/followType';
-import { UserType } from 'src/users/domain/enums/userType.enum';
 
 @Injectable()
 export class FollowUseCase {
   constructor(
-    private readonly followersService: FollowersService,
+    private readonly usersService: UsersService,
     private readonly artistsService: ArtistsService,
+    private readonly followedsService: FollowedsService,
   ) {}
 
   async execute(
-    followedArtistUserId: number,
+    followedUserId: number,
     follower: FollowArtistParams,
   ): Promise<boolean | DomainException> {
     let result: boolean | DomainException;
@@ -28,20 +29,22 @@ export class FollowUseCase {
     const queryRunner = connection.createQueryRunner();
 
     await queryRunner.connect();
-    if (
-      !(await this.artistsService.existArtistByUserId(followedArtistUserId))
-    ) {
+
+    // TODO: ESTO ESTA LIMITANDO QUE SOLO SE SIGAN ARTISTAS
+    if (!(await this.usersService.existsArtist(followedUserId))) {
       return new DomainConflictException('Artist not exists');
     }
 
     if (
-      await this.followersService.existsFollowerInArtist(
-        followedArtistUserId,
+      await this.followedsService.existsFollowerInArtist(
+        followedUserId,
         follower.userId,
       )
     ) {
       return new DomainConflictException('Follower already exists');
     }
+
+    // TODO: ESTA DATA PODRIA VENEIRDEL FRONT
     const artistData = await this.artistsService.findOne({
       select: [
         'id',
@@ -51,7 +54,7 @@ export class FollowUseCase {
         'lastName',
         'profileThumbnail',
       ],
-      where: { userId: followedArtistUserId },
+      where: { userId: followedUserId },
     });
 
     console.log('artistData: ', artistData);
@@ -59,14 +62,14 @@ export class FollowUseCase {
     await queryRunner.startTransaction();
 
     try {
-      await queryRunner.manager.save(Follower, {
-        followedUserId: artistData.userId,
-        ...Object.assign(new Follower(), follower),
+      await queryRunner.manager.save(Followed, {
+        userFollowedId: artistData.userId,
+        ...Object.assign(new Followed(), follower),
       });
 
-      await queryRunner.manager.save(Follow, {
-        ...Object.assign(new Follow(), {
-          followerUserId: follower.userId,
+      await queryRunner.manager.save(Following, {
+        ...Object.assign(new Following(), {
+          userFollowingId: follower.userId,
           userType: UserType.ARTIST,
           userId: artistData.userId,
           fullname: [artistData.firstName, artistData.lastName].join(' '),

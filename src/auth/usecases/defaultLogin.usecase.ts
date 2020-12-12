@@ -11,7 +11,7 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 import { LoginParams } from './interfaces/defaultLogin.params';
-import { DomainNotFoundException } from 'src/global/domain/exceptions/domainNotFound.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 
 @Injectable()
 export class DefaultLoginUseCase {

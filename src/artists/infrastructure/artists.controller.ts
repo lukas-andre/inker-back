@@ -29,7 +29,6 @@ import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
-import { FollowerDto } from './dtos/follow.dto';
 
 @ApiBearerAuth()
 @ApiTags('artists')
@@ -101,51 +100,5 @@ export class ArtistsController {
     @Body() body: UpdateArtistDto,
   ) {
     return this.artistHandler.handleUpdateArtistBasicInfo(id, body);
-  }
-
-  @ApiOperation({ summary: 'Add follow' })
-  @ApiOkResponse({
-    description: 'Follow ok',
-    type: Boolean,
-  })
-  @ApiParam({ name: 'id', required: true, type: Number })
-  @Post(':id/follow')
-  async follow(@Param('id', ParseIntPipe) id: number, @Request() request) {
-    return this.artistHandler.handleFollow(id, request);
-  }
-
-  @ApiOperation({ summary: 'Unfollow' })
-  @ApiOkResponse({
-    description: 'Unfollow ok',
-    type: Boolean,
-  })
-  @ApiParam({ name: 'id', required: true, type: Number })
-  @Post(':id/unfollow')
-  async unfollow(@Param('id', ParseIntPipe) id: number, @Request() request) {
-    return this.artistHandler.handleUnfollow(id, request);
-  }
-
-  @ApiOperation({ summary: 'Find artist followers' })
-  @ApiOkResponse({
-    description: 'Find followers ok',
-    type: FollowerDto,
-    isArray: true
-  })
-  @ApiParam({ name: 'id', required: true, type: Number })
-  @Get(':id/followers')
-  async findArtistFollowers(@Param('id', ParseIntPipe) id: number) {
-    return this.artistHandler.handleFindArtistFollowers(id);
-  }
-
-  @ApiOperation({ summary: 'Find artist follows' })
-  @ApiOkResponse({
-    description: 'Find follows ok',
-    type: FollowerDto,
-    isArray: true
-  })
-  @ApiParam({ name: 'id', required: true, type: Number })
-  @Get(':id/follows')
-  async findArtistFollows(@Param('id', ParseIntPipe) id: number) {
-    return this.artistHandler.findArtistFollows(id);
   }
 }

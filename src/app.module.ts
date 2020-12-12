@@ -7,8 +7,7 @@ import { ArtistsModule } from './artists/artists.module';
 import { GlobalModule } from './global/global.module';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { MultimediasModule } from './multimedias/multimedias.module';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './global/infrastructure/guards/auth.guard';
+import { FollowsModule } from './follows/follows.module';
 
 @Module({
   imports: [
@@ -35,8 +34,17 @@ import { AuthGuard } from './global/infrastructure/guards/auth.guard';
       imports: [ConfigModule],
       name: 'artist-db',
       useFactory: (configService: ConfigService) => {
-        console.log('customerDB', configService.get('artistDb'));
+        console.log('artistDb', configService.get('artistDb'));
         return configService.get('artistDb');
+      },
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: 'follow-db',
+      useFactory: (configService: ConfigService) => {
+        console.log('followDB', configService.get('followDb'));
+        return configService.get('followDb');
       },
       inject: [ConfigService],
     }),
@@ -45,6 +53,7 @@ import { AuthGuard } from './global/infrastructure/guards/auth.guard';
     CustomersModule,
     ArtistsModule,
     MultimediasModule,
+    FollowsModule,
     // FeedModule,
     // PostsModule,
     // NotificationsModule,

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../infrastructure/entities/user.entity';
 import {
   Repository,
   FindManyOptions,
@@ -8,13 +7,14 @@ import {
   FindOneOptions,
   DeleteResult,
 } from 'typeorm';
-import { hash, compare } from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { LoginType } from '../../../auth/domain/enums/loginType.enum';
 import { Role } from '../../infrastructure/entities/role.entity';
-import { CreateUserByTypeParams } from 'src/users/usecases/user/interfaces/createUserByType.params';
 import { IUser } from '../models/user.model';
-
+import { User } from '../../infrastructure/entities/user.entity';
+import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { hash, compare } from 'bcryptjs';
 @Injectable()
 export class UsersService {
   constructor(
@@ -57,6 +57,22 @@ export class UsersService {
       relations: ['role', 'role.permissions'],
       where: { [String(LoginType[type]).toLocaleLowerCase()]: identifier },
     });
+  }
+
+  async exists(userId: number): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.usersRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM users u WHERE u.id = $1)`,
+      [userId],
+    );
+    return result.pop().exists;
+  }
+
+  async existsArtist(userId: number): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.usersRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM users u WHERE u.id = $1 AND u.userType)`,
+      [userId],
+    );
+    return result.pop().exists;
   }
 
   async find(options: FindManyOptions<User>) {

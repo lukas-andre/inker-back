@@ -4,8 +4,8 @@ import { serviceErrorStringify } from '../../global/domain/utils/serviceErrorStr
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { CreateArtistDto } from '../infrastructure/dtos/createArtist.dto';
 import { Artist } from '../infrastructure/entities/artist.entity';
-import { DomainConflictException } from 'src/global/domain/exceptions/domainConflict.exception';
-import { DomainException } from 'src/global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { DomainException } from '../../global/domain/exceptions/domain.exception';
 
 @Injectable()
 export class CreateArtistUseCase {

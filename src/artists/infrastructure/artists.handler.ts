@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { CreateArtistDto } from './dtos/createArtist.dto';
 import { CreateArtistUseCase } from '../usecases/createArtist.usecase';
 import { FindArtistsUseCases } from '../usecases/findArtist.usecases';
@@ -6,14 +7,7 @@ import { UpdateArtistProfilePictureUseCase } from '../usecases/updateArtistProfi
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { UpdateArtistBasicInfoUseCase } from '../usecases/updateArtstBasicInfo.usecase';
-import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
-import { FollowerDto } from './dtos/follow.dto';
-import { FollowUseCase } from '../usecases/followArtist.usecase';
-import { UnfollowArtistUseCase } from '../usecases/unfollowArtist.usecase';
-import { BaseHandler } from 'src/global/infrastructure/base.handler';
-import { FindArtistFollowersUseCase } from '../usecases/findArtistFollowers.usecase';
-import { FindArtistFollowsUseCase } from '../usecases/findArtistFollows.usecase';
+import { BaseHandler } from '../../global/infrastructure/base.handler';
 @Injectable()
 export class ArtistsHandler extends BaseHandler {
   constructor(
@@ -21,10 +15,6 @@ export class ArtistsHandler extends BaseHandler {
     private readonly findArtistsUseCases: FindArtistsUseCases,
     private readonly updateArtistProfilePictureUseCase: UpdateArtistProfilePictureUseCase,
     private readonly updateArtistBasicInfoUseCase: UpdateArtistBasicInfoUseCase,
-    private readonly followUseCase: FollowUseCase,
-    private readonly unfollowArtistUseCase: UnfollowArtistUseCase,
-    private readonly findArtistFollowersUseCase: FindArtistFollowersUseCase,
-    private readonly findArtistFollowsUseCase: FindArtistFollowsUseCase,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);
@@ -57,36 +47,5 @@ export class ArtistsHandler extends BaseHandler {
     return this.resolve(
       await this.updateArtistBasicInfoUseCase.execute(id, dto),
     );
-  }
-
-  async handleFollow(followedArtistId: number, request): Promise<boolean> {
-    const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    const follower: FollowerDto = {
-      userId: jwtPayload.id,
-      userTypeId: jwtPayload.userTypeId,
-      userType: jwtPayload.userType,
-      username: jwtPayload.username,
-      fullname: jwtPayload.fullname,
-      profileThumbnail: jwtPayload.profileThumbnail
-        ? jwtPayload.profileThumbnail
-        : '',
-    };
-
-    return this.resolve(await this.followUseCase.execute(followedArtistId, follower));
-  }
-
-  async handleUnfollow(id: number, request): Promise<boolean> {
-    const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    return this.resolve(
-      await this.unfollowArtistUseCase.execute(id, jwtPayload.id),
-    );
-  }
-
-  async handleFindArtistFollowers(artistUserId: number): Promise<FollowerDto[]> {
-    return this.resolve(await this.findArtistFollowersUseCase.execute(artistUserId));
-  }
-
-  async findArtistFollows(artistUserId: number) {
-    return this.resolve(await this.findArtistFollowsUseCase.execute(artistUserId));
   }
 }
