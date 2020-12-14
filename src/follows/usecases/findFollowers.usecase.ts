@@ -21,11 +21,10 @@ export class FindFollowersUseCase {
     if (!(await this.usersService.exists(userId))) {
       result = new DomainNotFoundException('User not found');
     }
-    
 
     result = await this.followedsService.findByKey({
       userType: UserType.ARTIST,
-      userFollowedId: userId
+      userFollowedId: userId,
     });
 
     this.logger.log(

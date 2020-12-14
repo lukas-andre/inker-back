@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Logger,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ExtractJwt } from 'passport-jwt';
 import { JwtService } from '@nestjs/jwt';
@@ -18,12 +23,12 @@ export class AuthGuard implements CanActivate {
     const calledAction = context.getHandler().name;
     console.log('calledAction: ', calledAction);
     console.log('calledController: ', calledController);
-    
-    const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(request)
+
+    const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
     if (!jwt) {
       return false;
     }
-    
+
     let verifyJwt: JwtPayload;
     try {
       verifyJwt = this.jwtService.verify(jwt);
@@ -36,9 +41,7 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    const permission = verifyJwt.permision.find(
-      p => p.c == calledController,
-    );
+    const permission = verifyJwt.permision.find(p => p.c == calledController);
     console.log('permission: ', permission);
 
     if (!permission) {

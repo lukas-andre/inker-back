@@ -1,9 +1,4 @@
-import {
-  Entity,
-  Column,
-  ManyToMany,
-  JoinTable
-} from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
 import { Permission } from './permission.entity';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 

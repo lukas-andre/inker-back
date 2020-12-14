@@ -38,12 +38,12 @@ export class FollowsHandler extends BaseHandler {
 
   async handleUnfollow(id: number, request): Promise<boolean> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    return this.resolve(
-      await this.unfollowUseCase.execute(id, jwtPayload.id),
-    );
+    return this.resolve(await this.unfollowUseCase.execute(id, jwtPayload.id));
   }
 
-  async handleFindArtistFollowers(artistUserId: number): Promise<FollowerDto[]> {
+  async handleFindArtistFollowers(
+    artistUserId: number,
+  ): Promise<FollowerDto[]> {
     return this.resolve(await this.findFollowersUseCase.execute(artistUserId));
   }
 

@@ -1,11 +1,8 @@
-import {
-  Entity,
-  Column,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Permission extends BaseEntity{
+export class Permission extends BaseEntity {
   @Column({ unique: true })
   controller: string;
 

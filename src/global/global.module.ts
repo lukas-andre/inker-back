@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { BaseHandler } from './infrastructure/base.handler';
-import config from '../config'
+import config from '../config';
 @Global()
 @Module({
   imports: [

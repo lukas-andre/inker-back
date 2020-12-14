@@ -3,15 +3,15 @@ import { Entity, Column, Index } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Following extends BaseEntity  {
+export class Following extends BaseEntity {
   @Index()
   @Column({ name: 'user_following_id' })
   userFollowingId: number;
 
   @Index()
-  @Column({ name: 'user_id'})
+  @Column({ name: 'user_id' })
   userId: number;
-  
+
   @Index()
   @Column({ name: 'user_type_id' })
   userTypeId: number;

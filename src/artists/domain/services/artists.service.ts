@@ -16,7 +16,6 @@ import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQuery
 
 @Injectable()
 export class ArtistsService {
-
   private readonly serviceName: string = ArtistsService.name;
 
   constructor(
