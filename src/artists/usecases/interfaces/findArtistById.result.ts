@@ -1,3 +1,3 @@
 import { ArtistType } from "../../domain/artistType";
 
-export type findArtistById = ArtistType;
+export type FindArtistByIdResult = ArtistType;

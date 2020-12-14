@@ -16,7 +16,7 @@ export class UnfollowUseCase {
     userId: number,
   ): Promise<boolean | DomainException> {
     let result: boolean | DomainException;
-    const connection = getConnection('artist-db');
+    const connection = getConnection('follow-db');
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
 
