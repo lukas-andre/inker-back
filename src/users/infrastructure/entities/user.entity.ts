@@ -1,9 +1,4 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  Index,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, Index } from 'typeorm';
 import { Role } from './role.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';

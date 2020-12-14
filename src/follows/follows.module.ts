@@ -17,7 +17,7 @@ import { UnfollowUseCase } from './usecases/unfollow.usecase';
   imports: [
     TypeOrmModule.forFeature([Followed, Following], 'follow-db'),
     forwardRef(() => UsersModule),
-    forwardRef(() => ArtistsModule)
+    forwardRef(() => ArtistsModule),
   ],
   controllers: [FollowsController],
   providers: [
@@ -29,9 +29,6 @@ import { UnfollowUseCase } from './usecases/unfollow.usecase';
     FollowUseCase,
     UnfollowUseCase,
   ],
-  exports: [
-    FollowedsService,
-    FollowingsService
-  ]
+  exports: [FollowedsService, FollowingsService],
 })
 export class FollowsModule {}

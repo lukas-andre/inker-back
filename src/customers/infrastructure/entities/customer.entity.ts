@@ -1,8 +1,5 @@
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import {
-  Entity,
-  Column,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { CustomerFollows } from '../../domain/interfaces/customerFollows.interface';
 
 @Entity()

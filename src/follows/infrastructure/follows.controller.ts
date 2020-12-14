@@ -1,14 +1,25 @@
-import { Controller, Get, Post, Param, ParseIntPipe, Request } from '@nestjs/common';
-import { ApiOperation, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  ParseIntPipe,
+  Request,
+} from '@nestjs/common';
+import {
+  ApiOperation,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { FollowerDto } from '../../artists/infrastructure/dtos/follow.dto';
 import { FollowsHandler } from './follows.handler';
-
 
 @ApiTags('follow')
 @Controller('follow')
 export class FollowsController {
   constructor(private readonly followsHandler: FollowsHandler) {}
-  
+
   @ApiOperation({ summary: 'Add follow' })
   @ApiOkResponse({
     description: 'Follow ok',
@@ -16,7 +27,10 @@ export class FollowsController {
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Post(':userId')
-  async follow(@Param('userId', ParseIntPipe) userId: number, @Request() request) {
+  async follow(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Request() request,
+  ) {
     return this.followsHandler.handleFollow(userId, request);
   }
 
@@ -27,7 +41,10 @@ export class FollowsController {
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Post(':userId/unfollow')
-  async unfollow(@Param('userId', ParseIntPipe) userId: number, @Request() request) {
+  async unfollow(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Request() request,
+  ) {
     return this.followsHandler.handleUnfollow(userId, request);
   }
 
@@ -35,7 +52,7 @@ export class FollowsController {
   @ApiOkResponse({
     description: 'Find followers ok',
     type: FollowerDto,
-    isArray: true
+    isArray: true,
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Get(':userId/followers')
@@ -47,7 +64,7 @@ export class FollowsController {
   @ApiOkResponse({
     description: 'Find follows ok',
     type: FollowerDto,
-    isArray: true
+    isArray: true,
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Get(':userId/follows')

@@ -17,7 +17,7 @@ import { FollowsModule } from '../follows/follows.module';
   imports: [
     TypeOrmModule.forFeature([Artist, Gender, Tag], 'artist-db'),
     MultimediasModule,
-    FollowsModule
+    FollowsModule,
   ],
   providers: [
     ArtistsHandler,

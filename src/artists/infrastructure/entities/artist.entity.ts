@@ -1,15 +1,10 @@
-import {
-  Entity,
-  Column,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
 import { Tag } from './tag.entity';
 import { Gender } from './genders.entity';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Artist extends BaseEntity  {
+export class Artist extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: number;
 

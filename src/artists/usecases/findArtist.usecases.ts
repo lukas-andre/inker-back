@@ -25,7 +25,9 @@ export class FindArtistsUseCases {
       return new DomainNotFoundException('Artist not found');
     }
 
-    artist.followers = await this.followedsService.countFollowers(artist.userId);
+    artist.followers = await this.followedsService.countFollowers(
+      artist.userId,
+    );
     artist.follows = await this.followingService.countFollows(artist.userId);
     return artist;
   }

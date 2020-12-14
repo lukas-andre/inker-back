@@ -16,7 +16,6 @@ export class FollowerDto {
   @IsString()
   readonly userTypeId: number;
 
-
   @ApiProperty({
     example: 'ARTIST',
     description: 'UserType',
