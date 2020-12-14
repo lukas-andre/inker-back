@@ -61,18 +61,18 @@ export class FollowingsService {
 
   async existFollower(
     userFollowingId: number,
-    userId: number,
+    followedUserId: number,
   ): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.followsRepository.query(
       `SELECT EXISTS(SELECT 1 FROM following f WHERE f.user_following_id = $1 AND f.user_id = $2)`,
-      [userFollowingId, userId],
+      [userFollowingId, followedUserId],
     );
 
     return result.pop().exists;
   }
 
-  async countFollows(followerUserId: number): Promise<number> {
-    return this.followsRepository.count({ where: { followerUserId } });
+  async countFollows(userFollowingId: number): Promise<number> {
+    return this.followsRepository.count({ where: { userFollowingId } });
   }
 
   async delete(id: string): Promise<DeleteResult> {

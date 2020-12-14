@@ -2,7 +2,7 @@ import { IsString, IsOptional, IsNumber } from 'class-validator';
 import { JwtPermission } from '../../../global/domain/interfaces/jwtPayload.interface';
 
 export class DefaultLoginResult {
-  @IsString()
+  @IsNumber()
   id: number;
 
   @IsString()

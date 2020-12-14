@@ -7,6 +7,7 @@ import { DomainNotFoundException } from '../../global/domain/exceptions/domainNo
 import { FollowedsService } from '../../follows/domain/services/followeds.service';
 import { FollowingsService } from '../../follows/domain/services/followings.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
+import { FindArtistByIdResult } from './interfaces/findArtistById.result';
 
 @Injectable()
 export class FindArtistsUseCases {
@@ -16,7 +17,7 @@ export class FindArtistsUseCases {
     private readonly followingService: FollowingsService,
   ) {}
 
-  async findById(id: number): Promise<ArtistType | DomainException> {
+  async findById(id: number): Promise<FindArtistByIdResult | DomainException> {
     let artist: ArtistType | DomainException;
     artist = await this.artistsService.findById(id);
 

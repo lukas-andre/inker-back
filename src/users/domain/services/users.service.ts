@@ -15,6 +15,7 @@ import { User } from '../../infrastructure/entities/user.entity';
 import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { hash, compare } from 'bcryptjs';
+import { UserType } from '../enums/userType.enum';
 @Injectable()
 export class UsersService {
   constructor(
@@ -61,7 +62,7 @@ export class UsersService {
 
   async exists(userId: number): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.usersRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM users u WHERE u.id = $1)`,
+      `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1)`,
       [userId],
     );
     return result.pop().exists;
@@ -69,8 +70,8 @@ export class UsersService {
 
   async existsArtist(userId: number): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.usersRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM users u WHERE u.id = $1 AND u.userType)`,
-      [userId],
+      `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u."userType" = $2)`,
+      [userId, UserType.ARTIST],
     );
     return result.pop().exists;
   }

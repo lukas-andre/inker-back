@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Followed } from '../../infrastructure/entities/followed.entity';
 import {
@@ -61,18 +61,18 @@ export class FollowedsService {
 
   async existsFollowerInArtist(
     artistUserId: number,
-    userId: number,
+    followerUserId: number,
   ): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.followersRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM follower f WHERE f.user_followed_id = $1 AND f.user_id = $2)`,
-      [artistUserId, userId],
+      `SELECT EXISTS(SELECT 1 FROM followed f WHERE f.user_followed_id = $1 AND f.user_id = $2)`,
+      [artistUserId, followerUserId],
     );
 
     return result.pop().exists;
   }
 
-  async countFollowers(followedUserId: number): Promise<number> {
-    return this.followersRepository.count({ where: { followedUserId} });
+  async countFollowers(userFollowedId: number): Promise<number> {
+    return this.followersRepository.count({ where: { userFollowedId } });
   }
 
   async delete(id: string): Promise<DeleteResult> {

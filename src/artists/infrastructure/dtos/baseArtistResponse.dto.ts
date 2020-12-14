@@ -1,5 +1,3 @@
-import { Artist } from '../entities/artist.entity';
-import { Follower } from '../entities/follower.entity';
 import { Gender } from '../entities/genders.entity';
 import { Tag } from '../entities/tag.entity';
 
@@ -15,6 +13,7 @@ export class BaseArtistResponse {
   tags?: Tag[] | string[];
   genders?: Gender[] | string[];
   followers?: number;
+  follows?: number;
   rating?: number;
   created_at?: Date;
   updated_at?: Date;

@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
       this.logger.error(error);
       return false;
     }
-    
+    console.log('verifyJwt: ', verifyJwt);
     if (!verifyJwt) {
       return false;
     }
