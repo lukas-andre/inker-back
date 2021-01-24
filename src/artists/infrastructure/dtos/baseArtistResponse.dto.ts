@@ -1,5 +1,5 @@
-import { Gender } from '../entities/genders.entity';
-import { Tag } from '../entities/tag.entity';
+import { GenrerInterface } from 'src/genres/genre.interface';
+import { TagInterface } from 'src/tags/tag.interface';
 
 export class BaseArtistResponse {
   id?: number;
@@ -10,8 +10,8 @@ export class BaseArtistResponse {
   contactPhoneNumber?: string;
   shortDescription?: string;
   profileThumbnail?: string;
-  tags?: Tag[] | string[];
-  genders?: Gender[] | string[];
+  tags?: TagInterface[] | string[];
+  genres?: GenrerInterface[] | string[];
   followers?: number;
   follows?: number;
   rating?: number;

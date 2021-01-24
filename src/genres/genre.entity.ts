@@ -1,8 +1,8 @@
 import { Entity, Column } from 'typeorm';
-import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+import { BaseEntity } from '../global/infrastructure/entities/base.entity';
 
 @Entity()
-export class Gender extends BaseEntity {
+export class Genrer extends BaseEntity {
   @Column()
   name: string;
 

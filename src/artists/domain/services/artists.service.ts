@@ -63,7 +63,7 @@ export class ArtistsService {
     return await this.artistsRepository.find({
       select: [
         'id',
-        'genders',
+        'genres',
         'lastName',
         'profileThumbnail',
         'shortDescription',
