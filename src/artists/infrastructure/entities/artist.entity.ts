@@ -1,6 +1,6 @@
-import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
-import { Tag } from './tag.entity';
-import { Gender } from './genders.entity';
+import { GenrerInterface } from '../../../genres/genre.interface';
+import { TagInterface } from '../../../tags/tag.interface';
+import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
@@ -29,13 +29,11 @@ export class Artist extends BaseEntity {
   @Column({ name: 'profile_thumbnail', nullable: true })
   profileThumbnail: string;
 
-  @ManyToMany(() => Tag)
-  @JoinTable({ name: 'artist_tags' })
-  tags: Tag[];
+  @Column('jsonb', { nullable: true })
+  tags: TagInterface[];
 
-  @ManyToMany(() => Gender)
-  @JoinTable({ name: 'artist_genders' })
-  genders: Gender[];
+  @Column('jsonb', { nullable: true })
+  genres: GenrerInterface[];
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;

@@ -1,5 +1,5 @@
-import { Gender } from '../infrastructure/entities/genders.entity';
-import { Tag } from '../infrastructure/entities/tag.entity';
+import { GenrerInterface } from '../../genres/genre.interface';
+import { TagInterface } from '../../tags/tag.interface';
 
 export type ArtistTypeProps =
   | 'id'
@@ -29,8 +29,8 @@ export type ArtistType = {
   contactPhoneNumber?: string;
   shortDescription?: string;
   profileThumbnail?: string;
-  tags?: string[] | Tag[];
-  genders?: string[] | Gender[];
+  tags?: string[] | TagInterface[];
+  genres?: string[] | GenrerInterface[];
   rating?: number;
   followers?: number;
   follows?: number;

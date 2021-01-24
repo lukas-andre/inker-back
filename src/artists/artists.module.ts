@@ -9,13 +9,11 @@ import { CreateArtistUseCase } from './usecases/createArtist.usecase';
 import { FindArtistsUseCases } from './usecases/findArtist.usecases';
 import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfilePicture.usecase';
 import { UpdateArtistBasicInfoUseCase } from './usecases/updateArtstBasicInfo.usecase';
-import { Gender } from './infrastructure/entities/genders.entity';
-import { Tag } from './infrastructure/entities/tag.entity';
 import { FollowsModule } from '../follows/follows.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Artist, Gender, Tag], 'artist-db'),
+    TypeOrmModule.forFeature([Artist], 'artist-db'),
     MultimediasModule,
     FollowsModule,
   ],

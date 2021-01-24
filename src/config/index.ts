@@ -5,6 +5,10 @@ import userDatabase from './userDatabase';
 import artistDatabase from './artistDatabase';
 import customerDatabase from './customerDatabase';
 import followDatabase from './followDatabase';
+import likeDatabase from './likeDatabase';
+import postDatabase from './postDatabase';
+import genreDatabase from './genreDatabase';
+import tagDatabase from './tagDatabase';
 
 export default [
   app,
@@ -14,4 +18,8 @@ export default [
   artistDatabase,
   customerDatabase,
   followDatabase,
+  likeDatabase,
+  postDatabase,
+  genreDatabase,
+  tagDatabase,
 ];

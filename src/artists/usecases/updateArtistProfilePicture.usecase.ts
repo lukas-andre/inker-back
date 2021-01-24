@@ -28,7 +28,7 @@ export class UpdateArtistProfilePictureUseCase {
     if (!artist) return new DomainNotFoundException('Artists not found');
 
     const source = `artist/${id}`;
-    const fileName = `profile-picture_${new Date()}`;
+    const fileName = `profile_picture_${id}`;
     console.time('uploadFile');
 
     const { aws, cloudFrontUrl } = await this.multimediasService.upload(
