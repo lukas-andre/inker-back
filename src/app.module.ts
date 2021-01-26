@@ -6,7 +6,7 @@ import { ArtistsModule } from './artists/artists.module';
 import { GlobalModule } from './global/global.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { FollowsModule } from './follows/follows.module';
-import { LikesModule } from './likes/likes.module';
+import { ReactionsModule } from './reactions/reactions.module';
 import { PostsModule } from './posts/posts.module';
 import { GenresModule } from './genres/genres.module';
 import { TagsModule } from './tags/tags.module';
@@ -22,7 +22,7 @@ import { DatabasesModule } from './databases/database.module';
     ArtistsModule,
     MultimediasModule,
     FollowsModule,
-    LikesModule,
+    ReactionsModule,
     PostsModule,
     TagsModule,
     GenresModule,

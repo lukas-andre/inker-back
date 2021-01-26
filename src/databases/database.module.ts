@@ -42,10 +42,10 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'like-db',
+      name: 'reaction-db',
       useFactory: (configService: ConfigService) => {
-        console.log('likeDb', configService.get('likeDb'));
-        return configService.get('likeDb');
+        console.log('reactionDb', configService.get('reactionDb'));
+        return configService.get('reactionDb');
       },
       inject: [ConfigService],
     }),

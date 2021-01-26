@@ -8,19 +8,27 @@ export class Comment extends BaseEntity {
 
   @Index()
   @Column({ nullable: true })
-  location: boolean;
+  location: string;
 
   @Index()
   @Column({ name: 'user_id' })
-  userId: string;
+  userId: number;
 
   @Index()
-  @Column({ name: 'post_id' })
-  postId: string;
+  @Column({ name: 'user_type_id' })
+  userTypeId: number;
+
+  @Index()
+  @Column({ name: 'user_type' })
+  userType: string;
+
+  @Index()
+  @Column({ name: 'parent_type' })
+  parentType: string;
 
   @Index()
   @Column({ name: 'parent_id', nullable: true })
-  partenId: string;
+  partenId: number;
 
   @Column()
   username: string;

@@ -1,14 +1,14 @@
 import { registerAs } from '@nestjs/config';
 
-export default registerAs('likeDb', () => ({
+export default registerAs('reactionDb', () => ({
   type: 'postgres',
-  name: 'like-db',
+  name: 'reaction-db',
   host: process.env.DB_HOST || 'localhost',
   username: process.env.DB_USERNAME || 'root',
   password: process.env.DB_PASSWORD || 'root',
-  database: 'inker-like',
+  database: 'inker-reaction',
   port: parseInt(process.env.DB_PORT, 5432),
-  entities: [__dirname + '/../likes/**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/../reactions/**/*.entity{.ts,.js}'],
   synchronize: process.env.TYPEORM_SYNC,
   logging: true,
   cache: true,

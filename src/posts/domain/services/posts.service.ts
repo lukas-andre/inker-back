@@ -19,7 +19,7 @@ export class PostsService {
     private readonly postsRepository: Repository<Post>,
   ) {}
 
-  async findById(id: string) {
+  async findById(id: number) {
     return await this.postsRepository.findOne(id);
   }
 
@@ -35,9 +35,18 @@ export class PostsService {
       },
     });
   }
+  async createQueryBuilder(alias: string) {
+    return this.postsRepository.createQueryBuilder(alias);
+  }
 
-  async findAndCount(options: FindManyOptions<Post>) {
+  async findAndCount(
+    options: FindManyOptions<Post>,
+  ): Promise<[Post[], number]> {
     return await this.postsRepository.findAndCount(options);
+  }
+
+  async count(options: FindManyOptions<Post>): Promise<number> {
+    return await this.postsRepository.count(options);
   }
 
   async findOne(options?: FindOneOptions<Post>): Promise<Post | undefined> {

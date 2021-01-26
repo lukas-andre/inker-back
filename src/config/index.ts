@@ -5,7 +5,7 @@ import userDatabase from './userDatabase';
 import artistDatabase from './artistDatabase';
 import customerDatabase from './customerDatabase';
 import followDatabase from './followDatabase';
-import likeDatabase from './likeDatabase';
+import reactionDatabase from './reactionDatabase';
 import postDatabase from './postDatabase';
 import genreDatabase from './genreDatabase';
 import tagDatabase from './tagDatabase';
@@ -18,7 +18,7 @@ export default [
   artistDatabase,
   customerDatabase,
   followDatabase,
-  likeDatabase,
+  reactionDatabase,
   postDatabase,
   genreDatabase,
   tagDatabase,

@@ -1,8 +1,6 @@
-import { Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
-@Entity()
 export class CreatePostDto {
   @ApiProperty({
     description: 'Post Content',
@@ -17,20 +15,16 @@ export class CreatePostDto {
   readonly location: string;
 
   @ApiProperty({
-    description: 'Post user profile thumnail',
-  })
-  @IsString()
-  readonly profileThumbnail: string;
-
-  @ApiProperty({
     description: 'Post tags',
   })
+  @IsOptional()
   @IsArray()
-  readonly tags: string[];
+  readonly tags?: string[];
 
   @ApiProperty({
     description: 'Post genders',
   })
+  @IsOptional()
   @IsArray()
-  readonly genders: string[];
+  readonly genders?: string[];
 }

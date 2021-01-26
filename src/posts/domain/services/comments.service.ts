@@ -19,11 +19,11 @@ export class CommentsService {
     private readonly commentsRepository: Repository<Comment>,
   ) {}
 
-  async findById(id: string) {
+  async findById(id: number): Promise<Comment> {
     return await this.commentsRepository.findOne(id);
   }
 
-  async find(options: FindManyOptions<Comment>) {
+  async find(options: FindManyOptions<Comment>): Promise<Comment[]> {
     return await this.commentsRepository.find(options);
   }
 
@@ -36,8 +36,14 @@ export class CommentsService {
     });
   }
 
-  async findAndCount(options: FindManyOptions<Comment>) {
+  async findAndCount(
+    options: FindManyOptions<Comment>,
+  ): Promise<[Comment[], number]> {
     return await this.commentsRepository.findAndCount(options);
+  }
+
+  async count(options: FindManyOptions<Comment>): Promise<number> {
+    return await this.commentsRepository.count(options);
   }
 
   async findOne(

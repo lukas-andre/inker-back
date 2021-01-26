@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like } from 'src/likes/infrastructure/entities/like.entity';
+import { Reaction } from 'src/reactions/infrastructure/entities/reaction.entity';
 import {
   Repository,
   FindManyOptions,
@@ -11,48 +11,45 @@ import {
 } from 'typeorm';
 
 @Injectable()
-export class LikesService {
-  private readonly serviceName: string = LikesService.name;
+export class ReactionsService {
+  private readonly serviceName: string = ReactionsService.name;
 
   constructor(
-    @InjectRepository(Like, 'like-db')
-    private readonly likesRepository: Repository<Like>,
+    @InjectRepository(Reaction, 'reaction-db')
+    private readonly likesRepository: Repository<Reaction>,
   ) {}
 
   async findById(id: string) {
     return await this.likesRepository.findOne(id);
   }
 
-  async find(options: FindManyOptions<Like>) {
+  async find(options: FindManyOptions<Reaction>) {
     return await this.likesRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<Like>) {
+  async findByKey(
+    findConditions: FindConditions<Reaction>,
+    select: (keyof Reaction)[],
+  ) {
     return await this.likesRepository.find({
-      select: [
-        'id',
-        'active',
-        'activityId',
-        'type',
-        'userId',
-        'created_at',
-        'updated_at',
-      ],
+      select,
       where: {
         ...findConditions,
       },
     });
   }
 
-  async findAndCount(options: FindManyOptions<Like>) {
+  async findAndCount(options: FindManyOptions<Reaction>) {
     return await this.likesRepository.findAndCount(options);
   }
 
-  async findOne(options?: FindOneOptions<Like>): Promise<Like | undefined> {
+  async findOne(
+    options?: FindOneOptions<Reaction>,
+  ): Promise<Reaction | undefined> {
     return await this.likesRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Like>): Promise<Like> {
+  async save(artist: DeepPartial<Reaction>): Promise<Reaction> {
     return await this.likesRepository.save(artist);
   }
 

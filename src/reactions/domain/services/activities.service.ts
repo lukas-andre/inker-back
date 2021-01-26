@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Activity } from '../../../likes/infrastructure/entities/activity.entity';
+import { Activity } from '../../infrastructure/entities/activity.entity';
 import {
   Repository,
   FindManyOptions,
@@ -15,7 +15,7 @@ export class ActivitiesService {
   private readonly serviceName: string = ActivitiesService.name;
 
   constructor(
-    @InjectRepository(Activity, 'like-db')
+    @InjectRepository(Activity, 'reaction-db')
     private readonly acitivitiesRepository: Repository<Activity>,
   ) {}
 
@@ -27,9 +27,12 @@ export class ActivitiesService {
     return await this.acitivitiesRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<Activity>) {
+  async findByKey(
+    findConditions: FindConditions<Activity>,
+    select: (keyof Activity)[],
+  ) {
     return await this.acitivitiesRepository.find({
-      select: ['id', 'likes', 'created_at', 'updated_at'],
+      select,
       where: {
         ...findConditions,
       },
@@ -43,6 +46,13 @@ export class ActivitiesService {
   async findOne(
     options?: FindOneOptions<Activity>,
   ): Promise<Activity | undefined> {
+    return await this.acitivitiesRepository.findOne(options);
+  }
+
+  async findAll(
+    options?: FindOneOptions<Activity>,
+  ): Promise<Activity | undefined> {
+    // this.acitivitiesRepository.createQueryBuilder('activities').select('activities').addSelect()
     return await this.acitivitiesRepository.findOne(options);
   }
 
