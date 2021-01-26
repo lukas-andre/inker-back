@@ -16,6 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
   generateJwtByUserType(
     userType: string,
     user: User,
@@ -42,6 +43,6 @@ export class AuthService {
       ...jwtPayload,
       accessToken,
       expiresIn: this.configService.get('auth.jwtExpiration'),
-    };
+    } as FullJwtPayload;
   }
 }

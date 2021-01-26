@@ -15,11 +15,10 @@ import { TagsService } from '../../tags/tags.service';
 import { GenresService } from '../../genres/genres.service';
 import { GenrerInterface } from '../../genres/genre.interface';
 import { TagInterface } from '../../tags/tag.interface';
-import { MultimediasMetadaInterface } from '../../multimedias/interfaces/multimediasMetadata.interface copy';
 
 @Injectable()
-export class UploadPostUseCase {
-  private readonly logger = new Logger(UploadPostUseCase.name);
+export class ArtistUploadPostUseCase {
+  private readonly logger = new Logger(ArtistUploadPostUseCase.name);
 
   constructor(
     private readonly postService: PostsService,
@@ -49,23 +48,25 @@ export class UploadPostUseCase {
       return new DomainNotFoundException('Artists not found');
     }
 
-    const genresEntities: GenrerInterface[] = [],
-      tagsEntities: TagInterface[] = [];
+    const genres: GenrerInterface[] = [],
+      tags: TagInterface[] = [];
     try {
       await Promise.all([
-        this.genresService.handlePostGenres(createPostDto, genresEntities),
-        this.tagsService.handlePostTags(createPostDto, tagsEntities),
+        this.genresService.handlePostGenres(createPostDto, genres),
+        this.tagsService.handlePostTags(createPostDto, tags),
       ]);
     } catch (error) {
       this.logger.log(JSON.stringify(error));
     }
 
+    console.log('genres: ', genres);
+    console.log('tags: ', tags);
     const newPost: DeepPartial<Post> = {
       content: createPostDto.content,
       location: createPostDto.location,
-      profileThumbnail: createPostDto.profileThumbnail,
-      genres: genresEntities,
-      tags: tagsEntities,
+      profileThumbnail: jwtPayload.profileThumbnail,
+      genres: genres ? genres : [{}],
+      tags: tags ? tags : [{}],
       userId: jwtPayload.id,
       userTypeId: jwtPayload.userTypeId,
       userType: jwtPayload.userType,

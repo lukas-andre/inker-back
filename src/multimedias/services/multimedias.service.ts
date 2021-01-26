@@ -12,7 +12,7 @@ export class MultimediasService {
   ) {}
 
   public async upload(
-    file: any,
+    file: FileInterface,
     source?: string,
     fileName?: string,
   ): Promise<{ aws: AWS.S3.ManagedUpload.SendData; cloudFrontUrl: string }> {
