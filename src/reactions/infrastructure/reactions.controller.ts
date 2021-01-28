@@ -20,9 +20,9 @@ export class ReactionsController {
   private readonly logger = new Logger(ReactionsController.name);
   constructor(private readonly reactionsHandler: ReactionsHandler) {}
 
-  @ApiOperation({ summary: 'Add Like to activity' })
+  @ApiOperation({ summary: 'Add Reaction to activity' })
   @ApiOkResponse({
-    description: 'Add like ok',
+    description: 'Add reaction ok',
     type: ReactionToActivityResponseDto,
   })
   @Post()

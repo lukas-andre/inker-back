@@ -1,5 +1,5 @@
-import { GenrerInterface } from 'src/genres/genre.interface';
-import { TagInterface } from 'src/tags/tag.interface';
+import { GenrerInterface } from '../../../genres/genre.interface';
+import { TagInterface } from '../../../tags/tag.interface';
 
 export class BaseArtistResponse {
   id?: number;

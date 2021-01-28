@@ -24,7 +24,7 @@ import { CreatePostDto } from '../dtos/createPost.dto';
 import { PostsHandler } from '../handlers/posts.handler';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { ListAllArtistPostsQueryDto } from '../dtos/listAllArtistPostQuery.dto';
-import { PaginationDto } from 'src/global/infrastructure/dtos/pagination.dto';
+import { PaginationDto } from '../../../global/infrastructure/dtos/pagination.dto';
 import { ArtistPostResponseDto } from '../dtos/listAllArtistPostResponse.dto';
 
 @ApiTags('posts')

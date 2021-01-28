@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { Activity } from '../infrastructure/entities/activity.entity';
-import { JwtPayload } from 'src/global/domain/interfaces/jwtPayload.interface';
+import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import { ActivitiesService } from '../domain/services/activities.service';
 import { ReactionsService } from '../domain/services/reactions.service';
 import { Reaction } from '../infrastructure/entities/reaction.entity';
 import { ReactionToActivityDto } from '../infrastructure/reactionToActivity.dto';
+import { FindReactionAndReactionTypeGroup } from '../domain/interfaces/findReactionAndReactionTypeGroup.interface';
 
 @Injectable()
 export class ReactToActivityUseCase {
@@ -19,21 +20,122 @@ export class ReactToActivityUseCase {
   async execute(
     jwtPayload: JwtPayload,
     reactionDto: ReactionToActivityDto,
-  ): Promise<Activity | DomainException> {
-    const existsUserReaction = await this.reactionsService.findOne({
-      where: { userId: jwtPayload.id },
-      order: {
-        created_at: 'DESC',
+  ): Promise<FindReactionAndReactionTypeGroup | DomainException> {
+    const isSameReaction  = await this.validateSameUserReaction(
+      jwtPayload,
+      reactionDto,
+    );
+
+    if (isSameReaction) {
+      await this.reactionsService.save(
+        this.mapToReaction(reactionDto, jwtPayload, false),
+      );
+      return this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
+        reactionDto.activityId,
+        reactionDto.activity,
+      );
+    }
+
+    const existsUserReactionInThisActivity = await this.reactionsService.findOne(
+      {
+        where: {
+          activityId: reactionDto.activityId,
+          activityType: reactionDto.activity,
+          userId: jwtPayload.id,
+          active: true,
+        },
+      },
+    );
+
+    if (existsUserReactionInThisActivity) {
+      existsUserReactionInThisActivity.active = false;
+      await this.reactionsService.save(existsUserReactionInThisActivity);
+    }
+
+    await this.reactionsService.save(
+      this.mapToReaction(reactionDto, jwtPayload),
+    );
+
+    const existingActivity = await this.activitiesService.findOne({
+      where: {
+        activityId: reactionDto.activityId,
+        activityType: reactionDto.activity,
+        reactionType: reactionDto.reaction,
       },
     });
 
-    if (existsUserReaction) {
-      existsUserReaction.active = false;
-      await this.reactionsService.save(existsUserReaction);
+    if (existingActivity && !existsUserReactionInThisActivity) {
+      existingActivity.reactions++;
+      await this.activitiesService.save(existingActivity);
     }
 
+    if (existingActivity && existsUserReactionInThisActivity) {
+      const oldUserReaction = await this.activitiesService.findOne({
+        where: {
+          activityId: existsUserReactionInThisActivity.activityId,
+          activityType: existsUserReactionInThisActivity.activityType,
+          reactionType: existsUserReactionInThisActivity.reactionType,
+        },
+      });
+
+      if (oldUserReaction.reactions > 0) {
+        oldUserReaction.reactions--;
+      }
+
+      await this.activitiesService.save(oldUserReaction);
+
+      const toUpdateActivities = await this.activitiesService.findOne({
+        where: {
+          activityId: reactionDto.activityId,
+          reactionType: reactionDto.reaction,
+          activityType: reactionDto.activity,
+        },
+      });
+      toUpdateActivities.reactions++;
+
+      await this.activitiesService.save(toUpdateActivities);
+    }
+
+    if (!existingActivity && existsUserReactionInThisActivity) {
+      const oldActivityRegister = await this.activitiesService.findOne({
+        where: {
+          activityId: existsUserReactionInThisActivity.activityId,
+          activityType: existsUserReactionInThisActivity.activityType,
+          reactionType: existsUserReactionInThisActivity.reactionType,
+        },
+      });
+
+      oldActivityRegister.reactions--;
+      await this.activitiesService.save(oldActivityRegister);
+      await this.activitiesService.save(this.mapNewActivity(reactionDto));
+    }
+
+    if (!existingActivity && !existsUserReactionInThisActivity) {
+      await this.activitiesService.save(this.mapNewActivity(reactionDto));
+    }
+
+    return await this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
+      reactionDto.activityId,
+      reactionDto.activity,
+    );
+  }
+
+  private mapNewActivity(reactionDto: ReactionToActivityDto) {
+    const newActivity = new Activity();
+    newActivity.activityId = reactionDto.activityId;
+    newActivity.activityType = reactionDto.activity;
+    newActivity.reactionType = reactionDto.reaction;
+    newActivity.reactions = 1;
+    return newActivity;
+  }
+
+  private mapToReaction(
+    reactionDto: ReactionToActivityDto,
+    jwtPayload: JwtPayload,
+    isActive: boolean = true,
+  ): Reaction {
     const newReaction = new Reaction();
-    newReaction.active = true;
+    newReaction.active = isActive;
     newReaction.activityId = reactionDto.activityId;
     newReaction.activityType = reactionDto.activity;
     newReaction.location = reactionDto.location;
@@ -43,71 +145,42 @@ export class ReactToActivityUseCase {
     newReaction.userTypeId = jwtPayload.userTypeId;
     newReaction.profileThumbnail = jwtPayload.profileThumbnail;
     newReaction.username = jwtPayload.username;
-
-    console.log('newReaction: ', newReaction);
-
-    await this.reactionsService.save(newReaction);
-
-    const existingActivity = await this.activitiesService.findOne({
-      where: {
-        activityId: reactionDto.activityId,
-        reactionType: reactionDto.reaction,
-      },
-    });
-
-    console.log('existingActivity: ', existingActivity);
-
-    if (existingActivity && !existsUserReaction) {
-      existingActivity.reactions++;
-      return await this.activitiesService.save(existingActivity);
-    }
-
-    console.log('existsUserReaction: ', existsUserReaction);
-
-    if (existingActivity && existsUserReaction) {
-      existingActivity.reactions--;
-      await this.activitiesService.save(existingActivity);
-
-      const toUpdateActivities = await this.activitiesService.findOne({
-        where: {
-          reactionType: reactionDto.reaction,
-        },
-      });
-      toUpdateActivities.reactions++;
-
-      return await this.activitiesService.save(toUpdateActivities);
-    }
-
-    // ESTO PUEDE PASAR SI EL USUARIO YA REACCIONO.
-    // Y SE QUIERE CAMBIIAR A UN NUEVA REACCION SIN ACTIVIDAD REGISTRADA AUN
-    if (!existingActivity && existsUserReaction) {
-      const oldActivityRegister = await this.activitiesService.findOne({
-        where: {
-          activityId: existsUserReaction.activityId,
-          reactionType: existsUserReaction.reactionType,
-        },
-      });
-
-      oldActivityRegister.reactions--;
-      await this.activitiesService.save(oldActivityRegister);
-
-      const newActivity = new Activity();
-      newActivity.activityId = reactionDto.activityId;
-      newActivity.reactionType = reactionDto.reaction;
-      newActivity.reactions = 1;
-      return await this.activitiesService.save(newActivity);
-    }
-
-    if (!existingActivity && !existsUserReaction) {
-      const newActivity = new Activity();
-      newActivity.activityId = reactionDto.activityId;
-      newActivity.reactionType = reactionDto.reaction;
-      newActivity.reactions = 1;
-      return await this.activitiesService.save(newActivity);
-    }
-
-    return this.activitiesService.findOne({
-      where: { activityId: reactionDto.activityId },
-    });
+    return newReaction;
   }
+
+  private async validateSameUserReaction(
+    jwtPayload: JwtPayload,
+    reactionDto: ReactionToActivityDto,
+  ): Promise<boolean> {
+    const sameUserReaction = await this.reactionsService.findOne({
+      where: {
+        userId: jwtPayload.id,
+        activityType: reactionDto.activity,
+        reactionType: reactionDto.reaction,
+        active: true,
+      },
+
+    });
+
+    if (sameUserReaction) {
+      sameUserReaction.active = false;
+      await this.reactionsService.save(sameUserReaction);
+
+      const activity = await this.activitiesService.findOne({
+        where: {
+          activityId: reactionDto.activityId,
+          reactionType: reactionDto.reaction,
+          activityType: reactionDto.activity,
+        },
+      });
+
+      activity.reactions--;
+      await this.activitiesService.save(activity);
+      return true;
+    }
+
+    return false;
+  }
+
+  
 }

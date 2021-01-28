@@ -1,4 +1,4 @@
-import { BaseModelType } from 'src/global/domain/models/base.model';
+import { BaseModelType } from '../../../global/domain/models/base.model';
 
 export type LikeProps =
   | 'id'

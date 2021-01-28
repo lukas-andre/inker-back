@@ -8,7 +8,7 @@ export class ReactionToActivityResponseDto {
     example: 5,
   })
   @IsNumber()
-  readonly reactions: number;
+  readonly totalReactions: number;
 
   @ApiProperty({
     description: 'Activity id',
@@ -18,9 +18,16 @@ export class ReactionToActivityResponseDto {
   readonly activityId: number;
 
   @ApiProperty({
-    description: 'raectionType type',
+    description: 'raection type',
     example: ReactionTypeEnum.INK,
   })
-  @IsEnum(ReactionTypeEnum)
-  readonly reactionType: ReactionTypeEnum;
+  @IsString()
+  readonly activityType: string;
+
+  @ApiProperty({
+    description: 'raections in DESC order',
+    example: [ReactionTypeEnum.INK, ReactionTypeEnum.LOVE],
+  })
+  @IsString()
+  readonly reactions: string;
 }

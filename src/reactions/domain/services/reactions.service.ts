@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Reaction } from 'src/reactions/infrastructure/entities/reaction.entity';
+import { Reaction } from '../../../reactions/infrastructure/entities/reaction.entity';
 import {
   Repository,
   FindManyOptions,
