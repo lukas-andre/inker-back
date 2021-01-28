@@ -21,7 +21,7 @@ export class ReactToActivityUseCase {
     jwtPayload: JwtPayload,
     reactionDto: ReactionToActivityDto,
   ): Promise<FindReactionAndReactionTypeGroup | DomainException> {
-    const isSameReaction  = await this.validateSameUserReaction(
+    const isSameReaction = await this.validateSameUserReaction(
       jwtPayload,
       reactionDto,
     );
@@ -159,7 +159,6 @@ export class ReactToActivityUseCase {
         reactionType: reactionDto.reaction,
         active: true,
       },
-
     });
 
     if (sameUserReaction) {
@@ -181,6 +180,4 @@ export class ReactToActivityUseCase {
 
     return false;
   }
-
-  
 }
