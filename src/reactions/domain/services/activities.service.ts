@@ -9,6 +9,7 @@ import {
   DeepPartial,
   DeleteResult,
 } from 'typeorm';
+import { FindReactionAndReactionTypeGroup } from '../interfaces/findReactionAndReactionTypeGroup.interface';
 
 @Injectable()
 export class ActivitiesService {
@@ -49,11 +50,27 @@ export class ActivitiesService {
     return await this.acitivitiesRepository.findOne(options);
   }
 
-  async findAll(
-    options?: FindOneOptions<Activity>,
-  ): Promise<Activity | undefined> {
-    // this.acitivitiesRepository.createQueryBuilder('activities').select('activities').addSelect()
-    return await this.acitivitiesRepository.findOne(options);
+  async findAllWithTotalReactionsAndReactionGroup(
+    activityId?: number,
+    activityType?: string,
+  ): Promise<FindReactionAndReactionTypeGroup | undefined> {
+    return (await this.acitivitiesRepository
+      .createQueryBuilder('activities')
+      .select('COUNT(activities.reactions)', 'totalReactions')
+      .addSelect('activities.activity_type', 'activityType')
+      .addSelect('activities.activity_id', 'activityId')
+      .addSelect(
+        `array_to_string(array_agg(activities.reaction_type ORDER BY activities.reactions DESC), ',') AS reactions`,
+      )
+      .where('activities.activity_id = :activityId', {
+        activityId,
+      })
+      .andWhere('activities.activity_type = :activityType', {
+        activityType,
+      })
+      .andWhere('activities.reactions > 0')
+      .groupBy('activities.activity_id, activities.activity_type ')
+      .getRawOne()) as FindReactionAndReactionTypeGroup;
   }
 
   async save(artist: DeepPartial<Activity>): Promise<Activity> {

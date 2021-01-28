@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreatePostDto } from 'src/posts/infrastructure/dtos/createPost.dto';
+import { CreatePostDto } from '../posts/infrastructure/dtos/createPost.dto';
 import {
   Repository,
   FindManyOptions,
