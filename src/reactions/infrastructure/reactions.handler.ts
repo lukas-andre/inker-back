@@ -5,11 +5,13 @@ import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { ReactToActivityUseCase } from '../usecases/reactToActivity.usecase';
 import { ReactionToActivityResponseDto } from './reactionToActivityResponse.dto';
 import { ReactionToActivityDto } from './reactionToActivity.dto';
+import { GetReactionsDetailByActivity } from '../usecases/getReactionsDetailByActivity.usecase copy';
 
 @Injectable()
 export class ReactionsHandler extends BaseHandler {
   constructor(
     private readonly reactToActivityUseCase: ReactToActivityUseCase,
+    private readonly getReactionsDetailByActivity: GetReactionsDetailByActivity,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);
@@ -22,6 +24,21 @@ export class ReactionsHandler extends BaseHandler {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
     return this.resolve(
       await this.reactToActivityUseCase.execute(jwtPayload, dto),
+    );
+  }
+
+  async handleGetReactionsDetail(
+    activityId: number,
+    activity: string,
+    request: any,
+  ): Promise<ReactionToActivityResponseDto> {
+    const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
+    return this.resolve(
+      await this.getReactionsDetailByActivity.execute(
+        jwtPayload,
+        activityId,
+        activity,
+      ),
     );
   }
 }

@@ -16,22 +16,22 @@ export class ReactionsService {
 
   constructor(
     @InjectRepository(Reaction, 'reaction-db')
-    private readonly likesRepository: Repository<Reaction>,
+    private readonly reactionsRepository: Repository<Reaction>,
   ) {}
 
   async findById(id: string) {
-    return await this.likesRepository.findOne(id);
+    return await this.reactionsRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Reaction>) {
-    return await this.likesRepository.find(options);
+    return await this.reactionsRepository.find(options);
   }
 
   async findByKey(
     findConditions: FindConditions<Reaction>,
     select: (keyof Reaction)[],
   ) {
-    return await this.likesRepository.find({
+    return await this.reactionsRepository.find({
       select,
       where: {
         ...findConditions,
@@ -40,20 +40,53 @@ export class ReactionsService {
   }
 
   async findAndCount(options: FindManyOptions<Reaction>) {
-    return await this.likesRepository.findAndCount(options);
+    return await this.reactionsRepository.findAndCount(options);
   }
 
   async findOne(
     options?: FindOneOptions<Reaction>,
   ): Promise<Reaction | undefined> {
-    return await this.likesRepository.findOne(options);
+    return await this.reactionsRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Reaction>): Promise<Reaction> {
-    return await this.likesRepository.save(artist);
+  async save(reaction: DeepPartial<Reaction>): Promise<Reaction> {
+    return await this.reactionsRepository.save(reaction);
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.likesRepository.delete(id);
+    return await this.reactionsRepository.delete(id);
   }
+
+  async findByActivityIdAndActivityType(
+    activityId: number,
+    activity: string,
+  ): Promise<any> {
+    return (await this.reactionsRepository
+      .createQueryBuilder('reactions')
+      .select(
+        `json_agg(json_build_object('reaction_type', reactions.reaction_type, 'user_id', reactions.user_id, 'user_type_id', reactions.user_type_id, 'user_type', reactions.user_type, 'profile_thumbnail', reactions.profile_thumbnail, 'username', reactions.username)) AS reactions`,
+      )
+      .addSelect('COUNT(reactions.reaction_type) AS group_total')
+      .addSelect('reactions.reaction_type AS reaction_type')
+      .where('reactions.active = true')
+      .andWhere('reactions.activity_id = :activityId', { activityId })
+      .andWhere('reactions.activity_type = :activity', { activity })
+      .groupBy('reactions.reaction_type')
+      .getRawMany()) as GropuedReactionsInterface[];
+  }
+}
+
+export interface GropuedReactionsInterface {
+  reactions: GroupedReactionInterface;
+  group_total: string;
+  reaction_type: string;
+}
+
+export interface GroupedReactionInterface {
+  reaction_type: string;
+  user_id: number;
+  user_type_id: number;
+  user_type: string;
+  profile_thumbnail?: string;
+  username: string;
 }
