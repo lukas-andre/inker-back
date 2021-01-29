@@ -47,7 +47,7 @@ export class ReactionsController {
     return this.reactionsHandler.handleReaction(body, request);
   }
 
-  @ApiOperation({ summary: 'Get reactions frrom activity' })
+  @ApiOperation({ summary: 'Get reactions from activity' })
   @ApiOkResponse({
     description: 'Get reaction ok',
   })
@@ -78,6 +78,43 @@ export class ReactionsController {
     console.log('activityId: ', activityId);
     console.log('activity: ', activity);
     return this.reactionsHandler.handleGetReactionsDetail(
+      activityId,
+      activity,
+      request,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get activities from activity' })
+  @ApiOkResponse({
+    description: 'Get activities ok',
+  })
+  @ApiParam({
+    description: 'Activity id',
+    name: 'activityId',
+    required: true,
+    type: Number,
+    example: 10,
+  })
+  @ApiParam({
+    description: 'Activity id',
+    name: 'activity',
+    required: true,
+    enum: ActivityTypeEnum,
+    example: ActivityTypeEnum.POST,
+  })
+  @Get('resume')
+  async getActivityReactionsResume(
+    @Ip() ip: string,
+    @HostParam() host: any,
+    @Request() request,
+    @Query('activityId', ParseIntPipe) activityId: number,
+    @Query('activity') activity: string,
+  ): Promise<any> {
+    this.logger.log(`IP: ${ip}`);
+    this.logger.log(`Host: ${JSON.stringify(host)}`);
+    console.log('activityId: ', activityId);
+    console.log('activity: ', activity);
+    return this.reactionsHandler.handleGetActivityReactionsResume(
       activityId,
       activity,
       request,

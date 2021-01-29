@@ -6,7 +6,8 @@ import { Activity } from './infrastructure/entities/activity.entity';
 import { Reaction } from './infrastructure/entities/reaction.entity';
 import { ReactionsController } from './infrastructure/reactions.controller';
 import { ReactionsHandler } from './infrastructure/reactions.handler';
-import { GetReactionsDetailByActivity } from './usecases/getReactionsDetailByActivity.usecase copy';
+import { GetActivityReactionsResumeUseCase } from './usecases/getActivityReactionsResumse.usecase.usecase';
+import { GetReactionsDetailByActivityUseCase } from './usecases/getReactionsDetailByActivity.usecasee';
 import { ReactToActivityUseCase } from './usecases/reactToActivity.usecase';
 
 @Module({
@@ -16,7 +17,8 @@ import { ReactToActivityUseCase } from './usecases/reactToActivity.usecase';
     ReactionsService,
     ActivitiesService,
     ReactToActivityUseCase,
-    GetReactionsDetailByActivity,
+    GetReactionsDetailByActivityUseCase,
+    GetActivityReactionsResumeUseCase,
     ReactionsHandler,
   ],
   exports: [],

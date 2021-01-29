@@ -9,11 +9,11 @@ import { ReactionToActivityDto } from '../infrastructure/reactionToActivity.dto'
 import { FindReactionAndReactionTypeGroup } from '../domain/interfaces/findReactionAndReactionTypeGroup.interface';
 
 @Injectable()
-export class GetReactionsDetailByActivity {
-  private readonly logger = new Logger(GetReactionsDetailByActivity.name);
+export class GetReactionsDetailByActivityUseCase
+ {
+  private readonly logger = new Logger(GetReactionsDetailByActivityUseCase.name);
 
   constructor(
-    private readonly activitiesService: ActivitiesService,
     private readonly reactionsService: ReactionsService,
   ) {}
 
@@ -27,5 +27,6 @@ export class GetReactionsDetailByActivity {
       activity,
     );
     console.log('result: ', result);
+    return result;
   }
 }
