@@ -27,9 +27,8 @@ export class ReactToActivityUseCase {
     );
 
     if (isSameReaction) {
-      await this.reactionsService.save(
-        this.mapToReaction(reactionDto, jwtPayload, false),
-      );
+      await this.deactivateReaction(reactionDto, jwtPayload);
+
       return this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
         reactionDto.activityId,
         reactionDto.activity,
@@ -117,6 +116,15 @@ export class ReactToActivityUseCase {
     return await this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
       reactionDto.activityId,
       reactionDto.activity,
+    );
+  }
+
+  private async deactivateReaction(
+    reactionDto: ReactionToActivityDto,
+    jwtPayload: JwtPayload,
+  ) {
+    await this.reactionsService.save(
+      this.mapToReaction(reactionDto, jwtPayload, false),
     );
   }
 

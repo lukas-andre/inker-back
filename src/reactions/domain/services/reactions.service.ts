@@ -9,6 +9,7 @@ import {
   DeepPartial,
   DeleteResult,
 } from 'typeorm';
+import { GroupedReactionsInterface } from '../interfaces/groupedReaections.interface';
 
 @Injectable()
 export class ReactionsService {
@@ -61,7 +62,7 @@ export class ReactionsService {
     activityId: number,
     activity: string,
   ): Promise<any> {
-    return (await this.reactionsRepository
+    return await this.reactionsRepository
       .createQueryBuilder('reactions')
       .select(
         `json_agg(json_build_object('reaction_type', reactions.reaction_type, 'user_id', reactions.user_id, 'user_type_id', reactions.user_type_id, 'user_type', reactions.user_type, 'profile_thumbnail', reactions.profile_thumbnail, 'username', reactions.username)) AS reactions`,
@@ -72,21 +73,6 @@ export class ReactionsService {
       .andWhere('reactions.activity_id = :activityId', { activityId })
       .andWhere('reactions.activity_type = :activity', { activity })
       .groupBy('reactions.reaction_type')
-      .getRawMany()) as GropuedReactionsInterface[];
+      .getRawMany() as GroupedReactionsInterface[];
   }
-}
-
-export interface GropuedReactionsInterface {
-  reactions: GroupedReactionInterface;
-  group_total: string;
-  reaction_type: string;
-}
-
-export interface GroupedReactionInterface {
-  reaction_type: string;
-  user_id: number;
-  user_type_id: number;
-  user_type: string;
-  profile_thumbnail?: string;
-  username: string;
 }
