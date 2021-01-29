@@ -6,7 +6,7 @@ import { ReactToActivityUseCase } from '../usecases/reactToActivity.usecase';
 import { ReactionToActivityResponseDto } from './reactionToActivityResponse.dto';
 import { ReactionToActivityDto } from './reactionToActivity.dto';
 import { GetReactionsDetailByActivityUseCase } from '../usecases/getReactionsDetailByActivity.usecasee';
-import { GetActivityReactionsResumeUseCase } from '../usecases/getActivityReactionsResumse.usecase.usecase';
+import { GetActivityReactionsResumeUseCase } from '../usecases/getActivityReactionsResume.usecase';
 
 @Injectable()
 export class ReactionsHandler extends BaseHandler {
