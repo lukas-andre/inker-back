@@ -10,6 +10,6 @@ export default registerAs('postDb', () => ({
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../posts/**/*.entity{.ts,.js}'],
   synchronize: process.env.TYPEORM_SYNC,
-  logging: true,
+  logging: false,
   cache: true,
 }));

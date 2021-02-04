@@ -14,7 +14,6 @@ export class ListAllArtistPostsQueryDto {
 
   @ApiProperty({
     description: 'Post Tags',
-    required: false,
   })
   @IsArray()
   @IsOptional()

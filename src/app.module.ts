@@ -11,6 +11,8 @@ import { PostsModule } from './posts/posts.module';
 import { GenresModule } from './genres/genres.module';
 import { TagsModule } from './tags/tags.module';
 import { DatabasesModule } from './databases/database.module';
+import { ChatGateway } from './chat/chat.gateway';
+import { AlertGateway } from './alert/alert.gateway';
 
 @Module({
   imports: [
@@ -29,6 +31,6 @@ import { DatabasesModule } from './databases/database.module';
     // FeedModule,
     // NotificationsModule,
   ],
-  providers: [],
+  providers: [ChatGateway, AlertGateway],
 })
 export class AppModule {}

@@ -10,6 +10,6 @@ export default registerAs('genreDb', () => ({
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../genres/**/*.entity{.ts,.js}'],
   synchronize: process.env.TYPEORM_SYNC,
-  logging: true,
+  logging: false,
   cache: true,
 }));

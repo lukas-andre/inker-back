@@ -18,6 +18,7 @@ import {
   ApiOkResponse,
   ApiTags,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { ReactionsHandler } from './reactions.handler';
 import { ReactionToActivityResponseDto } from './reactionToActivityResponse.dto';
@@ -51,14 +52,14 @@ export class ReactionsController {
   @ApiOkResponse({
     description: 'Get reaction ok',
   })
-  @ApiParam({
+  @ApiQuery({
     description: 'Activity id',
     name: 'activityId',
     required: true,
     type: Number,
     example: 10,
   })
-  @ApiParam({
+  @ApiQuery({
     description: 'Activity id',
     name: 'activity',
     required: true,
@@ -88,14 +89,14 @@ export class ReactionsController {
   @ApiOkResponse({
     description: 'Get activities ok',
   })
-  @ApiParam({
+  @ApiQuery({
     description: 'Activity id',
     name: 'activityId',
     required: true,
     type: Number,
     example: 10,
   })
-  @ApiParam({
+  @ApiQuery({
     description: 'Activity id',
     name: 'activity',
     required: true,
