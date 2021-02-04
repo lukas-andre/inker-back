@@ -19,8 +19,8 @@ export class PaginationDto {
   @Expose()
   @ApiProperty({
     description: 'From which record you want to start to count',
-    example: 0,
-    default: 0,
+    example: 1,
+    default: 1,
   })
   @IsNotEmpty()
   @IsNumber()

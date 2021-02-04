@@ -18,6 +18,7 @@ import {
   ApiOkResponse,
   ApiTags,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreatePostDto } from '../dtos/createPost.dto';
@@ -59,6 +60,18 @@ export class PostsController {
     isArray: true,
   })
   @ApiParam({ name: 'userId', example: 1, required: true })
+  @ApiQuery({
+    name: 'genres',
+    required: false,
+    type: [String]
+  })
+  @ApiQuery({
+    name: 'tags',
+    required: false,
+    type: [String]
+  })
+  @ApiQuery({ name: 'limit', type: Number, required: true })
+  @ApiQuery({ name: 'offset', type: Number, required: true })
   @Get('/:userId/userId')
   async listArtistPost(
     @Ip() ip: string,

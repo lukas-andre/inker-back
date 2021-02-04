@@ -10,5 +10,5 @@ export default registerAs('customerDb', () => ({
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../customers/**/*.entity{.ts,.js}'],
   synchronize: process.env.TYPEORM_SYNC,
-  logging: true,
+  logging: false,
 }));
