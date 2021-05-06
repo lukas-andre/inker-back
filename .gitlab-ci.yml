@@ -9,10 +9,7 @@ stages:
   - staging
 
 staging:
-    type: deploy
     stage: staging
     image: ruby:latest
     script:
-        - dpl --provider=heroku --app=$HEROKU_APP --api-key=$HEROKU_API_KEY   
-    only:
-        - staging
+        - dpl --provider=heroku --app=$HEROKU_APP --api-key=$HEROKU_API_KEY
