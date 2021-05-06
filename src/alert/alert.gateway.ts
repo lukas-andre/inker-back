@@ -14,15 +14,15 @@ import { inspect } from 'util';
 export class AlertGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   private logger: Logger = new Logger(AlertGateway.name);
-  
-  @WebSocketServer() wss: Server;  
+
+  @WebSocketServer() wss: Server;
 
   afterInit(server: any) {
     this.logger.log('Initialized!');
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log('New Connection!'); 
+    this.logger.log('New Connection!');
     this.logger.log(inspect(client.json));
   }
 
@@ -32,10 +32,7 @@ export class AlertGateway
   }
 
   @SubscribeMessage('sendAlert')
-  handleMessage(
-    client: Socket,
-    message: { sender: string; message: string },
-  ) {
+  handleMessage(client: Socket, message: { sender: string; message: string }) {
     console.log('message: ', message);
     this.wss.emit('chatToClient', message);
   }

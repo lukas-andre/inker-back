@@ -2,7 +2,7 @@ import { BaseEntity } from '../../../global/infrastructure/entities/base.entity'
 import { Entity, Column, Index } from 'typeorm';
 import { TagInterface } from '../../../tags/tag.interface';
 import { GenrerInterface } from '../../../genres/genre.interface';
-import { MultimediasMetadaInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface copy';
+import { MultimediasMetadaInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 @Entity()
 export class Post extends BaseEntity {
