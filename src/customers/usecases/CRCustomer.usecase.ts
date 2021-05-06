@@ -1,5 +1,4 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { CustomersService } from '../domain/customers.service';
 import { serviceErrorStringify } from '../../global/domain/utils/serviceErrorStringify';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';

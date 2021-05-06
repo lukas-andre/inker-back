@@ -30,7 +30,6 @@ import { AlertGateway } from './alert/alert.gateway';
     GenresModule,
     // FeedModule,
     // NotificationsModule,
-    // //
   ],
   providers: [ChatGateway, AlertGateway],
 })
