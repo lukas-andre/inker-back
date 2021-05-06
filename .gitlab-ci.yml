@@ -1,10 +1,5 @@
 image: node:latest
 
-before_script:
-  - apt-get update -qy
-  - apt-get install -y ruby-dev
-  - gem install dpl
-
 stages:
   - lint
   - staging
@@ -26,6 +21,10 @@ staging:
   stage: staging
   image: ruby:latest
   when: manual
+  before_script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
   script:
     - echo $HEROKU_APP
     - echo $HEROKU_API_KEY
