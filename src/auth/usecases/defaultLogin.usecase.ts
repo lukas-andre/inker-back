@@ -34,7 +34,7 @@ export class DefaultLoginUseCase {
       return new DomainConflictException('Invalid credentials');
     }
 
-    return this.defaultLogin(user, loginParams);;
+    return this.defaultLogin(user, loginParams);
   }
 
   private async defaultLogin(

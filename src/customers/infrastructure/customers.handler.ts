@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { serviceErrorStringify } from '../../global/domain/utils/serviceErrorStringify';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
