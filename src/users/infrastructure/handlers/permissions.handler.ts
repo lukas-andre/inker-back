@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, HttpException } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { FindAllPermissionsUseCase } from '../../usecases/permission/findAllPermissions.usecase';
 import { FindAllRoutesUseCase } from '../../usecases/permission/findAllRoutes.usecase';

@@ -1,7 +1,6 @@
 import {
   Injectable,
   ConflictException,
-  NotFoundException,
 } from '@nestjs/common';
 import { serviceErrorStringify } from '../../global/domain/utils/serviceErrorStringify';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';

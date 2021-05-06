@@ -18,8 +18,7 @@ export class FindArtistsUseCases {
   ) {}
 
   async findById(id: number): Promise<FindArtistByIdResult | DomainException> {
-    let artist: ArtistType | DomainException;
-    artist = await this.artistsService.findById(id);
+    const artist: ArtistType | DomainException = await this.artistsService.findById(id); 
 
     if (!artist) {
       return new DomainNotFoundException('Artist not found');

@@ -6,7 +6,25 @@ before_script:
   - gem install dpl
 
 stages:
+  - lint
   - staging
+
+tslint:
+  image: node:10-alpine
+  stage: lint
+  script:
+    - yarn lint
+  tags:
+    - private
+
+prettier:
+  image: node:10-alpine
+  stage: lint
+  script:
+    - yarn
+    - yarn format-check
+  tags:
+    - private
 
 staging:
     stage: staging

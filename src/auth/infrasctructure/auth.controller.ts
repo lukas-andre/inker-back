@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Logger,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
