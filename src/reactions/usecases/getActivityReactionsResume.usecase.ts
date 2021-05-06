@@ -7,9 +7,7 @@ import { ActivitiesService } from '../domain/services/activities.service';
 export class GetActivityReactionsResumeUseCase {
   private readonly logger = new Logger(GetActivityReactionsResumeUseCase.name);
 
-  constructor(
-    private readonly activitiesService: ActivitiesService,
-  ) {}
+  constructor(private readonly activitiesService: ActivitiesService) {}
 
   async execute(
     jwtPayload: JwtPayload,

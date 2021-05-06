@@ -62,7 +62,7 @@ export class ReactionsService {
     activityId: number,
     activity: string,
   ): Promise<any> {
-    return await this.reactionsRepository
+    return (await this.reactionsRepository
       .createQueryBuilder('reactions')
       .select(
         `json_agg(json_build_object('reaction_type', reactions.reaction_type, 'user_id', reactions.user_id, 'user_type_id', reactions.user_type_id, 'user_type', reactions.user_type, 'profile_thumbnail', reactions.profile_thumbnail, 'username', reactions.username)) AS reactions`,
@@ -73,6 +73,6 @@ export class ReactionsService {
       .andWhere('reactions.activity_id = :activityId', { activityId })
       .andWhere('reactions.activity_type = :activity', { activity })
       .groupBy('reactions.reaction_type')
-      .getRawMany() as GroupedReactionsInterface[];
+      .getRawMany()) as GroupedReactionsInterface[];
   }
 }

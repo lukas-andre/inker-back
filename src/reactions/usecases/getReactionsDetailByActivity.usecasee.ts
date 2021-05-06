@@ -9,13 +9,12 @@ import { ReactionToActivityDto } from '../infrastructure/reactionToActivity.dto'
 import { FindReactionAndReactionTypeGroup } from '../domain/interfaces/findReactionAndReactionTypeGroup.interface';
 
 @Injectable()
-export class GetReactionsDetailByActivityUseCase
- {
-  private readonly logger = new Logger(GetReactionsDetailByActivityUseCase.name);
+export class GetReactionsDetailByActivityUseCase {
+  private readonly logger = new Logger(
+    GetReactionsDetailByActivityUseCase.name,
+  );
 
-  constructor(
-    private readonly reactionsService: ReactionsService,
-  ) {}
+  constructor(private readonly reactionsService: ReactionsService) {}
 
   async execute(
     jwtPayload: JwtPayload,

@@ -63,12 +63,12 @@ export class PostsController {
   @ApiQuery({
     name: 'genres',
     required: false,
-    type: [String]
+    type: [String],
   })
   @ApiQuery({
     name: 'tags',
     required: false,
-    type: [String]
+    type: [String],
   })
   @ApiQuery({ name: 'limit', type: Number, required: true })
   @ApiQuery({ name: 'offset', type: Number, required: true })

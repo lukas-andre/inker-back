@@ -44,7 +44,6 @@ export class ReactionsHandler extends BaseHandler {
     );
   }
 
-
   async handleGetActivityReactionsResume(
     activityId: number,
     activity: string,

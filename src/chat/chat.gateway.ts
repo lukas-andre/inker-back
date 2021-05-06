@@ -22,7 +22,7 @@ export class ChatGateway
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log('New Connection!'); 
+    this.logger.log('New Connection!');
     this.logger.log(inspect(client));
   }
   handleDisconnect(client: Socket) {
@@ -33,7 +33,7 @@ export class ChatGateway
   @SubscribeMessage('chatToServer')
   handleMessage(
     client: Socket,
-    message: { sender: string; message: string, room: string },
+    message: { sender: string; message: string; room: string },
   ) {
     console.log('message: ', message);
     this.wss.to(message.room).emit('chatToClient', message);
