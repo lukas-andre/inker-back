@@ -140,7 +140,7 @@ export class ReactToActivityUseCase {
   private mapToReaction(
     reactionDto: ReactionToActivityDto,
     jwtPayload: JwtPayload,
-    isActive: boolean = true,
+    isActive = true,
   ): Reaction {
     const newReaction = new Reaction();
     newReaction.active = isActive;

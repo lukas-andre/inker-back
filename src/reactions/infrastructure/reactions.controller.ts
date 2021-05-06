@@ -9,7 +9,6 @@ import {
   HostParam,
   Logger,
   Get,
-  Param,
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
@@ -17,7 +16,6 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiTags,
-  ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
 import { ReactionsHandler } from './reactions.handler';

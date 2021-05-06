@@ -25,8 +25,6 @@ export class DefaultLoginUseCase {
   async execute(
     loginParams: LoginParams,
   ): Promise<DefaultLoginResult | DomainException> {
-    let response: DefaultLoginResult | DomainException;
-
     const user = await this.usersService.findByType(
       loginParams.loginType,
       loginParams.identifier,
@@ -36,11 +34,7 @@ export class DefaultLoginUseCase {
       return new DomainConflictException('Invalid credentials');
     }
 
-    response = await this.defaultLogin(user, loginParams);
-
-    if (response instanceof DomainException) return response;
-
-    return response;
+    return this.defaultLogin(user, loginParams);
   }
 
   private async defaultLogin(
@@ -70,8 +64,8 @@ export class DefaultLoginUseCase {
     userId: number,
   ): Promise<Customer | Artist> {
     if (userType === UserType.CUSTOMER)
-      return await this.customersService.findOne({ where: { userId } });
+      return this.customersService.findOne({ where: { userId } });
     if (userType === UserType.ARTIST)
-      return await this.artistsService.findOne({ where: { userId } });
+      return this.artistsService.findOne({ where: { userId } });
   }
 }

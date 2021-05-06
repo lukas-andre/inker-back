@@ -1,19 +1,33 @@
 image: node:latest
 
-before_script: 
-  - apt-get update -qy
-  - apt-get install -y ruby-dev
-  - gem install dpl
-
 stages:
+  - lint
   - staging
 
+tslint:
+  image: node:10-alpine
+  stage: lint
+  before_script: 
+    - yarn add eslint
+  script:
+    - yarn lint
+
+prettier:
+  image: node:10-alpine
+  stage: lint
+  script:
+    - yarn
+    - yarn format-check
+
 staging:
-    type: deploy
-    stage: staging
-    image: ruby:latest
-    script:
-        - dpl --provider=heroku --app=$HEROKU_APP --api-key=$HEROKU_API_KEY
-        
-    only:
-        - staging
+  stage: staging
+  image: ruby:latest
+  when: manual
+  before_script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+  script:
+    - echo $HEROKU_APP
+    - echo $HEROKU_API_KEY
+    - dpl --provider=heroku --app=$HEROKU_APP --api-key=$HEROKU_API_KEY
