@@ -50,6 +50,7 @@ async function bootstrap() {
       max: 100, // limit each IP to 100 requests per windowMs
     }),
   );
+  // test
   const port = configService.get('app.port', 3000);
   await app.listen(port, '0.0.0.0');
 }
