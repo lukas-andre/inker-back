@@ -11,5 +11,8 @@ stages:
 staging:
     stage: staging
     image: ruby:latest
+    when: manual
     script:
+        - echo $HEROKU_APP
+        - echo $HEROKU_API_KEY
         - dpl --provider=heroku --app=$HEROKU_APP --api-key=$HEROKU_API_KEY
