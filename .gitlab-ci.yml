@@ -7,6 +7,8 @@ stages:
 tslint:
   image: node:10-alpine
   stage: lint
+  before_script: 
+    - yarn add eslint
   script:
     - yarn lint
 
