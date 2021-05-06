@@ -11,7 +11,6 @@ import {
   FindConditions,
 } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { FollowTopic } from '../../../customers/domain/interfaces/customerFollows.interface';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 
 @Injectable()
@@ -77,10 +76,6 @@ export class ArtistsService {
         ...options,
       },
     });
-  }
-
-  async addFollow(artists: Artist, topic: string, newFollow: FollowTopic) {
-    return await this.artistsRepository.save(artists);
   }
 
   async findById(id: number) {

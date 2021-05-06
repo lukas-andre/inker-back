@@ -32,7 +32,7 @@ export class MultimediasService {
     artistId: number,
     postId: number,
   ): Promise<MultimediasMetadaInterface> {
-    let multimediasMetada: MultimediasMetadaInterface = {
+    const multimediasMetada: MultimediasMetadaInterface = {
       count: 0,
       metadata: [],
     };
