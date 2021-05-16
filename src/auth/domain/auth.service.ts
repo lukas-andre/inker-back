@@ -35,6 +35,11 @@ export class AuthService {
         a: permission.action,
       })),
     };
+    console.log(
+      `this.configService.get('auth.jwtExpiration') ${this.configService.get(
+        'auth.jwtExpiration',
+      )}`,
+    );
     const accessToken = this.jwtService.sign(jwtPayload, {
       issuer: this.configService.get('auth.jwtIssuer'),
       expiresIn: this.configService.get('auth.jwtExpiration'),
