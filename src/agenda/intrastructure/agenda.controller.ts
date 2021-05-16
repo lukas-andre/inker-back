@@ -6,6 +6,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AgendaHandler } from './agenda.handler';
+import { AddEventReqDto } from './dtos/addEventReq.dto';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -13,14 +14,14 @@ export class AgendaController {
   private readonly serviceName = AgendaController.name;
   private readonly logger = new Logger(this.serviceName);
 
-  constructor(private readonly authHandler: AgendaHandler) {}
+  constructor(private readonly agendaHandler: AgendaHandler) {}
 
-  //   @ApiOperation({ summary: 'Login User' })
-  //   @HttpCode(200)
-  //   @ApiOkResponse({ description: 'Login successful.', type: LoginResDto })
-  //   @ApiConflictResponse({ description: 'Invalid credentials.' })
-  //   @Post('login')
-  //   async login(@Body() loginReqDto: LoginReqDto): Promise<LoginResDto> {
-  //     return await this.authHandler.handleLogin(loginReqDto);
-  //   }
+  @ApiOperation({ summary: 'Add event' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Event added successful.', type: undefined })
+  @ApiConflictResponse({ description: 'Invalid Dates.' })
+  @Post('event')
+  async addEvent(@Body() addEventReqDto: AddEventReqDto): Promise<any> {
+    return this.agendaHandler.handleAddEvent(addEventReqDto);
+  }
 }
