@@ -1,6 +1,7 @@
 import { UserType } from '../../domain/enums/userType.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsEnum, IsOptional, ValidateIf, IsBoolean } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateUserReqDto {
   @ApiProperty({
@@ -61,4 +62,29 @@ export class CreateUserReqDto {
   @IsString()
   @IsOptional()
   readonly phoneNumber?: string;
+
+  @ApiProperty({
+    example: ['2', '3', '4', '5', '6'],
+    description: 'Week working days',
+  })
+  @ValidateIf(v => v.userType === UserType.ARTIST)
+  @IsString({ each: true })
+  agendaWorkingDays: string[];
+
+  @ApiProperty({
+    example: true,
+    description: 'True if artist set agenda public',
+  })
+  @ValidateIf(v => v.userType === UserType.ARTIST)
+  @Transform(value => Boolean(value === 'true' || value === true))
+  agendaIsPublic: boolean;
+
+  @ApiProperty({
+    example: true,
+    description: 'True if artist set agenda open',
+  })
+  @ValidateIf(v => v.userType === UserType.ARTIST)
+  @IsBoolean()
+  @Transform(value => Boolean(value === 'true' || value === true))
+  agendaIsOpen: boolean;
 }

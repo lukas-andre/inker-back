@@ -42,7 +42,6 @@ export class AuthService {
     return {
       ...jwtPayload,
       accessToken,
-      expiresIn: this.configService.get('auth.jwtExpiration'),
     } as FullJwtPayload;
   }
 }

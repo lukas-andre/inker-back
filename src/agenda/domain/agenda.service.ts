@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateArtistDto } from 'src/artists/infrastructure/dtos/createArtist.dto';
 import {
   Repository,
   FindManyOptions,
@@ -34,6 +35,16 @@ export class AgendaService {
         ...findConditions,
       },
     });
+  }
+
+  async createWithArtistDto(dto: CreateArtistDto) {
+    const agenda: Partial<Agenda> = {
+      open: dto.agendaIsOpen,
+      public: dto.agendaIsPublic,
+      userId: dto.userId,
+      workingDays: dto.agendaWorkingDays,
+    };
+    return this.save(agenda);
   }
 
   async findAndCount(options: FindManyOptions<Agenda>) {

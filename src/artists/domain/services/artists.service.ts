@@ -35,9 +35,15 @@ export class ArtistsService {
       } as ServiceError;
     }
 
-    const artists = Object.assign(new Artist(), dto);
+    const artist = this.artistsRepository.create();
+    artist.userId = dto.userId;
+    artist.firstName = dto.firstName;;
+    artist.lastName = dto.lastName;
+    artist.contactEmail = dto.contactEmail;
+    artist.contactPhoneNumber = dto.phoneNumber;
+    artist.username = dto.username;
 
-    return this.artistsRepository.save(artists);
+    return this.artistsRepository.save(artist);
   }
 
   async existArtist(artistId: number): Promise<boolean | undefined> {

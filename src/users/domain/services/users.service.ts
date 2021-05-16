@@ -39,13 +39,14 @@ export class UsersService {
       return false;
     }
 
-    const newUser = Object.assign(new User(), {
-      ...createUserParams,
-      password: await this.hashPasword(createUserParams.password),
-      role,
-    });
-
-    const { password, ...result } = await this.usersRepository.save(newUser);
+    const user = this.usersRepository.create();
+    user.username = createUserParams.username;;
+    user.userType = createUserParams.userType;
+    user.email = createUserParams.email;
+    user.password = await this.hashPasword(createUserParams.password),
+    user.role = role;
+    
+    const { password, ...result } = await this.usersRepository.save(user);
     return result as IUser;
   }
 
