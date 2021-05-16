@@ -37,7 +37,7 @@ export class ArtistsService {
 
     const artists = Object.assign(new Artist(), dto);
 
-    return await this.artistsRepository.save(artists);
+    return this.artistsRepository.save(artists);
   }
 
   async existArtist(artistId: number): Promise<boolean | undefined> {
@@ -59,7 +59,7 @@ export class ArtistsService {
   }
 
   async findByKey(options: FindConditions<Artist>) {
-    return await this.artistsRepository.find({
+    return this.artistsRepository.find({
       select: [
         'id',
         'genres',
@@ -79,26 +79,26 @@ export class ArtistsService {
   }
 
   async findById(id: number) {
-    return await this.artistsRepository.findOne(id);
+    return this.artistsRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Artist>) {
-    return await this.artistsRepository.find(options);
+    return this.artistsRepository.find(options);
   }
 
   async findAndCount(options: FindManyOptions<Artist>) {
-    return await this.artistsRepository.findAndCount(options);
+    return this.artistsRepository.findAndCount(options);
   }
 
   async findOne(options?: FindOneOptions<Artist>): Promise<Artist | undefined> {
-    return await this.artistsRepository.findOne(options);
+    return this.artistsRepository.findOne(options);
   }
 
   async save(artist: DeepPartial<Artist>): Promise<Artist> {
-    return await this.artistsRepository.save(artist);
+    return this.artistsRepository.save(artist);
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    return await this.artistsRepository.delete(id);
+    return this.artistsRepository.delete(id);
   }
 }

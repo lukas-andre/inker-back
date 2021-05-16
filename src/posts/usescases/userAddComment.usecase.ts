@@ -59,7 +59,7 @@ export class UserAddCommentUseCase {
       username: jwtPayload.username,
     };
 
-    return await this.commentsService.save(newComment);
+    return this.commentsService.save(newComment);
   }
 
   private async validParent(

@@ -34,10 +34,10 @@ export class FindArtistsUseCases {
   }
 
   async findOne(options: FindManyOptions<Artist>) {
-    return await this.artistsService.findOne(options);
+    return this.artistsService.findOne(options);
   }
 
   async findAll(options: FindManyOptions<Artist>): Promise<Artist[]> {
-    return await this.artistsService.find(options);
+    return this.artistsService.find(options);
   }
 }

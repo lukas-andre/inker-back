@@ -21,18 +21,18 @@ export class ActivitiesService {
   ) {}
 
   async findById(id: string) {
-    return await this.acitivitiesRepository.findOne(id);
+    return this.acitivitiesRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Activity>) {
-    return await this.acitivitiesRepository.find(options);
+    return this.acitivitiesRepository.find(options);
   }
 
   async findByKey(
     findConditions: FindConditions<Activity>,
     select: (keyof Activity)[],
   ) {
-    return await this.acitivitiesRepository.find({
+    return this.acitivitiesRepository.find({
       select,
       where: {
         ...findConditions,
@@ -41,13 +41,13 @@ export class ActivitiesService {
   }
 
   async findAndCount(options: FindManyOptions<Activity>) {
-    return await this.acitivitiesRepository.findAndCount(options);
+    return this.acitivitiesRepository.findAndCount(options);
   }
 
   async findOne(
     options?: FindOneOptions<Activity>,
   ): Promise<Activity | undefined> {
-    return await this.acitivitiesRepository.findOne(options);
+    return this.acitivitiesRepository.findOne(options);
   }
 
   async findAllWithTotalReactionsAndReactionGroup(
@@ -74,10 +74,10 @@ export class ActivitiesService {
   }
 
   async save(artist: DeepPartial<Activity>): Promise<Activity> {
-    return await this.acitivitiesRepository.save(artist);
+    return this.acitivitiesRepository.save(artist);
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.acitivitiesRepository.delete(id);
+    return this.acitivitiesRepository.delete(id);
   }
 }

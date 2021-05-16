@@ -22,15 +22,15 @@ export class GenresService {
   ) {}
 
   async findById(id: string) {
-    return await this.genresRepository.findOne(id);
+    return this.genresRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Genrer>) {
-    return await this.genresRepository.find(options);
+    return this.genresRepository.find(options);
   }
 
   async findByKey(findConditions: FindConditions<Genrer>) {
-    return await this.genresRepository.find({
+    return this.genresRepository.find({
       select: ['id', 'name', 'created_at', 'updated_at'],
       where: {
         ...findConditions,
@@ -39,19 +39,19 @@ export class GenresService {
   }
 
   async findAndCount(options: FindManyOptions<Genrer>) {
-    return await this.genresRepository.findAndCount(options);
+    return this.genresRepository.findAndCount(options);
   }
 
   async findOne(options?: FindOneOptions<Genrer>): Promise<Genrer | undefined> {
-    return await this.genresRepository.findOne(options);
+    return this.genresRepository.findOne(options);
   }
 
   async save(artist: DeepPartial<Genrer>): Promise<Genrer> {
-    return await this.genresRepository.save(artist);
+    return this.genresRepository.save(artist);
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.genresRepository.delete(id);
+    return this.genresRepository.delete(id);
   }
 
   async handlePostGenres(

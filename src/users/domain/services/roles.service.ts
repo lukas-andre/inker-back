@@ -26,12 +26,12 @@ export class RolesService {
       await this.rolesRepository.save(role);
     }
 
-    return await this.findAll({});
+    return this.findAll({});
   }
 
   async findAll(query: any): Promise<Role[]> {
     const { limit, offset, ...rest } = query;
-    return await this.rolesRepository.find({
+    return this.rolesRepository.find({
       where: rest,
       order: {
         created_at: 'ASC',
@@ -43,12 +43,12 @@ export class RolesService {
   }
 
   async findById(id: number): Promise<Role> {
-    return await this.rolesRepository.findOne(id, {
+    return this.rolesRepository.findOne(id, {
       relations: ['permissions'],
     });
   }
 
   async findOne(query: FindOneOptions<Role>): Promise<Role> {
-    return await this.rolesRepository.findOne(query);
+    return this.rolesRepository.findOne(query);
   }
 }

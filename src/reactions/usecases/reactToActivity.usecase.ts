@@ -113,7 +113,7 @@ export class ReactToActivityUseCase {
       await this.activitiesService.save(this.mapNewActivity(reactionDto));
     }
 
-    return await this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
+    return this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
       reactionDto.activityId,
       reactionDto.activity,
     );

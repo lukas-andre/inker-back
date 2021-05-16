@@ -13,6 +13,7 @@ import { TagsModule } from './tags/tags.module';
 import { DatabasesModule } from './databases/database.module';
 import { ChatGateway } from './chat/chat.gateway';
 import { AlertGateway } from './alert/alert.gateway';
+import { AgendaModule } from './agenda/agenda.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AlertGateway } from './alert/alert.gateway';
     PostsModule,
     TagsModule,
     GenresModule,
+    AgendaModule,
     // FeedModule,
     // NotificationsModule,
   ],

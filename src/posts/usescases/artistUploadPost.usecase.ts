@@ -41,11 +41,11 @@ export class ArtistUploadPostUseCase {
     try {
       artist = await this.artistsService.findById(jwtPayload.userTypeId);
     } catch (error) {
-      return new DomainInternalServerErrorException(`Error: ${error}`);
+      return new DomainInternalServerErrorException(`Error: ${error.message}`);
     }
 
     if (!artist) {
-      return new DomainNotFoundException('Artists not found');
+      return new DomainNotFoundException('Artist not found');
     }
 
     const genres: GenrerInterface[] = [],

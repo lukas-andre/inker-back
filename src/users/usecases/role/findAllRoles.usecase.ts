@@ -6,6 +6,6 @@ export class FindAllRolesUseCase {
   constructor(private readonly rolesService: RolesService) {}
 
   async execute(query: any) {
-    return await this.rolesService.findAll(query);
+    return this.rolesService.findAll(query);
   }
 }

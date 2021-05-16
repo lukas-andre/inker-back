@@ -21,15 +21,15 @@ export class FollowedsService {
   ) {}
 
   async findById(id: string) {
-    return await this.followersRepository.findOne(id);
+    return this.followersRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Followed>) {
-    return await this.followersRepository.find(options);
+    return this.followersRepository.find(options);
   }
 
   async findByKey(findConditions: FindConditions<Followed>) {
-    return await this.followersRepository.find({
+    return this.followersRepository.find({
       select: [
         'userFollowedId',
         'userId',
@@ -46,17 +46,17 @@ export class FollowedsService {
   }
 
   async findAndCount(options: FindManyOptions<Followed>) {
-    return await this.followersRepository.findAndCount(options);
+    return this.followersRepository.findAndCount(options);
   }
 
   async findOne(
     options?: FindOneOptions<Followed>,
   ): Promise<Followed | undefined> {
-    return await this.followersRepository.findOne(options);
+    return this.followersRepository.findOne(options);
   }
 
   async save(artist: DeepPartial<Followed>): Promise<Followed> {
-    return await this.followersRepository.save(artist);
+    return this.followersRepository.save(artist);
   }
 
   async existsFollowerInArtist(
@@ -76,6 +76,6 @@ export class FollowedsService {
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.followersRepository.delete(id);
+    return this.followersRepository.delete(id);
   }
 }

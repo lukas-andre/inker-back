@@ -68,6 +68,14 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
       },
       inject: [ConfigService],
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: 'agenda-db',
+      useFactory: (configService: ConfigService) => {
+        return configService.get('agendaDb');
+      },
+      inject: [ConfigService],
+    }),
   ],
 })
 export class DatabasesModule {}
