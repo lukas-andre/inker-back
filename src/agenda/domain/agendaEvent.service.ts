@@ -40,7 +40,9 @@ export class AgendaEventService {
     return this.agendaEventRepository.findAndCount(options);
   }
 
-  async findOne(options?: FindOneOptions<AgendaEvent>): Promise<AgendaEvent | undefined> {
+  async findOne(
+    options?: FindOneOptions<AgendaEvent>,
+  ): Promise<AgendaEvent | undefined> {
     return this.agendaEventRepository.findOne(options);
   }
 

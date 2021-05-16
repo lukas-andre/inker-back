@@ -4,9 +4,7 @@ import { BaseHandler } from '../../global/infrastructure/base.handler';
 
 @Injectable()
 export class AgendaHandler extends BaseHandler {
-  constructor(
-    private readonly jwtService: JwtService,
-  ) {
+  constructor(private readonly jwtService: JwtService) {
     super(jwtService);
   }
 }

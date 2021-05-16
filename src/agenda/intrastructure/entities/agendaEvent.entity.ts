@@ -4,22 +4,25 @@ import { Agenda } from './agenda.entity';
 
 @Entity()
 export class AgendaEvent extends BaseEntity {
-  @ManyToOne(() => Agenda, agenda => agenda.agendaEvent)
-  @JoinColumn({name: 'agenda_id'})
+  @ManyToOne(
+    () => Agenda,
+    agenda => agenda.agendaEvent,
+  )
+  @JoinColumn({ name: 'agenda_id' })
   agenda: Agenda;
 
   @Column()
   title: string;
 
   @Column()
-  start: Date
+  start: Date;
 
   @Column()
-  end: Date
+  end: Date;
 
   @Column()
-  color: string
+  color: string;
 
   @Column()
-  info: string
+  info: string;
 }
