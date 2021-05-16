@@ -22,6 +22,7 @@ export class UsersHandler {
       throw resolveDomainException(result);
     }
 
+    console.log('result2: ', result);
     return result;
   }
 }

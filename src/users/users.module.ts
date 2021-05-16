@@ -23,12 +23,15 @@ import { FindAllPermissionsUseCase } from './usecases/permission/findAllPermissi
 import { InitRolesUseCase } from './usecases/role/initRoles.usecase';
 import { InitPermissionsUseCase } from './usecases/permission/initPermissions.usecase';
 import { FindAllRoutesUseCase } from './usecases/permission/findAllRoutes.usecase';
+import { AgendaService } from '../agenda/domain/agenda.service';
+import { AgendaModule } from '../agenda/agenda.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role, Permission], 'user-db'),
     CustomersModule,
     ArtistsModule,
+    AgendaModule
   ],
   providers: [
     UsersService,

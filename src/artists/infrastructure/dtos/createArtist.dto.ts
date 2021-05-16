@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsArray, IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export class CreateArtistDto {
   @ApiProperty({
@@ -43,4 +44,26 @@ export class CreateArtistDto {
   })
   @IsString()
   readonly phoneNumber?: string;
+
+  @ApiProperty({
+    example: ['2', '3', '4', '5', '6'],
+    description: 'Week working days',
+  })
+  @IsString({ each: true })
+  agendaWorkingDays: string[];
+
+  @ApiProperty({
+    example: true,
+    description: 'True if artist set agenda public',
+  })
+  @Transform(value => Boolean(value === 'true' || value === true))
+  agendaIsPublic: boolean;
+
+  @ApiProperty({
+    example: true,
+    description: 'True if artist set agenda open',
+  })
+  @IsBoolean()
+  @Transform(value => Boolean(value === 'true' || value === true))
+  agendaIsOpen: boolean;
 }

@@ -6,6 +6,9 @@ import { AgendaEvent } from './agendaEvent.entity';
 export class Agenda extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: number;
+  
+  @Column({ type: 'jsonb', default: ['1', '2', '3', '4', '5']})
+  workingDays: string[];
 
   @Column({ default: false })
   public: boolean;

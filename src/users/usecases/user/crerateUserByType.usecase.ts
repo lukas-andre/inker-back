@@ -13,7 +13,7 @@ import { UsersService } from '../../domain/services/users.service';
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
 import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
-
+import { AgendaService } from '../../../agenda/domain/agenda.service';
 @Injectable()
 export class CreateUserByTypeUseCase {
   constructor(
@@ -21,6 +21,7 @@ export class CreateUserByTypeUseCase {
     private readonly artistsService: ArtistsService,
     private readonly customerService: CustomersService,
     private readonly rolesService: RolesService,
+    private readonly agendaService: AgendaService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -49,6 +50,9 @@ export class CreateUserByTypeUseCase {
       return this.handleCreateError(created.id, response);
     }
 
+    console.log('created: ', created);
+
+
     return created;
   }
 
@@ -74,12 +78,17 @@ export class CreateUserByTypeUseCase {
         return await this.createArtist(createArtistDto);
       },
     };
-
     return createByType[dto.userType]();
   }
 
   private async createArtist(createArtistDto: CreateArtistDto) {
     const result = await this.artistsService.create(createArtistDto);
+
+    const savedAgenda = await this.agendaService.createWithArtistDto(createArtistDto);
+    if (savedAgenda instanceof ServiceError && result instanceof Artist) {
+      await this.artistsService.delete(result.id);
+    }
+    
     return result;
   }
 
