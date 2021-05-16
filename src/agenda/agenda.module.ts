@@ -9,8 +9,7 @@ import { AgendaEvent } from './intrastructure/entities/agendaEvent.entity';
     TypeOrmModule.forFeature([Agenda, AgendaEvent], 'agenda-db'),
     ArtistsModule,
   ],
-  providers: [
-  ],
+  providers: [],
   controllers: [],
   exports: [],
 })

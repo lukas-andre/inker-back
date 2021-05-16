@@ -15,12 +15,12 @@ export class AgendaController {
 
   constructor(private readonly authHandler: AgendaHandler) {}
 
-//   @ApiOperation({ summary: 'Login User' })
-//   @HttpCode(200)
-//   @ApiOkResponse({ description: 'Login successful.', type: LoginResDto })
-//   @ApiConflictResponse({ description: 'Invalid credentials.' })
-//   @Post('login')
-//   async login(@Body() loginReqDto: LoginReqDto): Promise<LoginResDto> {
-//     return await this.authHandler.handleLogin(loginReqDto);
-//   }
+  //   @ApiOperation({ summary: 'Login User' })
+  //   @HttpCode(200)
+  //   @ApiOkResponse({ description: 'Login successful.', type: LoginResDto })
+  //   @ApiConflictResponse({ description: 'Invalid credentials.' })
+  //   @Post('login')
+  //   async login(@Body() loginReqDto: LoginReqDto): Promise<LoginResDto> {
+  //     return await this.authHandler.handleLogin(loginReqDto);
+  //   }
 }
