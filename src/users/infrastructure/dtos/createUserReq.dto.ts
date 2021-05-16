@@ -73,6 +73,7 @@ export class CreateUserReqDto {
   @ApiProperty({
     example: ['2', '3', '4', '5', '6'],
     description: 'Week working days',
+    required: false,
   })
   @ValidateIf(v => v.userType === UserType.ARTIST)
   @IsString({ each: true })
@@ -81,6 +82,7 @@ export class CreateUserReqDto {
   @ApiProperty({
     example: true,
     description: 'True if artist set agenda public',
+    required: false,
   })
   @ValidateIf(v => v.userType === UserType.ARTIST)
   @Transform(value => Boolean(value === 'true' || value === true))
@@ -89,6 +91,7 @@ export class CreateUserReqDto {
   @ApiProperty({
     example: true,
     description: 'True if artist set agenda open',
+    required: false,
   })
   @ValidateIf(v => v.userType === UserType.ARTIST)
   @IsBoolean()
