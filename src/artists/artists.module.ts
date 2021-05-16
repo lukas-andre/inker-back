@@ -17,7 +17,7 @@ import { AgendaModule } from '../agenda/agenda.module';
     TypeOrmModule.forFeature([Artist], 'artist-db'),
     MultimediasModule,
     FollowsModule,
-    AgendaModule
+    AgendaModule,
   ],
   providers: [
     ArtistsHandler,

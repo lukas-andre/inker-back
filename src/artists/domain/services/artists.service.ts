@@ -37,7 +37,7 @@ export class ArtistsService {
 
     const artist = this.artistsRepository.create();
     artist.userId = dto.userId;
-    artist.firstName = dto.firstName;;
+    artist.firstName = dto.firstName;
     artist.lastName = dto.lastName;
     artist.contactEmail = dto.contactEmail;
     artist.contactPhoneNumber = dto.phoneNumber;

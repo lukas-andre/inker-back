@@ -52,7 +52,6 @@ export class CreateUserByTypeUseCase {
 
     console.log('created: ', created);
 
-
     return created;
   }
 
@@ -84,11 +83,13 @@ export class CreateUserByTypeUseCase {
   private async createArtist(createArtistDto: CreateArtistDto) {
     const result = await this.artistsService.create(createArtistDto);
 
-    const savedAgenda = await this.agendaService.createWithArtistDto(createArtistDto);
+    const savedAgenda = await this.agendaService.createWithArtistDto(
+      createArtistDto,
+    );
     if (savedAgenda instanceof ServiceError && result instanceof Artist) {
       await this.artistsService.delete(result.id);
     }
-    
+
     return result;
   }
 

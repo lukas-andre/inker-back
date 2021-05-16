@@ -7,9 +7,7 @@ import { Agenda } from './intrastructure/entities/agenda.entity';
 import { AgendaEvent } from './intrastructure/entities/agendaEvent.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Agenda, AgendaEvent], 'agenda-db'),
-  ],
+  imports: [TypeOrmModule.forFeature([Agenda, AgendaEvent], 'agenda-db')],
   providers: [AgendaService, AgendaHandler],
   controllers: [AgendaController],
   exports: [AgendaService],

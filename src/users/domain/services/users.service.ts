@@ -40,12 +40,12 @@ export class UsersService {
     }
 
     const user = this.usersRepository.create();
-    user.username = createUserParams.username;;
+    user.username = createUserParams.username;
     user.userType = createUserParams.userType;
     user.email = createUserParams.email;
-    user.password = await this.hashPasword(createUserParams.password),
-    user.role = role;
-    
+    (user.password = await this.hashPasword(createUserParams.password)),
+      (user.role = role);
+
     const { password, ...result } = await this.usersRepository.save(user);
     return result as IUser;
   }

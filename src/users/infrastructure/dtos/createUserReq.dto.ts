@@ -1,6 +1,13 @@
 import { UserType } from '../../domain/enums/userType.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, IsEnum, IsOptional, ValidateIf, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  ValidateIf,
+  IsBoolean,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateUserReqDto {

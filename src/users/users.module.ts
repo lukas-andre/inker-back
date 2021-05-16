@@ -31,7 +31,7 @@ import { AgendaModule } from '../agenda/agenda.module';
     TypeOrmModule.forFeature([User, Role, Permission], 'user-db'),
     CustomersModule,
     ArtistsModule,
-    AgendaModule
+    AgendaModule,
   ],
   providers: [
     UsersService,
