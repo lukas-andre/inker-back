@@ -39,6 +39,6 @@ export class UpdateArtistProfilePictureUseCase {
     console.timeEnd('uploadFile');
 
     artist.profileThumbnail = cloudFrontUrl;
-    return await this.artistsService.save(artist);
+    return this.artistsService.save(artist);
   }
 }

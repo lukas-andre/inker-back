@@ -38,33 +38,33 @@ export class CustomersService {
 
     const newCustomer = Object.assign(new Customer());
 
-    return await this.customersRepository.save(newCustomer);
+    return this.customersRepository.save(newCustomer);
   }
 
   async addFollow(customer: Customer, topic: string, newFollow: FollowTopic) {
     customer.follows.map(
       follow => (follow[topic] = [...follow[topic], newFollow]),
     );
-    return await this.customersRepository.save(customer);
+    return this.customersRepository.save(customer);
   }
 
   async findById(id: string) {
-    return await this.customersRepository.findOne(id);
+    return this.customersRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Customer>) {
-    return await this.customersRepository.find(options);
+    return this.customersRepository.find(options);
   }
 
   async findOne(
     options?: FindOneOptions<Customer>,
   ): Promise<Customer | undefined> {
-    return await this.customersRepository.findOne(options);
+    return this.customersRepository.findOne(options);
   }
   async save(customer: DeepPartial<Customer>): Promise<Customer> {
-    return await this.customersRepository.save(customer);
+    return this.customersRepository.save(customer);
   }
   async delete(id: string): Promise<DeleteResult> {
-    return await this.customersRepository.delete(id);
+    return this.customersRepository.delete(id);
   }
 }

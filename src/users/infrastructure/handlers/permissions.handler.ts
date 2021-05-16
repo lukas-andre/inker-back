@@ -32,9 +32,9 @@ export class PermissionsHandler {
   }
 
   async findOne(id: string) {
-    return await this.findOnePermissionUseCase.execute({ where: { id } });
+    return this.findOnePermissionUseCase.execute({ where: { id } });
   }
   async findAll(query: any) {
-    return await this.findAllPermissionsUseCase.execute(query);
+    return this.findAllPermissionsUseCase.execute(query);
   }
 }

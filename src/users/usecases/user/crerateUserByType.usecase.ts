@@ -75,7 +75,7 @@ export class CreateUserByTypeUseCase {
       },
     };
 
-    return await createByType[dto.userType]();
+    return createByType[dto.userType]();
   }
 
   private async createArtist(createArtistDto: CreateArtistDto) {

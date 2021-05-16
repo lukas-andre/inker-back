@@ -6,6 +6,6 @@ export class FindOneRoleUseCase {
   constructor(private readonly rolesService: RolesService) {}
 
   async execute(id: number) {
-    return await this.rolesService.findOne({ where: { id } });
+    return this.rolesService.findOne({ where: { id } });
   }
 }

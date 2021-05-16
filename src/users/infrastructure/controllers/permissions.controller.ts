@@ -28,17 +28,17 @@ export class PermissionsController {
   })
   @Get()
   async findAll(@Query() query: any): Promise<Permission[]> {
-    return await this.permissionsHandler.findAll(query);
+    return this.permissionsHandler.findAll(query);
   }
 
   @Get('/initial')
   async initial(): Promise<Permission[]> {
-    return await this.permissionsHandler.handleInitial();
+    return this.permissionsHandler.handleInitial();
   }
 
   @Get('/routes')
   async findRoutes(): Promise<any> {
-    return await this.permissionsHandler.findRoutes();
+    return this.permissionsHandler.findRoutes();
   }
 
   @ApiOperation({ summary: 'Get Permissions By Id' })

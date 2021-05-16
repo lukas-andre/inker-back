@@ -9,6 +9,7 @@ import reactionDatabase from './reactionDatabase';
 import postDatabase from './postDatabase';
 import genreDatabase from './genreDatabase';
 import tagDatabase from './tagDatabase';
+import agendaDatabase from './agendaDatabase';
 
 export default [
   app,
@@ -22,4 +23,5 @@ export default [
   postDatabase,
   genreDatabase,
   tagDatabase,
+  agendaDatabase,
 ];

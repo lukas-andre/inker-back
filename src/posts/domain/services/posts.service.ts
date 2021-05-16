@@ -20,15 +20,15 @@ export class PostsService {
   ) {}
 
   async findById(id: number) {
-    return await this.postsRepository.findOne(id);
+    return this.postsRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Post>) {
-    return await this.postsRepository.find(options);
+    return this.postsRepository.find(options);
   }
 
   async findByKey(findConditions: FindConditions<Post>) {
-    return await this.postsRepository.find({
+    return this.postsRepository.find({
       select: ['id', 'location', 'profileThumbnail', 'username', 'content'],
       where: {
         ...findConditions,
@@ -42,22 +42,22 @@ export class PostsService {
   async findAndCount(
     options: FindManyOptions<Post>,
   ): Promise<[Post[], number]> {
-    return await this.postsRepository.findAndCount(options);
+    return this.postsRepository.findAndCount(options);
   }
 
   async count(options: FindManyOptions<Post>): Promise<number> {
-    return await this.postsRepository.count(options);
+    return this.postsRepository.count(options);
   }
 
   async findOne(options?: FindOneOptions<Post>): Promise<Post | undefined> {
-    return await this.postsRepository.findOne(options);
+    return this.postsRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Post>): Promise<Post> {
-    return await this.postsRepository.save(artist);
+  async save(post: DeepPartial<Post>): Promise<Post> {
+    return this.postsRepository.save(post);
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.postsRepository.delete(id);
+    return this.postsRepository.delete(id);
   }
 }

@@ -12,7 +12,7 @@ export class PermissionsService {
 
   async findAll(query: any): Promise<Permission[]> {
     const { limit, offset, ...rest } = query;
-    return await this.permissionsRepository.find({
+    return this.permissionsRepository.find({
       where: rest,
       order: {
         created_at: 'ASC',
@@ -24,6 +24,6 @@ export class PermissionsService {
   }
 
   async findOne(options?: FindOneOptions<Permission>): Promise<Permission> {
-    return await this.permissionsRepository.findOne(options);
+    return this.permissionsRepository.findOne(options);
   }
 }

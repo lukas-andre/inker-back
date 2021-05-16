@@ -22,15 +22,15 @@ export class TagsService {
   ) {}
 
   async findById(id: string) {
-    return await this.tagsRepository.findOne(id);
+    return this.tagsRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Tag>) {
-    return await this.tagsRepository.find(options);
+    return this.tagsRepository.find(options);
   }
 
   async findByKey(findConditions: FindConditions<Tag>) {
-    return await this.tagsRepository.find({
+    return this.tagsRepository.find({
       select: ['id', 'name', 'created_at', 'updated_at'],
       where: {
         ...findConditions,
@@ -39,19 +39,19 @@ export class TagsService {
   }
 
   async findAndCount(options: FindManyOptions<Tag>) {
-    return await this.tagsRepository.findAndCount(options);
+    return this.tagsRepository.findAndCount(options);
   }
 
   async findOne(options?: FindOneOptions<Tag>): Promise<Tag | undefined> {
-    return await this.tagsRepository.findOne(options);
+    return this.tagsRepository.findOne(options);
   }
 
   async save(artist: DeepPartial<Tag>): Promise<Tag> {
-    return await this.tagsRepository.save(artist);
+    return this.tagsRepository.save(artist);
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.tagsRepository.delete(id);
+    return this.tagsRepository.delete(id);
   }
 
   async handlePostTags(

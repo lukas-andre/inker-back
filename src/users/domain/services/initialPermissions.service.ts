@@ -41,10 +41,10 @@ export class InitialPermissionsService {
       }
     }
 
-    return await this.permissionsRepository.find();
+    return this.permissionsRepository.find();
   }
 
   async getAllRoutes(): Promise<Permission[] | ServiceError> {
-    return await this.permissionsRepository.find();
+    return this.permissionsRepository.find();
   }
 }

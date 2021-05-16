@@ -50,7 +50,7 @@ export class UsersService {
   }
 
   async findById(id: number) {
-    return await this.usersRepository.findOne(id);
+    return this.usersRepository.findOne(id);
   }
 
   async findByType(type: string, identifier: string) {
@@ -77,37 +77,37 @@ export class UsersService {
   }
 
   async find(options: FindManyOptions<User>) {
-    return await this.usersRepository.find(options);
+    return this.usersRepository.find(options);
   }
 
   async findOne(options?: FindOneOptions<User>): Promise<User | undefined> {
-    return await this.usersRepository.findOne(options);
+    return this.usersRepository.findOne(options);
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    return await this.usersRepository.delete(id);
+    return this.usersRepository.delete(id);
   }
 
   async findAndCount(
     options: FindManyOptions<User>,
   ): Promise<[User[], number]> {
-    return await this.usersRepository.findAndCount(options);
+    return this.usersRepository.findAndCount(options);
   }
 
   async edit(id: number, update: DeepPartial<User> | User): Promise<User> {
-    return await this.usersRepository.save(
+    return this.usersRepository.save(
       Object.assign(await this.findById(id), update),
     );
   }
 
   async hashPasword(password: string): Promise<string> {
-    return await hash(password, this.configService.get('auth.saltLength'));
+    return hash(password, this.configService.get('auth.saltLength'));
   }
 
   async validatePassword(
     incomingPassword: string,
     databaseUserPassword: string,
   ): Promise<boolean> {
-    return await compare(incomingPassword, databaseUserPassword);
+    return compare(incomingPassword, databaseUserPassword);
   }
 }

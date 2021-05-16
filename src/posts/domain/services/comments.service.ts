@@ -20,15 +20,15 @@ export class CommentsService {
   ) {}
 
   async findById(id: number): Promise<Comment> {
-    return await this.commentsRepository.findOne(id);
+    return this.commentsRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Comment>): Promise<Comment[]> {
-    return await this.commentsRepository.find(options);
+    return this.commentsRepository.find(options);
   }
 
   async findByKey(findConditions: FindConditions<Comment>) {
-    return await this.commentsRepository.find({
+    return this.commentsRepository.find({
       select: ['id', 'location', 'profileThumbnail', 'username', 'content'],
       where: {
         ...findConditions,
@@ -39,24 +39,24 @@ export class CommentsService {
   async findAndCount(
     options: FindManyOptions<Comment>,
   ): Promise<[Comment[], number]> {
-    return await this.commentsRepository.findAndCount(options);
+    return this.commentsRepository.findAndCount(options);
   }
 
   async count(options: FindManyOptions<Comment>): Promise<number> {
-    return await this.commentsRepository.count(options);
+    return this.commentsRepository.count(options);
   }
 
   async findOne(
     options?: FindOneOptions<Comment>,
   ): Promise<Comment | undefined> {
-    return await this.commentsRepository.findOne(options);
+    return this.commentsRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Comment>): Promise<Comment> {
-    return await this.commentsRepository.save(artist);
+  async save(comment: DeepPartial<Comment>): Promise<Comment> {
+    return this.commentsRepository.save(comment);
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.commentsRepository.delete(id);
+    return this.commentsRepository.delete(id);
   }
 }

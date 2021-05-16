@@ -25,6 +25,6 @@ export class UsersController {
   @ApiConflictResponse({ description: 'Users already exists' })
   @Post()
   async create(@Body() createUserDto: CreateUserReqDto) {
-    return await this.usersHandler.handleCreate(createUserDto);
+    return this.usersHandler.handleCreate(createUserDto);
   }
 }
