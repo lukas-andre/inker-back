@@ -22,11 +22,11 @@ export class AgendaHandler extends BaseHandler {
     return this.resolve(await this.addEventUseCase.execute(dto));
   }
 
-  async handleUpdateEvent(dto: UpdateEventReqDto, id: string): Promise<any> {
+  async handleUpdateEvent(dto: UpdateEventReqDto, id: number): Promise<any> {
     return this.resolve(await this.updateEventUseCase.execute(dto, id));
   }
 
-  async handleCancelEvent(eventId: string, agendaId: string): Promise<any> {
+  async handleCancelEvent(eventId: number, agendaId: number): Promise<any> {
     return this.resolve(
       await this.cancelEventUseCase.execute(eventId, agendaId),
     );

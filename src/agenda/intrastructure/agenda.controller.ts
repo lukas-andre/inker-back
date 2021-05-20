@@ -7,11 +7,13 @@ import {
   Put,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { AgendaHandler } from './agenda.handler';
@@ -39,9 +41,10 @@ export class AgendaController {
   @HttpCode(200)
   @ApiOkResponse({ description: 'Event updated successful.', type: undefined })
   @ApiConflictResponse({ description: 'Invalid Dates.' })
+  @ApiParam({ name: 'id', required: true, type: Number })
   @Put('event/:id')
   async updateEvent(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateEventReqDto: UpdateEventReqDto,
   ): Promise<any> {
     return this.agendaHandler.handleUpdateEvent(updateEventReqDto, id);
@@ -51,10 +54,12 @@ export class AgendaController {
   @HttpCode(200)
   @ApiOkResponse({ description: 'Event canceled successful.', type: undefined })
   @ApiConflictResponse({ description: 'Invalid Dates.' })
-  @Delete('agendaId/event/:eventId')
+  @ApiParam({ name: 'agendaId', required: true, type: Number })
+  @ApiParam({ name: 'eventId', required: true, type: Number })
+  @Delete(':agendaId/event/:eventId')
   async cancelEvent(
-    @Param('eventId') eventId: string,
-    @Param('agendaId') agendaId: string,
+    @Param('agendaId', ParseIntPipe) agendaId: number,
+    @Param('eventId', ParseIntPipe) eventId: number,
   ): Promise<any> {
     return this.agendaHandler.handleCancelEvent(eventId, agendaId);
   }

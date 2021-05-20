@@ -1,4 +1,10 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { Agenda } from './agenda.entity';
 
@@ -28,6 +34,9 @@ export class AgendaEvent extends BaseEntity {
 
   @Column({ default: false })
   notification: boolean;
+
+  @DeleteDateColumn()
+  delete_at: Date;
 
   // TODO: HACER RELACION OneToOne A UNA ENTIDAD customer que tenga su informacion basica;
 }

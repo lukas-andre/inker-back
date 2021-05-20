@@ -17,8 +17,8 @@ export class CancelEventUseCase {
   ) {}
 
   async execute(
-    eventId: string,
-    agendaId: string,
+    eventId: number,
+    agendaId: number,
   ): Promise<Agenda | DomainException> {
     const existsAgenda = await this.agendaService.findById(agendaId);
 
@@ -33,13 +33,19 @@ export class CancelEventUseCase {
     }
 
     try {
-      // TODO: HACER UN SOFTDELETE A MANO, UN CAMPO canceled O AGLO ASI
-      const result = await this.agendaEventService.delete(eventId);
+      const result = await this.agendaEventService.softDelete(eventId);
       this.logger.log(`Delete result: ${stringify(result)}`);
-      return existsAgenda;
+      if (result.affected) {
+        return existsAgenda;
+      }
+      return new DomainInternalServerErrorException(
+        'Fail when an event is canceled',
+      );
     } catch (error) {
       this.logger.log(`Adding event error ${error.message}`);
-      return new DomainInternalServerErrorException('Failed saving event');
+      return new DomainInternalServerErrorException(
+        'Fail when an event is canceled',
+      );
     }
   }
 }

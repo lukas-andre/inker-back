@@ -19,10 +19,8 @@ export class UpdateEventUseCase {
 
   async execute(
     updateEventReqDto: UpdateEventReqDto,
-    eventId: string,
+    eventId: number,
   ): Promise<AgendaEvent | DomainException> {
-    console.log('updateEventReqDto: ', updateEventReqDto);
-    console.log('eventId: ', eventId);
     const existsAgenda = await this.agendaService.findById(
       updateEventReqDto.agendaId,
     );
@@ -33,26 +31,18 @@ export class UpdateEventUseCase {
 
     const event = await this.agendaEventService.findById(eventId);
 
-    console.log('event: ', event);
-
     if (!event) {
       return new DomainNotFoundException('Event not found');
     }
 
-    const [startDateIsInUse, endDateIsInUse] = await Promise.all([
-      this.agendaEventService.existEventBetweenStartDateAndEndDate(
-        existsAgenda.id,
-        updateEventReqDto.start,
-        event.id,
-      ),
-      this.agendaEventService.existEventBetweenStartDateAndEndDate(
-        existsAgenda.id,
-        updateEventReqDto.end,
-        event.id,
-      ),
-    ]);
+    const dateRangeIsInUse = await this.agendaEventService.existEventBetweenStartDateAndEndDate(
+      existsAgenda.id,
+      updateEventReqDto.start,
+      updateEventReqDto.end,
+      event.id,
+    );
 
-    if ([startDateIsInUse, endDateIsInUse].some(date => date === true)) {
+    if (dateRangeIsInUse) {
       return new DomainConflictException(
         'Already exists event in current date range',
       );
