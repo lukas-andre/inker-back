@@ -16,9 +16,6 @@ export function IsEndDate(validationOptions?: ValidationOptions) {
         validate(value: any, args: ValidationArguments) {
           const endDate = new Date(value);
           const startDate = new Date((args.object as any).start);
-          console.log('IsEndDate: endDate: ', endDate);
-          console.log('IsEndDate: startDate: ', startDate);
-          console.log('value: ', value);
           return endDate > startDate;
         },
       },

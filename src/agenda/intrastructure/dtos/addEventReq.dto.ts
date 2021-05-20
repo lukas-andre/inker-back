@@ -1,7 +1,7 @@
-import { IsString, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsOnlyDate } from '../../../global/domain/validators/isOnyDate.validator';
+import { IsOnlyDate } from '../../../global/domain/validators/isOnlyDate.validator';
 import { IsStartDate } from '../../../global/domain/validators/isStartDate.validator';
 import { IsEndDate } from '../../../global/domain/validators/isEndDate.validator';
 
