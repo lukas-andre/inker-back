@@ -47,7 +47,7 @@ export class UsersService {
     user.role = role;
 
     const { password, ...result } = await this.usersRepository.save(user);
-    
+
     return result as IUser;
   }
 
