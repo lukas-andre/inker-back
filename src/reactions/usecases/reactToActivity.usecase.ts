@@ -29,6 +29,7 @@ export class ReactToActivityUseCase {
     if (isSameReaction) {
       await this.deactivateReaction(reactionDto, jwtPayload);
 
+      //TODO: TAL VEZ AQUI NO RETORNAR EL MISMO DTO
       return this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
         reactionDto.activityId,
         reactionDto.activity,

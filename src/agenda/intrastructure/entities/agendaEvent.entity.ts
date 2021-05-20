@@ -25,4 +25,7 @@ export class AgendaEvent extends BaseEntity {
 
   @Column()
   info: string;
+
+  @Column({ default: false })
+  notification: boolean;
 }

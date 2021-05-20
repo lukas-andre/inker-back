@@ -10,6 +10,6 @@ export default registerAs('agendaDb', () => ({
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../agenda/**/*.entity{.ts,.js}'],
   synchronize: process.env.TYPEORM_SYNC,
-  logging: false,
+  logging: true,
   cache: true,
 }));

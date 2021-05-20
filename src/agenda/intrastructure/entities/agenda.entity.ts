@@ -1,4 +1,4 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, DeleteDateColumn } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { AgendaEvent } from './agendaEvent.entity';
 
@@ -21,4 +21,7 @@ export class Agenda extends BaseEntity {
     agendaEvent => agendaEvent.agenda,
   )
   agendaEvent: AgendaEvent;
+
+  @DeleteDateColumn()
+  delete_at: Date;
 }

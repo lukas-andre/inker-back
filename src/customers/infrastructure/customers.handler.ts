@@ -1,5 +1,5 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { serviceErrorStringify } from '../../global/domain/utils/serviceErrorStringify';
+import { handleServiceError } from '../../global/domain/utils/serviceErrorStringify';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
 import { CRCustomerUseCase } from '../usecases/CRCustomer.usecase';
@@ -13,7 +13,7 @@ export class CustomerHandler {
   async handleCreate(createCustomerDto: CreateCustomerReqDto) {
     const created = await this.CRCustomerUseCase.create(createCustomerDto);
     if (created instanceof ServiceError) {
-      throw new ConflictException(serviceErrorStringify(created));
+      throw new ConflictException(handleServiceError(created));
     }
 
     return created;
