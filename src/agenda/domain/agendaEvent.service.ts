@@ -20,7 +20,7 @@ export class AgendaEventService {
     private readonly agendaEventRepository: Repository<AgendaEvent>,
   ) {}
 
-  async findById(id: string) {
+  async findById(id: number) {
     return this.agendaEventRepository.findOne(id);
   }
 
@@ -51,20 +51,32 @@ export class AgendaEventService {
     return this.agendaEventRepository.save(agendaEvent);
   }
 
-  async delete(id: string): Promise<DeleteResult> {
+  async delete(id: number): Promise<DeleteResult> {
     return this.agendaEventRepository.delete(id);
+  }
+
+  async softDelete(id: number): Promise<DeleteResult> {
+    return this.agendaEventRepository.softDelete(id);
   }
 
   async existEventBetweenStartDateAndEndDate(
     agendaId: number,
-    date: string,
+    startDate: string,
+    endDate: string,
     eventId?: number,
   ): Promise<boolean | ServiceError> {
-    const qb = await this.agendaEventRepository
+    const qb = this.agendaEventRepository
       .createQueryBuilder('agenda_event')
       .select('COUNT(agenda_event.id)')
-      .where(`(:date > agenda_event.start AND :date < agenda_event.end)`, {
-        date,
+      .where(`(:start > agenda_event.start AND :start < agenda_event.end)`, {
+        start: startDate,
+      })
+      .orWhere(`(:end > agenda_event.start AND :end < agenda_event.end)`, {
+        end: endDate,
+      })
+      .orWhere(`(:start = agenda_event.start AND :end = agenda_event.end)`, {
+        start: startDate,
+        end: endDate,
       })
       .andWhere('agenda_event.agenda_id = :agendaId', { agendaId });
 
@@ -73,9 +85,8 @@ export class AgendaEventService {
     }
 
     try {
-      const result = await qb.getRawOne<{ count: string }>();
-      console.log('result', result);
-      return !!Number(result.count);
+      const { count } = await qb.getRawOne<{ count: string }>();
+      return !!Number(count);
     } catch (error) {
       const serviceError: ServiceError = {
         error: 'Trouble finding available event date ',

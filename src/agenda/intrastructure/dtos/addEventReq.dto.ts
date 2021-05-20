@@ -7,11 +7,11 @@ import { IsEndDate } from '../../../global/domain/validators/isEndDate.validator
 
 export class AddEventReqDto {
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: 'User Email or User Username',
   })
   @IsString()
-  readonly agendaId: string;
+  readonly agendaId: number;
 
   @ApiProperty({
     example: '2021-05-18 16:00:00',

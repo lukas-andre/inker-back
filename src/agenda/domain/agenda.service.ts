@@ -20,7 +20,7 @@ export class AgendaService {
     private readonly agendaRepository: Repository<Agenda>,
   ) {}
 
-  async findById(id: string) {
+  async findById(id: number) {
     return this.agendaRepository.findOne(id);
   }
 
@@ -59,7 +59,7 @@ export class AgendaService {
     return this.agendaRepository.save(agenda);
   }
 
-  async delete(id: string): Promise<DeleteResult> {
+  async delete(id: number): Promise<DeleteResult> {
     return this.agendaRepository.delete(id);
   }
 }

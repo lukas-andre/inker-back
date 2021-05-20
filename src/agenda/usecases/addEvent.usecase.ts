@@ -30,29 +30,19 @@ export class AddEventUseCase {
       return new DomainNotFoundException('Agenda not found');
     }
 
-    // TODO: HAY PROBLEMAS CUANDO SE QUIERE AGENAR UNA HORA JUSTO AL INICIO DEL TERMINO DE OTRA HORA
-    // SE DEBE SOLUCIONAR DE LA MANERA MAS SENCILLA POSIBLE SIN MUCHAS QUERIES EXTRA
-    const [startDateIsInUse, endDateIsInUse] = await Promise.all([
-      this.agendaEventService.existEventBetweenStartDateAndEndDate(
-        existsAgenda.id,
-        addEventDto.start,
-      ),
-      this.agendaEventService.existEventBetweenStartDateAndEndDate(
-        existsAgenda.id,
-        addEventDto.end,
-      ),
-    ]);
+    const dateRangeIsInUse = await this.agendaEventService.existEventBetweenStartDateAndEndDate(
+      existsAgenda.id,
+      addEventDto.start,
+      addEventDto.end,
+    );
 
-    console.log('startDateIsInUse: ', startDateIsInUse);
-    console.log('endDateIsInUse: ', endDateIsInUse);
-    const serviceError = [startDateIsInUse, endDateIsInUse].find(
-      date => date instanceof ServiceError,
-    ) as ServiceError;
+    const serviceError =
+      dateRangeIsInUse instanceof ServiceError ? dateRangeIsInUse : null;
     if (serviceError) {
       return new DomainConflictException(handleServiceError(serviceError));
     }
 
-    if ([startDateIsInUse, endDateIsInUse].some(date => date === true)) {
+    if (dateRangeIsInUse) {
       return new DomainConflictException(
         'Already exists event in current date range',
       );
