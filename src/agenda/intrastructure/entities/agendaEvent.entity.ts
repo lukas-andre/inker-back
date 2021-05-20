@@ -28,4 +28,6 @@ export class AgendaEvent extends BaseEntity {
 
   @Column({ default: false })
   notification: boolean;
+
+  // TODO: HACER RELACION OneToOne A UNA ENTIDAD customer que tenga su informacion basica; 
 }
