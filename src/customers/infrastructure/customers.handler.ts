@@ -8,10 +8,10 @@ import { Customer } from './entities/customer.entity';
 
 @Injectable()
 export class CustomerHandler {
-  constructor(private readonly CRCustomerUseCase: CRCustomerUseCase) {}
+  constructor(private readonly cRCustomerUseCase: CRCustomerUseCase) {}
 
   async handleCreate(createCustomerDto: CreateCustomerReqDto) {
-    const created = await this.CRCustomerUseCase.create(createCustomerDto);
+    const created = await this.cRCustomerUseCase.create(createCustomerDto);
     if (created instanceof ServiceError) {
       throw new ConflictException(handleServiceError(created));
     }
@@ -20,14 +20,14 @@ export class CustomerHandler {
   }
 
   async handleFindAll(options: FindOneOptions<Customer>): Promise<Customer[]> {
-    return this.CRCustomerUseCase.findAll(options);
+    return this.cRCustomerUseCase.findAll(options);
   }
 
   async handleFindOne(options: FindOneOptions<Customer>): Promise<Customer> {
-    return this.CRCustomerUseCase.findOne(options);
+    return this.cRCustomerUseCase.findOne(options);
   }
 
   async handleFindById(id: string): Promise<Customer> {
-    return this.CRCustomerUseCase.findById(id);
+    return this.cRCustomerUseCase.findById(id);
   }
 }
