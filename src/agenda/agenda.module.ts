@@ -7,6 +7,8 @@ import { AgendaHandler } from './intrastructure/agenda.handler';
 import { Agenda } from './intrastructure/entities/agenda.entity';
 import { AgendaEvent } from './intrastructure/entities/agendaEvent.entity';
 import { AddEventUseCase } from './usecases/addEvent.usecase';
+import { CancelEventUseCase } from './usecases/cancelEvent.usecase';
+import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Agenda, AgendaEvent], 'agenda-db')],
@@ -15,6 +17,8 @@ import { AddEventUseCase } from './usecases/addEvent.usecase';
     AgendaHandler,
     AgendaEventService,
     AddEventUseCase,
+    UpdateEventUseCase,
+    CancelEventUseCase,
   ],
   controllers: [AgendaController],
   exports: [AgendaService],

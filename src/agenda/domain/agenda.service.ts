@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateArtistDto } from 'src/artists/infrastructure/dtos/createArtist.dto';
+import { CreateArtistDto } from '../../artists/infrastructure/dtos/createArtist.dto';
 import {
   Repository,
   FindManyOptions,

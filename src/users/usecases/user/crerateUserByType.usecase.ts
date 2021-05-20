@@ -6,7 +6,7 @@ import { ArtistsService } from '../../../artists/domain/services/artists.service
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
 import { CustomersService } from '../../../customers/domain/customers.service';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { serviceErrorStringify } from '../../../global/domain/utils/serviceErrorStringify';
+import { handleServiceError } from '../../../global/domain/utils/serviceErrorStringify';
 import { UserType } from '../../domain/enums/userType.enum';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
@@ -104,6 +104,6 @@ export class CreateUserByTypeUseCase {
 
   private async handleCreateError(userId: number, error: ServiceError) {
     await this.rollbackCreate(userId);
-    return new DomainConflictException(serviceErrorStringify(error));
+    return new DomainConflictException(handleServiceError(error));
   }
 }

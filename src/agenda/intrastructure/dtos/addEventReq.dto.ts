@@ -1,6 +1,9 @@
-import { IsString, IsIn, IsDate, IsBoolean } from 'class-validator';
+import { IsString, IsBoolean, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+import { IsOnlyDate } from '../../../global/domain/validators/isOnyDate.validator';
+import { IsStartDate } from '../../../global/domain/validators/isStartDate.validator';
+import { IsEndDate } from '../../../global/domain/validators/isEndDate.validator';
 
 export class AddEventReqDto {
   @ApiProperty({
@@ -11,18 +14,24 @@ export class AddEventReqDto {
   readonly agendaId: string;
 
   @ApiProperty({
-    example: new Date(),
-    description: 'Start date',
+    example: '2021-05-18 16:00:00',
+    description: 'Start date string(format:YYYY-MM-DD hh:mm:ss)',
   })
-  @IsDate()
-  readonly start: Date;
+  @IsOnlyDate()
+  @IsStartDate({
+    message: 'Start date must be less than end date',
+  })
+  readonly start: string;
 
   @ApiProperty({
-    example: new Date(),
-    description: 'End date',
+    example: '2021-05-18 16:30:00',
+    description: 'End date string(format:YYYY-MM-DD hh:mm:ss)',
   })
-  @IsDate()
-  readonly end: Date;
+  @IsOnlyDate()
+  @IsEndDate({
+    message: 'End date must be greater than end date',
+  })
+  readonly end: string;
 
   @ApiProperty({
     example: 'Tatto for Lucas',

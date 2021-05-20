@@ -18,6 +18,7 @@ export class GetAllArtistPostsUseCase {
     pagination: PaginationDto,
   ): Promise<Post[] | DomainException> {
     console.log('query: ', query);
+    // TODO: MOVER ESTO A UN SERVICIO
     const qb = (await this.postService.createQueryBuilder('posts'))
       .select('posts')
       .where('posts.userId = :userId', { userId })

@@ -54,7 +54,7 @@ export class ActivitiesService {
     activityId?: number,
     activityType?: string,
   ): Promise<FindReactionAndReactionTypeGroup | undefined> {
-    return (await this.acitivitiesRepository
+    return this.acitivitiesRepository
       .createQueryBuilder('activities')
       .select('COUNT(activities.reactions)', 'totalReactions')
       .addSelect('activities.activity_type', 'activityType')
@@ -70,7 +70,7 @@ export class ActivitiesService {
       })
       .andWhere('activities.reactions > 0')
       .groupBy('activities.activity_id, activities.activity_type ')
-      .getRawOne()) as FindReactionAndReactionTypeGroup;
+      .getRawOne();
   }
 
   async save(artist: DeepPartial<Activity>): Promise<Activity> {

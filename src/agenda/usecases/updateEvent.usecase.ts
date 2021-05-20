@@ -3,16 +3,14 @@ import { DomainException } from '../../global/domain/exceptions/domain.exception
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
-import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { handleServiceError } from '../../global/domain/utils/serviceErrorStringify';
+import { UpdateEventReqDto } from '../intrastructure/dtos/updateEventReq.dto';
 
 @Injectable()
-export class AddEventUseCase {
-  private readonly logger = new Logger(AddEventUseCase.name);
+export class UpdateEventUseCase {
+  private readonly logger = new Logger(UpdateEventUseCase.name);
 
   constructor(
     private readonly agendaService: AgendaService,
@@ -20,37 +18,39 @@ export class AddEventUseCase {
   ) {}
 
   async execute(
-    addEventDto: AddEventReqDto,
+    updateEventReqDto: UpdateEventReqDto,
+    eventId: string,
   ): Promise<AgendaEvent | DomainException> {
+    console.log('updateEventReqDto: ', updateEventReqDto);
+    console.log('eventId: ', eventId);
     const existsAgenda = await this.agendaService.findById(
-      addEventDto.agendaId,
+      updateEventReqDto.agendaId,
     );
 
     if (!existsAgenda) {
       return new DomainNotFoundException('Agenda not found');
     }
 
-    // TODO: HAY PROBLEMAS CUANDO SE QUIERE AGENAR UNA HORA JUSTO AL INICIO DEL TERMINO DE OTRA HORA
-    // SE DEBE SOLUCIONAR DE LA MANERA MAS SENCILLA POSIBLE SIN MUCHAS QUERIES EXTRA
+    const event = await this.agendaEventService.findById(eventId);
+
+    console.log('event: ', event);
+
+    if (!event) {
+      return new DomainNotFoundException('Event not found');
+    }
+
     const [startDateIsInUse, endDateIsInUse] = await Promise.all([
       this.agendaEventService.existEventBetweenStartDateAndEndDate(
         existsAgenda.id,
-        addEventDto.start,
+        updateEventReqDto.start,
+        event.id,
       ),
       this.agendaEventService.existEventBetweenStartDateAndEndDate(
         existsAgenda.id,
-        addEventDto.end,
+        updateEventReqDto.end,
+        event.id,
       ),
     ]);
-
-    console.log('startDateIsInUse: ', startDateIsInUse);
-    console.log('endDateIsInUse: ', endDateIsInUse);
-    const serviceError = [startDateIsInUse, endDateIsInUse].find(
-      date => date instanceof ServiceError,
-    ) as ServiceError;
-    if (serviceError) {
-      return new DomainConflictException(handleServiceError(serviceError));
-    }
 
     if ([startDateIsInUse, endDateIsInUse].some(date => date === true)) {
       return new DomainConflictException(
@@ -58,14 +58,23 @@ export class AddEventUseCase {
       );
     }
 
-    const event = new AgendaEvent();
-    event.agenda = existsAgenda;
-    event.title = addEventDto.title;
-    event.info = addEventDto.info;
-    event.color = addEventDto.color;
-    event.end = addEventDto.end as any;
-    event.start = addEventDto.start as any;
-    event.notification = addEventDto.notification;
+    event.title = updateEventReqDto.title
+      ? updateEventReqDto.title
+      : event.title;
+    event.info = updateEventReqDto.info ? updateEventReqDto.info : event.info;
+    event.color = updateEventReqDto.color
+      ? updateEventReqDto.color
+      : event.color;
+    event.end = updateEventReqDto.end
+      ? updateEventReqDto.end
+      : (event.end as any);
+    event.start = updateEventReqDto.start
+      ? updateEventReqDto.start
+      : (event.start as any);
+    event.notification =
+      typeof updateEventReqDto.notification === 'boolean'
+        ? updateEventReqDto.notification
+        : event.notification;
 
     try {
       return this.agendaEventService.save(event);
