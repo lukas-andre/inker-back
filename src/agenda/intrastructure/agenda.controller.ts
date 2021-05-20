@@ -51,11 +51,15 @@ export class AgendaController {
   @HttpCode(200)
   @ApiOkResponse({ description: 'Event canceled successful.', type: undefined })
   @ApiConflictResponse({ description: 'Invalid Dates.' })
-  @Delete('event/:eventId/agenda/:agendaId')
+  @Delete('agendaId/event/:eventId')
   async cancelEvent(
     @Param('eventId') eventId: string,
     @Param('agendaId') agendaId: string,
   ): Promise<any> {
     return this.agendaHandler.handleCancelEvent(eventId, agendaId);
   }
+
+  // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,
+  // TODO: HACER UN SOLO ENDPOINT PARA MOSTRAR Y PAGINAR EVENTOS POR SEMANA Y EVENTOS POR DIA
+  // TODO: REAGENDAMIENTO ? 
 }
