@@ -1,8 +1,7 @@
 import { IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AgendaViewType } from '../../../agenda/domain/enum/agendaViewType.enum';
-import { IsOnlyDate } from 'src/global/domain/validators/isOnlyDate.validator';
-import { IsStartDate } from 'src/global/domain/validators/isStartDate.validator';
+import { IsOnlyDate } from '../../../global/domain/validators/isOnlyDate.validator';
 
 export class ListEventByViewTypeQueryDto {
   @ApiProperty({
@@ -20,5 +19,5 @@ export class ListEventByViewTypeQueryDto {
   @IsOnlyDate('YYYY-MM-DD')
   readonly date: string;
 
-  //TODO: AGREGAR MAS FILTROS XD, PODRIA SER POR CUSTOMER ID
+  //TODO: AGREGAR MAS FILTROS XD, PODRIA SER POR CUSTOMER ID POR MAÑANA/TARDE/NOCHE
 }

@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
+import { FindEventByAgendaIdAndEventIdUseCase } from '../usecases/findEventByAgendaIdAndEventId.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 import { AddEventReqDto } from './dtos/addEventReq.dto';
@@ -16,6 +17,7 @@ export class AgendaHandler extends BaseHandler {
     private readonly updateEventUseCase: UpdateEventUseCase,
     private readonly cancelEventUseCase: CancelEventUseCase,
     private readonly listEventByViewTypeUseCase: ListEventByViewTypeUseCase,
+    private readonly findEventByAgendaIdAndEventIdUseCase: FindEventByAgendaIdAndEventIdUseCase,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);
@@ -41,6 +43,18 @@ export class AgendaHandler extends BaseHandler {
   ): Promise<any> {
     return this.resolve(
       await this.listEventByViewTypeUseCase.execute(agendaId, query),
+    );
+  }
+
+  async handleGetEventByEventId(
+    agendaId: number,
+    eventId: number,
+  ): Promise<any> {
+    return this.resolve(
+      await this.findEventByAgendaIdAndEventIdUseCase.execute(
+        agendaId,
+        eventId,
+      ),
     );
   }
 }

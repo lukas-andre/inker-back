@@ -72,8 +72,6 @@ export class AgendaController {
   @ApiOkResponse({ description: 'Event list successful.', type: undefined })
   @ApiConflictResponse({ description: 'Trouble listing events.' })
   @ApiParam({ name: 'agendaId', required: true, type: Number })
-  @ApiParam({ name: 'eventId', required: true, type: Number })
-  @ApiParam({ name: 'agendaId', required: true, type: Number })
   @Get(':agendaId')
   async listEventByViewType(
     @Param('agendaId', ParseIntPipe) agendaId: number,
@@ -85,8 +83,21 @@ export class AgendaController {
     );
   }
 
+  @ApiOperation({ summary: 'Get events by id' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Get Event successful.', type: undefined })
+  @ApiConflictResponse({ description: 'Trouble finding event.' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number })
+  @ApiParam({ name: 'eventId', required: true, type: Number })
+  @Get(':agendaId/event/:eventId')
+  async getEventByEventId(
+    @Param('agendaId', ParseIntPipe) agendaId: number,
+    @Param('eventId', ParseIntPipe) eventId: number,
+  ): Promise<any> {
+    return this.agendaHandler.handleGetEventByEventId(agendaId, eventId);
+  }
+
   // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,
   // TODO: GET EVENT BY ID
-  // TODO: HACER UN SOLO ENDPOINT PARA MOSTRAR Y PAGINAR EVENTOS POR SEMANA Y EVENTOS POR DIA
   // TODO: REAGENDAMIENTO ?
 }
