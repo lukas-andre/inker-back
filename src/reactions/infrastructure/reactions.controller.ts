@@ -11,6 +11,7 @@ import {
   Get,
   ParseIntPipe,
   Query,
+  HttpCode,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -34,6 +35,7 @@ export class ReactionsController {
     description: 'Add reaction ok',
     type: ReactionToActivityResponseDto,
   })
+  @HttpCode(200)
   @Post()
   async likeActivity(
     @Ip() ip: string,
@@ -74,8 +76,6 @@ export class ReactionsController {
   ): Promise<any> {
     this.logger.log(`IP: ${ip}`);
     this.logger.log(`Host: ${JSON.stringify(host)}`);
-    console.log('activityId: ', activityId);
-    console.log('activity: ', activity);
     return this.reactionsHandler.handleGetReactionsDetail(
       activityId,
       activity,

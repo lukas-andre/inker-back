@@ -96,4 +96,54 @@ export class AgendaEventService {
       return serviceError;
     }
   }
+
+  async findByDateRange(
+    id: number,
+    start: string,
+    end: string,
+  ): Promise<AgendaEvent[] | ServiceError> {
+    const qb = this.agendaEventRepository
+      .createQueryBuilder('agenda_event')
+      .select()
+      .where(`agenda_event.start BETWEEN :start and :end`, {
+        start,
+        end,
+      })
+      .andWhere('agenda_event.agenda_id = :agendaId', { agendaId: id });
+
+    try {
+      return qb.getMany();
+    } catch (error) {
+      const serviceError: ServiceError = {
+        error: 'Trouble finding event dates in range ',
+        method: this.findByDateRange.name,
+        subject: this.serviceName,
+      };
+      return serviceError;
+    }
+  }
+
+  async findByDate(
+    id: number,
+    stringDate: string,
+  ): Promise<AgendaEvent[] | ServiceError> {
+    const qb = this.agendaEventRepository
+      .createQueryBuilder('agenda_event')
+      .select()
+      .where(`agenda_event.start BETWEEN :date AND :date`, {
+        date: stringDate,
+      })
+      .andWhere('agenda_event.agenda_id = :agendaId', { agendaId: id });
+
+    try {
+      return qb.getMany();
+    } catch (error) {
+      const serviceError: ServiceError = {
+        error: 'Trouble finding event from date',
+        method: this.findByDate.name,
+        subject: this.serviceName,
+      };
+      return serviceError;
+    }
+  }
 }
