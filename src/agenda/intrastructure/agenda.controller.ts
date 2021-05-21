@@ -8,6 +8,8 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Get,
+  Query,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
@@ -18,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { AgendaHandler } from './agenda.handler';
 import { AddEventReqDto } from './dtos/addEventReq.dto';
+import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 
 @ApiTags('agenda')
@@ -64,7 +67,26 @@ export class AgendaController {
     return this.agendaHandler.handleCancelEvent(eventId, agendaId);
   }
 
+  @ApiOperation({ summary: 'List events for week/day' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Event list successful.', type: undefined })
+  @ApiConflictResponse({ description: 'Trouble listing events.' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number })
+  @ApiParam({ name: 'eventId', required: true, type: Number })
+  @ApiParam({ name: 'agendaId', required: true, type: Number })
+  @Get(':agendaId')
+  async listEventByViewType(
+    @Param('agendaId', ParseIntPipe) agendaId: number,
+    @Query() listEventByViewTypeQueryDto: ListEventByViewTypeQueryDto,
+  ): Promise<any> {
+    return this.agendaHandler.handleListEventByViewType(
+      agendaId,
+      listEventByViewTypeQueryDto,
+    );
+  }
+
   // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,
+  // TODO: GET EVENT BY ID
   // TODO: HACER UN SOLO ENDPOINT PARA MOSTRAR Y PAGINAR EVENTOS POR SEMANA Y EVENTOS POR DIA
   // TODO: REAGENDAMIENTO ?
 }

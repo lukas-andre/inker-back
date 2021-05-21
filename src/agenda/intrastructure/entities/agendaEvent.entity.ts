@@ -39,4 +39,5 @@ export class AgendaEvent extends BaseEntity {
   delete_at: Date;
 
   // TODO: HACER RELACION OneToOne A UNA ENTIDAD customer que tenga su informacion basica;
+  // TODO: HACER RELACION OneToOne A UNA ENTIDAD address que la ubicacion del evento;
 }

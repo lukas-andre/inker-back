@@ -1,4 +1,4 @@
-import { IsString, IsBoolean } from 'class-validator';
+import { IsString, IsBoolean, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsOnlyDate } from '../../../global/domain/validators/isOnlyDate.validator';
@@ -10,14 +10,14 @@ export class AddEventReqDto {
     example: 1,
     description: 'User Email or User Username',
   })
-  @IsString()
+  @IsNumber()
   readonly agendaId: number;
 
   @ApiProperty({
     example: '2021-05-18 16:00:00',
     description: 'Start date string(format:YYYY-MM-DD hh:mm:ss)',
   })
-  @IsOnlyDate()
+  @IsOnlyDate('YYYY-MM-DD hh:dd:ss')
   @IsStartDate({
     message: 'Start date must be less than end date',
   })
@@ -27,7 +27,7 @@ export class AddEventReqDto {
     example: '2021-05-18 16:30:00',
     description: 'End date string(format:YYYY-MM-DD hh:mm:ss)',
   })
-  @IsOnlyDate()
+  @IsOnlyDate('YYYY-MM-DD hh:dd:ss')
   @IsEndDate({
     message: 'End date must be greater than end date',
   })

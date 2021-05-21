@@ -8,6 +8,7 @@ import { Agenda } from './intrastructure/entities/agenda.entity';
 import { AgendaEvent } from './intrastructure/entities/agendaEvent.entity';
 import { AddEventUseCase } from './usecases/addEvent.usecase';
 import { CancelEventUseCase } from './usecases/cancelEvent.usecase';
+import { ListEventByViewTypeUseCase } from './usecases/listEventByViewType.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 
 @Module({
@@ -19,6 +20,7 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     AddEventUseCase,
     UpdateEventUseCase,
     CancelEventUseCase,
+    ListEventByViewTypeUseCase,
   ],
   controllers: [AgendaController],
   exports: [AgendaService],
