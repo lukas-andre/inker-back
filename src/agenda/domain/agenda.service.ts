@@ -10,6 +10,7 @@ import {
   DeleteResult,
 } from 'typeorm';
 import { Agenda } from '../intrastructure/entities/agenda.entity';
+import { ServiceError } from 'src/global/domain/interfaces/serviceError';
 
 @Injectable()
 export class AgendaService {
@@ -21,7 +22,15 @@ export class AgendaService {
   ) {}
 
   async findById(id: number) {
-    return this.agendaRepository.findOne(id);
+    // return this.agendaRepository.findOne(id);
+    const qb = this.agendaRepository
+      .createQueryBuilder('agenda')
+      .select('agenda.id')
+      .where('agenda.id = :agendaId', { agendaId: id });
+
+    const result = await qb.getOne();
+    console.log('result: ', result);
+    return result;
   }
 
   async find(options: FindManyOptions<Agenda>) {

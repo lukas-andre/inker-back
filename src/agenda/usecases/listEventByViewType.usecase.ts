@@ -67,14 +67,10 @@ export class ListEventByViewTypeUseCase {
     agenda: Agenda,
     date: string,
   ): Promise<AgendaEvent[] | DomainException> {
-    console.log('date: ', date);
-    console.log('new Date(date): ', new Date(date).toISOString());
-
+    // ESTA ES LA MANERA MAS POCO ELEGANTE DE CREAR EL INICIO Y EL FIN
+    // DE UN DIA EN UNA DATE CON FORMATO yyyy-MM-dd
     const startOfDay = date + ' 00:00:00';
     const endOfDay = date + ' 23:59:59';
-
-    console.log('startOfDay: ', startOfDay);
-    console.log('endOfDay: ', endOfDay);
 
     const result = await this.agendaEventService.findByDateRange(
       agenda.id,
@@ -82,14 +78,11 @@ export class ListEventByViewTypeUseCase {
       endOfDay,
     );
 
-    console.log('result: ', result);
-
     if (result instanceof ServiceError) {
       return new DomainConflictException(handleServiceError(result));
     }
 
     return result;
-    // return null;
   }
 
   private async handleWeekViewType(

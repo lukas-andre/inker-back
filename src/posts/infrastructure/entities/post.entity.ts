@@ -1,5 +1,5 @@
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { Entity, Column, Index } from 'typeorm';
+import { Entity, Column, Index, DeleteDateColumn } from 'typeorm';
 import { TagInterface } from '../../../tags/tag.interface';
 import { GenrerInterface } from '../../../genres/genre.interface';
 import { MultimediasMetadaInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
@@ -39,4 +39,10 @@ export class Post extends BaseEntity {
 
   @Column('jsonb', { nullable: true })
   genres: GenrerInterface[];
+
+  @Column({ default: false })
+  hidden: boolean;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date;
 }

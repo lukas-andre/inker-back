@@ -1,9 +1,10 @@
-import { Entity, Column, OneToMany, DeleteDateColumn } from 'typeorm';
+import { Entity, Column, OneToMany, DeleteDateColumn, Index } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { AgendaEvent } from './agendaEvent.entity';
 
 @Entity()
 export class Agenda extends BaseEntity {
+  @Index()
   @Column({ name: 'user_id' })
   userId: number;
 

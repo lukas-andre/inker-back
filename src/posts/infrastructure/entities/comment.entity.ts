@@ -1,5 +1,5 @@
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { Entity, Column, Index } from 'typeorm';
+import { Entity, Column, Index, DeleteDateColumn } from 'typeorm';
 
 @Entity()
 export class Comment extends BaseEntity {
@@ -35,4 +35,7 @@ export class Comment extends BaseEntity {
 
   @Column({ name: 'profile_thumbnail', nullable: true })
   profileThumbnail: string;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date;
 }
