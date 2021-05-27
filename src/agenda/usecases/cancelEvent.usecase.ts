@@ -39,12 +39,12 @@ export class CancelEventUseCase {
         return existsAgenda;
       }
       return new DomainInternalServerErrorException(
-        'Fail when an event is canceled',
+        'Fail when event is canceled',
       );
     } catch (error) {
       this.logger.log(`Adding event error ${error.message}`);
       return new DomainInternalServerErrorException(
-        'Fail when an event is canceled',
+        'Fail when event is canceled',
       );
     }
   }

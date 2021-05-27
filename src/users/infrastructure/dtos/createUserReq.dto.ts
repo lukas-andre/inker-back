@@ -7,8 +7,11 @@ import {
   IsOptional,
   ValidateIf,
   IsBoolean,
+  ValidateNested,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+import { AddressDto } from './address.dto';
+import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
 
 export class CreateUserReqDto {
   @ApiProperty({
@@ -69,6 +72,15 @@ export class CreateUserReqDto {
   @IsString()
   @IsOptional()
   readonly phoneNumber?: string;
+
+  @ApiProperty({
+    description: 'User phone numer',
+    required: false,
+    type: AddressDto,
+  })
+  @ValidateNested()
+  @Type(() => AddressDto)
+  address: AddressInterface;
 
   @ApiProperty({
     example: ['2', '3', '4', '5', '6'],
