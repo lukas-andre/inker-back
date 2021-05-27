@@ -11,14 +11,11 @@ import { Agenda } from '../intrastructure/entities/agenda.entity';
 import {
   endOfWeek,
   format,
-  startOfDay,
   startOfWeek,
-  endOfDay,
-  toDate,
 } from 'date-fns';
-import { ServiceError } from 'src/global/domain/interfaces/serviceError';
-import { DomainConflictException } from 'src/global/domain/exceptions/domainConflict.exception';
-import { handleServiceError } from 'src/global/domain/utils/serviceErrorStringify';
+import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { handleServiceError } from '../../global/domain/utils/serviceErrorStringify';
 
 @Injectable()
 export class ListEventByViewTypeUseCase {
