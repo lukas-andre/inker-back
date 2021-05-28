@@ -42,12 +42,12 @@ export class FindArtistByRangeUseCase {
 
     try {
       const artists = await this.artistsService.findByIds(
-        result.map(location => location.location_artist_id),
+        result.map((location) => location.location_artist_id),
       );
 
-      result.forEach(location => {
+      result.forEach((location) => {
         location.artist = artists.filter(
-          artist => artist.id === location.location_artist_id,
+          (artist) => artist.id === location.location_artist_id,
         );
       });
 

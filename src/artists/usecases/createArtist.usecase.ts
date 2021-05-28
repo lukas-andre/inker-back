@@ -1,14 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ArtistsService } from '../domain/services/artists.service';
 import { handleServiceError } from '../../global/domain/utils/handleServiceError';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { CreateArtistDto } from '../infrastructure/dtos/createArtist.dto';
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { AgendaService } from '../../agenda/domain/agenda.service';
 import { Agenda } from '../../agenda/intrastructure/entities/agenda.entity';
-import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 
 @Injectable()
 export class CreateArtistUseCase {

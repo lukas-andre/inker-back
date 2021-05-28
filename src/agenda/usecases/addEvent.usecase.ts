@@ -7,9 +7,8 @@ import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { handleServiceError } from '../../global/domain/utils/handleServiceError';
-import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 
 @Injectable()
 export class AddEventUseCase {
@@ -32,11 +31,12 @@ export class AddEventUseCase {
       return new DomainNotFoundException('Agenda not found');
     }
 
-    const dateRangeIsInUse = await this.agendaEventService.existEventBetweenStartDateAndEndDate(
-      existsAgenda.id,
-      addEventDto.start,
-      addEventDto.end,
-    );
+    const dateRangeIsInUse =
+      await this.agendaEventService.existEventBetweenStartDateAndEndDate(
+        existsAgenda.id,
+        addEventDto.start,
+        addEventDto.end,
+      );
 
     if (isServiceError(dateRangeIsInUse)) {
       return new DomainConflictException(

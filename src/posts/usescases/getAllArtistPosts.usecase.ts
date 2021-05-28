@@ -26,13 +26,13 @@ export class GetAllArtistPostsUseCase {
 
     if (query.genres?.length) {
       qb.andWhere('genres @> :genres', {
-        genres: JSON.stringify(query.genres.map(genre => ({ name: genre }))),
+        genres: JSON.stringify(query.genres.map((genre) => ({ name: genre }))),
       });
     }
 
     if (query.tags?.length) {
       qb.andWhere('tags @> :tags', {
-        tags: JSON.stringify(query.tags.map(tag => ({ name: tag }))),
+        tags: JSON.stringify(query.tags.map((tag) => ({ name: tag }))),
       });
     }
 

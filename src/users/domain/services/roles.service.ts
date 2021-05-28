@@ -17,9 +17,9 @@ export class RolesService {
     for (const initRole of initRoles) {
       const role = Object.assign(new Role(), initRole);
       if (initRole.name !== 'admin') {
-        role.permissions = permissions.filter(permission =>
+        role.permissions = permissions.filter((permission) =>
           initRolePermissions
-            .find(init => init.role === role.name)
+            .find((init) => init.role === role.name)
             .controllers.includes(permission.controller),
         );
       }

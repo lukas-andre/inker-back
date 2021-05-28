@@ -20,8 +20,8 @@ export class InitialPermissionsService {
     const controllersNames = new Set<string>();
 
     const providers = [...this.container.values()];
-    providers.forEach(modules => {
-      modules.controllers.forEach(controller =>
+    providers.forEach((modules) => {
+      modules.controllers.forEach((controller) =>
         controllersNames.add(controller.name),
       );
     });

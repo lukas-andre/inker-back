@@ -5,7 +5,7 @@ import {
 } from 'class-validator';
 
 export function IsStartDate(validationOptions?: ValidationOptions) {
-  return function(object: unknown, propertyName: string) {
+  return function (object: unknown, propertyName: string) {
     registerDecorator({
       name: 'IsStartDate',
       target: object.constructor,

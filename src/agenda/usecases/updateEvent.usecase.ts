@@ -35,12 +35,13 @@ export class UpdateEventUseCase {
       return new DomainNotFoundException('Event not found');
     }
 
-    const dateRangeIsInUse = await this.agendaEventService.existEventBetweenStartDateAndEndDate(
-      existsAgenda.id,
-      updateEventReqDto.start,
-      updateEventReqDto.end,
-      event.id,
-    );
+    const dateRangeIsInUse =
+      await this.agendaEventService.existEventBetweenStartDateAndEndDate(
+        existsAgenda.id,
+        updateEventReqDto.start,
+        updateEventReqDto.end,
+        event.id,
+      );
 
     if (dateRangeIsInUse) {
       return new DomainConflictException(

@@ -17,10 +17,7 @@ export class Agenda extends BaseEntity {
   @Column({ default: true })
   open: boolean;
 
-  @OneToMany(
-    () => AgendaEvent,
-    agendaEvent => agendaEvent.agenda,
-  )
+  @OneToMany(() => AgendaEvent, (agendaEvent) => agendaEvent.agenda)
   agendaEvent: AgendaEvent;
 
   @DeleteDateColumn()
