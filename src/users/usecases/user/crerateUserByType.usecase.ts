@@ -14,6 +14,10 @@ import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
 import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
 import { AgendaService } from '../../../agenda/domain/agenda.service';
+import { ArtistLocationsService } from '../../../locations/domain/artistLocations.service';
+import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
+import { Agenda } from '../../../agenda/intrastructure/entities/agenda.entity';
+import { Point } from 'geojson';
 @Injectable()
 export class CreateUserByTypeUseCase {
   constructor(
@@ -22,6 +26,7 @@ export class CreateUserByTypeUseCase {
     private readonly customerService: CustomersService,
     private readonly rolesService: RolesService,
     private readonly agendaService: AgendaService,
+    private readonly artistLocationsService: ArtistLocationsService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -44,13 +49,9 @@ export class CreateUserByTypeUseCase {
       createUserParams,
     );
 
-    console.log('response: ', response);
-
     if (response instanceof ServiceError) {
       return this.handleCreateError(created.id, response);
     }
-
-    console.log('created: ', created);
 
     return created;
   }
@@ -66,7 +67,7 @@ export class CreateUserByTypeUseCase {
           contactEmail: dto.email ? dto.email : undefined,
           userId,
         });
-        return await this.createCustomer(createCustomerDto);
+        return this.createCustomer(createCustomerDto);
       },
       [UserType.ARTIST]: async () => {
         const createArtistDto = Object.assign(new CreateArtistDto(), {
@@ -74,7 +75,7 @@ export class CreateUserByTypeUseCase {
           contactEmail: dto.email ? dto.email : undefined,
           userId,
         });
-        return await this.createArtist(createArtistDto);
+        return this.createArtist(createArtistDto);
       },
     };
     return createByType[dto.userType]();
@@ -86,11 +87,57 @@ export class CreateUserByTypeUseCase {
     const savedAgenda = await this.agendaService.createWithArtistDto(
       createArtistDto,
     );
+
     if (savedAgenda instanceof ServiceError && result instanceof Artist) {
       await this.artistsService.delete(result.id);
     }
 
+    const artistLocation: Partial<ArtistLocation> = this.mapCreateArtistDtoToArtistLocation(
+      result as Artist,
+      createArtistDto,
+    );
+
+    const savedLocation = await this.artistLocationsService.save(
+      artistLocation,
+    );
+
+    if (
+      savedLocation instanceof ServiceError &&
+      result instanceof Artist &&
+      savedAgenda instanceof Agenda
+    ) {
+      await this.artistsService.delete(result.id);
+      await this.agendaService.delete(savedAgenda.id);
+    }
+
     return result;
+  }
+
+  private mapCreateArtistDtoToArtistLocation(
+    artist: Artist,
+    createArtistDto: CreateArtistDto,
+  ): Partial<ArtistLocation> {
+    const point: Point = {
+      type: 'Point',
+      coordinates: [
+        createArtistDto.address.latitud,
+        createArtistDto.address.longitud,
+      ],
+    };
+    return {
+      artistId: artist.id,
+      name: [artist.firstName, artist.lastName].join(' '),
+      profileThumbnail: artist.profileThumbnail,
+      address1: createArtistDto.address.address1,
+      address2: createArtistDto.address.address2,
+      address3: createArtistDto.address.address3,
+      city: createArtistDto.address.city,
+      country: createArtistDto.address.country,
+      state: createArtistDto.address.state,
+      latitud: createArtistDto.address.latitud,
+      longitud: createArtistDto.address.longitud,
+      location: point,
+    };
   }
 
   private async createCustomer(createCustomerDto: CreateCustomerParams) {

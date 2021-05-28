@@ -57,7 +57,7 @@ export class AddressDto implements AddressInterface {
   readonly country?: string;
 
   @ApiProperty({
-    example: '356751',
+    example: -33.0244,
     description: 'Latitud',
   })
   @IsNotEmpty()
@@ -65,7 +65,7 @@ export class AddressDto implements AddressInterface {
   readonly latitud: number;
 
   @ApiProperty({
-    example: '715430',
+    example: -71.5517,
     description: 'Longitud',
   })
   @IsNotEmpty()
