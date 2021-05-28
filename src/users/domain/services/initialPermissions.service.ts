@@ -40,8 +40,8 @@ export class InitialPermissionsService {
           service: this.serviceName,
           method: this.initPermissions.name,
           catchedErrorMessage: error.detail,
-          publicErrorMessage: 'Trouble saving permissions'
-        }
+          publicErrorMessage: 'Trouble saving permissions',
+        };
       }
     }
 

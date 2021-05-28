@@ -25,7 +25,9 @@ export class CreateArtistUseCase {
   ): Promise<Artist | DomainException> {
     const created = await this.artistsService.create(createArtistdto);
     if (isServiceError(created)) {
-      return new DomainConflictException(handleServiceError(created, this.logger));
+      return new DomainConflictException(
+        handleServiceError(created, this.logger),
+      );
     }
     const agenda: Partial<Agenda> = {
       open: createArtistdto.agendaIsOpen,
@@ -37,7 +39,9 @@ export class CreateArtistUseCase {
     const savedAgenda = await this.agendaService.save(agenda);
     if (isServiceError(savedAgenda)) {
       await this.artistsService.delete(created.id);
-      return new DomainConflictException(handleServiceError(savedAgenda, this.logger));
+      return new DomainConflictException(
+        handleServiceError(savedAgenda, this.logger),
+      );
     }
 
     return created;

@@ -11,7 +11,7 @@ import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
 export class CustomerHandler {
   private readonly serviceName = CustomerHandler.name;
   private readonly logger = new Logger(this.serviceName);
-  
+
   constructor(private readonly cRCustomerUseCase: CRCustomerUseCase) {}
 
   async handleCreate(createCustomerDto: CreateCustomerReqDto) {

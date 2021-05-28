@@ -13,7 +13,7 @@ import { ArtistsModule } from 'src/artists/artists.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([ArtistLocation, EventLocation], 'location-db'),
-    ArtistsModule
+    ArtistsModule,
   ],
   controllers: [LocationsCrontoller],
   providers: [
