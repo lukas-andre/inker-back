@@ -58,7 +58,7 @@ export class AddEventReqDto {
     example: true,
     description: 'True for active notifiactions for this event',
   })
-  @Transform(value => Boolean(value === 'true' || value === true))
+  @Transform((value) => Boolean(value === 'true' || value === true))
   @IsBoolean()
   readonly notification: boolean;
 }

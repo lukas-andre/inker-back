@@ -47,7 +47,7 @@ export class CustomersService {
 
   async addFollow(customer: Customer, topic: string, newFollow: FollowTopic) {
     customer.follows.map(
-      follow => (follow[topic] = [...follow[topic], newFollow]),
+      (follow) => (follow[topic] = [...follow[topic], newFollow]),
     );
     return this.customersRepository.save(customer);
   }

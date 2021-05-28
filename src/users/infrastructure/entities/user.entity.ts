@@ -21,6 +21,6 @@ export class User extends BaseEntity {
   @Index()
   userType: string;
 
-  @ManyToOne(type => Role, { cascade: false, nullable: true })
+  @ManyToOne((type) => Role, { cascade: false, nullable: true })
   role: Role;
 }

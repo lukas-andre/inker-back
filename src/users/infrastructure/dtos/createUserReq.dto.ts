@@ -78,7 +78,7 @@ export class CreateUserReqDto {
     required: false,
     type: AddressDto,
   })
-  @ValidateIf(v => v.userType === UserType.ARTIST)
+  @ValidateIf((v) => v.userType === UserType.ARTIST)
   @ValidateNested()
   @Type(() => AddressDto)
   readonly address: AddressInterface;
@@ -88,7 +88,7 @@ export class CreateUserReqDto {
     description: 'Week working days',
     required: false,
   })
-  @ValidateIf(v => v.userType === UserType.ARTIST)
+  @ValidateIf((v) => v.userType === UserType.ARTIST)
   @IsString({ each: true })
   readonly agendaWorkingDays: string[];
 
@@ -97,8 +97,8 @@ export class CreateUserReqDto {
     description: 'True if artist set agenda public',
     required: false,
   })
-  @ValidateIf(v => v.userType === UserType.ARTIST)
-  @Transform(value => Boolean(value === 'true' || value === true))
+  @ValidateIf((v) => v.userType === UserType.ARTIST)
+  @Transform((value) => Boolean(value === 'true' || value === true))
   readonly agendaIsPublic: boolean;
 
   @ApiProperty({
@@ -106,8 +106,8 @@ export class CreateUserReqDto {
     description: 'True if artist set agenda open',
     required: false,
   })
-  @ValidateIf(v => v.userType === UserType.ARTIST)
+  @ValidateIf((v) => v.userType === UserType.ARTIST)
   @IsBoolean()
-  @Transform(value => Boolean(value === 'true' || value === true))
+  @Transform((value) => Boolean(value === 'true' || value === true))
   readonly agendaIsOpen: boolean;
 }

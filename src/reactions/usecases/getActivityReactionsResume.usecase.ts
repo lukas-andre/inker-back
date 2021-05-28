@@ -14,10 +14,11 @@ export class GetActivityReactionsResumeUseCase {
     activityId: number,
     activity: string,
   ): Promise<any | DomainException> {
-    const result = await this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
-      activityId,
-      activity,
-    );
+    const result =
+      await this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
+        activityId,
+        activity,
+      );
     console.log('result: ', result);
     return result;
   }

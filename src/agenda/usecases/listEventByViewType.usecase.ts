@@ -8,11 +8,10 @@ import { DomainInternalServerErrorException } from '../../global/domain/exceptio
 import { ListEventByViewTypeQueryDto } from '../intrastructure/dtos/listEventByViewTypeQuery.dto';
 import { AgendaViewType } from '../domain/enum/agendaViewType.enum';
 import { Agenda } from '../intrastructure/entities/agenda.entity';
-import { endOfWeek, format, startOfWeek } from 'date-fns';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { handleServiceError } from '../../global/domain/utils/handleServiceError';
-import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { endOfWeek, format, startOfWeek } from 'date-fns';
 
 @Injectable()
 export class ListEventByViewTypeUseCase {

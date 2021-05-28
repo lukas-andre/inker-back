@@ -36,16 +36,15 @@ export class ReactToActivityUseCase {
       );
     }
 
-    const existsUserReactionInThisActivity = await this.reactionsService.findOne(
-      {
+    const existsUserReactionInThisActivity =
+      await this.reactionsService.findOne({
         where: {
           activityId: reactionDto.activityId,
           activityType: reactionDto.activity,
           userId: jwtPayload.id,
           active: true,
         },
-      },
-    );
+      });
 
     if (existsUserReactionInThisActivity) {
       existsUserReactionInThisActivity.active = false;

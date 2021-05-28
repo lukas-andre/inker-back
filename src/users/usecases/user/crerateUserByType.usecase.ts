@@ -96,10 +96,11 @@ export class CreateUserByTypeUseCase {
       await this.artistsService.delete(result.id);
     }
 
-    const artistLocation: Partial<ArtistLocation> = this.mapCreateArtistDtoToArtistLocation(
-      result as Artist,
-      createArtistDto,
-    );
+    const artistLocation: Partial<ArtistLocation> =
+      this.mapCreateArtistDtoToArtistLocation(
+        result as Artist,
+        createArtistDto,
+      );
 
     const savedLocation = await this.artistLocationsService.save(
       artistLocation,

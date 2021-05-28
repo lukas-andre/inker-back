@@ -10,10 +10,7 @@ import { Agenda } from './agenda.entity';
 
 @Entity()
 export class AgendaEvent extends BaseEntity {
-  @ManyToOne(
-    () => Agenda,
-    agenda => agenda.agendaEvent,
-  )
+  @ManyToOne(() => Agenda, (agenda) => agenda.agendaEvent)
   @JoinColumn({ name: 'agenda_id' })
   agenda: Agenda;
 

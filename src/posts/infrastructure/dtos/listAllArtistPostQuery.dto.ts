@@ -9,7 +9,7 @@ export class ListAllArtistPostsQueryDto {
   })
   @IsArray()
   @IsOptional()
-  @Transform(value => (Array.isArray(value) ? value : value ? [value] : []))
+  @Transform((value) => (Array.isArray(value) ? value : value ? [value] : []))
   readonly genres: string[];
 
   @ApiProperty({
@@ -17,6 +17,6 @@ export class ListAllArtistPostsQueryDto {
   })
   @IsArray()
   @IsOptional()
-  @Transform(value => (Array.isArray(value) ? value : value ? [value] : []))
+  @Transform((value) => (Array.isArray(value) ? value : value ? [value] : []))
   readonly tags: string[];
 }

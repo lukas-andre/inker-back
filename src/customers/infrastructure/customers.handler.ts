@@ -1,11 +1,10 @@
 import { Injectable, ConflictException, Logger } from '@nestjs/common';
 import { handleServiceError } from '../../global/domain/utils/handleServiceError';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
 import { CRCustomerUseCase } from '../usecases/CRCustomer.usecase';
 import { FindOneOptions } from 'typeorm';
 import { Customer } from './entities/customer.entity';
-import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 
 @Injectable()
 export class CustomerHandler {
