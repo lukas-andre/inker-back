@@ -42,7 +42,7 @@ export class UsersService {
     const user = this.usersRepository.create();
     user.username = createUserParams.username;
     user.userType = createUserParams.userType;
-    user.email = createUserParams.email;
+    user.email = createUserParams.email.toLowerCase();
     user.password = await this.hashPasword(createUserParams.password);
     user.role = role;
 
