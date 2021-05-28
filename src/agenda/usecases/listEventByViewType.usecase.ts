@@ -11,11 +11,13 @@ import { Agenda } from '../intrastructure/entities/agenda.entity';
 import { endOfWeek, format, startOfWeek } from 'date-fns';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { handleServiceError } from '../../global/domain/utils/serviceErrorStringify';
+import { handleServiceError } from '../../global/domain/utils/handleServiceError';
+import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
 
 @Injectable()
 export class ListEventByViewTypeUseCase {
-  private readonly logger = new Logger(ListEventByViewTypeUseCase.name);
+  private readonly serviceName = ListEventByViewTypeUseCase.name;
+  private readonly logger = new Logger(this.serviceName);
 
   constructor(
     private readonly agendaService: AgendaService,
@@ -71,8 +73,10 @@ export class ListEventByViewTypeUseCase {
       endOfDay,
     );
 
-    if (result instanceof ServiceError) {
-      return new DomainConflictException(handleServiceError(result));
+    if (isServiceError(result)) {
+      return new DomainConflictException(
+        handleServiceError(result, this.logger),
+      );
     }
 
     return result;
@@ -100,8 +104,10 @@ export class ListEventByViewTypeUseCase {
       stringEndOfAgendaWeek,
     );
 
-    if (result instanceof ServiceError) {
-      return new DomainConflictException(handleServiceError(result));
+    if (isServiceError(result)) {
+      return new DomainConflictException(
+        handleServiceError(result, this.logger),
+      );
     }
 
     return result;

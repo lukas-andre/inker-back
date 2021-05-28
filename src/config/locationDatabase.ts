@@ -10,6 +10,6 @@ export default registerAs('locationDb', () => ({
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../locations/**/*.entity{.ts,.js}'],
   synchronize: process.env.TYPEORM_SYNC,
-  logging: false,
+  logging: true,
   cache: true,
 }));

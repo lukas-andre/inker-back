@@ -7,10 +7,13 @@ import { EventLocationsService } from './domain/eventLocations.service';
 import { LocationsCrontoller } from './infrastructure/locations.controller';
 import { LocationsHandler } from './infrastructure/locations.handler';
 import { AddLocationByApiUseCase } from './usescases/addLocationByApi.usecase';
+import { FindArtistByRangeUseCase } from './usescases/findArtistByRange.usecase';
+import { ArtistsModule } from 'src/artists/artists.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ArtistLocation, EventLocation], 'location-db'),
+    ArtistsModule
   ],
   controllers: [LocationsCrontoller],
   providers: [
@@ -18,6 +21,7 @@ import { AddLocationByApiUseCase } from './usescases/addLocationByApi.usecase';
     ArtistLocationsService,
     EventLocationsService,
     AddLocationByApiUseCase,
+    FindArtistByRangeUseCase,
   ],
   exports: [ArtistLocationsService, EventLocationsService],
 })

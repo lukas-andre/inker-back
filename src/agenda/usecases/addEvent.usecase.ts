@@ -8,11 +8,13 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { handleServiceError } from '../../global/domain/utils/serviceErrorStringify';
+import { handleServiceError } from '../../global/domain/utils/handleServiceError';
+import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
 
 @Injectable()
 export class AddEventUseCase {
-  private readonly logger = new Logger(AddEventUseCase.name);
+  private readonly serviceName = AddEventUseCase.name;
+  private readonly logger = new Logger(this.serviceName);
 
   constructor(
     private readonly agendaService: AgendaService,
@@ -36,10 +38,10 @@ export class AddEventUseCase {
       addEventDto.end,
     );
 
-    const serviceError =
-      dateRangeIsInUse instanceof ServiceError ? dateRangeIsInUse : null;
-    if (serviceError) {
-      return new DomainConflictException(handleServiceError(serviceError));
+    if (isServiceError(dateRangeIsInUse)) {
+      return new DomainConflictException(
+        handleServiceError(dateRangeIsInUse, this.logger),
+      );
     }
 
     if (dateRangeIsInUse) {

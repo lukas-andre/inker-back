@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
@@ -6,7 +6,7 @@ import { ArtistsService } from '../../../artists/domain/services/artists.service
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
 import { CustomersService } from '../../../customers/domain/customers.service';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { handleServiceError } from '../../../global/domain/utils/serviceErrorStringify';
+import { handleServiceError } from '../../../global/domain/utils/handleServiceError';
 import { UserType } from '../../domain/enums/userType.enum';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
@@ -18,8 +18,12 @@ import { ArtistLocationsService } from '../../../locations/domain/artistLocation
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { Agenda } from '../../../agenda/intrastructure/entities/agenda.entity';
 import { Point } from 'geojson';
+import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
 @Injectable()
 export class CreateUserByTypeUseCase {
+  private readonly serviceName = CreateUserByTypeUseCase.name;
+  private readonly logger = new Logger(this.serviceName);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly artistsService: ArtistsService,
@@ -49,7 +53,7 @@ export class CreateUserByTypeUseCase {
       createUserParams,
     );
 
-    if (response instanceof ServiceError) {
+    if (isServiceError(response)) {
       return this.handleCreateError(created.id, response);
     }
 
@@ -151,6 +155,6 @@ export class CreateUserByTypeUseCase {
 
   private async handleCreateError(userId: number, error: ServiceError) {
     await this.rollbackCreate(userId);
-    return new DomainConflictException(handleServiceError(error));
+    return new DomainConflictException(handleServiceError(error, this.logger));
   }
 }

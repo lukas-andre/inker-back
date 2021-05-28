@@ -3,6 +3,7 @@ import { DomainException } from '../../global/domain/exceptions/domain.exception
 import { ArtistLocationsService } from '../domain/artistLocations.service';
 import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
 import { Geometry, Point } from 'geojson';
+import { DomainConflictException } from 'src/global/domain/exceptions/domainConflict.exception';
 
 @Injectable()
 export class AddLocationByApiUseCase {
@@ -20,8 +21,6 @@ export class AddLocationByApiUseCase {
       coordinates: [addLocationDto.latitud, addLocationDto.longitud],
     };
 
-    console.log('Point: ', point);
-
     try {
       return this.artistsLocationService.save({
         address1: addLocationDto.address1,
@@ -36,7 +35,7 @@ export class AddLocationByApiUseCase {
       });
     } catch (error) {
       this.logger.log(`Error: ${error.message}`);
-      return new DomainException(`Could not save location `);
+      return new DomainConflictException(`Could not save location `);
     }
   }
 }

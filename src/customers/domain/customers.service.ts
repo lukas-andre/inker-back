@@ -30,15 +30,19 @@ export class CustomersService {
 
     if (exists) {
       return {
-        error: `Customer with user id: ${pararms.userId} already exist`,
-        subject: this.serviceName,
+        service: this.serviceName,
         method: this.create.name,
+        publicErrorMessage: `Customer with user id: ${pararms.userId} already exist`,
       } as ServiceError;
     }
-
-    const newCustomer = Object.assign(new Customer());
-
-    return this.customersRepository.save(newCustomer);
+    // TODO: METER EN UN TRY
+    return this.customersRepository.save({
+      userId: pararms.userId,
+      firstName: pararms.firstName,
+      lastName: pararms.lastName,
+      contactPhoneNumber: pararms.phoneNumber,
+      contactEmail: pararms.contactEmail,
+    });
   }
 
   async addFollow(customer: Customer, topic: string, newFollow: FollowTopic) {

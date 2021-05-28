@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ArtistsService } from '../domain/services/artists.service';
-import { handleServiceError } from '../../global/domain/utils/serviceErrorStringify';
+import { handleServiceError } from '../../global/domain/utils/handleServiceError';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { CreateArtistDto } from '../infrastructure/dtos/createArtist.dto';
 import { Artist } from '../infrastructure/entities/artist.entity';
@@ -8,9 +8,13 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { AgendaService } from '../../agenda/domain/agenda.service';
 import { Agenda } from '../../agenda/intrastructure/entities/agenda.entity';
+import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
 
 @Injectable()
 export class CreateArtistUseCase {
+  private readonly serviceName = CreateArtistUseCase.name;
+  private readonly logger = new Logger(this.serviceName);
+
   constructor(
     private readonly artistsService: ArtistsService,
     private readonly agendaService: AgendaService,
@@ -20,8 +24,8 @@ export class CreateArtistUseCase {
     createArtistdto: CreateArtistDto,
   ): Promise<Artist | DomainException> {
     const created = await this.artistsService.create(createArtistdto);
-    if (created instanceof ServiceError) {
-      return new DomainConflictException(handleServiceError(created));
+    if (isServiceError(created)) {
+      return new DomainConflictException(handleServiceError(created, this.logger));
     }
     const agenda: Partial<Agenda> = {
       open: createArtistdto.agendaIsOpen,
@@ -31,9 +35,9 @@ export class CreateArtistUseCase {
     };
 
     const savedAgenda = await this.agendaService.save(agenda);
-    if (savedAgenda instanceof ServiceError) {
+    if (isServiceError(savedAgenda)) {
       await this.artistsService.delete(created.id);
-      return new DomainConflictException(handleServiceError(savedAgenda));
+      return new DomainConflictException(handleServiceError(savedAgenda, this.logger));
     }
 
     return created;
