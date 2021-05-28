@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsNumber, IsNotEmpty } from 'class-validator';
 import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
 
-export class AddressDto implements AddressInterface {
+export class AddLocationDto implements AddressInterface {
   @ApiProperty({
     example: 'Av vicuña mackenna',
     description: 'Calle',
@@ -57,7 +57,7 @@ export class AddressDto implements AddressInterface {
   readonly country?: string;
 
   @ApiProperty({
-    example: '356751',
+    example: -33.51215,
     description: 'Latitud',
   })
   @IsNotEmpty()
@@ -65,7 +65,7 @@ export class AddressDto implements AddressInterface {
   readonly latitud: number;
 
   @ApiProperty({
-    example: '715430',
+    example: -70.60971,
     description: 'Longitud',
   })
   @IsNotEmpty()

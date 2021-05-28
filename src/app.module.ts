@@ -14,6 +14,7 @@ import { DatabasesModule } from './databases/database.module';
 import { ChatGateway } from './chat/chat.gateway';
 import { AlertGateway } from './alert/alert.gateway';
 import { AgendaModule } from './agenda/agenda.module';
+import { LocationsModule } from './locations/locations.module';
 
 @Module({
   imports: [
@@ -30,8 +31,7 @@ import { AgendaModule } from './agenda/agenda.module';
     TagsModule,
     GenresModule,
     AgendaModule,
-    // FeedModule,
-    // NotificationsModule,
+    LocationsModule,
   ],
   providers: [ChatGateway, AlertGateway],
 })

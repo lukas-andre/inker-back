@@ -1,5 +1,7 @@
 import { UserType } from '../../domain/enums/userType.enum';
 import { ApiProperty } from '@nestjs/swagger';
+import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
+import { AddressDto } from '../../../global/infrastructure/dtos/address.dto';
 import {
   IsString,
   IsEmail,
@@ -10,8 +12,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { AddressDto } from './address.dto';
-import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
 
 export class CreateUserReqDto {
   @ApiProperty({
@@ -78,9 +78,10 @@ export class CreateUserReqDto {
     required: false,
     type: AddressDto,
   })
+  @ValidateIf(v => v.userType === UserType.ARTIST)
   @ValidateNested()
   @Type(() => AddressDto)
-  address: AddressInterface;
+  readonly address: AddressInterface;
 
   @ApiProperty({
     example: ['2', '3', '4', '5', '6'],
@@ -89,7 +90,7 @@ export class CreateUserReqDto {
   })
   @ValidateIf(v => v.userType === UserType.ARTIST)
   @IsString({ each: true })
-  agendaWorkingDays: string[];
+  readonly agendaWorkingDays: string[];
 
   @ApiProperty({
     example: true,
@@ -98,7 +99,7 @@ export class CreateUserReqDto {
   })
   @ValidateIf(v => v.userType === UserType.ARTIST)
   @Transform(value => Boolean(value === 'true' || value === true))
-  agendaIsPublic: boolean;
+  readonly agendaIsPublic: boolean;
 
   @ApiProperty({
     example: true,
@@ -108,5 +109,5 @@ export class CreateUserReqDto {
   @ValidateIf(v => v.userType === UserType.ARTIST)
   @IsBoolean()
   @Transform(value => Boolean(value === 'true' || value === true))
-  agendaIsOpen: boolean;
+  readonly agendaIsOpen: boolean;
 }
