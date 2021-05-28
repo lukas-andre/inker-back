@@ -88,12 +88,12 @@ export class AgendaEventService {
       const { count } = await qb.getRawOne<{ count: string }>();
       return !!Number(count);
     } catch (error) {
-      const serviceError: ServiceError = {
-        error: 'Trouble finding available event date ',
+      return {
+        service: this.serviceName,
         method: this.existEventBetweenStartDateAndEndDate.name,
-        subject: this.serviceName,
+        publicErrorMessage: 'Trouble finding available event date ',
+        catchedErrorMessage: error.message,
       };
-      return serviceError;
     }
   }
 
@@ -114,12 +114,12 @@ export class AgendaEventService {
     try {
       return qb.getMany();
     } catch (error) {
-      const serviceError: ServiceError = {
-        error: 'Trouble finding event dates in range ',
+      return {
+        service: this.serviceName,
         method: this.findByDateRange.name,
-        subject: this.serviceName,
+        publicErrorMessage: 'Trouble finding event dates in range ',
+        catchedErrorMessage: error.message,
       };
-      return serviceError;
     }
   }
 }

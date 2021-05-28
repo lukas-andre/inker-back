@@ -36,8 +36,12 @@ export class InitialPermissionsService {
       try {
         await this.permissionsRepository.save(permission);
       } catch (error) {
-        this.logger.error(error.detail);
-        return { error: this.serviceName, subject: controllerName };
+        return {
+          service: this.serviceName,
+          method: this.initPermissions.name,
+          catchedErrorMessage: error.detail,
+          publicErrorMessage: 'Trouble saving permissions'
+        }
       }
     }
 

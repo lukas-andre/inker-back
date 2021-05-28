@@ -1,6 +1,7 @@
-import { Controller, Post, Body, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Logger, Get } from '@nestjs/common';
 import { ApiOperation, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AddLocationDto } from './dtos/addLocation.dto';
+import { FindArtistByArtistDto } from './dtos/findArtistByRange.dto';
 import { LocationsHandler } from './locations.handler';
 
 @ApiTags('locations')
@@ -11,11 +12,21 @@ export class LocationsCrontoller {
 
   @ApiOperation({ summary: 'Add Location' })
   @ApiOkResponse({
-    description: 'location added ok',
+    description: 'Location added ok',
     type: null,
   })
   @Post()
   async cretePost(@Body() body: AddLocationDto): Promise<any> {
     return this.locationsHandler.handleAddLocation(body);
+  }
+
+  @ApiOperation({ summary: 'Find artist by range in Kilometers' })
+  @ApiOkResponse({
+    description: 'Artists successfully found',
+    type: null,
+  })
+  @Get('artist')
+  async findArtistByRange(@Body() body: FindArtistByArtistDto): Promise<any> {
+    return this.locationsHandler.handleFindArtistByRange(body);
   }
 }

@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Point } from 'geojson';
+import { ServiceError } from 'src/global/domain/interfaces/serviceError';
 import {
   Repository,
   FindManyOptions,
@@ -8,11 +10,14 @@ import {
   DeleteResult,
 } from 'typeorm';
 import { ArtistLocation } from '../infrastructure/entities/artistLocation.entity';
+import * as stringify from 'json-stringify-safe';
+import { ArtistByRangeLocation } from '../usescases/interfaces/artistByRange.interface';
+
 
 @Injectable()
 export class ArtistLocationsService {
   private readonly serviceName: string = ArtistLocationsService.name;
-
+  private readonly logger = new Logger(this.serviceName);
   constructor(
     @InjectRepository(ArtistLocation, 'location-db')
     private readonly artistLocationsRepository: Repository<ArtistLocation>,
@@ -24,6 +29,34 @@ export class ArtistLocationsService {
 
   async find(options: FindManyOptions<ArtistLocation>) {
     return this.artistLocationsRepository.find(options);
+  }
+
+  async findByRange(originPoint: Point, range: number = 1000) {
+    try {
+      return this.artistLocationsRepository
+        .createQueryBuilder('location')
+        .select()
+        .addSelect(
+          'ST_Distance(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)))/1000 AS distance',
+        )
+        .where(
+          'ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)',
+        )
+        .orderBy('distance', 'ASC')
+        .setParameters({
+          origin: stringify(originPoint),
+          range: range * 1000, // KM Conversion
+        })
+        .getRawMany<ArtistByRangeLocation>();
+
+    } catch (error) {
+      return {
+        service: this.serviceName,
+        method: this.findByRange.name,
+        publicErrorMessage: 'Trouble find locations by range',
+        catchedErrorMessage: error.message,
+      } as ServiceError;
+    }
   }
 
   async findAndCount(options: FindManyOptions<ArtistLocation>) {

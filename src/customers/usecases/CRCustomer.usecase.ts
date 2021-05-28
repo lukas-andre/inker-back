@@ -1,19 +1,22 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, Logger } from '@nestjs/common';
 import { CustomersService } from '../domain/customers.service';
-import { handleServiceError } from '../../global/domain/utils/serviceErrorStringify';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { handleServiceError } from '../../global/domain/utils/handleServiceError';
 import { CreateCustomerParams } from './interfaces/createCustomer.params';
 import { FindOneOptions } from 'typeorm';
 import { Customer } from '../infrastructure/entities/customer.entity';
+import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
 
 @Injectable()
 export class CRCustomerUseCase {
+  private readonly serviceName = CRCustomerUseCase.name;
+  private readonly logger = new Logger(this.serviceName);
+
   constructor(private readonly customersService: CustomersService) {}
 
   async create(params: CreateCustomerParams): Promise<Customer> {
     const created = await this.customersService.create(params);
-    if (created instanceof ServiceError) {
-      throw new ConflictException(handleServiceError(created));
+    if (isServiceError(created)) {
+      throw new ConflictException(handleServiceError(created, this.logger));
     }
 
     return created;

@@ -29,9 +29,9 @@ export class ArtistsService {
 
     if (exists) {
       return {
-        error: `Artists with user id: ${dto.userId} already exist`,
-        subject: this.serviceName,
+        service: this.serviceName,
         method: this.create.name,
+        publicErrorMessage: `Artists with user id: ${dto.userId} already exist`,
       } as ServiceError;
     }
 
@@ -86,6 +86,10 @@ export class ArtistsService {
 
   async findById(id: number) {
     return this.artistsRepository.findOne(id);
+  }
+
+  async findByIds(ids: number[]) {
+    return this.artistsRepository.findByIds(ids);
   }
 
   async find(options: FindManyOptions<Artist>) {
