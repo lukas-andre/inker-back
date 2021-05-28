@@ -44,14 +44,16 @@ export class FindArtistByRangeUseCase {
       const artists = await this.artistsService.findByIds(
         result.map(location => location.location_artist_id),
       );
-  
+
       result.forEach(location => {
-        location.artist = artists.filter(artist => artist.id === location.location_artist_id)
-      })
+        location.artist = artists.filter(
+          artist => artist.id === location.location_artist_id,
+        );
+      });
 
       return result;
     } catch (error) {
-      logCatchedError(error, this.logger)
+      logCatchedError(error, this.logger);
       return new DomainConflictException('Troubles in Artist Service');
     }
   }

@@ -13,7 +13,6 @@ import { ArtistLocation } from '../infrastructure/entities/artistLocation.entity
 import * as stringify from 'json-stringify-safe';
 import { ArtistByRangeLocation } from '../usescases/interfaces/artistByRange.interface';
 
-
 @Injectable()
 export class ArtistLocationsService {
   private readonly serviceName: string = ArtistLocationsService.name;
@@ -48,7 +47,6 @@ export class ArtistLocationsService {
           range: range * 1000, // KM Conversion
         })
         .getRawMany<ArtistByRangeLocation>();
-
     } catch (error) {
       return {
         service: this.serviceName,
