@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { AgendaService } from '../domain/agenda.service';
@@ -6,19 +6,17 @@ import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { handleServiceError } from '../../global/domain/utils/handleServiceError';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
-export class AddEventUseCase {
-  private readonly serviceName = AddEventUseCase.name;
-  private readonly logger = new Logger(this.serviceName);
-
+export class AddEventUseCase extends BaseUseCase {
   constructor(
     private readonly agendaService: AgendaService,
     private readonly agendaEventService: AgendaEventService,
-  ) {}
+  ) {
+    super(AddEventUseCase.name);
+  }
 
   async execute(
     addEventDto: AddEventReqDto,
@@ -40,7 +38,7 @@ export class AddEventUseCase {
 
     if (isServiceError(dateRangeIsInUse)) {
       return new DomainConflictException(
-        handleServiceError(dateRangeIsInUse, this.logger),
+        this.handleServiceError(dateRangeIsInUse),
       );
     }
 
@@ -50,20 +48,13 @@ export class AddEventUseCase {
       );
     }
 
-    const event = new AgendaEvent();
-    event.agenda = existsAgenda;
-    event.title = addEventDto.title;
-    event.info = addEventDto.info;
-    event.color = addEventDto.color;
-    event.end = addEventDto.end as any;
-    event.start = addEventDto.start as any;
-    event.notification = addEventDto.notification;
+    const savedAgendaEvent = await this.agendaEventService.saveWithAddEventDto(
+      addEventDto,
+      existsAgenda,
+    );
 
-    try {
-      return this.agendaEventService.save(event);
-    } catch (error) {
-      this.logger.log(`Adding event error ${error.message}`);
-      return new DomainInternalServerErrorException('Failed saving event');
-    }
+    return isServiceError(savedAgendaEvent)
+      ? new DomainConflictException(this.handleServiceError(savedAgendaEvent))
+      : savedAgendaEvent;
   }
 }

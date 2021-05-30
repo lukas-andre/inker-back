@@ -10,15 +10,16 @@ import {
   DeleteResult,
 } from 'typeorm';
 import { Agenda } from '../intrastructure/entities/agenda.entity';
+import { BaseService } from 'src/global/domain/services/base.service';
 
 @Injectable()
-export class AgendaService {
-  private readonly serviceName: string = AgendaService.name;
-
+export class AgendaService extends BaseService {
   constructor(
     @InjectRepository(Agenda, 'agenda-db')
     private readonly agendaRepository: Repository<Agenda>,
-  ) {}
+  ) {
+    super(AgendaService.name);
+  }
 
   async findById(id: number) {
     return this.agendaRepository.findOne(id);
@@ -44,7 +45,16 @@ export class AgendaService {
       userId: dto.userId,
       workingDays: dto.agendaWorkingDays,
     };
-    return this.save(agenda);
+
+    try {
+      return this.save(agenda);
+    } catch (error) {
+      return this.serviceError(
+        this.createWithArtistDto,
+        'Problems saving agenda',
+        error.message,
+      );
+    }
   }
 
   async findAndCount(options: FindManyOptions<Agenda>) {

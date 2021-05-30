@@ -4,6 +4,7 @@ import {
   ValidationOptions,
 } from 'class-validator';
 
+// Validates that the end date is greater than start date
 export function IsEndDate(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
     registerDecorator({

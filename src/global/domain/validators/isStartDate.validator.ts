@@ -4,6 +4,7 @@ import {
   ValidationOptions,
 } from 'class-validator';
 
+// Validates that the start date is less than the end date
 export function IsStartDate(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
     registerDecorator({
@@ -14,9 +15,7 @@ export function IsStartDate(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          const startDate = new Date(value);
-          const endDate = new Date((args.object as any).end);
-          return startDate < endDate;
+          return new Date(value) < new Date((args.object as any).end);
         },
       },
     });

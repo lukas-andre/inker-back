@@ -12,15 +12,17 @@ import {
 } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { BaseService } from 'src/global/domain/services/base.service';
+import * as stringify from 'json-stringify-safe';
 
 @Injectable()
-export class ArtistsService {
-  private readonly serviceName: string = ArtistsService.name;
-
+export class ArtistsService extends BaseService {
   constructor(
     @InjectRepository(Artist, 'artist-db')
     private readonly artistsRepository: Repository<Artist>,
-  ) {}
+  ) {
+    super(ArtistsService.name);
+  }
 
   async create(dto: CreateArtistDto): Promise<Artist | ServiceError> {
     const exists = await this.artistsRepository.findOne({
@@ -28,11 +30,10 @@ export class ArtistsService {
     });
 
     if (exists) {
-      return {
-        service: this.serviceName,
-        method: this.create.name,
-        publicErrorMessage: `Artists with user id: ${dto.userId} already exist`,
-      } as ServiceError;
+      return this.serviceError(
+        this.create,
+        `Artists with user id: ${dto.userId} already exist`,
+      );
     }
 
     const artist = this.artistsRepository.create();
@@ -43,7 +44,15 @@ export class ArtistsService {
     artist.contactPhoneNumber = dto.phoneNumber;
     artist.username = dto.username;
 
-    return this.artistsRepository.save(artist);
+    try {
+      return this.artistsRepository.save(artist);
+    } catch (error) {
+      return this.serviceError(
+        this.create,
+        `Trouble creating artist ${stringify(artist)}`,
+        error.message,
+      );
+    }
   }
 
   async existArtist(artistId: number): Promise<boolean | undefined> {

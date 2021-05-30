@@ -1,12 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { ArtistsService } from '../../../artists/domain/services/artists.service';
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
 import { CustomersService } from '../../../customers/domain/customers.service';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { handleServiceError } from '../../../global/domain/utils/handleServiceError';
 import { UserType } from '../../domain/enums/userType.enum';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
@@ -16,14 +14,13 @@ import { CreateCustomerParams } from '../../../customers/usecases/interfaces/cre
 import { AgendaService } from '../../../agenda/domain/agenda.service';
 import { ArtistLocationsService } from '../../../locations/domain/artistLocations.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
-import { Agenda } from '../../../agenda/intrastructure/entities/agenda.entity';
+import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
 import { Point } from 'geojson';
-import { isServiceError } from 'src/global/domain/guards/isServiceError.guard';
-@Injectable()
-export class CreateUserByTypeUseCase {
-  private readonly serviceName = CreateUserByTypeUseCase.name;
-  private readonly logger = new Logger(this.serviceName);
+import { DomainException } from 'src/global/domain/exceptions/domain.exception';
+import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
+@Injectable()
+export class CreateUserByTypeUseCase extends BaseUseCase {
   constructor(
     private readonly usersService: UsersService,
     private readonly artistsService: ArtistsService,
@@ -32,7 +29,9 @@ export class CreateUserByTypeUseCase {
     private readonly agendaService: AgendaService,
     private readonly artistLocationsService: ArtistLocationsService,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    super(CreateUserByTypeUseCase.name);
+  }
 
   async execute(createUserParams: CreateUserByTypeParams) {
     const role = await this.rolesService.findOne({
@@ -53,7 +52,7 @@ export class CreateUserByTypeUseCase {
       createUserParams,
     );
 
-    if (isServiceError(response)) {
+    if (response instanceof DomainException) {
       return this.handleCreateError(created.id, response);
     }
 
@@ -63,7 +62,7 @@ export class CreateUserByTypeUseCase {
   private async handleCreateByUserType(
     userId: number,
     dto: CreateUserByTypeParams,
-  ): Promise<Customer | Artist | ServiceError> {
+  ): Promise<Customer | Artist | DomainException> {
     const createByType = {
       [UserType.CUSTOMER]: async () => {
         const createCustomerDto = Object.assign(new CreateCustomerParams(), {
@@ -86,36 +85,33 @@ export class CreateUserByTypeUseCase {
   }
 
   private async createArtist(createArtistDto: CreateArtistDto) {
-    const result = await this.artistsService.create(createArtistDto);
+    const artist = await this.artistsService.create(createArtistDto);
 
-    const savedAgenda = await this.agendaService.createWithArtistDto(
+    if (isServiceError(artist)) {
+      return new DomainConflictException(this.handleServiceError(artist));
+    }
+
+    const agenda = await this.agendaService.createWithArtistDto(
       createArtistDto,
     );
 
-    if (savedAgenda instanceof ServiceError && result instanceof Artist) {
-      await this.artistsService.delete(result.id);
+    if (isServiceError(agenda)) {
+      await this.artistsService.delete(artist.id);
+      return new DomainConflictException(this.handleServiceError(agenda));
     }
 
-    const artistLocation: Partial<ArtistLocation> =
-      this.mapCreateArtistDtoToArtistLocation(
-        result as Artist,
-        createArtistDto,
-      );
-
-    const savedLocation = await this.artistLocationsService.save(
-      artistLocation,
+    const artistLocation = await this.artistLocationsService.save(
+      this.mapCreateArtistDtoToArtistLocation(artist, createArtistDto),
     );
 
-    if (
-      savedLocation instanceof ServiceError &&
-      result instanceof Artist &&
-      savedAgenda instanceof Agenda
-    ) {
-      await this.artistsService.delete(result.id);
-      await this.agendaService.delete(savedAgenda.id);
+    if (isServiceError(artistLocation)) {
+      await this.agendaService.delete(agenda.id);
+      return new DomainConflictException(
+        this.handleServiceError(artistLocation),
+      );
     }
 
-    return result;
+    return artist;
   }
 
   private mapCreateArtistDtoToArtistLocation(
@@ -129,6 +125,7 @@ export class CreateUserByTypeUseCase {
         createArtistDto.address.longitud,
       ],
     };
+
     return {
       artistId: artist.id,
       name: [artist.firstName, artist.lastName].join(' '),
@@ -147,6 +144,9 @@ export class CreateUserByTypeUseCase {
 
   private async createCustomer(createCustomerDto: CreateCustomerParams) {
     const result = await this.customerService.create(createCustomerDto);
+    if (isServiceError(result)) {
+      return new DomainConflictException(this.handleServiceError(result));
+    }
     return result;
   }
 
@@ -154,8 +154,8 @@ export class CreateUserByTypeUseCase {
     await this.usersService.delete(userId);
   }
 
-  private async handleCreateError(userId: number, error: ServiceError) {
+  private async handleCreateError(userId: number, error: DomainException) {
     await this.rollbackCreate(userId);
-    return new DomainConflictException(handleServiceError(error, this.logger));
+    return error;
   }
 }
