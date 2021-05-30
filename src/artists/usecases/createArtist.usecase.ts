@@ -1,13 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ArtistsService } from '../domain/services/artists.service';
-import { CreateArtistDto } from '../infrastructure/dtos/createArtist.dto';
-import { Artist } from '../infrastructure/entities/artist.entity';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { Injectable } from '@nestjs/common';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { AgendaService } from '../../agenda/domain/agenda.service';
-import { Agenda } from '../../agenda/intrastructure/entities/agenda.entity';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
+import { ArtistsService } from '../domain/services/artists.service';
+import { Artist } from '../infrastructure/entities/artist.entity';
+import { AgendaService } from '../../agenda/domain/agenda.service';
+import { CreateArtistDto } from '../infrastructure/dtos/createArtist.dto';
+import { Agenda } from '../../agenda/intrastructure/entities/agenda.entity';
 
 @Injectable()
 export class CreateArtistUseCase extends BaseUseCase {

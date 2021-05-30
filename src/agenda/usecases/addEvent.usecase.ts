@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { AgendaService } from '../domain/agenda.service';
-import { AgendaEventService } from '../domain/agendaEvent.service';
-import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
+import { AgendaEventService } from '../domain/agendaEvent.service';
+import { AgendaService } from '../domain/agenda.service';
+import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
+import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
 
 @Injectable()
 export class AddEventUseCase extends BaseUseCase {

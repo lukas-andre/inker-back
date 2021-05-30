@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Logger, Get } from '@nestjs/common';
+import { Controller, Post, Body, Logger } from '@nestjs/common';
 import { ApiOperation, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AddLocationDto } from './dtos/addLocation.dto';
 import { FindArtistByArtistDto } from './dtos/findArtistByRange.dto';

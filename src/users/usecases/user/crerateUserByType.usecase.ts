@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
+import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { DomainException } from '../../../global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
+import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
-import { ArtistsService } from '../../../artists/domain/services/artists.service';
+import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
 import { CustomersService } from '../../../customers/domain/customers.service';
 import { UserType } from '../../domain/enums/userType.enum';
+import { ArtistsService } from '../../../artists/domain/services/artists.service';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
-import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
-import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
-import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
-import { AgendaService } from '../../../agenda/domain/agenda.service';
 import { ArtistLocationsService } from '../../../locations/domain/artistLocations.service';
-import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
-import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
+import { AgendaService } from '../../../agenda/domain/agenda.service';
+import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
+import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
+import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Point } from 'geojson';
-import { DomainException } from 'src/global/domain/exceptions/domain.exception';
-import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
 export class CreateUserByTypeUseCase extends BaseUseCase {

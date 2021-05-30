@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { BaseService } from '../../global/domain/services/base.service';
+import { Agenda } from '../intrastructure/entities/agenda.entity';
 import { CreateArtistDto } from '../../artists/infrastructure/dtos/createArtist.dto';
 import {
   Repository,
@@ -9,8 +11,6 @@ import {
   DeepPartial,
   DeleteResult,
 } from 'typeorm';
-import { Agenda } from '../intrastructure/entities/agenda.entity';
-import { BaseService } from 'src/global/domain/services/base.service';
 
 @Injectable()
 export class AgendaService extends BaseService {

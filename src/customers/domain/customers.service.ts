@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Customer } from '../infrastructure/entities/customer.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { BaseService } from '../../global/domain/services/base.service';
+import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { CreateCustomerParams } from '../usecases/interfaces/createCustomer.params';
+import { FollowTopic } from './interfaces/customerFollows.interface';
+import { Customer } from '../infrastructure/entities/customer.entity';
 import {
   Repository,
   FindManyOptions,
@@ -8,10 +12,6 @@ import {
   DeleteResult,
   DeepPartial,
 } from 'typeorm';
-import { FollowTopic } from './interfaces/customerFollows.interface';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { CreateCustomerParams } from '../usecases/interfaces/createCustomer.params';
-import { BaseService } from 'src/global/domain/services/base.service';
 
 @Injectable()
 export class CustomersService extends BaseService {

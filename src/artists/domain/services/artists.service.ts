@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { BaseService } from '../../../global/domain/services/base.service';
 import { CreateArtistDto } from '../../infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../infrastructure/entities/artist.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+
 import {
   Repository,
   DeleteResult,
@@ -10,9 +14,6 @@ import {
   DeepPartial,
   FindConditions,
 } from 'typeorm';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-import { BaseService } from 'src/global/domain/services/base.service';
 import * as stringify from 'json-stringify-safe';
 
 @Injectable()

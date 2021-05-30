@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreateArtistDto } from './dtos/createArtist.dto';
+import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { CreateArtistUseCase } from '../usecases/createArtist.usecase';
 import { FindArtistsUseCases } from '../usecases/findArtist.usecases';
 import { UpdateArtistProfilePictureUseCase } from '../usecases/updateArtistProfilePicture.usecase';
-import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
-import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { UpdateArtistBasicInfoUseCase } from '../usecases/updateArtstBasicInfo.usecase';
-import { BaseHandler } from '../../global/infrastructure/base.handler';
+import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
+import { CreateArtistDto } from './dtos/createArtist.dto';
+import { UpdateArtistDto } from './dtos/updateArtist.dto';
 @Injectable()
 export class ArtistsHandler extends BaseHandler {
   constructor(
