@@ -1,53 +1,36 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PaginationDto } from '../../global/infrastructure/dtos/pagination.dto';
+import { Injectable } from '@nestjs/common';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { PaginationDto } from '../../global/infrastructure/dtos/pagination.dto';
 import { ListAllArtistPostsQueryDto } from '../infrastructure/dtos/listAllArtistPostQuery.dto';
 import { PostsService } from '../domain/services/posts.service';
 import { Post } from '../infrastructure/entities/post.entity';
 
 @Injectable()
-export class GetAllArtistPostsUseCase {
-  private readonly logger = new Logger(GetAllArtistPostsUseCase.name);
-
-  constructor(private readonly postService: PostsService) {}
+export class GetAllArtistPostsUseCase extends BaseUseCase {
+  constructor(private readonly postService: PostsService) {
+    super(GetAllArtistPostsUseCase.name);
+  }
 
   async execute(
     userId: number,
     query: ListAllArtistPostsQueryDto,
     pagination: PaginationDto,
   ): Promise<Post[] | DomainException> {
-    console.log('query: ', query);
-    // TODO: MOVER ESTO A UN SERVICIO
-    const qb = (await this.postService.createQueryBuilder('posts'))
-      .select('posts')
-      .where('posts.userId = :userId', { userId })
-      .orderBy('posts.created_at');
+    const posts = await this.postService.findByUserId(
+      userId,
+      query.genres,
+      query.tags,
+      pagination,
+    );
 
-    if (query.genres?.length) {
-      qb.andWhere('genres @> :genres', {
-        genres: JSON.stringify(query.genres.map((genre) => ({ name: genre }))),
-      });
+    if (isServiceError(posts)) {
+      return new DomainConflictException(this.handleServiceError(posts));
     }
 
-    if (query.tags?.length) {
-      qb.andWhere('tags @> :tags', {
-        tags: JSON.stringify(query.tags.map((tag) => ({ name: tag }))),
-      });
-    }
-
-    const post = await qb
-      .limit(pagination.limit)
-      .offset(pagination.offset)
-      .getMany();
-
-    console.log('posts: ', post);
-
-    if (!post.length) {
-      return new DomainNotFoundException('Artist Dont have posts');
-    }
-
-    return post;
+    return posts.length ? posts : [];
   }
 }
 

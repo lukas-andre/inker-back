@@ -1,5 +1,3 @@
-//TODO: ADD LIKE A POST
-//TODO: ADD LIKE A COMENTARIO
 import {
   Controller,
   Post,

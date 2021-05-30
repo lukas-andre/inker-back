@@ -12,7 +12,7 @@ import { DomainException } from '../../global/domain/exceptions/domain.exception
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 import { LoginParams } from './interfaces/defaultLogin.params';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-
+// TODO: EXTEND BASE USECASE
 @Injectable()
 export class DefaultLoginUseCase {
   constructor(

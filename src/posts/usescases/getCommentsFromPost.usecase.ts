@@ -1,16 +1,17 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { PaginationDto } from '../../global/infrastructure/dtos/pagination.dto';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { CommentsService } from '../domain/services/comments.service';
 import { Comment } from '../infrastructure/entities/comment.entity';
 import { ParentCommentEnum } from '../infrastructure/enum/parentComment.enum';
-
 @Injectable()
-export class GetCommentsFromPostUseCase {
-  private readonly logger = new Logger(GetCommentsFromPostUseCase.name);
-
-  constructor(private readonly commentsService: CommentsService) {}
+export class GetCommentsFromPostUseCase extends BaseUseCase {
+  constructor(private readonly commentsService: CommentsService) {
+    super(GetCommentsFromPostUseCase.name);
+  }
 
   async execute(
     postId: number,
@@ -25,10 +26,10 @@ export class GetCommentsFromPostUseCase {
       skip: pagination.offset,
     });
 
-    if (!comments.length) {
-      return new DomainNotFoundException('Artist Dont have posts');
+    if (isServiceError(comments)) {
+      return new DomainConflictException(this.handleServiceError(comments));
     }
 
-    return comments;
+    return comments.length ? [] : comments;
   }
 }

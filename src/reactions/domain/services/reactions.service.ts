@@ -30,6 +30,7 @@ export class ReactionsService {
 
   async findByKey(
     findConditions: FindConditions<Reaction>,
+    // TODO: MIRAD ESTE SELECT :O
     select: (keyof Reaction)[],
   ) {
     return this.reactionsRepository.find({

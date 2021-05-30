@@ -12,13 +12,13 @@ export class BaseService {
   public serviceError(
     method: { name: string },
     publicError: string,
-    catchedError?: unknown,
+    catchedErrorMessage?: unknown,
   ): ServiceError {
     return {
       method: method.name,
       service: this.service,
       publicErrorMessage: publicError,
-      catchedErrorMessage: catchedError,
+      catchedErrorMessage,
     };
   }
 }

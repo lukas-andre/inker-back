@@ -94,8 +94,16 @@ export class ArtistsService extends BaseService {
     });
   }
 
-  async findById(id: number) {
-    return this.artistsRepository.findOne(id);
+  async findById(id: number): Promise<Artist | ServiceError> {
+    try {
+      return this.artistsRepository.findOne(id);
+    } catch (error) {
+      return this.serviceError(
+        this.findById,
+        'Problems finding artist by id',
+        error.message,
+      );
+    }
   }
 
   async findByIds(ids: number[]) {
@@ -114,8 +122,16 @@ export class ArtistsService extends BaseService {
     return this.artistsRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Artist>): Promise<Artist> {
-    return this.artistsRepository.save(artist);
+  async save(artist: DeepPartial<Artist>): Promise<Artist | ServiceError> {
+    try {
+      return this.artistsRepository.save(artist);
+    } catch (error) {
+      return this.serviceError(
+        this.save,
+        'Problems saving artist',
+        error.message,
+      );
+    }
   }
 
   async delete(id: number): Promise<DeleteResult> {
