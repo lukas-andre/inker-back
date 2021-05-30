@@ -10,7 +10,7 @@ import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
 import { FollowArtistParams } from './interfaces/followArtist.param';
-
+// TODO: EXTEND BASE USECASE
 @Injectable()
 export class FollowUseCase {
   constructor(

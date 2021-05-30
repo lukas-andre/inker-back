@@ -1,34 +1,35 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { MultimediasService } from '../../multimedias/services/multimedias.service';
+import { Injectable } from '@nestjs/common';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { PostsService } from '../domain/services/posts.service';
+import { MultimediasService } from '../../multimedias/services/multimedias.service';
 import { Post } from '../infrastructure/entities/post.entity';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import { CreatePostDto } from '../infrastructure/dtos/createPost.dto';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
-import { Artist } from '../../artists/infrastructure/entities/artist.entity';
-import { DeepPartial } from 'typeorm';
 import { TagsService } from '../../tags/tags.service';
 import { GenresService } from '../../genres/genres.service';
 import { GenrerInterface } from '../../genres/genre.interface';
 import { TagInterface } from '../../tags/tag.interface';
+import * as stringify from 'json-stringify-safe';
 
 @Injectable()
-export class ArtistUploadPostUseCase {
-  private readonly logger = new Logger(ArtistUploadPostUseCase.name);
-
+export class ArtistUploadPostUseCase extends BaseUseCase {
   constructor(
     private readonly postService: PostsService,
     private readonly artistsService: ArtistsService,
     private readonly genresService: GenresService,
     private readonly tagsService: TagsService,
     private readonly multimediasService: MultimediasService,
-  ) {}
+  ) {
+    super(ArtistUploadPostUseCase.name);
+  }
 
-  async execute(
+  public async execute(
     jwtPayload: JwtPayload,
     files: FileInterface[],
     createPostDto: CreatePostDto,
@@ -37,11 +38,9 @@ export class ArtistUploadPostUseCase {
       return new DomainNotFoundException('Not valid files to upload');
     }
 
-    let artist: Artist;
-    try {
-      artist = await this.artistsService.findById(jwtPayload.userTypeId);
-    } catch (error) {
-      return new DomainInternalServerErrorException(`Error: ${error.message}`);
+    const artist = await this.artistsService.findById(jwtPayload.userTypeId);
+    if (isServiceError(artist)) {
+      return new DomainConflictException(this.handleServiceError(artist));
     }
 
     if (!artist) {
@@ -56,12 +55,16 @@ export class ArtistUploadPostUseCase {
         this.tagsService.handlePostTags(createPostDto, tags),
       ]);
     } catch (error) {
-      this.logger.log(JSON.stringify(error));
+      // TODO: Not Handled Error
+      this.logger.log(
+        `Not Handled Error: ${stringify(error)} Message: ${error.message}`,
+      );
     }
 
     console.log('genres: ', genres);
     console.log('tags: ', tags);
-    const newPost: DeepPartial<Post> = {
+
+    let post = await this.postService.save({
       content: createPostDto.content,
       location: createPostDto.location,
       profileThumbnail: jwtPayload.profileThumbnail,
@@ -71,9 +74,11 @@ export class ArtistUploadPostUseCase {
       userTypeId: jwtPayload.userTypeId,
       userType: jwtPayload.userType,
       username: jwtPayload.username,
-    };
+    });
 
-    const post = await this.postService.save(newPost);
+    if (isServiceError(post)) {
+      return new DomainConflictException(this.handleServiceError(post));
+    }
 
     post.multimedia = await this.multimediasService.handlePostMultimedias(
       files,
@@ -81,6 +86,10 @@ export class ArtistUploadPostUseCase {
       post.id,
     );
 
-    return this.postService.save(post);
+    post = await this.postService.save(post);
+
+    return isServiceError(post)
+      ? new DomainConflictException(this.handleServiceError(post))
+      : post;
   }
 }

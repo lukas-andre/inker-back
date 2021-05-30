@@ -4,23 +4,17 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { ArtistLocationsService } from '../domain/artistLocations.service';
 import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
 import { Point } from 'geojson';
+import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
-export class AddLocationByApiUseCase {
-  private readonly logger = new Logger(AddLocationByApiUseCase.name);
-
-  constructor(
-    private readonly artistsLocationService: ArtistLocationsService,
-  ) {}
+export class AddLocationByApiUseCase extends BaseUseCase {
+  constructor(private readonly artistsLocationService: ArtistLocationsService) {
+    super(AddLocationByApiUseCase.name);
+  }
 
   async execute(
     addLocationDto: AddLocationDto,
   ): Promise<any | DomainException> {
-    const point: Point = {
-      type: 'Point',
-      coordinates: [addLocationDto.latitud, addLocationDto.longitud],
-    };
-
     try {
       return this.artistsLocationService.save({
         address1: addLocationDto.address1,
@@ -31,7 +25,10 @@ export class AddLocationByApiUseCase {
         country: addLocationDto.country,
         longitud: addLocationDto.longitud,
         latitud: addLocationDto.latitud,
-        location: point,
+        location: {
+          type: 'Point',
+          coordinates: [addLocationDto.latitud, addLocationDto.longitud],
+        } as Point,
       });
     } catch (error) {
       this.logger.log(`Error: ${error.message}`);

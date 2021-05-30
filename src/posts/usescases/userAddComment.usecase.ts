@@ -1,37 +1,34 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
-import { Artist } from '../../artists/infrastructure/entities/artist.entity';
-import { DeepPartial } from 'typeorm';
 import { CreateCommentDto } from '../infrastructure/dtos/createComment.dto';
 import { Comment } from '../infrastructure/entities/comment.entity';
 import { ParentCommentEnum } from '../infrastructure/enum/parentComment.enum';
 import { CommentsService } from '../domain/services/comments.service';
 import { PostsService } from '../domain/services/posts.service';
-
 @Injectable()
-export class UserAddCommentUseCase {
-  private readonly logger = new Logger(UserAddCommentUseCase.name);
-
+export class UserAddCommentUseCase extends BaseUseCase {
   constructor(
     private readonly commentsService: CommentsService,
     private readonly artistsService: ArtistsService,
     private readonly postsService: PostsService,
-  ) {}
+  ) {
+    super(UserAddCommentUseCase.name);
+  }
 
   public async execute(
     jwtPayload: JwtPayload,
     createCommentDto: CreateCommentDto,
   ): Promise<Comment | DomainException> {
-    let artist: Artist;
+    const artist = await this.artistsService.findById(jwtPayload.userTypeId);
 
-    try {
-      artist = await this.artistsService.findById(jwtPayload.userTypeId);
-    } catch (error) {
-      return new DomainInternalServerErrorException(`Error: ${error}`);
+    if (isServiceError(artist)) {
+      return new DomainConflictException(artist);
     }
 
     if (!artist) {
@@ -47,7 +44,7 @@ export class UserAddCommentUseCase {
       return new DomainNotFoundException('Comment parent is not valid');
     }
 
-    const newComment: DeepPartial<Comment> = {
+    const savedCommnet = await this.commentsService.save({
       content: createCommentDto.content,
       location: createCommentDto.location,
       parentType: ParentCommentEnum[createCommentDto.parentType],
@@ -57,9 +54,11 @@ export class UserAddCommentUseCase {
       userTypeId: jwtPayload.userTypeId,
       userId: jwtPayload.userTypeId,
       username: jwtPayload.username,
-    };
+    });
 
-    return this.commentsService.save(newComment);
+    return isServiceError(savedCommnet)
+      ? new DomainConflictException(this.handleServiceError(savedCommnet))
+      : savedCommnet;
   }
 
   private async validParent(
@@ -69,18 +68,22 @@ export class UserAddCommentUseCase {
     let validParent = false;
     switch (parentType) {
       case ParentCommentEnum.COMMENT:
-        const existsComment = await this.commentsService.count({
-          where: { id: parentId },
-          cache: true,
-        });
-        validParent = existsComment > 0 ? true : false;
+        validParent =
+          (await this.commentsService.count({
+            where: { id: parentId },
+            cache: true,
+          })) > 0
+            ? true
+            : false;
         break;
       case ParentCommentEnum.POST:
-        const existsPost = await this.postsService.count({
-          where: { id: parentId },
-          cache: true,
-        });
-        validParent = existsPost > 0 ? true : false;
+        validParent =
+          (await this.postsService.count({
+            where: { id: parentId },
+            cache: true,
+          })) > 0
+            ? true
+            : false;
         break;
       default:
         validParent = false;

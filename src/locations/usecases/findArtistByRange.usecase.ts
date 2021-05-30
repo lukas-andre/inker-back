@@ -8,7 +8,6 @@ import { FindArtistByArtistDto } from '../infrastructure/dtos/findArtistByRange.
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { Point } from 'geojson';
-
 @Injectable()
 export class FindArtistByRangeUseCase extends BaseUseCase {
   constructor(

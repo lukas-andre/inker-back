@@ -27,6 +27,7 @@ export class MultimediasService {
     };
   }
 
+  // TODO: ARREGLAR ESTO; QUE SEA EN PARARELO Y EVITAR MEMORY LEACKS
   public async handlePostMultimedias(
     files: FileInterface[],
     artistId: number,
