@@ -1,11 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
 export class FindEventByAgendaIdAndEventIdUseCase extends BaseUseCase {

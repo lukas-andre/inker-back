@@ -8,7 +8,7 @@ import { LocationsCrontoller } from './infrastructure/locations.controller';
 import { LocationsHandler } from './infrastructure/locations.handler';
 import { AddLocationByApiUseCase } from './usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
-import { ArtistsModule } from 'src/artists/artists.module';
+import { ArtistsModule } from '../artists/artists.module';
 
 @Module({
   imports: [

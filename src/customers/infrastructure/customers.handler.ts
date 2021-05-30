@@ -1,11 +1,10 @@
-import { Injectable, ConflictException, Logger } from '@nestjs/common';
-import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
-import { CRCustomerUseCase } from '../usecases/CRCustomer.usecase';
-import { FindOneOptions } from 'typeorm';
-import { Customer } from './entities/customer.entity';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { BaseHandler } from 'src/global/infrastructure/base.handler';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { BaseHandler } from '../../global/infrastructure/base.handler';
+import { CRCustomerUseCase } from '../usecases/CRCustomer.usecase';
+import { Customer } from './entities/customer.entity';
+import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
+import { FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class CustomerHandler extends BaseHandler {

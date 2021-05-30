@@ -1,5 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { BaseService } from '../../global/domain/services/base.service';
+import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
+import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
+import { Agenda } from '../intrastructure/entities/agenda.entity';
 import {
   Repository,
   FindManyOptions,
@@ -8,11 +13,6 @@ import {
   DeepPartial,
   DeleteResult,
 } from 'typeorm';
-import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
-import { Agenda } from '../intrastructure/entities/agenda.entity';
-import { BaseService } from 'src/global/domain/services/base.service';
 @Injectable()
 export class AgendaEventService extends BaseService {
   constructor(

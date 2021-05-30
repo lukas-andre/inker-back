@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { ArtistLocationsService } from '../domain/artistLocations.service';
 import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
-import { Geometry, Point } from 'geojson';
-import { DomainConflictException } from 'src/global/domain/exceptions/domainConflict.exception';
+import { Point } from 'geojson';
 
 @Injectable()
 export class AddLocationByApiUseCase {

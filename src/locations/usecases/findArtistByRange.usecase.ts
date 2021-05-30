@@ -1,13 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { logCatchedError } from '../../global/domain/utils/logCatchedError';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { ArtistLocationsService } from '../domain/artistLocations.service';
 import { FindArtistByArtistDto } from '../infrastructure/dtos/findArtistByRange.dto';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { Point } from 'geojson';
-import { logCatchedError } from 'src/global/domain/utils/logCatchedError';
-import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
 export class FindArtistByRangeUseCase extends BaseUseCase {
