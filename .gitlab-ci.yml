@@ -1,16 +1,16 @@
 image: node:latest
 
 stages:
-  - lint
+  # - lint
   - staging
 
-tslint:
-  image: node:10-alpine
-  stage: lint
-  before_script: 
-    - yarn add eslint
-  script:
-    - yarn lint
+# tslint:
+#   image: node:10-alpine
+#   stage: lint
+#   before_script:
+#     - yarn add eslint
+#   script:
+#     - yarn lint
 
 prettier:
   image: node:10-alpine
