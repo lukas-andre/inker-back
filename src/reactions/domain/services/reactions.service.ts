@@ -21,18 +21,19 @@ export class ReactionsService {
   ) {}
 
   async findById(id: string) {
-    return await this.reactionsRepository.findOne(id);
+    return this.reactionsRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Reaction>) {
-    return await this.reactionsRepository.find(options);
+    return this.reactionsRepository.find(options);
   }
 
   async findByKey(
     findConditions: FindConditions<Reaction>,
+    // TODO: MIRAD ESTE SELECT :O
     select: (keyof Reaction)[],
   ) {
-    return await this.reactionsRepository.find({
+    return this.reactionsRepository.find({
       select,
       where: {
         ...findConditions,
@@ -41,21 +42,21 @@ export class ReactionsService {
   }
 
   async findAndCount(options: FindManyOptions<Reaction>) {
-    return await this.reactionsRepository.findAndCount(options);
+    return this.reactionsRepository.findAndCount(options);
   }
 
   async findOne(
     options?: FindOneOptions<Reaction>,
   ): Promise<Reaction | undefined> {
-    return await this.reactionsRepository.findOne(options);
+    return this.reactionsRepository.findOne(options);
   }
 
   async save(reaction: DeepPartial<Reaction>): Promise<Reaction> {
-    return await this.reactionsRepository.save(reaction);
+    return this.reactionsRepository.save(reaction);
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.reactionsRepository.delete(id);
+    return this.reactionsRepository.delete(id);
   }
 
   async findByActivityIdAndActivityType(

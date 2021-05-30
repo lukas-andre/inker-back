@@ -6,7 +6,7 @@ import { DomainException } from '../../global/domain/exceptions/domain.exception
 import { FollowedsService } from '../domain/services/followeds.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
-
+// TODO: EXTEND BASE USECASE
 @Injectable()
 export class UnfollowUseCase {
   constructor(private readonly followedsService: FollowedsService) {}

@@ -71,6 +71,7 @@ export class ArtistsController {
     type: BaseArtistResponse,
   })
   @Get()
+  // TODO: add query DTO with artist entity fields
   async findAllArtists() {
     return this.artistHandler.handleGetAll();
   }

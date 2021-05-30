@@ -23,6 +23,6 @@ export class AuthController {
   @ApiConflictResponse({ description: 'Invalid credentials.' })
   @Post('login')
   async login(@Body() loginReqDto: LoginReqDto): Promise<LoginResDto> {
-    return await this.authHandler.handleLogin(loginReqDto);
+    return this.authHandler.handleLogin(loginReqDto);
   }
 }

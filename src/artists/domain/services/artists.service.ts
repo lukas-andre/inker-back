@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { BaseService } from '../../../global/domain/services/base.service';
 import { CreateArtistDto } from '../../infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../infrastructure/entities/artist.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+
 import {
   Repository,
   DeleteResult,
@@ -10,17 +14,16 @@ import {
   DeepPartial,
   FindConditions,
 } from 'typeorm';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import * as stringify from 'json-stringify-safe';
 
 @Injectable()
-export class ArtistsService {
-  private readonly serviceName: string = ArtistsService.name;
-
+export class ArtistsService extends BaseService {
   constructor(
     @InjectRepository(Artist, 'artist-db')
     private readonly artistsRepository: Repository<Artist>,
-  ) {}
+  ) {
+    super(ArtistsService.name);
+  }
 
   async create(dto: CreateArtistDto): Promise<Artist | ServiceError> {
     const exists = await this.artistsRepository.findOne({
@@ -28,16 +31,29 @@ export class ArtistsService {
     });
 
     if (exists) {
-      return {
-        error: `Artists with user id: ${dto.userId} already exist`,
-        subject: this.serviceName,
-        method: this.create.name,
-      } as ServiceError;
+      return this.serviceError(
+        this.create,
+        `Artists with user id: ${dto.userId} already exist`,
+      );
     }
 
-    const artists = Object.assign(new Artist(), dto);
+    const artist = this.artistsRepository.create();
+    artist.userId = dto.userId;
+    artist.firstName = dto.firstName;
+    artist.lastName = dto.lastName;
+    artist.contactEmail = dto.contactEmail;
+    artist.contactPhoneNumber = dto.phoneNumber;
+    artist.username = dto.username;
 
-    return await this.artistsRepository.save(artists);
+    try {
+      return this.artistsRepository.save(artist);
+    } catch (error) {
+      return this.serviceError(
+        this.create,
+        `Trouble creating artist ${stringify(artist)}`,
+        error.message,
+      );
+    }
   }
 
   async existArtist(artistId: number): Promise<boolean | undefined> {
@@ -59,7 +75,7 @@ export class ArtistsService {
   }
 
   async findByKey(options: FindConditions<Artist>) {
-    return await this.artistsRepository.find({
+    return this.artistsRepository.find({
       select: [
         'id',
         'genres',
@@ -78,27 +94,47 @@ export class ArtistsService {
     });
   }
 
-  async findById(id: number) {
-    return await this.artistsRepository.findOne(id);
+  async findById(id: number): Promise<Artist | ServiceError> {
+    try {
+      return this.artistsRepository.findOne(id);
+    } catch (error) {
+      return this.serviceError(
+        this.findById,
+        'Problems finding artist by id',
+        error.message,
+      );
+    }
+  }
+
+  async findByIds(ids: number[]) {
+    return this.artistsRepository.findByIds(ids);
   }
 
   async find(options: FindManyOptions<Artist>) {
-    return await this.artistsRepository.find(options);
+    return this.artistsRepository.find(options);
   }
 
   async findAndCount(options: FindManyOptions<Artist>) {
-    return await this.artistsRepository.findAndCount(options);
+    return this.artistsRepository.findAndCount(options);
   }
 
   async findOne(options?: FindOneOptions<Artist>): Promise<Artist | undefined> {
-    return await this.artistsRepository.findOne(options);
+    return this.artistsRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Artist>): Promise<Artist> {
-    return await this.artistsRepository.save(artist);
+  async save(artist: DeepPartial<Artist>): Promise<Artist | ServiceError> {
+    try {
+      return this.artistsRepository.save(artist);
+    } catch (error) {
+      return this.serviceError(
+        this.save,
+        'Problems saving artist',
+        error.message,
+      );
+    }
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    return await this.artistsRepository.delete(id);
+    return this.artistsRepository.delete(id);
   }
 }

@@ -1,5 +1,6 @@
 export class ServiceError {
-  error: string;
-  subject?: string;
-  method?: string;
+  service: string;
+  method: string;
+  publicErrorMessage: string;
+  catchedErrorMessage?: any;
 }

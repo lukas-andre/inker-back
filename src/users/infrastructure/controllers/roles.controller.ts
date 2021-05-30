@@ -25,14 +25,14 @@ export class RolesController {
   @ApiOkResponse({ description: 'Init roles ok', isArray: true, type: Role })
   @Get('init-roles')
   async initRoles(): Promise<Role[]> {
-    return await this.rolesHandler.initRoles();
+    return this.rolesHandler.initRoles();
   }
 
   @ApiOperation({ summary: 'Find Roles' })
   @ApiOkResponse({ isArray: true, type: Role })
   @Get()
   async findAll(@Query() query: any): Promise<Role[]> {
-    return await this.rolesHandler.findAll(query);
+    return this.rolesHandler.findAll(query);
   }
 
   @ApiOperation({ summary: 'Get Role By Id' })

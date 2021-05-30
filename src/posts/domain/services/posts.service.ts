@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from '../../../posts/infrastructure/entities/post.entity';
+import { BaseService } from '../../../global/domain/services/base.service';
+import { PaginationDto } from '../../../global/infrastructure/dtos/pagination.dto';
+import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import {
   Repository,
   FindManyOptions,
@@ -11,24 +14,24 @@ import {
 } from 'typeorm';
 
 @Injectable()
-export class PostsService {
-  private readonly serviceName: string = PostsService.name;
-
+export class PostsService extends BaseService {
   constructor(
     @InjectRepository(Post, 'post-db')
     private readonly postsRepository: Repository<Post>,
-  ) {}
+  ) {
+    super(PostsService.name);
+  }
 
   async findById(id: number) {
-    return await this.postsRepository.findOne(id);
+    return this.postsRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Post>) {
-    return await this.postsRepository.find(options);
+    return this.postsRepository.find(options);
   }
 
   async findByKey(findConditions: FindConditions<Post>) {
-    return await this.postsRepository.find({
+    return this.postsRepository.find({
       select: ['id', 'location', 'profileThumbnail', 'username', 'content'],
       where: {
         ...findConditions,
@@ -42,22 +45,65 @@ export class PostsService {
   async findAndCount(
     options: FindManyOptions<Post>,
   ): Promise<[Post[], number]> {
-    return await this.postsRepository.findAndCount(options);
+    return this.postsRepository.findAndCount(options);
   }
 
   async count(options: FindManyOptions<Post>): Promise<number> {
-    return await this.postsRepository.count(options);
+    return this.postsRepository.count(options);
   }
 
   async findOne(options?: FindOneOptions<Post>): Promise<Post | undefined> {
-    return await this.postsRepository.findOne(options);
+    return this.postsRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Post>): Promise<Post> {
-    return await this.postsRepository.save(artist);
+  async save(post: DeepPartial<Post>): Promise<Post | ServiceError> {
+    try {
+      return this.postsRepository.save(post);
+    } catch (error) {
+      return this.serviceError(
+        this.save,
+        'Problems saving post',
+        error.message,
+      );
+    }
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.postsRepository.delete(id);
+    return this.postsRepository.delete(id);
+  }
+
+  async findByUserId(
+    userId: number,
+    genres: string[],
+    tags: string[],
+    pagination: PaginationDto,
+  ): Promise<Post[] | ServiceError> {
+    try {
+      const qb = this.postsRepository
+        .createQueryBuilder('posts')
+        .select('posts')
+        .where('posts.userId = :userId', { userId })
+        .orderBy('posts.created_at');
+
+      if (genres?.length) {
+        qb.andWhere('genres @> :genres', {
+          genres: JSON.stringify(genres.map((genre) => ({ name: genre }))),
+        });
+      }
+
+      if (tags?.length) {
+        qb.andWhere('tags @> :tags', {
+          tags: JSON.stringify(tags.map((tag) => ({ name: tag }))),
+        });
+      }
+
+      return qb.limit(pagination.limit).offset(pagination.offset).getMany();
+    } catch (error) {
+      return this.serviceError(
+        this.findByUserId,
+        'Problems finding artists',
+        error.message,
+      );
+    }
   }
 }

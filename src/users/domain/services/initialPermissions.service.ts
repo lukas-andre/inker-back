@@ -20,8 +20,8 @@ export class InitialPermissionsService {
     const controllersNames = new Set<string>();
 
     const providers = [...this.container.values()];
-    providers.forEach(modules => {
-      modules.controllers.forEach(controller =>
+    providers.forEach((modules) => {
+      modules.controllers.forEach((controller) =>
         controllersNames.add(controller.name),
       );
     });
@@ -36,15 +36,19 @@ export class InitialPermissionsService {
       try {
         await this.permissionsRepository.save(permission);
       } catch (error) {
-        this.logger.error(error.detail);
-        return { error: this.serviceName, subject: controllerName };
+        return {
+          service: this.serviceName,
+          method: this.initPermissions.name,
+          catchedErrorMessage: error.detail,
+          publicErrorMessage: 'Trouble saving permissions',
+        };
       }
     }
 
-    return await this.permissionsRepository.find();
+    return this.permissionsRepository.find();
   }
 
   async getAllRoutes(): Promise<Permission[] | ServiceError> {
-    return await this.permissionsRepository.find();
+    return this.permissionsRepository.find();
   }
 }
