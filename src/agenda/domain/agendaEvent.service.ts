@@ -10,15 +10,17 @@ import {
 } from 'typeorm';
 import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
+import { Agenda } from '../intrastructure/entities/agenda.entity';
+import { BaseService } from 'src/global/domain/services/base.service';
 @Injectable()
-export class AgendaEventService {
-  private readonly serviceName: string = AgendaEventService.name;
-  private readonly logger = new Logger(this.serviceName);
-
+export class AgendaEventService extends BaseService {
   constructor(
     @InjectRepository(AgendaEvent, 'agenda-db')
     private readonly agendaEventRepository: Repository<AgendaEvent>,
-  ) {}
+  ) {
+    super(AgendaEventService.name);
+  }
 
   async findById(id: number) {
     return this.agendaEventRepository.findOne(id);
@@ -120,6 +122,32 @@ export class AgendaEventService {
         publicErrorMessage: 'Trouble finding event dates in range ',
         catchedErrorMessage: error.message,
       };
+    }
+  }
+
+  async saveWithAddEventDto(
+    dto: AddEventReqDto,
+    agenda: Agenda,
+  ): Promise<AgendaEvent | ServiceError> {
+    const event = new AgendaEvent();
+    event.agenda = agenda;
+
+    try {
+      return this.save({
+        agenda,
+        title: dto.title,
+        info: dto.info,
+        color: dto.color,
+        end: dto.end as any,
+        start: dto.start as any,
+        notification: dto.notification,
+      });
+    } catch (error) {
+      return this.serviceError(
+        this.saveWithAddEventDto,
+        'Problemas saving event',
+        error.message,
+      );
     }
   }
 }

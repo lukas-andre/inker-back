@@ -2,21 +2,21 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { ArtistLocationsService } from '../domain/artistLocations.service';
 import { FindArtistByArtistDto } from '../infrastructure/dtos/findArtistByRange.dto';
-import { handleServiceError } from '../../global/domain/utils/handleServiceError';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { Point } from 'geojson';
 import { logCatchedError } from 'src/global/domain/utils/logCatchedError';
+import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
-export class FindArtistByRangeUseCase {
-  private readonly logger = new Logger(FindArtistByRangeUseCase.name);
-
+export class FindArtistByRangeUseCase extends BaseUseCase {
   constructor(
     private readonly artistsLocationService: ArtistLocationsService,
     private readonly artistsService: ArtistsService,
-  ) {}
+  ) {
+    super(FindArtistByRangeUseCase.name);
+  }
 
   async execute(
     findArtistByArtistDto: FindArtistByArtistDto,
@@ -35,9 +35,7 @@ export class FindArtistByRangeUseCase {
     );
 
     if (isServiceError(result)) {
-      return new DomainConflictException(
-        handleServiceError(result, this.logger),
-      );
+      return new DomainConflictException(this.handleServiceError(result));
     }
 
     try {

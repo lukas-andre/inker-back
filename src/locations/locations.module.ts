@@ -6,8 +6,8 @@ import { ArtistLocationsService } from './domain/artistLocations.service';
 import { EventLocationsService } from './domain/eventLocations.service';
 import { LocationsCrontoller } from './infrastructure/locations.controller';
 import { LocationsHandler } from './infrastructure/locations.handler';
-import { AddLocationByApiUseCase } from './usescases/addLocationByApi.usecase';
-import { FindArtistByRangeUseCase } from './usescases/findArtistByRange.usecase';
+import { AddLocationByApiUseCase } from './usecases/addLocationByApi.usecase';
+import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
 import { ArtistsModule } from 'src/artists/artists.module';
 
 @Module({

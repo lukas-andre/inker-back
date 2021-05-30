@@ -11,15 +11,16 @@ import {
 import { FollowTopic } from './interfaces/customerFollows.interface';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { CreateCustomerParams } from '../usecases/interfaces/createCustomer.params';
+import { BaseService } from 'src/global/domain/services/base.service';
 
 @Injectable()
-export class CustomersService {
-  private readonly serviceName: string = CustomersService.name;
-
+export class CustomersService extends BaseService {
   constructor(
     @InjectRepository(Customer, 'customer-db')
     private readonly customersRepository: Repository<Customer>,
-  ) {}
+  ) {
+    super(CustomersService.name);
+  }
 
   async create(
     pararms: CreateCustomerParams,
@@ -29,20 +30,27 @@ export class CustomersService {
     });
 
     if (exists) {
-      return {
-        service: this.serviceName,
-        method: this.create.name,
-        publicErrorMessage: `Customer with user id: ${pararms.userId} already exist`,
-      } as ServiceError;
+      return this.serviceError(
+        this.create,
+        `Customer with user id: ${pararms.userId} already exist`,
+      );
     }
-    // TODO: METER EN UN TRY
-    return this.customersRepository.save({
-      userId: pararms.userId,
-      firstName: pararms.firstName,
-      lastName: pararms.lastName,
-      contactPhoneNumber: pararms.phoneNumber,
-      contactEmail: pararms.contactEmail,
-    });
+
+    try {
+      return this.customersRepository.save({
+        userId: pararms.userId,
+        firstName: pararms.firstName,
+        lastName: pararms.lastName,
+        contactPhoneNumber: pararms.phoneNumber,
+        contactEmail: pararms.contactEmail,
+      });
+    } catch (error) {
+      return this.serviceError(
+        this.create,
+        'Problems saving customer',
+        error.message,
+      );
+    }
   }
 
   async addFollow(customer: Customer, topic: string, newFollow: FollowTopic) {

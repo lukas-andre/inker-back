@@ -6,15 +6,16 @@ import { AgendaEventService } from '../domain/agendaEvent.service';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { Agenda } from '../intrastructure/entities/agenda.entity';
 import * as stringify from 'json-stringify-safe';
+import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
-export class CancelEventUseCase {
-  private readonly logger = new Logger(CancelEventUseCase.name);
-
+export class CancelEventUseCase extends BaseUseCase {
   constructor(
     private readonly agendaService: AgendaService,
     private readonly agendaEventService: AgendaEventService,
-  ) {}
+  ) {
+    super(CancelEventUseCase.name);
+  }
 
   async execute(
     eventId: number,

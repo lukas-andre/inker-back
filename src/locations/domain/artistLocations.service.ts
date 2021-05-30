@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { ArtistLocation } from '../infrastructure/entities/artistLocation.entity';
 import * as stringify from 'json-stringify-safe';
-import { ArtistByRangeLocation } from '../usescases/interfaces/artistByRange.interface';
+import { ArtistByRangeLocation } from '../usecases/interfaces/artistByRange.interface';
 
 @Injectable()
 export class ArtistLocationsService {

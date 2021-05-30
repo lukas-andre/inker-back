@@ -1,25 +1,25 @@
 import { Injectable, ConflictException, Logger } from '@nestjs/common';
-import { handleServiceError } from '../../global/domain/utils/handleServiceError';
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
 import { CRCustomerUseCase } from '../usecases/CRCustomer.usecase';
 import { FindOneOptions } from 'typeorm';
 import { Customer } from './entities/customer.entity';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { BaseHandler } from 'src/global/infrastructure/base.handler';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class CustomerHandler {
+export class CustomerHandler extends BaseHandler {
   private readonly serviceName = CustomerHandler.name;
-  private readonly logger = new Logger(this.serviceName);
 
-  constructor(private readonly cRCustomerUseCase: CRCustomerUseCase) {}
+  constructor(
+    private readonly cRCustomerUseCase: CRCustomerUseCase,
+    private readonly jwtService: JwtService,
+  ) {
+    super(jwtService);
+  }
 
   async handleCreate(createCustomerDto: CreateCustomerReqDto) {
-    const created = await this.cRCustomerUseCase.create(createCustomerDto);
-    if (isServiceError(created)) {
-      throw new ConflictException(handleServiceError(created, this.logger));
-    }
-
-    return created;
+    return this.resolve(this.cRCustomerUseCase.create(createCustomerDto));
   }
 
   async handleFindAll(options: FindOneOptions<Customer>): Promise<Customer[]> {

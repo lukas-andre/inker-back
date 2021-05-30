@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { AgendaService } from '../domain/agenda.service';
@@ -9,19 +9,18 @@ import { ListEventByViewTypeQueryDto } from '../intrastructure/dtos/listEventByV
 import { AgendaViewType } from '../domain/enum/agendaViewType.enum';
 import { Agenda } from '../intrastructure/entities/agenda.entity';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { handleServiceError } from '../../global/domain/utils/handleServiceError';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { endOfWeek, format, startOfWeek } from 'date-fns';
+import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
-export class ListEventByViewTypeUseCase {
-  private readonly serviceName = ListEventByViewTypeUseCase.name;
-  private readonly logger = new Logger(this.serviceName);
-
+export class ListEventByViewTypeUseCase extends BaseUseCase {
   constructor(
     private readonly agendaService: AgendaService,
     private readonly agendaEventService: AgendaEventService,
-  ) {}
+  ) {
+    super(ListEventByViewTypeUseCase.name);
+  }
 
   async execute(
     agendaId: number,
@@ -73,9 +72,7 @@ export class ListEventByViewTypeUseCase {
     );
 
     if (isServiceError(result)) {
-      return new DomainConflictException(
-        handleServiceError(result, this.logger),
-      );
+      return new DomainConflictException(this.handleServiceError(result));
     }
 
     return result;
@@ -103,12 +100,8 @@ export class ListEventByViewTypeUseCase {
       stringEndOfAgendaWeek,
     );
 
-    if (isServiceError(result)) {
-      return new DomainConflictException(
-        handleServiceError(result, this.logger),
-      );
-    }
-
-    return result;
+    return isServiceError(result)
+      ? new DomainConflictException(this.handleServiceError(result))
+      : result;
   }
 }

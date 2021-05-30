@@ -1,6 +1,7 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
 
-export function IsOnlyDate(
+// Decorator to validate different date formats
+export function ValidateDateFormat(
   format?: string,
   validationOptions?: ValidationOptions,
 ) {
