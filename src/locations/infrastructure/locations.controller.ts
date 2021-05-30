@@ -25,7 +25,7 @@ export class LocationsCrontoller {
     description: 'Artists successfully found',
     type: null,
   })
-  @Get('artist')
+  @Post('artist')
   async findArtistByRange(@Body() body: FindArtistByArtistDto): Promise<any> {
     return this.locationsHandler.handleFindArtistByRange(body);
   }
