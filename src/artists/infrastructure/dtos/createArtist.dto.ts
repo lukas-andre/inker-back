@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
+import { AddressDto } from '../../../global/infrastructure/dtos/address.dto';
 
 export class CreateArtistDto {
   @ApiProperty({
@@ -43,4 +46,35 @@ export class CreateArtistDto {
   })
   @IsString()
   readonly phoneNumber?: string;
+
+  @ApiProperty({
+    description: 'User phone numer',
+    required: false,
+    type: AddressDto,
+  })
+  @ValidateNested()
+  @Type(() => AddressDto)
+  readonly address: AddressInterface;
+
+  @ApiProperty({
+    example: ['2', '3', '4', '5', '6'],
+    description: 'Week working days',
+  })
+  @IsString({ each: true })
+  readonly agendaWorkingDays: string[];
+
+  @ApiProperty({
+    example: true,
+    description: 'True if artist set agenda public',
+  })
+  @Transform((value) => Boolean(value === 'true' || value === true))
+  readonly agendaIsPublic: boolean;
+
+  @ApiProperty({
+    example: true,
+    description: 'True if artist set agenda open',
+  })
+  @IsBoolean()
+  @Transform((value) => Boolean(value === 'true' || value === true))
+  readonly agendaIsOpen: boolean;
 }

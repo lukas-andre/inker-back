@@ -29,22 +29,22 @@ export class ReactToActivityUseCase {
     if (isSameReaction) {
       await this.deactivateReaction(reactionDto, jwtPayload);
 
+      //TODO: TAL VEZ AQUI NO RETORNAR EL MISMO DTO
       return this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
         reactionDto.activityId,
         reactionDto.activity,
       );
     }
 
-    const existsUserReactionInThisActivity = await this.reactionsService.findOne(
-      {
+    const existsUserReactionInThisActivity =
+      await this.reactionsService.findOne({
         where: {
           activityId: reactionDto.activityId,
           activityType: reactionDto.activity,
           userId: jwtPayload.id,
           active: true,
         },
-      },
-    );
+      });
 
     if (existsUserReactionInThisActivity) {
       existsUserReactionInThisActivity.active = false;
@@ -113,7 +113,7 @@ export class ReactToActivityUseCase {
       await this.activitiesService.save(this.mapNewActivity(reactionDto));
     }
 
-    return await this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
+    return this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
       reactionDto.activityId,
       reactionDto.activity,
     );

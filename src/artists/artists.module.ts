@@ -10,12 +10,14 @@ import { FindArtistsUseCases } from './usecases/findArtist.usecases';
 import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfilePicture.usecase';
 import { UpdateArtistBasicInfoUseCase } from './usecases/updateArtstBasicInfo.usecase';
 import { FollowsModule } from '../follows/follows.module';
+import { AgendaModule } from '../agenda/agenda.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Artist], 'artist-db'),
     MultimediasModule,
     FollowsModule,
+    AgendaModule,
   ],
   providers: [
     ArtistsHandler,

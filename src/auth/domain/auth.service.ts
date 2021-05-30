@@ -30,11 +30,16 @@ export class AuthService {
       userType: UserType[userType],
       userTypeId: entity.id,
       profileThumbnail: entity.profileThumbnail,
-      permision: user.role.permissions.map(permission => ({
+      permision: user.role.permissions.map((permission) => ({
         c: permission.controller,
         a: permission.action,
       })),
     };
+    console.log(
+      `this.configService.get('auth.jwtExpiration') ${this.configService.get(
+        'auth.jwtExpiration',
+      )}`,
+    );
     const accessToken = this.jwtService.sign(jwtPayload, {
       issuer: this.configService.get('auth.jwtIssuer'),
       expiresIn: this.configService.get('auth.jwtExpiration'),
@@ -42,7 +47,6 @@ export class AuthService {
     return {
       ...jwtPayload,
       accessToken,
-      expiresIn: this.configService.get('auth.jwtExpiration'),
     } as FullJwtPayload;
   }
 }

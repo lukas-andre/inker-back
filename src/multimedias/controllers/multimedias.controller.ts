@@ -18,6 +18,6 @@ export class MultimediasController {
   @UseInterceptors(FileInterceptor('file'))
   async upload(@UploadedFile() file) {
     console.log('file: ', file);
-    return await this.multimediasService.upload(file);
+    return this.multimediasService.upload(file);
   }
 }

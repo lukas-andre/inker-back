@@ -12,7 +12,8 @@ import { inspect } from 'util';
 
 @WebSocketGateway(3012, { namespace: 'chat' })
 export class ChatGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() wss: Server;
 
   private logger: Logger = new Logger(ChatGateway.name);

@@ -12,7 +12,8 @@ import { inspect } from 'util';
 
 @WebSocketGateway(3012, { namespace: 'alert' })
 export class AlertGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   private logger: Logger = new Logger(AlertGateway.name);
 
   @WebSocketServer() wss: Server;

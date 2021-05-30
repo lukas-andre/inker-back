@@ -13,7 +13,7 @@ export class PaginationDto {
   @IsNumber()
   @Min(1)
   @Max(50)
-  @Transform(value => Number(value))
+  @Transform((value) => Number(value))
   readonly limit: number;
 
   @Expose()
@@ -25,6 +25,6 @@ export class PaginationDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(value => Number(value))
+  @Transform((value) => Number(value))
   readonly offset: number;
 }
