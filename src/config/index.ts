@@ -11,6 +11,7 @@ import genreDatabase from './genreDatabase';
 import tagDatabase from './tagDatabase';
 import agendaDatabase from './agendaDatabase';
 import locationDatabase from './locationDatabase';
+import customerFeedDatabase from './customerFeedDatabase';
 
 export default [
   app,
@@ -26,4 +27,5 @@ export default [
   tagDatabase,
   agendaDatabase,
   locationDatabase,
+  customerFeedDatabase,
 ];

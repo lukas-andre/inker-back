@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { getConnection } from 'typeorm';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { getConnection } from 'typeorm';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';

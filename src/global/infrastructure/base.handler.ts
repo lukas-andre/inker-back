@@ -1,8 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ExtractJwt } from 'passport-jwt';
 import { DomainException } from '../domain/exceptions/domain.exception';
 import { JwtPayload } from '../domain/interfaces/jwtPayload.interface';
+import { logCatchedError } from '../domain/utils/logCatchedError';
 import { resolveDomainException } from './exceptions/resolveDomainException';
 
 @Injectable()
@@ -17,7 +23,8 @@ export class BaseHandler {
         ExtractJwt.fromAuthHeaderAsBearerToken()(request),
       ) as JwtPayload;
     } catch (e) {
-      this.logger.error(JSON.stringify(e));
+      logCatchedError(e.message, this.logger);
+      throw new ForbiddenException('Invalid JWT');
     }
   }
 

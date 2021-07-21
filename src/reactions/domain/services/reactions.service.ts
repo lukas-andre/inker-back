@@ -10,15 +10,17 @@ import {
   DeleteResult,
 } from 'typeorm';
 import { GroupedReactionsInterface } from '../interfaces/groupedReaections.interface';
+import { ServiceError } from 'src/global/domain/interfaces/serviceError';
+import { BaseService } from 'src/global/domain/services/base.service';
 
 @Injectable()
-export class ReactionsService {
-  private readonly serviceName: string = ReactionsService.name;
-
+export class ReactionsService extends BaseService {
   constructor(
     @InjectRepository(Reaction, 'reaction-db')
     private readonly reactionsRepository: Repository<Reaction>,
-  ) {}
+  ) {
+    super(ReactionsService.name);
+  }
 
   async findById(id: string) {
     return this.reactionsRepository.findOne(id);
@@ -62,18 +64,26 @@ export class ReactionsService {
   async findByActivityIdAndActivityType(
     activityId: number,
     activity: string,
-  ): Promise<any> {
-    return (await this.reactionsRepository
-      .createQueryBuilder('reactions')
-      .select(
-        `json_agg(json_build_object('reaction_type', reactions.reaction_type, 'user_id', reactions.user_id, 'user_type_id', reactions.user_type_id, 'user_type', reactions.user_type, 'profile_thumbnail', reactions.profile_thumbnail, 'username', reactions.username)) AS reactions`,
-      )
-      .addSelect('COUNT(reactions.reaction_type) AS group_total')
-      .addSelect('reactions.reaction_type AS reaction_type')
-      .where('reactions.active = true')
-      .andWhere('reactions.activity_id = :activityId', { activityId })
-      .andWhere('reactions.activity_type = :activity', { activity })
-      .groupBy('reactions.reaction_type')
-      .getRawMany()) as GroupedReactionsInterface[];
+  ): Promise<GroupedReactionsInterface[] | ServiceError> {
+    try {
+      return this.reactionsRepository
+        .createQueryBuilder('reactions')
+        .select(
+          `json_agg(json_build_object('reaction_type', reactions.reaction_type, 'user_id', reactions.user_id, 'user_type_id', reactions.user_type_id, 'user_type', reactions.user_type, 'profile_thumbnail', reactions.profile_thumbnail, 'username', reactions.username)) AS reactions`,
+        )
+        .addSelect('COUNT(reactions.reaction_type) AS group_total')
+        .addSelect('reactions.reaction_type AS reaction_type')
+        .where('reactions.active = true')
+        .andWhere('reactions.activity_id = :activityId', { activityId })
+        .andWhere('reactions.activity_type = :activity', { activity })
+        .groupBy('reactions.reaction_type')
+        .getRawMany();
+    } catch (error) {
+      return this.serviceError(
+        this.findByActivityIdAndActivityType,
+        'Problems listing reactions',
+        error.message,
+      );
+    }
   }
 }

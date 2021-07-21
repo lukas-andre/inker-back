@@ -7,7 +7,7 @@ import { Reaction } from './infrastructure/entities/reaction.entity';
 import { ReactionsController } from './infrastructure/reactions.controller';
 import { ReactionsHandler } from './infrastructure/reactions.handler';
 import { GetActivityReactionsResumeUseCase } from './usecases/getActivityReactionsResume.usecase';
-import { GetReactionsDetailByActivityUseCase } from './usecases/getReactionsDetailByActivity.usecasee';
+import { GetReactionsDetailByActivityUseCase } from './usecases/getReactionsDetailByActivity.usecase';
 import { ReactToActivityUseCase } from './usecases/reactToActivity.usecase';
 
 @Module({
