@@ -84,6 +84,14 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
       },
       inject: [ConfigService],
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: 'customer-feed-db',
+      useFactory: (configService: ConfigService) => {
+        return configService.get('customerFeedDb');
+      },
+      inject: [ConfigService],
+    }),
   ],
 })
 export class DatabasesModule {}

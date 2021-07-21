@@ -5,7 +5,7 @@ import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { ReactToActivityUseCase } from '../usecases/reactToActivity.usecase';
 import { ReactionToActivityResponseDto } from './reactionToActivityResponse.dto';
 import { ReactionToActivityDto } from './reactionToActivity.dto';
-import { GetReactionsDetailByActivityUseCase } from '../usecases/getReactionsDetailByActivity.usecasee';
+import { GetReactionsDetailByActivityUseCase } from '../usecases/getReactionsDetailByActivity.usecase';
 import { GetActivityReactionsResumeUseCase } from '../usecases/getActivityReactionsResume.usecase';
 
 @Injectable()
