@@ -10,42 +10,42 @@ export class CreateArtistDto {
     description: 'User Id',
   })
   @IsNumber()
-  readonly userId: number;
+  userId: number;
 
   @ApiProperty({
     example: 'noname_eter',
     description: 'Username',
   })
   @IsString()
-  readonly username: string;
+  username: string;
 
   @ApiProperty({
     example: 'Lucas',
     description: 'First Name',
   })
   @IsString()
-  readonly firstName: string;
+  firstName: string;
 
   @ApiProperty({
     example: 'Henry',
     description: 'Last Name',
   })
   @IsString()
-  readonly lastName: string;
+  lastName: string;
 
   @ApiProperty({
     example: 'test@inker.cl',
     description: 'Customer contact email',
   })
   @IsString()
-  readonly contactEmail?: string;
+  contactEmail?: string;
 
   @ApiProperty({
     example: '+56964484712',
     description: 'Customer phone numer',
   })
   @IsString()
-  readonly phoneNumber?: string;
+  phoneNumber?: string;
 
   @ApiProperty({
     description: 'User phone numer',
@@ -54,21 +54,21 @@ export class CreateArtistDto {
   })
   @ValidateNested()
   @Type(() => AddressDto)
-  readonly address: AddressInterface;
+  address: AddressInterface;
 
   @ApiProperty({
     example: ['2', '3', '4', '5', '6'],
     description: 'Week working days',
   })
   @IsString({ each: true })
-  readonly agendaWorkingDays: string[];
+  agendaWorkingDays: string[];
 
   @ApiProperty({
     example: true,
     description: 'True if artist set agenda public',
   })
   @Transform((value) => Boolean(value === 'true' || value === true))
-  readonly agendaIsPublic: boolean;
+  agendaIsPublic: boolean;
 
   @ApiProperty({
     example: true,
@@ -76,5 +76,5 @@ export class CreateArtistDto {
   })
   @IsBoolean()
   @Transform((value) => Boolean(value === 'true' || value === true))
-  readonly agendaIsOpen: boolean;
+  agendaIsOpen: boolean;
 }

@@ -4,9 +4,9 @@ import { DomainNotFoundException } from '../../global/domain/exceptions/domainNo
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
+import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { UpdateEventReqDto } from '../intrastructure/dtos/updateEventReq.dto';
+import { UpdateEventReqDto } from '../infrastructure/dtos/updateEventReq.dto';
 
 @Injectable()
 export class UpdateEventUseCase {

@@ -1,3 +1,7 @@
-import { CreateCustomerReqDto } from '../../infrastructure/dtos/createCustomerReq.dto';
-
-export class CreateCustomerParams extends CreateCustomerReqDto {}
+export interface CreateCustomerParams {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  contactEmail?: string;
+  phoneNumber?: string;
+}

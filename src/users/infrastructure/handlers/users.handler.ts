@@ -4,7 +4,7 @@ import { DomainException } from '../../../global/domain/exceptions/domain.except
 import { resolveDomainException } from '../../../global/infrastructure/exceptions/resolveDomainException';
 import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
 import { IUser } from '../../domain/models/user.model';
-import { CreateUserByTypeUseCase } from '../../usecases/user/crerateUserByType.usecase';
+import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
 
 @Injectable()

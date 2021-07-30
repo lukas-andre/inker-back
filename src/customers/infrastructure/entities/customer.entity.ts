@@ -5,7 +5,7 @@ import { CustomerFollows } from '../../domain/interfaces/customerFollows.interfa
 @Entity()
 export class Customer extends BaseEntity {
   @Column({ name: 'user_id' })
-  userId: string;
+  userId: number;
 
   @Column({ name: 'first_name', nullable: true })
   firstName: string;

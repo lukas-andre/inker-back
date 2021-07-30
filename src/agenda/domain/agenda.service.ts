@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../global/domain/services/base.service';
-import { Agenda } from '../intrastructure/entities/agenda.entity';
+import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { CreateArtistDto } from '../../artists/infrastructure/dtos/createArtist.dto';
 import {
   Repository,

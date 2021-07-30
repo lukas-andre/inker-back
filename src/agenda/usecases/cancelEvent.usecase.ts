@@ -5,7 +5,7 @@ import { DomainNotFoundException } from '../../global/domain/exceptions/domainNo
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaService } from '../domain/agenda.service';
-import { Agenda } from '../intrastructure/entities/agenda.entity';
+import { Agenda } from '../infrastructure/entities/agenda.entity';
 import * as stringify from 'json-stringify-safe';
 
 @Injectable()
