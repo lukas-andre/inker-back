@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../global/domain/services/base.service';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
-import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
-import { Agenda } from '../intrastructure/entities/agenda.entity';
+import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
+import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
+import { Agenda } from '../infrastructure/entities/agenda.entity';
 import {
   Repository,
   FindManyOptions,

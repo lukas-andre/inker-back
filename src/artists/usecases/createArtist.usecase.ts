@@ -7,7 +7,8 @@ import { ArtistsService } from '../domain/services/artists.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { AgendaService } from '../../agenda/domain/agenda.service';
 import { CreateArtistDto } from '../infrastructure/dtos/createArtist.dto';
-import { Agenda } from '../../agenda/intrastructure/entities/agenda.entity';
+import { Agenda } from '../../agenda/infrastructure/entities/agenda.entity';
+import { CreateArtistParams } from './interfaces/createArtist.params';
 
 @Injectable()
 export class CreateArtistUseCase extends BaseUseCase {
@@ -19,17 +20,17 @@ export class CreateArtistUseCase extends BaseUseCase {
   }
 
   async execute(
-    createArtistdto: CreateArtistDto,
+    createArtistDto: CreateArtistParams,
   ): Promise<Artist | DomainException> {
-    const created = await this.artistsService.create(createArtistdto);
+    const created = await this.artistsService.create(createArtistDto);
     if (isServiceError(created)) {
       return new DomainConflictException(this.handleServiceError(created));
     }
     const agenda: Partial<Agenda> = {
-      open: createArtistdto.agendaIsOpen,
-      public: createArtistdto.agendaIsPublic,
-      userId: createArtistdto.userId,
-      workingDays: createArtistdto.agendaWorkingDays,
+      open: createArtistDto.agendaIsOpen,
+      public: createArtistDto.agendaIsPublic,
+      userId: createArtistDto.userId,
+      workingDays: createArtistDto.agendaWorkingDays,
     };
 
     const savedAgenda = await this.agendaService.save(agenda);

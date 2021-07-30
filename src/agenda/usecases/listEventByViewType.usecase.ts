@@ -8,9 +8,9 @@ import { isServiceError } from '../../global/domain/guards/isServiceError.guard'
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaViewType } from '../domain/enum/agendaViewType.enum';
-import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
-import { Agenda } from '../intrastructure/entities/agenda.entity';
-import { ListEventByViewTypeQueryDto } from '../intrastructure/dtos/listEventByViewTypeQuery.dto';
+import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
+import { Agenda } from '../infrastructure/entities/agenda.entity';
+import { ListEventByViewTypeQueryDto } from '../infrastructure/dtos/listEventByViewTypeQuery.dto';
 import { endOfWeek, format, startOfWeek } from 'date-fns';
 
 @Injectable()

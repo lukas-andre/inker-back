@@ -6,8 +6,8 @@ import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaService } from '../domain/agenda.service';
-import { AddEventReqDto } from '../intrastructure/dtos/addEventReq.dto';
-import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
+import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
+import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
 export class AddEventUseCase extends BaseUseCase {

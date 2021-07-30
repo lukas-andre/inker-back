@@ -5,7 +5,7 @@ import { DomainNotFoundException } from '../../global/domain/exceptions/domainNo
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
-import { AgendaEvent } from '../intrastructure/entities/agendaEvent.entity';
+import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
 export class FindEventByAgendaIdAndEventIdUseCase extends BaseUseCase {

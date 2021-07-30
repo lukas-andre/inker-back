@@ -15,7 +15,7 @@ import { ArtistsModule } from '../artists/artists.module';
 import { UsersHandler } from './infrastructure/handlers/users.handler';
 import { RolesHandler } from './infrastructure/handlers/roles.handler';
 import { PermissionsHandler } from './infrastructure/handlers/permissions.handler';
-import { CreateUserByTypeUseCase } from './usecases/user/crerateUserByType.usecase';
+import { CreateUserByTypeUseCase } from './usecases/user/createUserByType.usecase';
 import { FindAllRolesUseCase } from './usecases/role/findAllRoles.usecase';
 import { FindOneRoleUseCase } from './usecases/role/findOneRole.usecase';
 import { FindOnePermissionUseCase } from './usecases/permission/findOnePermission.usecase';

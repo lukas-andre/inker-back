@@ -1,30 +1,34 @@
 import { UserType } from '../../../domain/enums/userType.enum';
 import { IsString, IsEmail, IsEnum, IsOptional } from 'class-validator';
+import { ArtistInfoInterface } from '../../../infrastructure/dtos/artistInfo.dto';
 
 export class CreateUserByTypeParams {
   @IsString()
   @IsOptional()
-  readonly username: string;
-
-  @IsString()
-  @IsOptional()
-  readonly firstName: string;
-
-  @IsString()
-  @IsOptional()
-  readonly lastName: string;
+  username: string;
 
   @IsEmail()
   @IsOptional()
-  readonly email: string;
+  email: string;
 
   @IsString()
-  readonly password: string;
-
-  @IsEnum(UserType)
-  readonly userType: UserType;
+  password: string;
 
   @IsString()
   @IsOptional()
-  readonly phoneNumber?: string;
+  phoneNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  firstName: string;
+
+  @IsString()
+  @IsOptional()
+  lastName: string;
+
+  @IsString()
+  userType: UserType;
+
+  @IsOptional()
+  artistInfo?: ArtistInfoInterface;
 }

@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
+import { CreateCustomerParams } from '../../usecases/interfaces/createCustomer.params';
 
-export class CreateCustomerReqDto {
+export class CreateCustomerReqDto implements CreateCustomerParams {
   @ApiProperty({
-    example: '415604a6-6db4-4a3b-a1dc-470193485b91',
+    example: 1,
     description: 'User Id',
   })
   @IsString()
-  readonly userId: string;
+  readonly userId: number;
 
   @ApiProperty({
     example: 'Lucas',
@@ -32,7 +33,7 @@ export class CreateCustomerReqDto {
 
   @ApiProperty({
     example: '+56964484712',
-    description: 'Customer phone numer',
+    description: 'Customer phone number',
   })
   @IsString()
   readonly phoneNumber?: string;
