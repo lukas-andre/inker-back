@@ -7,10 +7,10 @@ import * as helmet from 'helmet';
 import * as rateLimit from 'express-rate-limit';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { LoggingInterceptor } from './global/aspects/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    // TODO: Crear un logger
     cors: {
       origin: true,
       preflightContinue: false,
@@ -50,7 +50,7 @@ async function bootstrap() {
       max: 100, // limit each IP to 100 requests per windowMs
     }),
   );
-  // test
+
   const port = configService.get('app.port', 3000);
   await app.listen(port, '0.0.0.0');
 }
