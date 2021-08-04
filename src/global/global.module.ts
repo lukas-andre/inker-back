@@ -4,6 +4,8 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { BaseHandler } from './infrastructure/base.handler';
 import config from '../config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from './aspects/logging.interceptor';
 @Global()
 @Module({
   imports: [
@@ -22,7 +24,14 @@ import config from '../config';
     }),
   ],
   controllers: [],
-  providers: [BaseHandler, S3Client],
+  providers: [
+    BaseHandler,
+    S3Client,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ],
   exports: [ConfigModule, S3Client, JwtModule],
 })
 export class GlobalModule {}
