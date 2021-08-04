@@ -129,9 +129,6 @@ export class AgendaEventService extends BaseService {
     dto: AddEventReqDto,
     agenda: Agenda,
   ): Promise<AgendaEvent | ServiceError> {
-    const event = new AgendaEvent();
-    event.agenda = agenda;
-
     try {
       return this.save({
         agenda,
@@ -145,7 +142,7 @@ export class AgendaEventService extends BaseService {
     } catch (error) {
       return this.serviceError(
         this.saveWithAddEventDto,
-        'Problemas saving event',
+        'Problems saving event',
         error.message,
       );
     }

@@ -38,6 +38,7 @@ export class AgendaService extends BaseService {
     });
   }
 
+  // * this function could be more generic
   async createWithArtistDto(dto: CreateArtistDto) {
     const agenda: Partial<Agenda> = {
       open: dto.agendaIsOpen,
