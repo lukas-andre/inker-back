@@ -128,14 +128,6 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
     artist: Artist,
     createArtistDto: CreateArtistDto,
   ): Partial<ArtistLocation> {
-    const point: Point = {
-      type: 'Point',
-      coordinates: [
-        createArtistDto.address.latitud,
-        createArtistDto.address.longitud,
-      ],
-    };
-
     return {
       artistId: artist.id,
       name: [artist.firstName, artist.lastName].join(' '),
@@ -148,7 +140,13 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
       state: createArtistDto.address.state,
       latitud: createArtistDto.address.latitud,
       longitud: createArtistDto.address.longitud,
-      location: point,
+      location: {
+        type: 'Point',
+        coordinates: [
+          createArtistDto.address.latitud,
+          createArtistDto.address.longitud,
+        ],
+      },
     };
   }
 
