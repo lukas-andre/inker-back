@@ -18,7 +18,6 @@ import { UsersService } from '../../domain/services/users.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { ArtistLocationsService } from '../../../locations/domain/artistLocations.service';
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
-import { Point } from 'geojson';
 
 @Injectable()
 export class CreateUserByTypeUseCase extends BaseUseCase {

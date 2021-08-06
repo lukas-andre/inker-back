@@ -47,7 +47,7 @@ export class DefaultLoginUseCase {
     );
 
     if (!result) {
-      return new DomainConflictException('User is not valid');
+      return new DomainConflictException('Invalid credentials');
     }
 
     const entity = await this.findUserEntityByType(user.userType, user.id);
@@ -63,9 +63,17 @@ export class DefaultLoginUseCase {
     userType: string,
     userId: number,
   ): Promise<Customer | Artist> {
-    if (userType === UserType.CUSTOMER)
-      return this.customersService.findOne({ where: { userId } });
-    if (userType === UserType.ARTIST)
-      return this.artistsService.findOne({ where: { userId } });
+    let userFounded = null;
+    switch (userType) {
+      case UserType.CUSTOMER:
+        userFounded = await this.customersService.findOne({
+          where: { userId },
+        });
+        break;
+      case UserType.ARTIST:
+        userFounded = await this.artistsService.findOne({ where: { userId } });
+        break;
+    }
+    return userFounded;
   }
 }
