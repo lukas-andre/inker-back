@@ -39,6 +39,7 @@ export class LoggingInterceptor implements NestInterceptor {
     call$: CallHandler,
   ): Observable<unknown> {
     const req: Request = context.switchToHttp().getRequest();
+    const now = new Date();
     const { method, url, body, headers } = req;
     const ctx: string = `${this.userPrefix}${this.ctxPrefix} - ${method} - ${url}`;
     const message: string = `Incoming request - ${method} - ${url}`;
@@ -56,10 +57,10 @@ export class LoggingInterceptor implements NestInterceptor {
     return call$.handle().pipe(
       tap({
         next: (val: unknown): void => {
-          this.logNext(val, context);
+          this.logNext(val, context, this.getExecutionTimeInSeconds(now));
         },
         error: (err: Error): void => {
-          this.logError(err, context);
+          this.logError(err, context, this.getExecutionTimeInSeconds(now));
         },
       }),
     );
@@ -69,8 +70,13 @@ export class LoggingInterceptor implements NestInterceptor {
    * Logs the request response in success cases
    * @param body body returned
    * @param context details about the current request
+   * @param executionTime execution time seconds
    */
-  private logNext(body: unknown, context: ExecutionContext): void {
+  private logNext(
+    body: unknown,
+    context: ExecutionContext,
+    executionTime: string,
+  ): void {
     const req: Request = context.switchToHttp().getRequest<Request>();
     const res: Response = context.switchToHttp().getResponse<Response>();
     const { method, url } = req;
@@ -82,6 +88,7 @@ export class LoggingInterceptor implements NestInterceptor {
       {
         message,
         body: this.minify ? undefined : body,
+        executionTime,
       },
       ctx,
     );
@@ -91,8 +98,13 @@ export class LoggingInterceptor implements NestInterceptor {
    * Logs the request response in success cases
    * @param error Error object
    * @param context details about the current request
+   * @param executionTime execution time seconds
    */
-  private logError(error: Error, context: ExecutionContext): void {
+  private logError(
+    error: Error,
+    context: ExecutionContext,
+    executionTime: string,
+  ): void {
     const req: Request = context.switchToHttp().getRequest<Request>();
     const { method, url, body } = req;
 
@@ -109,6 +121,7 @@ export class LoggingInterceptor implements NestInterceptor {
             body,
             message,
             error,
+            executionTime,
           },
           error.stack,
           ctx,
@@ -121,6 +134,7 @@ export class LoggingInterceptor implements NestInterceptor {
             error,
             body: this.minify ? undefined : body,
             message,
+            executionTime,
           },
           ctx,
         );
@@ -129,10 +143,15 @@ export class LoggingInterceptor implements NestInterceptor {
       this.logger.error(
         {
           message: `Outgoing response - ${method} - ${url}`,
+          executionTime,
         },
         error.stack,
         `${this.userPrefix}${this.ctxPrefix} - ${method} - ${url}`,
       );
     }
+  }
+
+  private getExecutionTimeInSeconds(oldDate: Date) {
+    return `${Math.abs((new Date().getTime() - oldDate.getTime()) / 1000)}s`;
   }
 }
