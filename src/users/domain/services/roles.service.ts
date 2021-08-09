@@ -34,7 +34,7 @@ export class RolesService {
     return this.rolesRepository.find({
       where: rest,
       order: {
-        created_at: 'ASC',
+        createdAt: 'ASC',
       },
       skip: offset,
       take: limit,

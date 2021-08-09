@@ -43,7 +43,7 @@ export class UsersService {
     user.username = createUserParams.username;
     user.userType = createUserParams.userType;
     user.email = createUserParams.email.toLowerCase();
-    user.password = await this.hashPasword(createUserParams.password);
+    user.password = await this.hashPassword(createUserParams.password);
     user.role = role;
 
     const { password, ...result } = await this.usersRepository.save(user);
@@ -102,7 +102,7 @@ export class UsersService {
     );
   }
 
-  async hashPasword(password: string): Promise<string> {
+  async hashPassword(password: string): Promise<string> {
     return hash(password, this.configService.get('auth.saltLength'));
   }
 

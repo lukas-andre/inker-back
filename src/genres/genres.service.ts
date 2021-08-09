@@ -31,7 +31,7 @@ export class GenresService {
 
   async findByKey(findConditions: FindConditions<Genrer>) {
     return this.genresRepository.find({
-      select: ['id', 'name', 'created_at', 'updated_at'],
+      select: ['id', 'name', 'createdAt', 'updatedAt'],
       where: {
         ...findConditions,
       },
