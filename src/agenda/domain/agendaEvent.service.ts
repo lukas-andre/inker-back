@@ -32,7 +32,7 @@ export class AgendaEventService extends BaseService {
 
   async findByKey(findConditions: FindConditions<AgendaEvent>) {
     return this.agendaEventRepository.find({
-      select: ['id', 'created_at', 'updated_at'],
+      select: ['id', 'createdAt', 'updatedAt'],
       where: {
         ...findConditions,
       },

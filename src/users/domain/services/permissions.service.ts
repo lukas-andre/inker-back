@@ -15,7 +15,7 @@ export class PermissionsService {
     return this.permissionsRepository.find({
       where: rest,
       order: {
-        created_at: 'ASC',
+        createdAt: 'ASC',
       },
       skip: offset,
       take: limit,

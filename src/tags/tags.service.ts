@@ -31,7 +31,7 @@ export class TagsService {
 
   async findByKey(findConditions: FindConditions<Tag>) {
     return this.tagsRepository.find({
-      select: ['id', 'name', 'created_at', 'updated_at'],
+      select: ['id', 'name', 'createdAt', 'updatedAt'],
       where: {
         ...findConditions,
       },
