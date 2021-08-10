@@ -56,12 +56,12 @@ export class ArtistsController {
   @ApiParam({ name: 'id', required: true, type: Number })
   @Post('/:id/profile-picture')
   @UseInterceptors(FileInterceptor('file'))
-  async updateProfileProflePicture(
+  async updateProfileProfilePicture(
     @UploadedFile() file,
     @Param('id', ParseIntPipe) id: number,
   ) {
     console.log('file: ', file);
-    return this.artistHandler.handleUpdateProfileProflePicture(id, file);
+    return this.artistHandler.handleUpdateProfileProfilePicture(id, file);
   }
 
   @ApiOperation({ summary: 'Find all Artists' })

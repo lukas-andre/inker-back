@@ -4,7 +4,7 @@ import { BaseService } from '../services/base.service';
 import * as stringify from 'json-stringify-safe';
 
 export class BaseUseCase extends BaseService {
-  constructor(readonly serviceName) {
+  constructor(readonly serviceName: string) {
     super(serviceName);
   }
 
