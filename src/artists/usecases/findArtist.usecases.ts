@@ -7,16 +7,16 @@ import { DomainNotFoundException } from '../../global/domain/exceptions/domainNo
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { ArtistsService } from '../domain/services/artists.service';
-import { FollowersService } from '../../follows/domain/services/followers';
 import { FollowingsService } from '../../follows/domain/services/followings.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { FindArtistByIdResult } from './interfaces/findArtistById.result';
+import { FollowedsService } from '../../follows/domain/services/followeds.service';
 
 @Injectable()
 export class FindArtistsUseCases extends BaseUseCase {
   constructor(
     private readonly artistsService: ArtistsService,
-    private readonly followersService: FollowersService,
+    private readonly followedsService: FollowedsService,
     private readonly followingService: FollowingsService,
   ) {
     super(FindArtistsUseCases.name);
@@ -35,7 +35,7 @@ export class FindArtistsUseCases extends BaseUseCase {
     }
 
     // TODO: ESTO PUEDE SER EN PARALELO
-    artist.followers = await this.followersService.countFollowers(
+    artist.followers = await this.followedsService.countFollowers(
       artist.userId,
     );
     artist.follows = await this.followingService.countFollows(artist.userId);
