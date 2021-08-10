@@ -24,7 +24,7 @@ export class ArtistsHandler extends BaseHandler {
     return this.resolve(await this.createArtistUseCase.execute(dto));
   }
 
-  async handleUpdateProfileProflePicture(
+  async handleUpdateProfileProfilePicture(
     id: number,
     file: any,
   ): Promise<BaseArtistResponse> {

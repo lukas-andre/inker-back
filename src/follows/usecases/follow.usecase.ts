@@ -5,7 +5,7 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersService } from '../../users/domain/services/users.service';
-import { FollowedsService } from '../domain/services/followeds.service';
+import { FollowersService } from '../domain/services/followers';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
@@ -16,7 +16,7 @@ export class FollowUseCase {
   constructor(
     private readonly usersService: UsersService,
     private readonly artistsService: ArtistsService,
-    private readonly followedsService: FollowedsService,
+    private readonly followersService: FollowersService,
   ) {}
 
   async execute(
@@ -30,13 +30,13 @@ export class FollowUseCase {
 
     await queryRunner.connect();
 
-    // TODO: ESTO ESTA LIMITANDO QUE SOLO SE SIGAN ARTISTAS
+    // ! THIS IS LIMITING THAT ONLY ARTISTS ARE FOLLOWED
     if (!(await this.usersService.existsArtist(followedUserId))) {
       return new DomainConflictException('Artist not exists');
     }
 
     if (
-      await this.followedsService.existsFollowerInArtist(
+      await this.followersService.existsFollowerInArtist(
         followedUserId,
         follower.userId,
       )
@@ -44,7 +44,7 @@ export class FollowUseCase {
       return new DomainConflictException('Follower already exists');
     }
 
-    // TODO: ESTA DATA PODRIA VENEIRDEL FRONT
+    // TODO: This could be came from in the front request
     const artistData = await this.artistsService.findOne({
       select: [
         'id',

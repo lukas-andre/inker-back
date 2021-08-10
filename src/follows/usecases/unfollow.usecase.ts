@@ -3,13 +3,15 @@ import { DomainInternalServerErrorException } from '../../global/domain/exceptio
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { getConnection } from 'typeorm';
-import { FollowedsService } from '../domain/services/followeds.service';
+import { FollowersService } from '../domain/services/followers';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
-// TODO: EXTEND BASE USECASE
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 @Injectable()
-export class UnfollowUseCase {
-  constructor(private readonly followedsService: FollowedsService) {}
+export class UnfollowUseCase extends BaseUseCase {
+  constructor(private readonly followersService: FollowersService) {
+    super(UnfollowUseCase.name);
+  }
 
   async execute(
     artistUserId: number,
@@ -20,7 +22,7 @@ export class UnfollowUseCase {
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
 
-    const existsFollower = await this.followedsService.existsFollowerInArtist(
+    const existsFollower = await this.followersService.existsFollowerInArtist(
       artistUserId,
       userId,
     );
