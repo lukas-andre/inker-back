@@ -5,7 +5,7 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersService } from '../../users/domain/services/users.service';
-import { FollowersService } from '../domain/services/followers';
+import { FollowedsService } from '../domain/services/followeds.service';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
@@ -16,7 +16,7 @@ export class FollowUseCase {
   constructor(
     private readonly usersService: UsersService,
     private readonly artistsService: ArtistsService,
-    private readonly followersService: FollowersService,
+    private readonly followedsService: FollowedsService,
   ) {}
 
   async execute(
@@ -36,7 +36,7 @@ export class FollowUseCase {
     }
 
     if (
-      await this.followersService.existsFollowerInArtist(
+      await this.followedsService.existsFollowerInArtist(
         followedUserId,
         follower.userId,
       )
