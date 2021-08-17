@@ -8,8 +8,6 @@ import { FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class CustomerHandler extends BaseHandler {
-  private readonly serviceName = CustomerHandler.name;
-
   constructor(
     private readonly cRCustomerUseCase: CRCustomerUseCase,
     private readonly jwtService: JwtService,

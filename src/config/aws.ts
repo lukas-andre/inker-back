@@ -7,4 +7,6 @@ export default registerAs('aws', () => ({
   accessKey: process.env.AWS_ACCESS_KEY,
   secretKey: process.env.AWS_ACCESS_SECRET,
   cloudFrontUrl: process.env.CLOUD_FRONT_URL,
+  smsAccessKey: process.env.SMS_AWS_ACCESS_KEY,
+  smsSecretKey: process.env.SMS_AWS_ACCESS_SECRET,
 }));

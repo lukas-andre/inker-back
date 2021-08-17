@@ -12,11 +12,13 @@ import tagDatabase from './tagDatabase';
 import agendaDatabase from './agendaDatabase';
 import locationDatabase from './locationDatabase';
 import customerFeedDatabase from './customerFeedDatabase';
+import validationHash from './verificationHash';
 
 export default [
   app,
   auth,
   aws,
+  validationHash,
   userDatabase,
   artistDatabase,
   customerDatabase,
