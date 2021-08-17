@@ -14,13 +14,13 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Column({ nullable: true, default: true })
-  active: boolean;
-
   @Column({ enum: UserType })
   @Index()
   userType: string;
 
   @ManyToOne((type) => Role, { cascade: false, nullable: true })
   role: Role;
+
+  @Column({ nullable: false, default: false })
+  active: boolean = false;
 }

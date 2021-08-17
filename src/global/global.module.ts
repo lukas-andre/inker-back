@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { S3Client } from './infrastructure/clients/s3.client';
+import { SMSClient } from './infrastructure/clients/sms.client';
 import { BaseHandler } from './infrastructure/base.handler';
 import config from '../config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -27,11 +28,12 @@ import { LoggingInterceptor } from './aspects/logging.interceptor';
   providers: [
     BaseHandler,
     S3Client,
+    SMSClient,
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     },
   ],
-  exports: [ConfigModule, S3Client, JwtModule],
+  exports: [ConfigModule, S3Client, SMSClient, JwtModule],
 })
 export class GlobalModule {}
