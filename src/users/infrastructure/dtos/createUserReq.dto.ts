@@ -1,15 +1,15 @@
-import { UserType } from '../../domain/enums/userType.enum';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  IsString,
   IsEmail,
   IsEnum,
   IsOptional,
+  IsString,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { ArtistInfoInterface, ArtistInfoDto } from './artistInfo.dto';
+import { UserType } from '../../domain/enums/userType.enum';
+import { ArtistInfoDto, ArtistInfoInterface } from './artistInfo.dto';
 
 export class CreateUserReqDto {
   @ApiProperty({

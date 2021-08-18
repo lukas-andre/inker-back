@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  HttpException,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ExtractJwt } from 'passport-jwt';
 import { DomainException } from '../domain/exceptions/domain.exception';

@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { JwtPermission } from '../../../global/domain/interfaces/jwtPayload.interface';
 
 export class DefaultLoginResult {
@@ -20,7 +20,7 @@ export class DefaultLoginResult {
   @IsString()
   userType: string;
 
-  permision: JwtPermission[];
+  permission: JwtPermission[];
 
   @IsString()
   accessToken: string;

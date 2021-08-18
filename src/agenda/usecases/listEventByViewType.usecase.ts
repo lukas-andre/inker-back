@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import { endOfWeek, format, startOfWeek } from 'date-fns';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaViewType } from '../domain/enum/agendaViewType.enum';
-import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { ListEventByViewTypeQueryDto } from '../infrastructure/dtos/listEventByViewTypeQuery.dto';
-import { endOfWeek, format, startOfWeek } from 'date-fns';
+import { Agenda } from '../infrastructure/entities/agenda.entity';
+import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
 export class ListEventByViewTypeUseCase extends BaseUseCase {

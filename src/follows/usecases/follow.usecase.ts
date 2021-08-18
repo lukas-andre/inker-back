@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { getConnection } from 'typeorm';
+import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersService } from '../../users/domain/services/users.service';
 import { FollowedsService } from '../domain/services/followeds.service';
-import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
 import { FollowArtistParams } from './interfaces/followArtist.param';

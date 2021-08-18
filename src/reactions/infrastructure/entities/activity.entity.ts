@@ -1,7 +1,7 @@
+import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { Entity, Column, Index } from 'typeorm';
-import { ReactionTypeEnum } from '../enums/reaction.enum';
 import { ActivityTypeEnum } from '../enums/activity.enum';
+import { ReactionTypeEnum } from '../enums/reaction.enum';
 
 @Entity()
 export class Activity extends BaseEntity {

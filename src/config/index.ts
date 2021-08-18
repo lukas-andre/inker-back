@@ -1,17 +1,17 @@
+import agendaDatabase from './agendaDatabase';
 import app from './app';
+import artistDatabase from './artistDatabase';
 import auth from './auth';
 import aws from './aws';
-import userDatabase from './userDatabase';
-import artistDatabase from './artistDatabase';
 import customerDatabase from './customerDatabase';
-import followDatabase from './followDatabase';
-import reactionDatabase from './reactionDatabase';
-import postDatabase from './postDatabase';
-import genreDatabase from './genreDatabase';
-import tagDatabase from './tagDatabase';
-import agendaDatabase from './agendaDatabase';
-import locationDatabase from './locationDatabase';
 import customerFeedDatabase from './customerFeedDatabase';
+import followDatabase from './followDatabase';
+import genreDatabase from './genreDatabase';
+import locationDatabase from './locationDatabase';
+import postDatabase from './postDatabase';
+import reactionDatabase from './reactionDatabase';
+import tagDatabase from './tagDatabase';
+import userDatabase from './userDatabase';
 import validationHash from './verificationHash';
 
 export default [

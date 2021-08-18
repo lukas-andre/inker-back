@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { ArtistsService } from '../domain/services/artists.service';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from '../infrastructure/dtos/updateArtist.dto';
 
 @Injectable()
 export class UpdateArtistBasicInfoUseCase extends BaseUseCase {
-  constructor(private readonly aristsService: ArtistsService) {
+  constructor(private readonly artistsService: ArtistsService) {
     super(UpdateArtistBasicInfoUseCase.name);
   }
 
@@ -18,7 +18,7 @@ export class UpdateArtistBasicInfoUseCase extends BaseUseCase {
     id: number,
     updateArtistDto: UpdateArtistDto,
   ): Promise<BaseArtistResponse | DomainException> {
-    let result = await this.aristsService.findById(id);
+    let result = await this.artistsService.findById(id);
 
     if (isServiceError(result)) {
       return new DomainConflictException(this.handleServiceError(result));
@@ -28,7 +28,7 @@ export class UpdateArtistBasicInfoUseCase extends BaseUseCase {
       return new DomainNotFoundException('Artist not found');
     }
 
-    result = await this.aristsService.save(
+    result = await this.artistsService.save(
       Object.assign(result, updateArtistDto),
     );
 

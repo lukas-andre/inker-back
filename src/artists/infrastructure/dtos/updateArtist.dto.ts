@@ -6,7 +6,7 @@ export class UpdateArtistDto extends PartialType(
   OmitType(CreateArtistDto, ['userId', 'phoneNumber'] as const),
 ) {
   @ApiProperty({
-    example: 'This is my inker studio, wecolme',
+    example: 'This is my inker studio, welcome',
     description: 'description for artist studio profile',
     required: false,
   })

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Following } from '../../infrastructure/entities/following.entity';
 import {
-  Repository,
+  DeepPartial,
   DeleteResult,
+  FindConditions,
   FindManyOptions,
   FindOneOptions,
-  DeepPartial,
-  FindConditions,
+  Repository,
 } from 'typeorm';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { Following } from '../../infrastructure/entities/following.entity';
 
 @Injectable()
 export class FollowingsService {

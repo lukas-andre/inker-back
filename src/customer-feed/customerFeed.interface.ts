@@ -1,4 +1,4 @@
-import { PostInterface } from '../posts/domain/services/intercaces/post.inteface';
+import { PostInterface } from '../posts/domain/services/interfaces/post.interface';
 
 export interface CustomerFeedInterface {
   posts: PostInterface;

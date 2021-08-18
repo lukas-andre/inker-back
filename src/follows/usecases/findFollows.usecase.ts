@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { UsersService } from '../../users/domain/services/users.service';
 import { FollowingsService } from '../domain/services/followings.service';
 import { FollowingType } from '../domain/types/followingType';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 @Injectable()
 export class FindFollowsUseCase extends BaseUseCase {
   constructor(

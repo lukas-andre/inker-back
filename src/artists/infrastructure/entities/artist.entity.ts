@@ -1,7 +1,7 @@
-import { GenrerInterface } from '../../../genres/genre.interface';
-import { TagInterface } from '../../../tags/tag.interface';
-import { Entity, Column } from 'typeorm';
+import { Column, Entity } from 'typeorm';
+import { GenreInterface } from '../../../genres/genre.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+import { TagInterface } from '../../../tags/tag.interface';
 
 @Entity()
 export class Artist extends BaseEntity {
@@ -33,7 +33,7 @@ export class Artist extends BaseEntity {
   tags: TagInterface[];
 
   @Column('jsonb', { nullable: true })
-  genres: GenrerInterface[];
+  genres: GenreInterface[];
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;

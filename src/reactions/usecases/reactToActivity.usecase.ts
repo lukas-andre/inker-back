@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { Activity } from '../infrastructure/entities/activity.entity';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
+import { FindReactionAndReactionTypeGroup } from '../domain/interfaces/findReactionAndReactionTypeGroup.interface';
 import { ActivitiesService } from '../domain/services/activities.service';
 import { ReactionsService } from '../domain/services/reactions.service';
+import { Activity } from '../infrastructure/entities/activity.entity';
 import { Reaction } from '../infrastructure/entities/reaction.entity';
 import { ReactionToActivityDto } from '../infrastructure/reactionToActivity.dto';
-import { FindReactionAndReactionTypeGroup } from '../domain/interfaces/findReactionAndReactionTypeGroup.interface';
 
 @Injectable()
 export class ReactToActivityUseCase {
@@ -29,7 +29,7 @@ export class ReactToActivityUseCase {
     if (isSameReaction) {
       await this.deactivateReaction(reactionDto, jwtPayload);
 
-      //TODO: TAL VEZ AQUI NO RETORNAR EL MISMO DTO
+      //TODO: maybe here return the same dto
       return this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
         reactionDto.activityId,
         reactionDto.activity,

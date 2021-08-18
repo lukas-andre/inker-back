@@ -1,5 +1,5 @@
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 import { UserType } from '../../../domain/enums/userType.enum';
-import { IsString, IsEmail, IsEnum, IsOptional } from 'class-validator';
 import { ArtistInfoInterface } from '../../../infrastructure/dtos/artistInfo.dto';
 
 export class CreateUserByTypeParams {

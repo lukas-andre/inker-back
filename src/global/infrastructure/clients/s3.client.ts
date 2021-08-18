@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import * as AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
+import * as AWS from 'aws-sdk';
 import { Readable } from 'stream';
 
 @Injectable()

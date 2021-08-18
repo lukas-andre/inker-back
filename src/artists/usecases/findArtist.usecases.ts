@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { FindManyOptions } from 'typeorm';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import { FollowedsService } from '../../follows/domain/services/followeds.service';
+import { FollowingsService } from '../../follows/domain/services/followings.service';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { ArtistsService } from '../domain/services/artists.service';
-import { FollowingsService } from '../../follows/domain/services/followings.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { FindArtistByIdResult } from './interfaces/findArtistById.result';
-import { FollowedsService } from '../../follows/domain/services/followeds.service';
 
 @Injectable()
 export class FindArtistsUseCases extends BaseUseCase {

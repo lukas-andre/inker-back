@@ -12,8 +12,7 @@ import { LoginResDto } from './dtos/loginRes.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  private readonly serviceName = AuthController.name;
-  private readonly logger = new Logger(this.serviceName);
+  private readonly logger = new Logger(AuthController.name);
 
   constructor(private readonly authHandler: AuthHandler) {}
 

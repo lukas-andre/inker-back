@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './infrasctructure/auth.controller';
-import { UsersModule } from '../users/users.module';
 import { ArtistsModule } from '../artists/artists.module';
 import { CustomersModule } from '../customers/customers.module';
-import { AuthHandler } from './infrasctructure/auth.handler';
+import { UsersModule } from '../users/users.module';
 import { AuthService } from './domain/auth.service';
+import { AuthController } from './infrastructure/auth.controller';
+import { AuthHandler } from './infrastructure/auth.handler';
 import { DefaultLoginUseCase } from './usecases/defaultLogin.usecase';
 
 @Module({

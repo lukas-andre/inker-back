@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { resolveDomainException } from '../../global/infrastructure/exceptions/resolveDomainException';
-import { LoginParams } from '../usecases/interfaces/defaultLogin.params';
+import { LoginType } from '../domain/enums/loginType.enum';
 import { DefaultLoginUseCase } from '../usecases/defaultLogin.usecase';
+import { LoginParams } from '../usecases/interfaces/defaultLogin.params';
 import { LoginReqDto } from './dtos/loginReq.dto';
 import { LoginResDto } from './dtos/loginRes.dto';
-import { LoginType } from '../domain/enums/loginType.enum';
 
 @Injectable()
 export class AuthHandler {

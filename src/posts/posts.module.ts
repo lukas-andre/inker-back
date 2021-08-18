@@ -12,9 +12,9 @@ import { Comment } from './infrastructure/entities/comment.entity';
 import { Post } from './infrastructure/entities/post.entity';
 import { CommentsHandler } from './infrastructure/handlers/comments.handler';
 import { PostsHandler } from './infrastructure/handlers/posts.handler';
-import { ArtistUploadPostUseCase } from './usescases/artistUploadPost.usecase';
-import { GetAllArtistPostsUseCase } from './usescases/getAllArtistPosts.usecase';
-import { UserAddCommentUseCase } from './usescases/userAddComment.usecase';
+import { ArtistUploadPostUseCase } from './usecases/artistUploadPost.usecase';
+import { GetAllArtistPostsUseCase } from './usecases/getAllArtistPosts.usecase';
+import { UserAddCommentUseCase } from './usecases/userAddComment.usecase';
 
 @Module({
   imports: [

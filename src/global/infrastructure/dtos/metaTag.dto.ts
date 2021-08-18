@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class MetatagDto {
+export class MetaTagDto {
   @ApiProperty({
     description: 'tag name',
     nullable: true,

@@ -1,32 +1,32 @@
 import {
-  Controller,
-  Post,
-  Request,
   Body,
-  UseInterceptors,
-  UploadedFiles,
-  Ip,
-  HostParam,
-  Logger,
+  Controller,
   Get,
+  HostParam,
+  Ip,
+  Logger,
   Param,
-  Query,
   ParseIntPipe,
+  Post,
+  Query,
+  Request,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import {
-  ApiOperation,
   ApiOkResponse,
-  ApiTags,
+  ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { CreatePostDto } from '../dtos/createPost.dto';
-import { PostsHandler } from '../handlers/posts.handler';
-import { FileInterface } from '../../../multimedias/interfaces/file.interface';
-import { ListAllArtistPostsQueryDto } from '../dtos/listAllArtistPostQuery.dto';
 import { PaginationDto } from '../../../global/infrastructure/dtos/pagination.dto';
+import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import { CreatePostDto } from '../dtos/createPost.dto';
+import { ListAllArtistPostsQueryDto } from '../dtos/listAllArtistPostQuery.dto';
 import { ArtistPostResponseDto } from '../dtos/listAllArtistPostResponse.dto';
+import { PostsHandler } from '../handlers/posts.handler';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -85,6 +85,6 @@ export class PostsController {
     return this.postHandler.listArtistPostByUserId(userId, query, pagination);
   }
 
-  //TODO: EDITAR POST
-  //TODO: ELIMINAR POST
+  //TODO: EDIT POST
+  //TODO: DELETE POST
 }

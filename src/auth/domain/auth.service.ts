@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '../../users/infrastructure/entities/user.entity';
-import { Customer } from '../../customers/infrastructure/entities/customer.entity';
-import { Artist } from '../../artists/infrastructure/entities/artist.entity';
-import { UserType } from '../../users/domain/enums/userType.enum';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Artist } from '../../artists/infrastructure/entities/artist.entity';
+import { Customer } from '../../customers/infrastructure/entities/customer.entity';
 import {
   FullJwtPayload,
   JwtPayload,
 } from '../../global/domain/interfaces/jwtPayload.interface';
+import { UserType } from '../../users/domain/enums/userType.enum';
+import { User } from '../../users/infrastructure/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +30,7 @@ export class AuthService {
       userType: UserType[userType],
       userTypeId: entity.id,
       profileThumbnail: entity.profileThumbnail,
-      permision: user.role.permissions.map((permission) => ({
+      permission: user.role.permissions.map((permission) => ({
         c: permission.controller,
         a: permission.action,
       })),

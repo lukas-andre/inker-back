@@ -1,5 +1,5 @@
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { UserType } from '../../../domain/enums/userType.enum';
-import { IsString, IsEmail, IsEnum, IsOptional } from 'class-validator';
 
 export class CreateUserByTypeResult {
   @IsString()

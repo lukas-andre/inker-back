@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { FollowerDto } from '../../artists/infrastructure/dtos/follow.dto';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import { BaseHandler } from '../../global/infrastructure/base.handler';
-import { FollowerDto } from '../../artists/infrastructure/dtos/follow.dto';
-import { UnfollowUseCase } from '../usecases/unfollow.usecase';
+import { FollowingType } from '../domain/types/followingType';
 import { FindFollowersUseCase } from '../usecases/findFollowers.usecase';
 import { FindFollowsUseCase } from '../usecases/findFollows.usecase';
 import { FollowUseCase } from '../usecases/follow.usecase';
-import { FollowingType } from '../domain/types/followingType';
+import { UnfollowUseCase } from '../usecases/unfollow.usecase';
 
 @Injectable()
 export class FollowsHandler extends BaseHandler {

@@ -1,6 +1,6 @@
-import { MultimediaMetadaInterface } from './multimediaMetadata.interface';
+import { MultimediaMetadataInterface } from './multimediaMetadata.interface';
 
-export interface MultimediasMetadaInterface {
+export interface MultimediasMetadataInterface {
   count: number;
-  metadata: MultimediaMetadaInterface[];
+  metadata: MultimediaMetadataInterface[];
 }

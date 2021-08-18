@@ -11,7 +11,7 @@ export interface JwtPayload {
   userType: string;
   userTypeId: number;
   profileThumbnail: string;
-  permision: JwtPermission[];
+  permission: JwtPermission[];
 }
 
 export interface FullJwtPayload extends JwtPayload {

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from '../../global/domain/services/base.service';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
-import { Agenda } from '../infrastructure/entities/agenda.entity';
 import {
-  Repository,
-  FindManyOptions,
-  FindConditions,
-  FindOneOptions,
   DeepPartial,
   DeleteResult,
+  FindConditions,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
 } from 'typeorm';
+import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { BaseService } from '../../global/domain/services/base.service';
+import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
+import { Agenda } from '../infrastructure/entities/agenda.entity';
+import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 @Injectable()
 export class AgendaEventService extends BaseService {
   constructor(

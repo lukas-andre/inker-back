@@ -5,7 +5,7 @@ import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 export class JwtPermissionDto {
   @ApiProperty({
     example: 'AuthController',
-    description: 'Authorizated controller',
+    description: 'Authorized controller',
   })
   @IsString()
   c: string;
@@ -56,14 +56,14 @@ export class LoginResDto {
   @IsString()
   userType: string;
 
-  @ApiProperty({ name: 'permision', type: [JwtPermissionDto] })
+  @ApiProperty({ name: 'permission', type: [JwtPermissionDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => JwtPermissionDto)
-  permision: JwtPermissionDto[];
+  permission: JwtPermissionDto[];
 
   @ApiProperty({
-    example: 'kwledjashdf32091deusad',
+    example: '1231412-2131231',
     description: 'token',
   })
   @IsString()

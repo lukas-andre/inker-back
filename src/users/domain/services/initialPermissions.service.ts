@@ -1,9 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Permission } from '../../infrastructure/entities/permission.entity';
 import { Repository } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { Permission } from '../../infrastructure/entities/permission.entity';
 
 @Injectable()
 export class InitialPermissionsService {

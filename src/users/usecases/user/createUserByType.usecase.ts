@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { AgendaService } from '../../../agenda/domain/agenda.service';
+import { ArtistsService } from '../../../artists/domain/services/artists.service';
+import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
+import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
+import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
+import { CustomersService } from '../../../customers/domain/customers.service';
+import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
+import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
 import { DomainException } from '../../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
 import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
-import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
-import { CustomersService } from '../../../customers/domain/customers.service';
-import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
+import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { ArtistLocationsService } from '../../../locations/domain/artistLocations.service';
+import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
-import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
-import { ArtistsService } from '../../../artists/domain/services/artists.service';
-import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
-import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
-import { AgendaService } from '../../../agenda/domain/agenda.service';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
-import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
-import { ArtistLocationsService } from '../../../locations/domain/artistLocations.service';
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Logger,
   Param,
@@ -8,21 +9,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
-  ApiConflictResponse,
-  ApiQuery,
+  ApiOperation,
   ApiParam,
+  ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
-import { Body } from '@nestjs/common';
-import { CreateUserReqDto } from '../dtos/createUserReq.dto';
-import { UsersHandler } from '../handlers/users.handler';
-import { CreateUserResDto } from '../dtos/createUserRes.dto';
 import { LoggingInterceptor } from '../../../global/aspects/logging.interceptor';
-import { SendVerificationCodeQueryDto } from '../dtos/SendVerificationCodeQuery.dto';
+import { CreateUserReqDto } from '../dtos/createUserReq.dto';
+import { CreateUserResDto } from '../dtos/createUserRes.dto';
+import { SendVerificationCodeQueryDto } from '../dtos/sendVerificationCodeQuery.dto';
 import { VerificationType } from '../entities/verificationHash.entity';
+import { UsersHandler } from '../handlers/users.handler';
 
 @ApiTags('users')
 @Controller('users')

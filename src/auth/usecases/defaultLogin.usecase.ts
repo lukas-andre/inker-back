@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../../users/domain/services/users.service';
-import { User } from '../../users/infrastructure/entities/user.entity';
-import { UserType } from '../../users/domain/enums/userType.enum';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { CustomersService } from '../../customers/domain/customers.service';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
-import { Artist } from '../../artists/infrastructure/entities/artist.entity';
-import { AuthService } from '../domain/auth.service';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DefaultLoginResult } from './interfaces/defaultLogin.result';
-import { LoginParams } from './interfaces/defaultLogin.params';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { UserType } from '../../users/domain/enums/userType.enum';
+import { UsersService } from '../../users/domain/services/users.service';
+import { User } from '../../users/infrastructure/entities/user.entity';
+import { AuthService } from '../domain/auth.service';
+import { LoginParams } from './interfaces/defaultLogin.params';
+import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 // TODO: EXTEND BASE USECASE
 @Injectable()
 export class DefaultLoginUseCase {

@@ -1,4 +1,4 @@
-export interface MultimediaMetadaInterface {
+export interface MultimediaMetadataInterface {
   type?: string;
   url?: string;
   size?: number;

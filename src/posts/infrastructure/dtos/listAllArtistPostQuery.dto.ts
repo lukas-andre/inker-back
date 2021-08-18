@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { IsArray, IsOptional } from 'class-validator';
 
 export class ListAllArtistPostsQueryDto {
   @ApiProperty({

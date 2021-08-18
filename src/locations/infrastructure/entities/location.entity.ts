@@ -1,5 +1,5 @@
-import { Column, Entity, Index } from 'typeorm';
 import { Point } from 'geojson';
+import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity({ synchronize: false })

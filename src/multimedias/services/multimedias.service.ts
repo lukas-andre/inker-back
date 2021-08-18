@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3Client } from '../../global/infrastructure/clients/s3.client';
 import { FileInterface } from '../interfaces/file.interface';
-import { MultimediasMetadaInterface } from '../interfaces/multimediasMetadata.interface';
+import { MultimediasMetadataInterface } from '../interfaces/multimediasMetadata.interface';
 
 @Injectable()
 export class MultimediasService {
@@ -27,13 +27,12 @@ export class MultimediasService {
     };
   }
 
-  // TODO: ARREGLAR ESTO; QUE SEA EN PARARELO Y EVITAR MEMORY LEACKS
   public async handlePostMultimedias(
     files: FileInterface[],
     artistId: number,
     postId: number,
-  ): Promise<MultimediasMetadaInterface> {
-    const multimediasMetada: MultimediasMetadaInterface = {
+  ): Promise<MultimediasMetadataInterface> {
+    const multimediasMetadata: MultimediasMetadataInterface = {
       count: 0,
       metadata: [],
     };
@@ -44,11 +43,11 @@ export class MultimediasService {
       const fileName = `${postId}_${index}`;
 
       console.time('uploadFile');
-      // TODO: EL UPLOAD DEBE SER EN PARALELO !!!
+      // TODO: this upload can be in parallel !!!
       const { cloudFrontUrl } = await this.upload(file, source, fileName);
       console.timeEnd('uploadFile');
 
-      multimediasMetada.metadata.push({
+      multimediasMetadata.metadata.push({
         url: cloudFrontUrl,
         type: file.mimetype,
         encoding: file.encoding,
@@ -57,8 +56,8 @@ export class MultimediasService {
         size: file.size,
         position: index,
       });
-      multimediasMetada.count++;
+      multimediasMetadata.count++;
     }
-    return multimediasMetada;
+    return multimediasMetadata;
   }
 }

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOneOptions } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
+import { Permission } from '../../infrastructure/entities/permission.entity';
 import { Role } from '../../infrastructure/entities/role.entity';
 import { initRolePermissions } from '../data/initRolePermission.data';
 import { initRoles } from '../data/initRoles.data';
-import { Permission } from '../../infrastructure/entities/permission.entity';
 
 @Injectable()
 export class RolesService {

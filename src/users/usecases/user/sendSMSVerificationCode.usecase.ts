@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../../domain/services/users.service';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
+import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
+import { UsersService } from '../../domain/services/users.service';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import { VerificationType } from '../../infrastructure/entities/verificationHash.entity';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
 
 @Injectable()
 export class SendSMSVerificationCodeUseCase extends BaseUseCase {

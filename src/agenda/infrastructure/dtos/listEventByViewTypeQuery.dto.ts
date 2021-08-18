@@ -1,7 +1,7 @@
-import { IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { AgendaViewType } from '../../domain/enum/agendaViewType.enum';
+import { IsEnum } from 'class-validator';
 import { ValidateDateFormat } from '../../../global/domain/validators/isOnlyDate.validator';
+import { AgendaViewType } from '../../domain/enum/agendaViewType.enum';
 
 export class ListEventByViewTypeQueryDto {
   @ApiProperty({

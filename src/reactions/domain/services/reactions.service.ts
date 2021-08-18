@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Reaction } from '../../../reactions/infrastructure/entities/reaction.entity';
-import {
-  Repository,
-  FindManyOptions,
-  FindConditions,
-  FindOneOptions,
-  DeepPartial,
-  DeleteResult,
-} from 'typeorm';
-import { GroupedReactionsInterface } from '../interfaces/groupedReaections.interface';
 import { ServiceError } from 'src/global/domain/interfaces/serviceError';
 import { BaseService } from 'src/global/domain/services/base.service';
+import {
+  DeepPartial,
+  DeleteResult,
+  FindConditions,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
+} from 'typeorm';
+import { Reaction } from '../../../reactions/infrastructure/entities/reaction.entity';
+import { GroupedReactionsInterface } from '../interfaces/groupedReactions.interface';
 
 @Injectable()
 export class ReactionsService extends BaseService {
@@ -32,7 +32,7 @@ export class ReactionsService extends BaseService {
 
   async findByKey(
     findConditions: FindConditions<Reaction>,
-    // TODO: MIRAD ESTE SELECT :O
+    // TODO: LOOK THIS SELECT :O
     select: (keyof Reaction)[],
   ) {
     return this.reactionsRepository.find({

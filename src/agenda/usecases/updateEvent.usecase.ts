@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { UpdateEventReqDto } from '../infrastructure/dtos/updateEventReq.dto';
+import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
 export class UpdateEventUseCase {

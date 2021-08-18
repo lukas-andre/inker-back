@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomersService } from './domain/customers.service';
 import { CustomersController } from './infrastructure/customers.controller';
-import { Customer } from './infrastructure/entities/customer.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomerHandler } from './infrastructure/customers.handler';
+import { Customer } from './infrastructure/entities/customer.entity';
 import { CRCustomerUseCase } from './usecases/CRCustomer.usecase';
 
 @Module({

@@ -1,13 +1,13 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
-  ApiConflictResponse,
+  ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
-import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
 import { CustomerHandler } from './customers.handler';
+import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
 import { CreateCustomerResDto } from './dtos/createCustomerRes.dto';
 
 @ApiTags('customers')
@@ -20,7 +20,7 @@ export class CustomersController {
     description: 'Users has been created',
     type: CreateCustomerResDto,
   })
-  @ApiNotFoundResponse({ description: 'Rolo does not exists' })
+  @ApiNotFoundResponse({ description: 'Rol does not exists' })
   @ApiConflictResponse({ description: 'Users already exists' })
   @Post()
   async create(@Body() createCustomerDto: CreateCustomerReqDto) {

@@ -1,33 +1,33 @@
 import {
-  Controller,
-  Post,
   Body,
-  UseInterceptors,
-  UploadedFile,
-  Param,
+  Controller,
   Get,
-  Put,
-  UseGuards,
+  Param,
   ParseIntPipe,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiConsumes,
+  ApiBearerAuth,
   ApiBody,
+  ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiConflictResponse,
+  ApiOperation,
   ApiParam,
-  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
-import { ArtistsHandler } from './artists.handler';
-import { CreateArtistDto } from './dtos/createArtist.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
-import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
-import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
+import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
+import { ArtistsHandler } from './artists.handler';
+import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
+import { CreateArtistDto } from './dtos/createArtist.dto';
+import { UpdateArtistDto } from './dtos/updateArtist.dto';
 
 @ApiBearerAuth()
 @ApiTags('artists')

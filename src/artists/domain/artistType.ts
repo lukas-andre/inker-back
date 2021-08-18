@@ -1,4 +1,4 @@
-import { GenrerInterface } from '../../genres/genre.interface';
+import { GenreInterface } from '../../genres/genre.interface';
 import { TagInterface } from '../../tags/tag.interface';
 
 export type ArtistTypeProps =
@@ -30,7 +30,7 @@ export type ArtistType = {
   shortDescription?: string;
   profileThumbnail?: string;
   tags?: string[] | TagInterface[];
-  genres?: string[] | GenrerInterface[];
+  genres?: string[] | GenreInterface[];
   rating?: number;
   followers?: number;
   follows?: number;
