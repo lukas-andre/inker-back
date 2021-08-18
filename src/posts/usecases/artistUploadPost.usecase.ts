@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { PostsService } from '../domain/services/posts.service';
-import { MultimediasService } from '../../multimedias/services/multimedias.service';
-import { Post } from '../infrastructure/entities/post.entity';
-import { FileInterface } from '../../multimedias/interfaces/file.interface';
-import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
-import { CreatePostDto } from '../infrastructure/dtos/createPost.dto';
-import { ArtistsService } from '../../artists/domain/services/artists.service';
-import { TagsService } from '../../tags/tags.service';
-import { GenresService } from '../../genres/genres.service';
-import { GenrerInterface } from '../../genres/genre.interface';
-import { TagInterface } from '../../tags/tag.interface';
 import * as stringify from 'json-stringify-safe';
+import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { GenreInterface } from '../../genres/genre.interface';
+import { GenresService } from '../../genres/genres.service';
+import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import { FileInterface } from '../../multimedias/interfaces/file.interface';
+import { MultimediasService } from '../../multimedias/services/multimedias.service';
+import { TagInterface } from '../../tags/tag.interface';
+import { TagsService } from '../../tags/tags.service';
+import { PostsService } from '../domain/services/posts.service';
+import { CreatePostDto } from '../infrastructure/dtos/createPost.dto';
+import { Post } from '../infrastructure/entities/post.entity';
 
 @Injectable()
 export class ArtistUploadPostUseCase extends BaseUseCase {
@@ -47,7 +47,7 @@ export class ArtistUploadPostUseCase extends BaseUseCase {
       return new DomainNotFoundException('Artist not found');
     }
 
-    const genres: GenrerInterface[] = [],
+    const genres: GenreInterface[] = [],
       tags: TagInterface[] = [];
     try {
       await Promise.all([

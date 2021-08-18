@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  Repository,
-  FindManyOptions,
-  FindOneOptions,
   DeepPartial,
   DeleteResult,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
 } from 'typeorm';
 import { EventLocation } from '../infrastructure/entities/eventLocation.entity';
 

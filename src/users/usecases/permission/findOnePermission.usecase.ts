@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { FindOneOptions } from 'typeorm';
 import { PermissionsService } from '../../domain/services/permissions.service';
 import { Permission } from '../../infrastructure/entities/permission.entity';
-import { FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class FindOnePermissionUseCase {

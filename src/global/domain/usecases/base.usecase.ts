@@ -1,7 +1,7 @@
+import * as stringify from 'json-stringify-safe';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { DomainException } from '../exceptions/domain.exception';
 import { BaseService } from '../services/base.service';
-import * as stringify from 'json-stringify-safe';
 
 export class BaseUseCase extends BaseService {
   constructor(readonly serviceName: string) {

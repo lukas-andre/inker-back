@@ -7,11 +7,11 @@ import {
   Query,
 } from '@nestjs/common';
 import {
-  ApiParam,
-  ApiOperation,
-  ApiTags,
-  ApiOkResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
 } from '@nestjs/swagger';
 import { Role } from '../entities/role.entity';
 import { RolesHandler } from '../handlers/roles.handler';

@@ -1,10 +1,10 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { FindOneOptions } from 'typeorm';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { CreateCustomerParams } from './interfaces/createCustomer.params';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { CustomersService } from '../domain/customers.service';
 import { Customer } from '../infrastructure/entities/customer.entity';
+import { CreateCustomerParams } from './interfaces/createCustomer.params';
 
 @Injectable()
 export class CRCustomerUseCase extends BaseUseCase {

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Activity } from '../../infrastructure/entities/activity.entity';
 import {
-  Repository,
-  FindManyOptions,
-  FindConditions,
-  FindOneOptions,
   DeepPartial,
   DeleteResult,
+  FindConditions,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
 } from 'typeorm';
+import { Activity } from '../../infrastructure/entities/activity.entity';
 import { FindReactionAndReactionTypeGroup } from '../interfaces/findReactionAndReactionTypeGroup.interface';
 
 @Injectable()
@@ -17,22 +17,22 @@ export class ActivitiesService {
 
   constructor(
     @InjectRepository(Activity, 'reaction-db')
-    private readonly acitivitiesRepository: Repository<Activity>,
+    private readonly activitiesRepository: Repository<Activity>,
   ) {}
 
   async findById(id: string) {
-    return this.acitivitiesRepository.findOne(id);
+    return this.activitiesRepository.findOne(id);
   }
 
   async find(options: FindManyOptions<Activity>) {
-    return this.acitivitiesRepository.find(options);
+    return this.activitiesRepository.find(options);
   }
 
   async findByKey(
     findConditions: FindConditions<Activity>,
     select: (keyof Activity)[],
   ) {
-    return this.acitivitiesRepository.find({
+    return this.activitiesRepository.find({
       select,
       where: {
         ...findConditions,
@@ -41,20 +41,20 @@ export class ActivitiesService {
   }
 
   async findAndCount(options: FindManyOptions<Activity>) {
-    return this.acitivitiesRepository.findAndCount(options);
+    return this.activitiesRepository.findAndCount(options);
   }
 
   async findOne(
     options?: FindOneOptions<Activity>,
   ): Promise<Activity | undefined> {
-    return this.acitivitiesRepository.findOne(options);
+    return this.activitiesRepository.findOne(options);
   }
 
   async findAllWithTotalReactionsAndReactionGroup(
     activityId?: number,
     activityType?: string,
   ): Promise<FindReactionAndReactionTypeGroup | undefined> {
-    return this.acitivitiesRepository
+    return this.activitiesRepository
       .createQueryBuilder('activities')
       .select('COUNT(activities.reactions)', 'totalReactions')
       .addSelect('activities.activity_type', 'activityType')
@@ -74,10 +74,10 @@ export class ActivitiesService {
   }
 
   async save(artist: DeepPartial<Activity>): Promise<Activity> {
-    return this.acitivitiesRepository.save(artist);
+    return this.activitiesRepository.save(artist);
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return this.acitivitiesRepository.delete(id);
+    return this.activitiesRepository.delete(id);
   }
 }

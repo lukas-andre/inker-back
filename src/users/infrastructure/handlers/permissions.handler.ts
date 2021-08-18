@@ -1,6 +1,6 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
+import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { FindAllPermissionsUseCase } from '../../usecases/permission/findAllPermissions.usecase';
 import { FindAllRoutesUseCase } from '../../usecases/permission/findAllRoutes.usecase';
 import { FindOnePermissionUseCase } from '../../usecases/permission/findOnePermission.usecase';

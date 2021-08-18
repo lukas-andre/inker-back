@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
+import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import { CommentsService } from '../domain/services/comments.service';
+import { PostsService } from '../domain/services/posts.service';
 import { CreateCommentDto } from '../infrastructure/dtos/createComment.dto';
 import { Comment } from '../infrastructure/entities/comment.entity';
 import { ParentCommentEnum } from '../infrastructure/enum/parentComment.enum';
-import { CommentsService } from '../domain/services/comments.service';
-import { PostsService } from '../domain/services/posts.service';
+
 @Injectable()
 export class UserAddCommentUseCase extends BaseUseCase {
   constructor(
@@ -44,11 +45,11 @@ export class UserAddCommentUseCase extends BaseUseCase {
       return new DomainNotFoundException('Comment parent is not valid');
     }
 
-    const savedCommnet = await this.commentsService.save({
+    const savedComment = await this.commentsService.save({
       content: createCommentDto.content,
       location: createCommentDto.location,
       parentType: ParentCommentEnum[createCommentDto.parentType],
-      partenId: createCommentDto.parentId,
+      parentId: createCommentDto.parentId,
       profileThumbnail: jwtPayload.profileThumbnail,
       userType: jwtPayload.userType,
       userTypeId: jwtPayload.userTypeId,
@@ -56,9 +57,9 @@ export class UserAddCommentUseCase extends BaseUseCase {
       username: jwtPayload.username,
     });
 
-    return isServiceError(savedCommnet)
-      ? new DomainConflictException(this.handleServiceError(savedCommnet))
-      : savedCommnet;
+    return isServiceError(savedComment)
+      ? new DomainConflictException(this.handleServiceError(savedComment))
+      : savedComment;
   }
 
   private async validParent(

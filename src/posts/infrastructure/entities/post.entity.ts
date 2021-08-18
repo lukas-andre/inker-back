@@ -1,8 +1,8 @@
+import { Column, DeleteDateColumn, Entity, Index } from 'typeorm';
+import { GenreInterface } from '../../../genres/genre.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { Entity, Column, Index, DeleteDateColumn } from 'typeorm';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { TagInterface } from '../../../tags/tag.interface';
-import { GenrerInterface } from '../../../genres/genre.interface';
-import { MultimediasMetadaInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 @Entity()
 export class Post extends BaseEntity {
@@ -32,13 +32,13 @@ export class Post extends BaseEntity {
   profileThumbnail: string;
 
   @Column('jsonb', { nullable: true })
-  multimedia: MultimediasMetadaInterface;
+  multimedia: MultimediasMetadataInterface;
 
   @Column('jsonb', { nullable: true })
   tags: TagInterface[];
 
   @Column('jsonb', { nullable: true })
-  genres: GenrerInterface[];
+  genres: GenreInterface[];
 
   @Column({ default: false })
   hidden: boolean;

@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../../../global/domain/interfaces/jwtPayload.interface';
 import { BaseHandler } from '../../../global/infrastructure/base.handler';
-import { ArtistUploadPostUseCase } from '../../usescases/artistUploadPost.usecase';
+import { PaginationDto } from '../../../global/infrastructure/dtos/pagination.dto';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import { ArtistUploadPostUseCase } from '../../usecases/artistUploadPost.usecase';
+import { GetAllArtistPostsUseCase } from '../../usecases/getAllArtistPosts.usecase';
 import { CreatePostDto } from '../dtos/createPost.dto';
 import { ListAllArtistPostsQueryDto } from '../dtos/listAllArtistPostQuery.dto';
-import { PaginationDto } from '../../../global/infrastructure/dtos/pagination.dto';
-import { GetAllArtistPostsUseCase } from '../../../posts/usescases/getAllArtistPosts.usecase';
 
 @Injectable()
 export class PostsHandler extends BaseHandler {

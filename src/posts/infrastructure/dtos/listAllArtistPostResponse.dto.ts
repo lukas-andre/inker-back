@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { MetatagDto } from '../../../global/infrastructure/dtos/metaTag.dto';
+import { MetaTagDto } from '../../../global/infrastructure/dtos/metaTag.dto';
 import { MultimediasMetadataDto } from '../../../multimedias/dtos/multimediasMetadata.dto';
 
 export class ArtistPostResponseDto {
@@ -64,19 +64,19 @@ export class ArtistPostResponseDto {
 
   @ApiProperty({
     description: 'Post tags',
-    type: MetatagDto,
+    type: MetaTagDto,
     isArray: true,
   })
-  @Type(() => MetatagDto)
+  @Type(() => MetaTagDto)
   @Transform((value) => (value ? value : { name: '' }))
-  readonly tags: MetatagDto[];
+  readonly tags: MetaTagDto[];
 
   @ApiProperty({
     description: 'Post genders',
-    type: MetatagDto,
+    type: MetaTagDto,
     isArray: true,
   })
-  @Type(() => MetatagDto)
+  @Type(() => MetaTagDto)
   @Transform((value) => (value ? value : { name: '' }))
-  readonly genres: MetatagDto[];
+  readonly genres: MetaTagDto[];
 }

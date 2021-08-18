@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Repository,
-  FindManyOptions,
-  DeepPartial,
-  FindOneOptions,
-  DeleteResult,
-} from 'typeorm';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { compare, hash } from 'bcryptjs';
+import {
+  DeepPartial,
+  DeleteResult,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
+} from 'typeorm';
 import { LoginType } from '../../../auth/domain/enums/loginType.enum';
-import { Role } from '../../infrastructure/entities/role.entity';
-import { IUser } from '../models/user.model';
-import { User } from '../../infrastructure/entities/user.entity';
-import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-import { hash, compare } from 'bcryptjs';
+import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
+import { Role } from '../../infrastructure/entities/role.entity';
+import { User } from '../../infrastructure/entities/user.entity';
 import { UserType } from '../enums/userType.enum';
+import { IUser } from '../models/user.model';
 @Injectable()
 export class UsersService {
   constructor(

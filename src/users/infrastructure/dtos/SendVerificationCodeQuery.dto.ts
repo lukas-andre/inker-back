@@ -1,5 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { VerificationType } from '../entities/verificationHash.entity';
 
 export class SendVerificationCodeQueryDto {

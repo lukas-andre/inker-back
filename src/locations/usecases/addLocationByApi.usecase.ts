@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { Point } from 'geojson';
+import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { ArtistLocationsService } from '../domain/artistLocations.service';
 import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
-import { Point } from 'geojson';
-import { BaseUseCase } from 'src/global/domain/usecases/base.usecase';
 
 @Injectable()
 export class AddLocationByApiUseCase extends BaseUseCase {

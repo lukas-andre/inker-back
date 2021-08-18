@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { AgendaEventService } from '../domain/agendaEvent.service';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
+import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 

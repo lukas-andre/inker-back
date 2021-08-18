@@ -1,12 +1,12 @@
 import { Global, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigService, ConfigModule } from '@nestjs/config';
+import config from '../config';
+import { LoggingInterceptor } from './aspects/logging.interceptor';
+import { BaseHandler } from './infrastructure/base.handler';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { SMSClient } from './infrastructure/clients/sms.client';
-import { BaseHandler } from './infrastructure/base.handler';
-import config from '../config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { LoggingInterceptor } from './aspects/logging.interceptor';
 @Global()
 @Module({
   imports: [

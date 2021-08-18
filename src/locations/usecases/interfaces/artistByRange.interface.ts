@@ -17,24 +17,6 @@ export interface ArtistByRangeLocation {
   distance: number;
   artist: any[];
 }
-
-// export interface Artist {
-//   id: number;
-//   created_at: Date;
-//   updated_at: Date;
-//   userId: number;
-//   username: string;
-//   firstName: string;
-//   lastName: string;
-//   contactEmail: string;
-//   contactPhoneNumber: string;
-//   shortDescription: string;
-//   profileThumbnail: string;
-//   tags: string;
-//   genres: string;
-//   rating: number;
-// }
-
 export interface LocationLocation {
   type: string;
   coordinates: number[];

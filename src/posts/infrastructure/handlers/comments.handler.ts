@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserAddCommentUseCase } from '../../../posts/usescases/userAddComment.usecase';
 import { JwtPayload } from '../../../global/domain/interfaces/jwtPayload.interface';
 import { BaseHandler } from '../../../global/infrastructure/base.handler';
+import { UserAddCommentUseCase } from '../../usecases/userAddComment.usecase';
 import { CreateCommentDto } from '../dtos/createComment.dto';
 
 @Injectable()

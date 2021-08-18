@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import * as AWS from 'aws-sdk';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import { ConfigService } from '@nestjs/config';
+import * as AWS from 'aws-sdk';
 import { SNS } from 'aws-sdk';
+import { PromiseResult } from 'aws-sdk/lib/request';
 
 @Injectable()
 export class SMSClient {

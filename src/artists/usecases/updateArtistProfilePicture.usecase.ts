@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import * as stringify from 'json-stringify-safe';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { ArtistsService } from '../domain/services/artists.service';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { MultimediasService } from '../../multimedias/services/multimedias.service';
+import { ArtistsService } from '../domain/services/artists.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
-import * as stringify from 'json-stringify-safe';
 @Injectable()
 export class UpdateArtistProfilePictureUseCase extends BaseUseCase {
   constructor(

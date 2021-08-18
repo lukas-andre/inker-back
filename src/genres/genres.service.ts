@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreatePostDto } from '../posts/infrastructure/dtos/createPost.dto';
 import {
-  Repository,
-  FindManyOptions,
-  FindConditions,
-  FindOneOptions,
   DeepPartial,
   DeleteResult,
+  FindConditions,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
 } from 'typeorm';
+import { CreatePostDto } from '../posts/infrastructure/dtos/createPost.dto';
 import { Genrer } from './genre.entity';
-import { GenrerInterface } from './genre.interface';
+import { GenreInterface } from './genre.interface';
 
 @Injectable()
 export class GenresService {
@@ -56,7 +56,7 @@ export class GenresService {
 
   async handlePostGenres(
     createPostDto: CreatePostDto,
-    genresEntities: GenrerInterface[],
+    genresEntities: GenreInterface[],
   ): Promise<void> {
     for (const genrer of createPostDto.genders) {
       const existGender = await this.findOne({

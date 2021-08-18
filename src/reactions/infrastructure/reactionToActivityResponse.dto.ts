@@ -18,14 +18,14 @@ export class ReactionToActivityResponseDto {
   readonly activityId: number;
 
   @ApiProperty({
-    description: 'raection type',
+    description: 'reaction type',
     example: ReactionTypeEnum.INK,
   })
   @IsString()
   readonly activityType: string;
 
   @ApiProperty({
-    description: 'raections in DESC order',
+    description: 'reactions in DESC order',
     example: [ReactionTypeEnum.INK, ReactionTypeEnum.LOVE],
   })
   @IsString()

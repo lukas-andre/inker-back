@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { getConnection } from 'typeorm';
+import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { getConnection } from 'typeorm';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 @Injectable()
 export class UnfollowUseCase extends BaseUseCase {
   constructor(private readonly followedsService: FollowedsService) {

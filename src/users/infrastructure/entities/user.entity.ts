@@ -1,7 +1,7 @@
-import { Entity, Column, ManyToOne, Index } from 'typeorm';
-import { Role } from './role.entity';
-import { UserType } from '../../domain/enums/userType.enum';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+import { UserType } from '../../domain/enums/userType.enum';
+import { Role } from './role.entity';
 
 @Entity()
 export class User extends BaseEntity {

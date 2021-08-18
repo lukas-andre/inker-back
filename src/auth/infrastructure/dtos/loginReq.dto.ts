@@ -1,5 +1,5 @@
-import { IsString, IsIn } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsIn, IsString } from 'class-validator';
 import { LoginType } from '../../domain/enums/loginType.enum';
 
 export class LoginReqDto {

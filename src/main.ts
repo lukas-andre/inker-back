@@ -1,13 +1,12 @@
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as helmet from 'helmet';
-import * as rateLimit from 'express-rate-limit';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as rateLimit from 'express-rate-limit';
+import * as helmet from 'helmet';
 import { join } from 'path';
-import { LoggingInterceptor } from './global/aspects/logging.interceptor';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -26,7 +25,7 @@ async function bootstrap() {
     }),
   );
 
-  // TODO: Ver si usar global filters
+  // TODO: maybe use global filters
   const configService: ConfigService = app.get(ConfigService);
 
   const options = new DocumentBuilder()

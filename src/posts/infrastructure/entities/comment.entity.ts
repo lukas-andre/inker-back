@@ -1,5 +1,5 @@
+import { Column, DeleteDateColumn, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { Entity, Column, Index, DeleteDateColumn } from 'typeorm';
 
 @Entity()
 export class Comment extends BaseEntity {
@@ -28,7 +28,7 @@ export class Comment extends BaseEntity {
 
   @Index()
   @Column({ name: 'parent_id', nullable: true })
-  partenId: number;
+  parentId: number;
 
   @Column()
   username: string;

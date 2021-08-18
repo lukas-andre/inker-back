@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { FindOneOptions } from 'typeorm';
 import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { CRCustomerUseCase } from '../usecases/CRCustomer.usecase';
-import { Customer } from './entities/customer.entity';
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
-import { FindOneOptions } from 'typeorm';
+import { Customer } from './entities/customer.entity';
 
 @Injectable()
 export class CustomerHandler extends BaseHandler {

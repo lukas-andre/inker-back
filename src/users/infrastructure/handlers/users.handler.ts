@@ -7,7 +7,7 @@ import { IUser } from '../../domain/models/user.model';
 import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
 import { SendSMSVerificationCodeUseCase } from '../../usecases/user/sendSMSVerificationCode.usecase';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
-import { SendVerificationCodeQueryDto } from '../dtos/SendVerificationCodeQuery.dto';
+import { SendVerificationCodeQueryDto } from '../dtos/sendVerificationCodeQuery.dto';
 import { VerificationType } from '../entities/verificationHash.entity';
 
 @Injectable()

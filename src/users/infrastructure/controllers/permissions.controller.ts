@@ -6,11 +6,11 @@ import {
   Query,
 } from '@nestjs/common';
 import {
-  ApiParam,
+  ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
-  ApiOkResponse,
 } from '@nestjs/swagger';
 import { Permission } from '../entities/permission.entity';
 import { PermissionsHandler } from '../handlers/permissions.handler';

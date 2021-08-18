@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  Repository,
-  FindManyOptions,
-  FindConditions,
-  FindOneOptions,
   DeepPartial,
   DeleteResult,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
 } from 'typeorm';
 import { CustomerFeed } from './customerFeed.entity';
 

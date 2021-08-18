@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from '../../global/domain/services/base.service';
-import { Agenda } from '../infrastructure/entities/agenda.entity';
-import { CreateArtistDto } from '../../artists/infrastructure/dtos/createArtist.dto';
 import {
-  Repository,
-  FindManyOptions,
-  FindConditions,
-  FindOneOptions,
   DeepPartial,
   DeleteResult,
+  FindConditions,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
 } from 'typeorm';
+import { CreateArtistDto } from '../../artists/infrastructure/dtos/createArtist.dto';
+import { BaseService } from '../../global/domain/services/base.service';
+import { Agenda } from '../infrastructure/entities/agenda.entity';
 
 @Injectable()
 export class AgendaService extends BaseService {

@@ -1,4 +1,4 @@
-import { GenrerInterface } from '../../../genres/genre.interface';
+import { GenreInterface } from '../../../genres/genre.interface';
 import { TagInterface } from '../../../tags/tag.interface';
 
 export class BaseArtistResponse {
@@ -11,7 +11,7 @@ export class BaseArtistResponse {
   shortDescription?: string;
   profileThumbnail?: string;
   tags?: TagInterface[] | string[];
-  genres?: GenrerInterface[] | string[];
+  genres?: GenreInterface[] | string[];
   followers?: number;
   follows?: number;
   rating?: number;

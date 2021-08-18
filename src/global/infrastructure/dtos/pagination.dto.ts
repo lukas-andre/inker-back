@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, Max, Min } from 'class-validator';
 import { Expose, Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber, Max, Min } from 'class-validator';
 
 export class PaginationDto {
   @Expose()

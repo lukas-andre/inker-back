@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from '../../global/domain/services/base.service';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { CreateCustomerParams } from '../usecases/interfaces/createCustomer.params';
-import { FollowTopic } from './interfaces/customerFollows.interface';
-import { Customer } from '../infrastructure/entities/customer.entity';
 import {
-  Repository,
+  DeepPartial,
+  DeleteResult,
   FindManyOptions,
   FindOneOptions,
-  DeleteResult,
-  DeepPartial,
+  Repository,
 } from 'typeorm';
+import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { BaseService } from '../../global/domain/services/base.service';
+import { Customer } from '../infrastructure/entities/customer.entity';
+import { CreateCustomerParams } from '../usecases/interfaces/createCustomer.params';
+import { FollowTopic } from './interfaces/customerFollows.interface';
 
 @Injectable()
 export class CustomersService extends BaseService {
@@ -22,27 +22,25 @@ export class CustomersService extends BaseService {
     super(CustomersService.name);
   }
 
-  async create(
-    pararms: CreateCustomerParams,
-  ): Promise<Customer | ServiceError> {
+  async create(params: CreateCustomerParams): Promise<Customer | ServiceError> {
     const exists = await this.customersRepository.findOne({
-      userId: pararms.userId,
+      userId: params.userId,
     });
 
     if (exists) {
       return this.serviceError(
         this.create,
-        `Customer with user id: ${pararms.userId} already exist`,
+        `Customer with user id: ${params.userId} already exist`,
       );
     }
 
     try {
       return this.customersRepository.save({
-        userId: pararms.userId,
-        firstName: pararms.firstName,
-        lastName: pararms.lastName,
-        contactPhoneNumber: pararms.phoneNumber,
-        contactEmail: pararms.contactEmail,
+        userId: params.userId,
+        firstName: params.firstName,
+        lastName: params.lastName,
+        contactPhoneNumber: params.phoneNumber,
+        contactEmail: params.contactEmail,
       });
     } catch (error) {
       return this.serviceError(

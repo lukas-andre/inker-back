@@ -1,6 +1,6 @@
-import { UserType } from '../../../users/domain/enums/userType.enum';
-import { Entity, Column, Index } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
 @Entity()
 export class Followed extends BaseEntity {

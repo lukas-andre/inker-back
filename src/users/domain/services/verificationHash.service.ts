@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Repository,
-  FindManyOptions,
-  DeepPartial,
-  FindOneOptions,
-  DeleteResult,
-} from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { hash, compare } from 'bcryptjs';
+import { InjectRepository } from '@nestjs/typeorm';
+import { hash } from 'bcryptjs';
+import {
+  DeepPartial,
+  DeleteResult,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
+} from 'typeorm';
+import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { BaseService } from '../../../global/domain/services/base.service';
 import {
   VerificationHash,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
-import { BaseService } from '../../../global/domain/services/base.service';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 
 @Injectable()
 export class VerificationHashService extends BaseService {

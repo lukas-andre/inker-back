@@ -1,5 +1,5 @@
-import { GenrerInterface } from '../../../../genres/genre.interface';
-import { MultimediasMetadaInterface } from '../../../../multimedias/interfaces/multimediasMetadata.interface';
+import { GenreInterface } from '../../../../genres/genre.interface';
+import { MultimediasMetadataInterface } from '../../../../multimedias/interfaces/multimediasMetadata.interface';
 import { TagInterface } from '../../../../tags/tag.interface';
 
 export class PostInterface {
@@ -11,9 +11,9 @@ export class PostInterface {
   userType: string;
   username: string;
   profileThumbnail: string;
-  multimedia: MultimediasMetadaInterface;
+  multimedia: MultimediasMetadataInterface;
   tags: TagInterface[];
-  genres: GenrerInterface[];
+  genres: GenreInterface[];
   created_at: Date;
   updated_at: Date;
 }

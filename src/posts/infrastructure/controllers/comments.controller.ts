@@ -1,13 +1,13 @@
 import {
+  Body,
   Controller,
+  HostParam,
+  Ip,
+  Logger,
   Post,
   Request,
-  Body,
-  Ip,
-  HostParam,
-  Logger,
 } from '@nestjs/common';
-import { ApiOperation, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateCommentDto } from '../dtos/createComment.dto';
 import { CommentsHandler } from '../handlers/comments.handler';
 

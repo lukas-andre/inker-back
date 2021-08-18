@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { ParentCommentEnum } from '../enum/parentComment.enum';
 
 export class CreateCommentDto {
@@ -26,7 +26,7 @@ export class CreateCommentDto {
   readonly parentType: ParentCommentEnum;
 
   @ApiProperty({
-    description: 'Post user profile thumnail',
+    description: 'Post user profile thumbnail',
     type: Number,
   })
   @IsNumber()

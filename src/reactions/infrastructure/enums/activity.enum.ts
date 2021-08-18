@@ -1,5 +1,5 @@
 export enum ActivityTypeEnum {
   COMMENT = 'COMMENT',
   POST = 'POST',
-  TATTO = 'TATTO',
+  TATTOO = 'TATTOO',
 }
