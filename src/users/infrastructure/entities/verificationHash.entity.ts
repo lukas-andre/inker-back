@@ -10,5 +10,6 @@ export enum VerificationType {
 export class VerificationHash extends BaseEntity {
   @Column() userId: number;
   @Column() hash: string;
+  @Column({ nullable: false }) tries: number;
   @Column({ enum: VerificationType }) verificationType: VerificationType;
 }

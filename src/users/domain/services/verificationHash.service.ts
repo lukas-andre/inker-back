@@ -30,22 +30,16 @@ export class VerificationHashService extends BaseService {
     userId: number,
     verificationCode: string,
     verificationType: VerificationType,
-  ): Promise<VerificationHash | number | ServiceError> {
+    tries: number,
+  ): Promise<VerificationHash | ServiceError> {
     const verificationHash = await this.hashVerificationCode(verificationCode);
-
-    const exists: number = await this.verificationHashRepository.count({
-      where: { hash: verificationHash },
-    });
-
-    if (exists) {
-      return exists;
-    }
 
     try {
       return this.verificationHashRepository.save({
         userId,
         verificationType,
         hash: verificationHash,
+        tries,
       });
     } catch (error) {
       return this.serviceError(
@@ -89,7 +83,7 @@ export class VerificationHashService extends BaseService {
     );
   }
 
-  private async hashVerificationCode(code: string): Promise<string> {
+  async hashVerificationCode(code: string): Promise<string> {
     return hash(code, this.configService.get('verificationHash.saltLength'));
   }
 }

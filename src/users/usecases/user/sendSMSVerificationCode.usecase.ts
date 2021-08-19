@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DomainBadRule } from '../../../global/domain/exceptions/domainBadRule.exception';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
 import { UsersService } from '../../domain/services/users.service';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
-import { VerificationType } from '../../infrastructure/entities/verificationHash.entity';
+import {
+  VerificationHash,
+  VerificationType,
+} from '../../infrastructure/entities/verificationHash.entity';
 
 @Injectable()
 export class SendSMSVerificationCodeUseCase extends BaseUseCase {
@@ -30,24 +34,47 @@ export class SendSMSVerificationCodeUseCase extends BaseUseCase {
 
     const verificationCode = this.generateVerificationCode();
 
-    let verificationHash = await this.verificationHashService.create(
-      userId,
-      verificationCode,
-      VerificationType.SMS,
-    );
+    const isSmsAlreadySent = await this.verificationHashService.findOne({
+      where: {
+        userId: userId,
+        verificationType: VerificationType.SMS,
+      },
+    });
 
-    if (typeof verificationHash === 'number') {
-      await this.verificationHashService.delete(verificationHash);
+    console.log({ isSmsAlreadySent });
+
+    let verificationHash: VerificationHash | ServiceError;
+    if (isSmsAlreadySent) {
+      console.log('entre 1');
+
+      if (isSmsAlreadySent.tries >= 2) {
+        console.log('entre 2');
+
+        // ! IN PROD THROW ERROR IF SMS TRIES IS MORE TAN 'x' NUMBER !
+        return new DomainBadRule('Max sms tries reached');
+      }
 
       const verificationCode = this.generateVerificationCode();
 
-      const newVerificationHash = await this.verificationHashService.create(
+      verificationHash = await this.verificationHashService.edit(
+        isSmsAlreadySent.id,
+        {
+          ...isSmsAlreadySent,
+          tries: ++isSmsAlreadySent.tries,
+          hash: await this.verificationHashService.hashVerificationCode(
+            verificationCode,
+          ),
+        },
+      );
+    } else {
+      console.log('entre 3 else');
+
+      verificationHash = await this.verificationHashService.create(
         userId,
         verificationCode,
         VerificationType.SMS,
+        1,
       );
-
-      verificationHash = newVerificationHash;
     }
 
     if (verificationHash instanceof ServiceError) {
@@ -58,8 +85,8 @@ export class SendSMSVerificationCodeUseCase extends BaseUseCase {
 
     const smsMessage = `Ingrese ${verificationCode} para activar su cuenta en Inker`;
 
-    const snsResult = await this.smsClient.sendSMS(phoneNumber, smsMessage);
-    this.logger.log({ snsResult });
+    // const snsResult = await this.smsClient.sendSMS(phoneNumber, smsMessage);
+    this.logger.log({ smsMessage });
   }
 
   private generateVerificationCode(): string {
