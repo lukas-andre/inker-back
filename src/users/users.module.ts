@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgendaModule } from '../agenda/agenda.module';
 import { ArtistsModule } from '../artists/artists.module';
@@ -36,7 +36,7 @@ import { SendSMSVerificationCodeUseCase } from './usecases/user/sendSMSVerificat
       'user-db',
     ),
     CustomersModule,
-    ArtistsModule,
+    forwardRef(() => ArtistsModule),
     AgendaModule,
     LocationsModule,
   ],

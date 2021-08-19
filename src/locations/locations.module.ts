@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ArtistsModule } from '../artists/artists.module';
 import { ArtistLocationsService } from './domain/artistLocations.service';
@@ -13,7 +13,7 @@ import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
 @Module({
   imports: [
     TypeOrmModule.forFeature([ArtistLocation, EventLocation], 'location-db'),
-    ArtistsModule,
+    forwardRef(() => ArtistsModule),
   ],
   controllers: [LocationsController],
   providers: [

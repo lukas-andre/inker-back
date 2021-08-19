@@ -5,6 +5,7 @@ import { DomainException } from '../../global/domain/exceptions/domain.exception
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { ArtistLocationsService } from '../domain/artistLocations.service';
 import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
+import { ArtistLocation } from '../infrastructure/entities/artistLocation.entity';
 
 @Injectable()
 export class AddLocationByApiUseCase extends BaseUseCase {
@@ -14,7 +15,7 @@ export class AddLocationByApiUseCase extends BaseUseCase {
 
   async execute(
     addLocationDto: AddLocationDto,
-  ): Promise<any | DomainException> {
+  ): Promise<ArtistLocation | DomainException> {
     try {
       return this.artistsLocationService.save({
         address1: addLocationDto.address1,
