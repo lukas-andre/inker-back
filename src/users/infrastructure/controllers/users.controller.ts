@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  HttpCode,
   Logger,
   Param,
   ParseIntPipe,
@@ -12,6 +13,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -65,12 +67,13 @@ export class UsersController {
     example: VerificationType.SMS,
     required: true,
   })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: 'SMS has been sended',
     type: Boolean,
   })
   @ApiNotFoundResponse({ description: 'User does not exists' })
   @ApiConflictResponse({ description: 'SMS already sended' })
+  @HttpCode(200)
   @Post(':userId/send-verification-code')
   async sendValidationCode(
     @Param('userId', ParseIntPipe) userId: number,

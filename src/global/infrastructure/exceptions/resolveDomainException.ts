@@ -1,9 +1,11 @@
 import {
+  BadRequestException,
   ConflictException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { DomainException } from '../../domain/exceptions/domain.exception';
+import { DomainBadRule } from '../../domain/exceptions/domainBadRule.exception';
 import { DomainConflictException } from '../../domain/exceptions/domainConflict.exception';
 import { DomainInternalServerErrorException } from '../../domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../domain/exceptions/domainNotFound.exception';
@@ -15,4 +17,6 @@ export const resolveDomainException = (domainException: DomainException) => {
     return new NotFoundException(domainException.response);
   if (domainException instanceof DomainInternalServerErrorException)
     return new InternalServerErrorException(domainException.response);
+  if (domainException instanceof DomainBadRule)
+    return new BadRequestException(domainException.response);
 };
