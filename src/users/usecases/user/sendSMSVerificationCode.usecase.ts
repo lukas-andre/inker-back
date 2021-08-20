@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DomainBadRule } from '../../../global/domain/exceptions/domainBadRule.exception';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
@@ -13,7 +13,12 @@ import {
 } from '../../infrastructure/entities/verificationHash.entity';
 
 @Injectable()
-export class SendSMSVerificationCodeUseCase extends BaseUseCase {
+export class SendSMSVerificationCodeUseCase
+  extends BaseUseCase
+  implements OnModuleInit
+{
+  private maxSmsTries: number;
+
   constructor(
     private readonly usersService: UsersService,
     private readonly verificationHashService: VerificationHashService,
@@ -21,6 +26,10 @@ export class SendSMSVerificationCodeUseCase extends BaseUseCase {
     private readonly configService: ConfigService,
   ) {
     super(SendSMSVerificationCodeUseCase.name);
+  }
+
+  onModuleInit() {
+    this.maxSmsTries = this.configService.get('verificationHash.maxSmsTries');
   }
 
   public async execute(userId: number, phoneNumber: string) {
@@ -45,12 +54,7 @@ export class SendSMSVerificationCodeUseCase extends BaseUseCase {
 
     let verificationHash: VerificationHash | ServiceError;
     if (isSmsAlreadySent) {
-      console.log('entre 1');
-
-      if (isSmsAlreadySent.tries >= 2) {
-        console.log('entre 2');
-
-        // ! IN PROD THROW ERROR IF SMS TRIES IS MORE TAN 'x' NUMBER !
+      if (isSmsAlreadySent.tries >= this.maxSmsTries) {
         return new DomainBadRule('Max sms tries reached');
       }
 
@@ -67,8 +71,6 @@ export class SendSMSVerificationCodeUseCase extends BaseUseCase {
         },
       );
     } else {
-      console.log('entre 3 else');
-
       verificationHash = await this.verificationHashService.create(
         userId,
         verificationCode,
@@ -89,6 +91,7 @@ export class SendSMSVerificationCodeUseCase extends BaseUseCase {
     this.logger.log({ smsMessage });
   }
 
+  // * This function return a random number between 1000 and 9999
   private generateVerificationCode(): string {
     return String(Math.floor(1000 + Math.random() * 9000));
   }

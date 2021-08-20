@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
@@ -17,13 +17,22 @@ import {
 } from '../../infrastructure/entities/verificationHash.entity';
 
 @Injectable()
-export class VerificationHashService extends BaseService {
+export class VerificationHashService
+  extends BaseService
+  implements OnModuleInit
+{
+  private saltLength: number;
+
   constructor(
     @InjectRepository(VerificationHash, 'user-db')
     private readonly verificationHashRepository: Repository<VerificationHash>,
     private readonly configService: ConfigService,
   ) {
     super(VerificationHashService.name);
+  }
+
+  onModuleInit() {
+    this.saltLength = this.configService.get('verificationHash.saltLength');
   }
 
   async create(
@@ -84,6 +93,6 @@ export class VerificationHashService extends BaseService {
   }
 
   async hashVerificationCode(code: string): Promise<string> {
-    return hash(code, this.configService.get('verificationHash.saltLength'));
+    return hash(code, this.saltLength);
   }
 }
