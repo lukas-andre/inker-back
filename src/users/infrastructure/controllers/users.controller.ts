@@ -4,27 +4,22 @@ import {
   HttpCode,
   Logger,
   Param,
-  ParseIntPipe,
   Post,
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiConflictResponse,
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { LoggingInterceptor } from '../../../global/aspects/logging.interceptor';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
-import { CreateUserResDto } from '../dtos/createUserRes.dto';
 import { SendVerificationCodeQueryDto } from '../dtos/sendVerificationCodeQuery.dto';
-import { VerificationType } from '../entities/verificationHash.entity';
+import { ValidateVerificationCodeQueryDto } from '../dtos/ValidateVerificationCodeQuery.dto';
 import { UsersHandler } from '../handlers/users.handler';
+import { UserIdPipe } from '../pipes/userId.pipe';
+import {
+  CreateUserDoc,
+  SendVerificationCodeDoc,
+  ValidateVerificationCodeDoc,
+} from './docs/users.doc';
 
 @ApiTags('users')
 @Controller('users')
@@ -34,49 +29,17 @@ export class UsersController {
 
   constructor(private readonly usersHandler: UsersHandler) {}
 
-  @ApiOperation({ summary: 'Create User' })
-  @ApiCreatedResponse({
-    description: 'Users has been created',
-    type: CreateUserResDto,
-  })
-  @ApiNotFoundResponse({ description: 'Rol does not exists' })
-  @ApiConflictResponse({ description: 'Users already exists' })
+  @CreateUserDoc()
   @Post()
   async create(@Body() createUserDto: CreateUserReqDto) {
     return this.usersHandler.handleCreate(createUserDto);
   }
 
-  @ApiOperation({ summary: 'Send SMS Validation Code' })
-  @ApiParam({
-    name: 'userId',
-    description: 'User id',
-    required: true,
-    example: 1,
-    type: Number,
-  })
-  @ApiQuery({
-    name: 'phoneNumber',
-    description: 'Phone number intl',
-    example: '+56964484712',
-    required: true,
-  })
-  @ApiQuery({
-    name: 'type',
-    description: 'Sending type event',
-    enum: VerificationType,
-    example: VerificationType.SMS,
-    required: true,
-  })
-  @ApiOkResponse({
-    description: 'SMS has been sended',
-    type: Boolean,
-  })
-  @ApiNotFoundResponse({ description: 'User does not exists' })
-  @ApiConflictResponse({ description: 'SMS already sended' })
+  @SendVerificationCodeDoc()
   @HttpCode(200)
   @Post(':userId/send-verification-code')
   async sendValidationCode(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: number,
     @Query() sendVerificationCodeQueryDto: SendVerificationCodeQueryDto,
   ) {
     this.logger.log({ sendVerificationCodeQueryDto });
@@ -84,5 +47,16 @@ export class UsersController {
       userId,
       sendVerificationCodeQueryDto,
     );
+  }
+
+  @ValidateVerificationCodeDoc()
+  @HttpCode(200)
+  @Post(':userId/validate-verification-code/:code')
+  async validateVerificationCode(
+    @Param('userId', UserIdPipe) userId: number,
+    @Param('code') code: string,
+    @Query() { type }: ValidateVerificationCodeQueryDto,
+  ) {
+    return this.usersHandler.handleValidateVerificationCode(userId, code, type);
   }
 }

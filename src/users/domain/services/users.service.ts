@@ -11,18 +11,21 @@ import {
 } from 'typeorm';
 import { LoginType } from '../../../auth/domain/enums/loginType.enum';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { BaseService } from '../../../global/domain/services/base.service';
 import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
 import { Role } from '../../infrastructure/entities/role.entity';
 import { User } from '../../infrastructure/entities/user.entity';
 import { UserType } from '../enums/userType.enum';
 import { IUser } from '../models/user.model';
 @Injectable()
-export class UsersService {
+export class UsersService extends BaseService {
   constructor(
     @InjectRepository(User, 'user-db')
     private readonly usersRepository: Repository<User>,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    super(UsersService.name);
+  }
 
   async create(
     createUserParams: CreateUserByTypeParams,
@@ -76,6 +79,21 @@ export class UsersService {
       [userId, UserType.ARTIST],
     );
     return result.pop().exists;
+  }
+
+  async activate(userId: number) {
+    try {
+      return this.usersRepository
+        .createQueryBuilder()
+        .update(User)
+        .set({
+          active: true,
+        })
+        .where('id = :userId', { userId })
+        .execute();
+    } catch (error) {
+      return this.serviceError(this.activate, 'Error activating user', error);
+    }
   }
 
   async find(options: FindManyOptions<User>) {

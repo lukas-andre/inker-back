@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { hash } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 import {
   DeepPartial,
   DeleteResult,
@@ -94,5 +94,9 @@ export class VerificationHashService
 
   async hashVerificationCode(code: string): Promise<string> {
     return hash(code, this.saltLength);
+  }
+
+  async validateVerificationCode(code: string, hash: string): Promise<boolean> {
+    return compare(code, hash);
   }
 }
