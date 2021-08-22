@@ -28,6 +28,7 @@ import { FindOneRoleUseCase } from './usecases/role/findOneRole.usecase';
 import { InitRolesUseCase } from './usecases/role/initRoles.usecase';
 import { CreateUserByTypeUseCase } from './usecases/user/createUserByType.usecase';
 import { SendSMSVerificationCodeUseCase } from './usecases/user/sendSMSVerificationCode.usecase';
+import { ValidateSMSVerificationCodeUseCase } from './usecases/user/validateSMSVerificationCode.usecase';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { SendSMSVerificationCodeUseCase } from './usecases/user/sendSMSVerificat
     FindAllPermissionsUseCase,
     FindAllRoutesUseCase,
     SendSMSVerificationCodeUseCase,
+    ValidateSMSVerificationCodeUseCase,
   ],
   controllers: [UsersController, PermissionsController, RolesController],
   exports: [UsersService, RolesService],

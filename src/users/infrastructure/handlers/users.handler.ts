@@ -6,6 +6,7 @@ import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/
 import { IUser } from '../../domain/models/user.model';
 import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
 import { SendSMSVerificationCodeUseCase } from '../../usecases/user/sendSMSVerificationCode.usecase';
+import { ValidateSMSVerificationCodeUseCase } from '../../usecases/user/validateSMSVerificationCode.usecase';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
 import { SendVerificationCodeQueryDto } from '../dtos/sendVerificationCodeQuery.dto';
 import { VerificationType } from '../entities/verificationHash.entity';
@@ -15,6 +16,7 @@ export class UsersHandler extends BaseHandler {
   constructor(
     private readonly createUserByTypeUseCase: CreateUserByTypeUseCase,
     private readonly sendSMSVerificationCodeUseCase: SendSMSVerificationCodeUseCase,
+    private readonly validateSMSVerificationCodeUseCase: ValidateSMSVerificationCodeUseCase,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {
@@ -45,6 +47,22 @@ export class UsersHandler extends BaseHandler {
       case VerificationType.EMAIL:
         // TODO: IMPLEMENT EMAIL VERIFICATION TOKEN USE CASE
         break;
+    }
+  }
+
+  public async handleValidateVerificationCode(
+    userId: number,
+    code: string,
+    type: VerificationType,
+  ) {
+    switch (type) {
+      case VerificationType.EMAIL:
+        throw new Error('Function not implemented.');
+
+      case VerificationType.SMS:
+        return this.resolve(
+          await this.validateSMSVerificationCodeUseCase.execute(userId, code),
+        );
     }
   }
 }
