@@ -30,7 +30,6 @@ export class SMSClient {
     return this.client;
   }
 
-  // TODO: create a controller for this, receive params from url params
   async sendSMS(
     PhoneNumber: string /* E.164_PHONE_NUMBER */,
     Message: string /* required */,

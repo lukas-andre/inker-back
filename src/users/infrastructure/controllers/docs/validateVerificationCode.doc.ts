@@ -1,10 +1,13 @@
 import { applyDecorators } from '@nestjs/common';
 import {
+  ApiConflictResponse,
   ApiNotAcceptableResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defaultResponse.dto';
 import { VerificationType } from '../../entities/verificationHash.entity';
@@ -30,6 +33,9 @@ export function ValidateVerificationCodeDoc() {
       description: 'Validated',
       type: DefaultResponseDto,
     }),
+    ApiNotFoundResponse({ description: 'Hash for user not found' }),
     ApiNotAcceptableResponse({ description: 'User does not exists' }),
+    ApiUnprocessableEntityResponse({ description: 'Could not activate user' }),
+    ApiConflictResponse({ description: 'Invalid code' }),
   );
 }
