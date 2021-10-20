@@ -79,8 +79,9 @@ export class SendSMSVerificationCodeUseCase
 
     const smsMessage = `Ingrese ${verificationCode} para activar su cuenta en Inker`;
 
-    // const snsResult = await this.smsClient.sendSMS(phoneNumber, smsMessage);
+    const snsResult = await this.smsClient.sendSMS(phoneNumber, smsMessage);
     this.logger.log({ smsMessage });
+    this.logger.log({ snsResult });
 
     return { status: DefaultResponseStatus.OK };
   }

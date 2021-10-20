@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../../global/domain/exceptions/domainNotFound.exception';
+import { UnprocessableDomainException } from '../../../global/domain/exceptions/unprocessableDomain.exception';
 import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import {
@@ -54,7 +55,7 @@ export class ValidateSMSVerificationCodeUseCase extends BaseUseCase {
     this.logger.log({ activateUserResult });
 
     if (isServiceError(activateUserResult)) {
-      return new DomainConflictException(
+      return new UnprocessableDomainException(
         this.handleServiceError(activateUserResult),
       );
     }
