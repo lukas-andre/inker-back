@@ -5,9 +5,9 @@ import { BaseService } from 'src/global/domain/services/base.service';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { Reaction } from '../../../reactions/infrastructure/entities/reaction.entity';
@@ -22,8 +22,8 @@ export class ReactionsService extends BaseService {
     super(ReactionsService.name);
   }
 
-  async findById(id: string) {
-    return this.reactionsRepository.findOne(id);
+  async findById(id: number) {
+    return this.reactionsRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<Reaction>) {
@@ -31,7 +31,7 @@ export class ReactionsService extends BaseService {
   }
 
   async findByKey(
-    findConditions: FindConditions<Reaction>,
+    findConditions: FindOptionsWhere<Reaction>,
     // TODO: LOOK THIS SELECT :O
     select: (keyof Reaction)[],
   ) {
@@ -66,7 +66,7 @@ export class ReactionsService extends BaseService {
     activity: string,
   ): Promise<GroupedReactionsInterface[] | ServiceError> {
     try {
-      return this.reactionsRepository
+      return await this.reactionsRepository
         .createQueryBuilder('reactions')
         .select(
           `json_agg(json_build_object('reaction_type', reactions.reaction_type, 'user_id', reactions.user_id, 'user_type_id', reactions.user_type_id, 'user_type', reactions.user_type, 'profile_thumbnail', reactions.profile_thumbnail, 'username', reactions.username)) AS reactions`,

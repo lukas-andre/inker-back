@@ -68,7 +68,7 @@ export class ArtistPostResponseDto {
     isArray: true,
   })
   @Type(() => MetaTagDto)
-  @Transform((value) => (value ? value : { name: '' }))
+  @Transform(value => (value ? value : { name: '' }))
   readonly tags: MetaTagDto[];
 
   @ApiProperty({
@@ -77,6 +77,6 @@ export class ArtistPostResponseDto {
     isArray: true,
   })
   @Type(() => MetaTagDto)
-  @Transform((value) => (value ? value : { name: '' }))
+  @Transform(value => (value ? value : { name: '' }))
   readonly genres: MetaTagDto[];
 }

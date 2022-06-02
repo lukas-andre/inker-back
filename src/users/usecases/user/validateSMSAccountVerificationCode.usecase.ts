@@ -4,22 +4,31 @@ import { DomainConflictException } from '../../../global/domain/exceptions/domai
 import { DomainNotFoundException } from '../../../global/domain/exceptions/domainNotFound.exception';
 import { UnprocessableDomainException } from '../../../global/domain/exceptions/unprocessableDomain.exception';
 import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import {
-  DefaultResponseDto,
-  DefaultResponseStatus,
-} from '../../../global/infrastructure/dtos/defaultResponse.dto';
+  BaseUseCase,
+  UseCase,
+} from '../../../global/domain/usecases/base.usecase';
+import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import { UsersService } from '../../domain/services/users.service';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
-import { VerificationType } from '../../infrastructure/entities/verificationHash.entity';
+import {
+  NotificationType,
+  VerificationType,
+} from '../../infrastructure/entities/verificationHash.entity';
 
 @Injectable()
-export class ValidateSMSVerificationCodeUseCase extends BaseUseCase {
+export class ValidateSMSAccountVerificationCodeUseCase
+  extends BaseUseCase
+  implements UseCase
+{
+  private verificationType = VerificationType.ACTIVATE_ACCOUNT;
+
   constructor(
     private readonly verificationHashService: VerificationHashService,
     private readonly usersService: UsersService,
   ) {
-    super(ValidateSMSVerificationCodeUseCase.name);
+    super(ValidateSMSAccountVerificationCodeUseCase.name);
   }
 
   public async execute(
@@ -31,7 +40,8 @@ export class ValidateSMSVerificationCodeUseCase extends BaseUseCase {
     const userHash = await this.verificationHashService.findOne({
       where: {
         userId: userId,
-        verificationType: VerificationType.SMS,
+        notificationType: NotificationType.SMS,
+        verificationType: this.verificationType,
       },
     });
     this.logger.log({ userHash });
@@ -64,8 +74,6 @@ export class ValidateSMSVerificationCodeUseCase extends BaseUseCase {
       await this.verificationHashService.delete(userHash.id);
     }
 
-    return {
-      status: DefaultResponseStatus.OK,
-    };
+    return DefaultResponseHelper.ok;
   }
 }

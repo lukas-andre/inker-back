@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
@@ -9,7 +12,7 @@ import { PostsService } from '../domain/services/posts.service';
 import { Post } from '../infrastructure/entities/post.entity';
 
 @Injectable()
-export class GetAllArtistPostsUseCase extends BaseUseCase {
+export class GetAllArtistPostsUseCase extends BaseUseCase implements UseCase {
   constructor(private readonly postService: PostsService) {
     super(GetAllArtistPostsUseCase.name);
   }

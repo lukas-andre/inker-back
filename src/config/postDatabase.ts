@@ -9,7 +9,7 @@ export default registerAs('postDb', () => ({
   database: 'inker-post',
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../posts/**/*.entity{.ts,.js}'],
-  synchronize: process.env.TYPEORM_SYNC,
+  synchronize: Boolean(process.env.TYPEORM_SYNC),
   logging: false,
   cache: true,
 }));

@@ -55,7 +55,7 @@ export class UsersService extends BaseService {
   }
 
   async findById(id: number) {
-    return this.usersRepository.findOne(id);
+    return this.usersRepository.findOne({ where: { id } });
   }
 
   async findByType(type: string, identifier: string) {
@@ -83,7 +83,7 @@ export class UsersService extends BaseService {
 
   async activate(userId: number) {
     try {
-      return this.usersRepository
+      return await this.usersRepository
         .createQueryBuilder()
         .update(User)
         .set({
@@ -118,6 +118,10 @@ export class UsersService extends BaseService {
     return this.usersRepository.save(
       Object.assign(await this.findById(id), update),
     );
+  }
+
+  async save(user: User): Promise<User> {
+    return this.usersRepository.save(user);
   }
 
   async hashPassword(password: string): Promise<string> {

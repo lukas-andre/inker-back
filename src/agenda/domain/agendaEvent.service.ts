@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
@@ -23,14 +23,14 @@ export class AgendaEventService extends BaseService {
   }
 
   async findById(id: number) {
-    return this.agendaEventRepository.findOne(id);
+    return this.agendaEventRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<AgendaEvent>) {
     return this.agendaEventRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<AgendaEvent>) {
+  async findByKey(findConditions: FindOptionsWhere<AgendaEvent>) {
     return this.agendaEventRepository.find({
       select: ['id', 'createdAt', 'updatedAt'],
       where: {
@@ -114,7 +114,7 @@ export class AgendaEventService extends BaseService {
       .andWhere('agenda_event.agenda_id = :agendaId', { agendaId });
 
     try {
-      return qb.getMany();
+      return await qb.getMany();
     } catch (error) {
       return {
         service: this.serviceName,
@@ -130,7 +130,7 @@ export class AgendaEventService extends BaseService {
     agenda: Agenda,
   ): Promise<AgendaEvent | ServiceError> {
     try {
-      return this.save({
+      return await this.save({
         agenda,
         title: dto.title,
         info: dto.info,

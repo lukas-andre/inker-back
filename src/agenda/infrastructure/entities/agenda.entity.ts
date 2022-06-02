@@ -8,7 +8,11 @@ export class Agenda extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: number;
 
-  @Column({ type: 'jsonb', default: ['1', '2', '3', '4', '5'] })
+  @Column({
+    name: 'working_days',
+    type: 'jsonb',
+    default: ['1', '2', '3', '4', '5'],
+  })
   workingDays: string[];
 
   @Column({ default: false })
@@ -17,9 +21,9 @@ export class Agenda extends BaseEntity {
   @Column({ default: true })
   open: boolean;
 
-  @OneToMany(() => AgendaEvent, (agendaEvent) => agendaEvent.agenda)
+  @OneToMany(() => AgendaEvent, agendaEvent => agendaEvent.agenda)
   agendaEvent: AgendaEvent;
 
-  @DeleteDateColumn()
-  delete_at: Date;
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date;
 }

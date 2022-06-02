@@ -27,8 +27,12 @@ import { FindAllRolesUseCase } from './usecases/role/findAllRoles.usecase';
 import { FindOneRoleUseCase } from './usecases/role/findOneRole.usecase';
 import { InitRolesUseCase } from './usecases/role/initRoles.usecase';
 import { CreateUserByTypeUseCase } from './usecases/user/createUserByType.usecase';
-import { SendSMSVerificationCodeUseCase } from './usecases/user/sendSMSVerificationCode.usecase';
-import { ValidateSMSVerificationCodeUseCase } from './usecases/user/validateSMSVerificationCode.usecase';
+import { SendSMSAccountVerificationCodeUseCase } from './usecases/user/sendSMSAccountVerificationCode.usecase';
+import { SendSMSForgotPasswordCodeUseCase } from './usecases/user/sendSMSForgotPasswordCode.usecas';
+import { UpdateUserEmailUseCase } from './usecases/user/updateUserEmail.usecase';
+import { UpdateUserPasswordUseCase } from './usecases/user/updateUserPassword.usecase';
+import { UpdateUserUsernameUseCase } from './usecases/user/updateUserUsername.usecase';
+import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/validateSMSAccountVerificationCode.usecase';
 
 @Module({
   imports: [
@@ -58,8 +62,12 @@ import { ValidateSMSVerificationCodeUseCase } from './usecases/user/validateSMSV
     FindOnePermissionUseCase,
     FindAllPermissionsUseCase,
     FindAllRoutesUseCase,
-    SendSMSVerificationCodeUseCase,
-    ValidateSMSVerificationCodeUseCase,
+    SendSMSAccountVerificationCodeUseCase,
+    SendSMSForgotPasswordCodeUseCase,
+    UpdateUserEmailUseCase,
+    UpdateUserPasswordUseCase,
+    UpdateUserUsernameUseCase,
+    ValidateSMSAccountVerificationCodeUseCase,
   ],
   controllers: [UsersController, PermissionsController, RolesController],
   exports: [UsersService, RolesService],

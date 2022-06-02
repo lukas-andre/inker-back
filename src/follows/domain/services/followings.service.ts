@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
@@ -20,15 +20,15 @@ export class FollowingsService {
     private readonly followsRepository: Repository<Following>,
   ) {}
 
-  async findById(id: string) {
-    return this.followsRepository.findOne(id);
+  async findById(id: number) {
+    return this.followsRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<Following>) {
     return this.followsRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<Following>) {
+  async findByKey(findConditions: FindOptionsWhere<Following>) {
     return this.followsRepository.find({
       select: [
         'userFollowingId',

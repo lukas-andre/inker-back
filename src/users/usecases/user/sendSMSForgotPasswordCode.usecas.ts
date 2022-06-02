@@ -4,58 +4,64 @@ import { DomainException } from '../../../global/domain/exceptions/domain.except
 import { DomainBadRule } from '../../../global/domain/exceptions/domainBadRule.exception';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
 import {
-  DefaultResponseDto,
-  DefaultResponseStatus,
-} from '../../../global/infrastructure/dtos/defaultResponse.dto';
+  BaseUseCase,
+  UseCase,
+} from '../../../global/domain/usecases/base.usecase';
+import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
+import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import {
+  NotificationType,
   VerificationHash,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
 
 @Injectable()
-export class SendSMSVerificationCodeUseCase
+export class SendSMSForgotPasswordCodeUseCase
   extends BaseUseCase
-  implements OnModuleInit
+  implements UseCase, OnModuleInit
 {
-  private maxSmsTries: number;
+  protected verificationType = VerificationType.FORGOT_PASSWORD;
+  protected maxTries: number;
 
   constructor(
     private readonly verificationHashService: VerificationHashService,
     private readonly smsClient: SMSClient,
     private readonly configService: ConfigService,
   ) {
-    super(SendSMSVerificationCodeUseCase.name);
+    super(SendSMSForgotPasswordCodeUseCase.name);
   }
 
   onModuleInit() {
-    this.maxSmsTries = this.configService.get('verificationHash.maxSMSTries');
-    this.logger.log(`maxSmsTries ${this.maxSmsTries}`);
+    this.maxTries = this.configService.get(
+      'verificationHash.forgotPasswordVerification.sms.maxTries',
+    );
+    this.logger.log(`maxTries ${this.maxTries}`);
   }
 
   public async execute(
     userId: number,
     phoneNumber: string,
   ): Promise<DefaultResponseDto | DomainException> {
-    this.logger.log(`userId ${userId}`);
+    const verificationCode =
+      this.verificationHashService.generateVerificationCode();
+
+    this.logger.log({ verificationCode });
 
     const isSmsAlreadySent = await this.verificationHashService.findOne({
       where: {
         userId: userId,
-        verificationType: VerificationType.SMS,
+        notificationType: NotificationType.SMS,
+        verificationType: this.verificationType,
       },
     });
     this.logger.log({ isSmsAlreadySent });
 
-    const verificationCode = this.generateVerificationCode();
-    this.logger.log({ verificationCode });
-
     let verificationHash: VerificationHash | ServiceError;
     if (isSmsAlreadySent) {
-      if (isSmsAlreadySent.tries >= this.maxSmsTries) {
+      if (isSmsAlreadySent.tries >= this.maxTries) {
         return new DomainBadRule('Max sms tries reached');
       }
       verificationHash = await this.generateNewValidationHash(
@@ -66,7 +72,8 @@ export class SendSMSVerificationCodeUseCase
       verificationHash = await this.verificationHashService.create(
         userId,
         verificationCode,
-        VerificationType.SMS,
+        NotificationType.SMS,
+        this.verificationType,
         1,
       );
     }
@@ -77,30 +84,25 @@ export class SendSMSVerificationCodeUseCase
       );
     }
 
-    const smsMessage = `Ingrese ${verificationCode} para activar su cuenta en Inker`;
+    const smsMessage = `Ingrese ${verificationCode} para cambiar su contraseña en Inker`;
 
     const snsResult = await this.smsClient.sendSMS(phoneNumber, smsMessage);
     this.logger.log({ smsMessage });
     this.logger.log({ snsResult });
 
-    return { status: DefaultResponseStatus.OK };
+    return DefaultResponseHelper.ok;
   }
 
   private async generateNewValidationHash(
-    oldHash: VerificationHash,
+    previousHash: VerificationHash,
     verificationCode: string,
   ): Promise<VerificationHash | ServiceError> {
-    return this.verificationHashService.edit(oldHash.id, {
-      ...oldHash,
-      tries: ++oldHash.tries,
+    return this.verificationHashService.edit(previousHash.id, {
+      ...previousHash,
+      tries: ++previousHash.tries,
       hash: await this.verificationHashService.hashVerificationCode(
         verificationCode,
       ),
     });
-  }
-
-  // * This function return a random number between 1000 and 9999
-  private generateVerificationCode(): string {
-    return String(Math.floor(1000 + Math.random() * 9000));
   }
 }

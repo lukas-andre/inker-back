@@ -3,13 +3,16 @@ import * as stringify from 'json-stringify-safe';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 
 @Injectable()
-export class CancelEventUseCase extends BaseUseCase {
+export class CancelEventUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly agendaService: AgendaService,
     private readonly agendaEventService: AgendaEventService,

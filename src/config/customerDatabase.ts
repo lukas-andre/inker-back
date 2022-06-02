@@ -9,6 +9,6 @@ export default registerAs('customerDb', () => ({
   database: 'inker-customer',
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../customers/**/*.entity{.ts,.js}'],
-  synchronize: process.env.TYPEORM_SYNC,
+  synchronize: Boolean(process.env.TYPEORM_SYNC),
   logging: ['error'],
 }));

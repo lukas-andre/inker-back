@@ -22,7 +22,7 @@ export class CreateCommentDto {
     enum: ParentCommentEnum,
   })
   @IsEnum(ParentCommentEnum)
-  @Transform((value) => ParentCommentEnum[value])
+  @Transform(value => ParentCommentEnum[value.value])
   readonly parentType: ParentCommentEnum;
 
   @ApiProperty({

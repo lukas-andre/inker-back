@@ -5,18 +5,31 @@ import { BaseHandler } from '../../../global/infrastructure/base.handler';
 import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
 import { IUser } from '../../domain/models/user.model';
 import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
-import { SendSMSVerificationCodeUseCase } from '../../usecases/user/sendSMSVerificationCode.usecase';
-import { ValidateSMSVerificationCodeUseCase } from '../../usecases/user/validateSMSVerificationCode.usecase';
+import { SendSMSAccountVerificationCodeUseCase } from '../../usecases/user/sendSMSAccountVerificationCode.usecase';
+import { SendSMSForgotPasswordCodeUseCase } from '../../usecases/user/sendSMSForgotPasswordCode.usecas';
+import { UpdateUserEmailUseCase } from '../../usecases/user/updateUserEmail.usecase';
+import { UpdateUserPasswordUseCase } from '../../usecases/user/updateUserPassword.usecase';
+import { UpdateUserUsernameUseCase } from '../../usecases/user/updateUserUsername.usecase';
+import { ValidateSMSAccountVerificationCodeUseCase } from '../../usecases/user/validateSMSAccountVerificationCode.usecase';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
-import { SendVerificationCodeQueryDto } from '../dtos/sendVerificationCodeQuery.dto';
-import { VerificationType } from '../entities/verificationHash.entity';
+import { GetForgotPasswordCodeQueryDto } from '../dtos/getForgotPasswordCodeQuery.dto';
+import { SendAccountVerificationCodeQueryDto } from '../dtos/sendAccountVerificationCodeQuery.dto';
+import { UpdateUserEmailReqDto } from '../dtos/updateUserEmailReq.dto';
+import { UpdateUserPasswordQueryDto } from '../dtos/updateUserPasswordQuery.dto';
+import { UpdateUserPasswordReqDto } from '../dtos/updateUserPasswordReq.dto';
+import { UpdateUserUsernameReqDto } from '../dtos/updateUserUsernameReq.dto';
+import { NotificationType } from '../entities/verificationHash.entity';
 
 @Injectable()
 export class UsersHandler extends BaseHandler {
   constructor(
     private readonly createUserByTypeUseCase: CreateUserByTypeUseCase,
-    private readonly sendSMSVerificationCodeUseCase: SendSMSVerificationCodeUseCase,
-    private readonly validateSMSVerificationCodeUseCase: ValidateSMSVerificationCodeUseCase,
+    private readonly sendSMSAccountVerificationCodeUseCase: SendSMSAccountVerificationCodeUseCase,
+    private readonly sendSMSForgotPasswordCodeUseCase: SendSMSForgotPasswordCodeUseCase,
+    private readonly validateSMSAccountVerificationCodeUseCase: ValidateSMSAccountVerificationCodeUseCase,
+    private readonly updateUserEmailUseCase: UpdateUserEmailUseCase,
+    private readonly updateUserUsernameUseCase: UpdateUserUsernameUseCase,
+    private readonly updateUserPasswordUseCase: UpdateUserPasswordUseCase,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {
@@ -28,40 +41,92 @@ export class UsersHandler extends BaseHandler {
       await this.createUserByTypeUseCase.execute(dto as CreateUserByTypeParams),
     );
   }
-  public async handleSendValidationCode(
-    userId: number,
-    query: SendVerificationCodeQueryDto,
-  ) {
-    console.log({ userId });
-    console.log({ query });
 
-    switch (query.type) {
-      case VerificationType.SMS:
-        console.log('entre');
+  public async handleUpdateUserEmail(
+    userId: number,
+    dto: UpdateUserEmailReqDto,
+  ) {
+    return this.resolve(
+      await this.updateUserEmailUseCase.execute(userId, dto.email),
+    );
+  }
+
+  public async handleUpdateUserUsername(
+    userId: number,
+    dto: UpdateUserUsernameReqDto,
+  ) {
+    return this.resolve(
+      await this.updateUserUsernameUseCase.execute(userId, dto.username),
+    );
+  }
+
+  public async handleUpdateUserPassword(
+    userId: number,
+    code: string,
+    query: UpdateUserPasswordQueryDto,
+    dto: UpdateUserPasswordReqDto,
+  ) {
+    return this.resolve(
+      await this.updateUserPasswordUseCase.execute(
+        userId,
+        code,
+        query.notificationType,
+        dto.password,
+        dto.repeatedPassword,
+      ),
+    );
+  }
+
+  public async handleGetForgotPasswordCode(
+    userId: number,
+    query: GetForgotPasswordCodeQueryDto,
+  ) {
+    switch (query.notificationType) {
+      case NotificationType.EMAIL:
+        throw Error('Not implemented');
+      case NotificationType.SMS:
         return this.resolve(
-          await this.sendSMSVerificationCodeUseCase.execute(
+          await this.sendSMSForgotPasswordCodeUseCase.execute(
             userId,
             query.phoneNumber,
           ),
         );
-      case VerificationType.EMAIL:
+    }
+  }
+
+  public async handleSendAccountValidationCode(
+    userId: number,
+    query: SendAccountVerificationCodeQueryDto,
+  ) {
+    switch (query.notificationType) {
+      case NotificationType.SMS:
+        return this.resolve(
+          await this.sendSMSAccountVerificationCodeUseCase.execute(
+            userId,
+            query.phoneNumber,
+          ),
+        );
+      case NotificationType.EMAIL:
         // TODO: IMPLEMENT EMAIL VERIFICATION TOKEN USE CASE
         break;
     }
   }
 
-  public async handleValidateVerificationCode(
+  public async handleValidateAccountVerificationCode(
     userId: number,
     code: string,
-    type: VerificationType,
+    type: NotificationType,
   ) {
     switch (type) {
-      case VerificationType.EMAIL:
+      case NotificationType.EMAIL:
         throw new Error('Function not implemented.');
 
-      case VerificationType.SMS:
+      case NotificationType.SMS:
         return this.resolve(
-          await this.validateSMSVerificationCodeUseCase.execute(userId, code),
+          await this.validateSMSAccountVerificationCodeUseCase.execute(
+            userId,
+            code,
+          ),
         );
     }
   }

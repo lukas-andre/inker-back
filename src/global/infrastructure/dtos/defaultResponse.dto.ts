@@ -17,12 +17,13 @@ export class DefaultResponseDto {
   status: DefaultResponseStatus;
 
   @ApiProperty({
-    description: 'response data',
+    description:
+      'any response data -> Record<string, any> | string | boolean | number',
     example: true,
-    type: String,
+    type: Object,
     required: false,
   })
   @IsString()
   @IsOptional()
-  data?: string;
+  data?: Record<string, any> | string | boolean | number;
 }

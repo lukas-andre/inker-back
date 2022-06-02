@@ -8,7 +8,10 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { MultimediasService } from '../../multimedias/services/multimedias.service';
 import { TagInterface } from '../../tags/tag.interface';
@@ -18,7 +21,7 @@ import { CreatePostDto } from '../infrastructure/dtos/createPost.dto';
 import { Post } from '../infrastructure/entities/post.entity';
 
 @Injectable()
-export class ArtistUploadPostUseCase extends BaseUseCase {
+export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly postService: PostsService,
     private readonly artistsService: ArtistsService,

@@ -3,12 +3,15 @@ import { getConnection } from 'typeorm';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
 @Injectable()
-export class UnfollowUseCase extends BaseUseCase {
+export class UnfollowUseCase extends BaseUseCase implements UseCase {
   constructor(private readonly followedsService: FollowedsService) {
     super(UnfollowUseCase.name);
   }

@@ -27,7 +27,7 @@ export class CustomerHandler extends BaseHandler {
     return this.cRCustomerUseCase.findOne(options);
   }
 
-  async handleFindById(id: string): Promise<Customer> {
+  async handleFindById(id: number): Promise<Customer> {
     return this.cRCustomerUseCase.findById(id);
   }
 }

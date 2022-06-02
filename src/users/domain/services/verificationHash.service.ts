@@ -12,6 +12,7 @@ import {
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { BaseService } from '../../../global/domain/services/base.service';
 import {
+  NotificationType,
   VerificationHash,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
@@ -35,17 +36,19 @@ export class VerificationHashService
     this.saltLength = this.configService.get('verificationHash.saltLength');
   }
 
-  async create(
+  public async create(
     userId: number,
     verificationCode: string,
+    notificationType: NotificationType,
     verificationType: VerificationType,
     tries: number,
   ): Promise<VerificationHash | ServiceError> {
     const verificationHash = await this.hashVerificationCode(verificationCode);
 
     try {
-      return this.verificationHashRepository.save({
+      return await this.verificationHashRepository.save({
         userId,
+        notificationType,
         verificationType,
         hash: verificationHash,
         tries,
@@ -59,31 +62,31 @@ export class VerificationHashService
     }
   }
 
-  async findById(id: number) {
-    return this.verificationHashRepository.findOne(id);
+  public async findById(id: number) {
+    return this.verificationHashRepository.findOne({ where: { id } });
   }
 
-  async find(options: FindManyOptions<VerificationHash>) {
+  public async find(options: FindManyOptions<VerificationHash>) {
     return this.verificationHashRepository.find(options);
   }
 
-  async findOne(
+  public async findOne(
     options?: FindOneOptions<VerificationHash>,
   ): Promise<VerificationHash | undefined> {
     return this.verificationHashRepository.findOne(options);
   }
 
-  async delete(id: number): Promise<DeleteResult> {
+  public async delete(id: number): Promise<DeleteResult> {
     return this.verificationHashRepository.delete(id);
   }
 
-  async findAndCount(
+  public async findAndCount(
     options: FindManyOptions<VerificationHash>,
   ): Promise<[VerificationHash[], number]> {
     return this.verificationHashRepository.findAndCount(options);
   }
 
-  async edit(
+  public async edit(
     id: number,
     update: DeepPartial<VerificationHash> | VerificationHash,
   ): Promise<VerificationHash> {
@@ -92,11 +95,18 @@ export class VerificationHashService
     );
   }
 
-  async hashVerificationCode(code: string): Promise<string> {
+  public async hashVerificationCode(code: string): Promise<string> {
     return hash(code, this.saltLength);
   }
 
-  async validateVerificationCode(code: string, hash: string): Promise<boolean> {
+  public async validateVerificationCode(
+    code: string,
+    hash: string,
+  ): Promise<boolean> {
     return compare(code, hash);
+  }
+
+  public generateVerificationCode(): string {
+    return String(Math.floor(1000 + Math.random() * 9000));
   }
 }
