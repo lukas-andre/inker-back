@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersService } from '../../users/domain/services/users.service';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { FollowedType } from '../domain/types/followedType';
 @Injectable()
-export class FindFollowersUseCase extends BaseUseCase {
+export class FindFollowersUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersService: UsersService,
     private readonly followedsService: FollowedsService,

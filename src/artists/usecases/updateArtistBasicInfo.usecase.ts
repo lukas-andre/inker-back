@@ -3,13 +3,19 @@ import { DomainException } from '../../global/domain/exceptions/domain.exception
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { ArtistsService } from '../domain/services/artists.service';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from '../infrastructure/dtos/updateArtist.dto';
 
 @Injectable()
-export class UpdateArtistBasicInfoUseCase extends BaseUseCase {
+export class UpdateArtistBasicInfoUseCase
+  extends BaseUseCase
+  implements UseCase
+{
   constructor(private readonly artistsService: ArtistsService) {
     super(UpdateArtistBasicInfoUseCase.name);
   }

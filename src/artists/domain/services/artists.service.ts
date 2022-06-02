@@ -4,9 +4,10 @@ import * as stringify from 'json-stringify-safe';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
+  In,
   Repository,
 } from 'typeorm';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
@@ -26,7 +27,9 @@ export class ArtistsService extends BaseService {
 
   async create(dto: CreateArtistDto): Promise<Artist | ServiceError> {
     const exists = await this.artistsRepository.findOne({
-      userId: dto.userId,
+      where: {
+        userId: dto.userId,
+      },
     });
 
     if (exists) {
@@ -45,7 +48,7 @@ export class ArtistsService extends BaseService {
     artist.username = dto.username;
 
     try {
-      return this.artistsRepository.save(artist);
+      return await this.artistsRepository.save(artist);
     } catch (error) {
       return this.serviceError(
         this.create,
@@ -73,7 +76,7 @@ export class ArtistsService extends BaseService {
     return result.pop().exists;
   }
 
-  async findByKey(options: FindConditions<Artist>) {
+  async findByKey(options: FindOptionsWhere<Artist>) {
     return this.artistsRepository.find({
       select: [
         'id',
@@ -95,7 +98,7 @@ export class ArtistsService extends BaseService {
 
   async findById(id: number): Promise<Artist | ServiceError> {
     try {
-      return this.artistsRepository.findOne(id);
+      return await this.artistsRepository.findOne({ where: { id } });
     } catch (error) {
       return this.serviceError(
         this.findById,
@@ -106,7 +109,11 @@ export class ArtistsService extends BaseService {
   }
 
   async findByIds(ids: number[]) {
-    return this.artistsRepository.findByIds(ids);
+    return this.artistsRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
   }
 
   async find(options: FindManyOptions<Artist>) {
@@ -123,7 +130,7 @@ export class ArtistsService extends BaseService {
 
   async save(artist: DeepPartial<Artist>): Promise<Artist | ServiceError> {
     try {
-      return this.artistsRepository.save(artist);
+      return await this.artistsRepository.save(artist);
     } catch (error) {
       return this.serviceError(
         this.save,

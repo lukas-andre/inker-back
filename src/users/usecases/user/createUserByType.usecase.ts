@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
 import { AgendaService } from '../../../agenda/domain/agenda.service';
 import { ArtistsService } from '../../../artists/domain/services/artists.service';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
@@ -11,16 +12,20 @@ import { CreateCustomerParams } from '../../../customers/usecases/interfaces/cre
 import { DomainException } from '../../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
 import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../../global/domain/usecases/base.usecase';
 import { ArtistLocationsService } from '../../../locations/domain/artistLocations.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
+
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()
-export class CreateUserByTypeUseCase extends BaseUseCase {
+export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersService: UsersService,
     private readonly artistsService: ArtistsService,
@@ -33,19 +38,19 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
     super(CreateUserByTypeUseCase.name);
   }
 
-  public async execute(createUserParams: CreateUserByTypeParams) {
+  public async execute(
+    createUserParams: CreateUserByTypeParams,
+  ): Promise<Customer | Artist | DomainException> {
     const role = await this.rolesService.findOne({
       where: { name: createUserParams.userType.toLocaleLowerCase() },
     });
 
-    if (!role) {
-      return new DomainConflictException('Role not exists');
-    }
+    if (!role) return new DomainConflictException('Role not exists');
 
     const created = await this.usersService.create(createUserParams, role);
-    if (typeof created == 'boolean') {
+
+    if (typeof created === 'boolean')
       return new DomainConflictException('User already exists');
-    }
 
     const response = await this.handleCreateByUserType(
       created.id,
@@ -73,15 +78,15 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
         );
       },
     };
+
     return createByType[dto.userType]();
   }
 
   private async createArtist(createArtistDto: CreateArtistDto) {
     const artist = await this.artistsService.create(createArtistDto);
 
-    if (isServiceError(artist)) {
+    if (isServiceError(artist))
       return new DomainConflictException(this.handleServiceError(artist));
-    }
 
     const agenda = await this.agendaService.createWithArtistDto(
       createArtistDto,
@@ -89,6 +94,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
 
     if (isServiceError(agenda)) {
       await this.artistsService.delete(artist.id);
+
       return new DomainConflictException(this.handleServiceError(agenda));
     }
 
@@ -98,6 +104,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
 
     if (isServiceError(artistLocation)) {
       await this.agendaService.delete(agenda.id);
+
       return new DomainConflictException(
         this.handleServiceError(artistLocation),
       );
@@ -108,9 +115,10 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
 
   private async createCustomer(createCustomerDto: CreateCustomerParams) {
     const result = await this.customerService.create(createCustomerDto);
-    if (isServiceError(result)) {
+
+    if (isServiceError(result))
       return new DomainConflictException(this.handleServiceError(result));
-    }
+
     return result;
   }
 
@@ -120,6 +128,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
 
   private async handleCreateError(userId: number, error: DomainException) {
     await this.rollbackCreate(userId);
+
     return error;
   }
 
@@ -154,7 +163,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
     dto: CreateUserByTypeParams,
   ): CreateArtistParams {
     return {
-      userId: userId,
+      userId,
       username: dto.username,
       phoneNumber: dto.phoneNumber,
       contactEmail: dto.email,
@@ -172,7 +181,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase {
     dto: CreateUserByTypeParams,
   ): CreateCustomerParams {
     return {
-      userId: userId,
+      userId,
       firstName: dto.firstName,
       lastName: dto.lastName,
       contactEmail: dto.email,

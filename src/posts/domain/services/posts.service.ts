@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
@@ -23,14 +23,14 @@ export class PostsService extends BaseService {
   }
 
   async findById(id: number) {
-    return this.postsRepository.findOne(id);
+    return this.postsRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<Post>) {
     return this.postsRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<Post>) {
+  async findByKey(findConditions: FindOptionsWhere<Post>) {
     return this.postsRepository.find({
       select: ['id', 'location', 'profileThumbnail', 'username', 'content'],
       where: {
@@ -87,13 +87,13 @@ export class PostsService extends BaseService {
 
       if (genres?.length) {
         qb.andWhere('genres @> :genres', {
-          genres: JSON.stringify(genres.map((genre) => ({ name: genre }))),
+          genres: JSON.stringify(genres.map(genre => ({ name: genre }))),
         });
       }
 
       if (tags?.length) {
         qb.andWhere('tags @> :tags', {
-          tags: JSON.stringify(tags.map((tag) => ({ name: tag }))),
+          tags: JSON.stringify(tags.map(tag => ({ name: tag }))),
         });
       }
 

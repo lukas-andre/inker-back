@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
+  IsInstance,
   IsOptional,
   IsString,
   ValidateIf,
@@ -77,8 +78,9 @@ export class CreateUserReqDto {
     required: false,
     type: ArtistInfoDto,
   })
-  @ValidateIf((v) => v.userType === UserType.ARTIST)
+  @ValidateIf(v => v.userType === UserType.ARTIST)
   @ValidateNested()
+  @IsInstance(ArtistInfoDto)
   @Type(() => ArtistInfoDto)
   readonly artistInfo: ArtistInfoInterface;
 }

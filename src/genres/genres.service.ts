@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { CreatePostDto } from '../posts/infrastructure/dtos/createPost.dto';
@@ -21,15 +21,15 @@ export class GenresService {
     private readonly genresRepository: Repository<Genrer>,
   ) {}
 
-  async findById(id: string) {
-    return this.genresRepository.findOne(id);
+  async findById(id: number) {
+    return this.genresRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<Genrer>) {
     return this.genresRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<Genrer>) {
+  async findByKey(findConditions: FindOptionsWhere<Genrer>) {
     return this.genresRepository.find({
       select: ['id', 'name', 'createdAt', 'updatedAt'],
       where: {

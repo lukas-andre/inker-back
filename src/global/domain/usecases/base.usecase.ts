@@ -3,14 +3,16 @@ import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { DomainException } from '../exceptions/domain.exception';
 import { BaseService } from '../services/base.service';
 
+export interface UseCase {
+  execute(...args: any[]): Promise<any | DomainException>;
+}
+
 export class BaseUseCase extends BaseService {
   constructor(readonly serviceName: string) {
     super(serviceName);
   }
 
-  public async execute(...args: any[]): Promise<any | DomainException> {}
-
-  public handleServiceError(
+  protected handleServiceError(
     serviceError: ServiceError,
     errorMessage?: string,
   ): string {

@@ -8,11 +8,11 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defaultResponse.dto';
-import { VerificationType } from '../../entities/verificationHash.entity';
+import { NotificationType } from '../../entities/verificationHash.entity';
 
-export function SendVerificationCodeDoc() {
+export function SendAccountVerificationCodeDoc() {
   return applyDecorators(
-    ApiOperation({ summary: 'Send SMS Verification Code' }),
+    ApiOperation({ summary: 'Send SMS Account Verification Code' }),
     ApiParam({
       name: 'userId',
       description: 'User id',
@@ -27,10 +27,11 @@ export function SendVerificationCodeDoc() {
       required: true,
     }),
     ApiQuery({
-      name: 'type',
-      description: 'Sending type event',
-      enum: VerificationType,
-      example: VerificationType.SMS,
+      name: 'notificationType',
+      description: 'Notification type',
+      enum: NotificationType,
+      enumName: 'NotificationType',
+      example: NotificationType.SMS,
       required: true,
     }),
     ApiOkResponse({

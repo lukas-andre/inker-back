@@ -1,4 +1,4 @@
-import { Column, Entity } from 'typeorm';
+import { Column, DeleteDateColumn, Entity } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { CustomerFollows } from '../../domain/interfaces/customerFollows.interface';
 
@@ -30,4 +30,7 @@ export class Customer extends BaseEntity {
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date;
 }

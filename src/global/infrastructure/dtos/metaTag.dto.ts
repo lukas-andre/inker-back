@@ -9,7 +9,7 @@ export class MetaTagDto {
   })
   @IsOptional()
   @IsNumber()
-  @Transform((value) => (value ? value : ''))
+  @Transform(value => (value ? value : ''))
   readonly id?: number;
 
   @ApiProperty({
@@ -18,6 +18,6 @@ export class MetaTagDto {
   })
   @IsOptional()
   @IsString()
-  @Transform((value) => (value ? value : ''))
+  @Transform(value => (value ? value : ''))
   readonly name?: string;
 }

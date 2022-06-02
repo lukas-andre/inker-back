@@ -18,8 +18,8 @@ export class CustomerService {
     private readonly customerFeedRepository: Repository<CustomerFeed>,
   ) {}
 
-  async findById(id: string) {
-    return this.customerFeedRepository.findOne(id);
+  async findById(id: number) {
+    return this.customerFeedRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<CustomerFeed>) {
