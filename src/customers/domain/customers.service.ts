@@ -24,7 +24,9 @@ export class CustomersService extends BaseService {
 
   async create(params: CreateCustomerParams): Promise<Customer | ServiceError> {
     const exists = await this.customersRepository.findOne({
-      userId: params.userId,
+      where: {
+        userId: params.userId,
+      },
     });
 
     if (exists) {
@@ -53,13 +55,13 @@ export class CustomersService extends BaseService {
 
   async addFollow(customer: Customer, topic: string, newFollow: FollowTopic) {
     customer.follows.map(
-      (follow) => (follow[topic] = [...follow[topic], newFollow]),
+      follow => (follow[topic] = [...follow[topic], newFollow]),
     );
     return this.customersRepository.save(customer);
   }
 
-  async findById(id: string) {
-    return this.customersRepository.findOne(id);
+  async findById(id: number) {
+    return this.customersRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<Customer>) {

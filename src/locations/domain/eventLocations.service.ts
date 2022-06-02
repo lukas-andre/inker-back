@@ -18,8 +18,8 @@ export class EventLocationsService {
     private readonly eventLocationsRepository: Repository<EventLocation>,
   ) {}
 
-  async findById(id: string) {
-    return this.eventLocationsRepository.findOne(id);
+  async findById(id: number) {
+    return this.eventLocationsRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<EventLocation>) {

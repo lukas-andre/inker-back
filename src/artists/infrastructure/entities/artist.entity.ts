@@ -1,4 +1,4 @@
-import { Column, Entity } from 'typeorm';
+import { Column, DeleteDateColumn, Entity } from 'typeorm';
 import { GenreInterface } from '../../../genres/genre.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { TagInterface } from '../../../tags/tag.interface';
@@ -37,4 +37,7 @@ export class Artist extends BaseEntity {
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date;
 }

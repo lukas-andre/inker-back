@@ -5,7 +5,10 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaViewType } from '../domain/enum/agendaViewType.enum';
@@ -14,7 +17,7 @@ import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
-export class ListEventByViewTypeUseCase extends BaseUseCase {
+export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly agendaService: AgendaService,
     private readonly agendaEventService: AgendaEventService,

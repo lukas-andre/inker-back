@@ -32,7 +32,7 @@ export class PermissionsHandler {
     return this.findAllRoutesUseCase.execute();
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     return this.findOnePermissionUseCase.execute({ where: { id } });
   }
   async findAll(query: any) {

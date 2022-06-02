@@ -1,3 +1,4 @@
 export { CreateUserDoc } from './createUser.doc';
-export { SendVerificationCodeDoc } from './sendVerificationCode.doc';
-export { ValidateVerificationCodeDoc } from './validateVerificationCode.doc';
+export { SendAccountVerificationCodeDoc } from './sendAccountVerificationCode.doc';
+export { UpdateUserEmailDoc } from './updateUserEmail.doc';
+export { ValidateAccountVerificationCodeDoc } from './validateAccountVerificationCode.doc';

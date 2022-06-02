@@ -23,7 +23,7 @@ export class CommentsController {
     type: Boolean,
   })
   @Post()
-  async cretePost(
+  async createComment(
     @Ip() ip: string,
     @HostParam() host: any,
     @Request() request,

@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
@@ -22,7 +22,7 @@ export class CommentsService extends BaseService {
   }
 
   async findById(id: number): Promise<Comment> {
-    return this.commentsRepository.findOne(id);
+    return this.commentsRepository.findOne({ where: { id } });
   }
 
   async find(
@@ -39,7 +39,7 @@ export class CommentsService extends BaseService {
     }
   }
 
-  async findByKey(findConditions: FindConditions<Comment>) {
+  async findByKey(findConditions: FindOptionsWhere<Comment>) {
     return this.commentsRepository.find({
       select: ['id', 'location', 'profileThumbnail', 'username', 'content'],
       where: {

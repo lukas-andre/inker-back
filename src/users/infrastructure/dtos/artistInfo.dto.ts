@@ -33,7 +33,7 @@ export class ArtistInfoDto {
     description: 'True if artist set agenda public',
     required: false,
   })
-  @Transform((value) => Boolean(value === 'true' || value === true))
+  @Transform(value => Boolean(value.value === 'true' || value.value === true))
   readonly agendaIsPublic: boolean;
 
   @ApiProperty({
@@ -42,7 +42,7 @@ export class ArtistInfoDto {
     required: false,
   })
   @IsBoolean()
-  @Transform((value) => Boolean(value === 'true' || value === true))
+  @Transform(value => Boolean(value.value === 'true' || value.value === true))
   readonly agendaIsOpen: boolean;
 }
 

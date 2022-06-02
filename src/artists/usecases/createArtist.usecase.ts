@@ -4,13 +4,16 @@ import { Agenda } from '../../agenda/infrastructure/entities/agenda.entity';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { ArtistsService } from '../domain/services/artists.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { CreateArtistParams } from './interfaces/createArtist.params';
 
 @Injectable()
-export class CreateArtistUseCase extends BaseUseCase {
+export class CreateArtistUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly artistsService: ArtistsService,
     private readonly agendaService: AgendaService,

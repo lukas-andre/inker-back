@@ -2,13 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
-export class FindEventByAgendaIdAndEventIdUseCase extends BaseUseCase {
+export class FindEventByAgendaIdAndEventIdUseCase
+  extends BaseUseCase
+  implements UseCase
+{
   constructor(
     private readonly agendaService: AgendaService,
     private readonly agendaEventService: AgendaEventService,
@@ -31,7 +37,12 @@ export class FindEventByAgendaIdAndEventIdUseCase extends BaseUseCase {
     try {
       console.time('agendaEventService.findOne');
       const result = this.agendaEventService.findOne({
-        where: { agenda: existsAgenda, id: eventId },
+        where: {
+          id: eventId,
+          agenda: {
+            id: existsAgenda.id,
+          },
+        },
       });
       console.timeEnd('agendaEventService.findOne');
       return result;

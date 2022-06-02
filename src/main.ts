@@ -1,11 +1,13 @@
+import { join } from 'path';
+
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as rateLimit from 'express-rate-limit';
-import * as helmet from 'helmet';
-import { join } from 'path';
+import rateLimit from 'express-rate-limit';
+import Helmet from 'helmet';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -39,9 +41,10 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
+
   SwaggerModule.setup('api', app, document);
 
-  app.use(helmet());
+  app.use(Helmet());
   // app.use(csurf());
   app.use(
     rateLimit({
@@ -51,6 +54,8 @@ async function bootstrap() {
   );
 
   const port = configService.get('app.port', 3000);
+
   await app.listen(port, '0.0.0.0');
 }
+
 bootstrap();

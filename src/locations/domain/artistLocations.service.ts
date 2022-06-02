@@ -22,15 +22,15 @@ export class ArtistLocationsService {
     private readonly artistLocationsRepository: Repository<ArtistLocation>,
   ) {}
 
-  async findById(id: string) {
-    return this.artistLocationsRepository.findOne(id);
+  async findById(id: number) {
+    return this.artistLocationsRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<ArtistLocation>) {
     return this.artistLocationsRepository.find(options);
   }
 
-  async findByRange(originPoint: Point, range: number = 1000) {
+  async findByRange(originPoint: Point, range = 1000) {
     try {
       return this.artistLocationsRepository
         .createQueryBuilder('location')

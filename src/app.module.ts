@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ModulesContainer } from '@nestjs/core';
+
 import { AgendaModule } from './agenda/agenda.module';
 import { AlertGateway } from './alert/alert.gateway';
 import { ArtistsModule } from './artists/artists.module';
@@ -9,6 +11,7 @@ import { DatabasesModule } from './databases/database.module';
 import { FollowsModule } from './follows/follows.module';
 import { GenresModule } from './genres/genres.module';
 import { GlobalModule } from './global/global.module';
+import { HealthModule } from './health/health.module';
 import { LocationsModule } from './locations/locations.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { PostsModule } from './posts/posts.module';
@@ -32,7 +35,8 @@ import { UsersModule } from './users/users.module';
     GenresModule,
     AgendaModule,
     LocationsModule,
+    HealthModule,
   ],
-  providers: [ChatGateway, AlertGateway],
+  providers: [ChatGateway, AlertGateway, ModulesContainer],
 })
 export class AppModule {}

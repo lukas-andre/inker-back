@@ -9,7 +9,7 @@ export default registerAs('agendaDb', () => ({
   database: 'inker-agenda',
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../agenda/**/*.entity{.ts,.js}'],
-  synchronize: process.env.TYPEORM_SYNC,
+  synchronize: Boolean(process.env.TYPEORM_SYNC),
   logging: ['error'],
   cache: true,
 }));

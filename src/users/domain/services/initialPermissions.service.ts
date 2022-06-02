@@ -1,5 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ModulesContainer } from '@nestjs/core';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
@@ -11,7 +10,7 @@ export class InitialPermissionsService {
   private readonly logger = new Logger(this.serviceName);
 
   constructor(
-    @Inject('ModulesContainer') private readonly container: ModulesContainer,
+    // @Inject('ModulesContainer') private readonly container: ModulesContainer,
     @InjectRepository(Permission, 'user-db')
     private readonly permissionsRepository: Repository<Permission>,
   ) {}
@@ -19,12 +18,12 @@ export class InitialPermissionsService {
   async initPermissions(): Promise<Permission[] | ServiceError> {
     const controllersNames = new Set<string>();
 
-    const providers = [...this.container.values()];
-    providers.forEach((modules) => {
-      modules.controllers.forEach((controller) =>
-        controllersNames.add(controller.name),
-      );
-    });
+    // const providers = [...this.container.values()];
+    // providers.forEach((modules) => {
+    //   modules.controllers.forEach((controller) =>
+    //     controllersNames.add(controller.name),
+    //   );
+    // });
 
     const controllersNamesList = [...controllersNames.values()].sort();
     for (const [index, controllerName] of controllersNamesList.entries()) {

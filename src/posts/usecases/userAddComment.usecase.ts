@@ -5,7 +5,10 @@ import { DomainConflictException } from '../../global/domain/exceptions/domainCo
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { CommentsService } from '../domain/services/comments.service';
 import { PostsService } from '../domain/services/posts.service';
 import { CreateCommentDto } from '../infrastructure/dtos/createComment.dto';
@@ -13,7 +16,7 @@ import { Comment } from '../infrastructure/entities/comment.entity';
 import { ParentCommentEnum } from '../infrastructure/enum/parentComment.enum';
 
 @Injectable()
-export class UserAddCommentUseCase extends BaseUseCase {
+export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly commentsService: CommentsService,
     private readonly artistsService: ArtistsService,

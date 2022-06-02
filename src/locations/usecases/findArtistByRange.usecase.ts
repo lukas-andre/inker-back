@@ -4,13 +4,16 @@ import { ArtistsService } from '../../artists/domain/services/artists.service';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { logCatchedError } from '../../global/domain/utils/logCatchedError';
 import { ArtistLocationsService } from '../domain/artistLocations.service';
 import { FindArtistByArtistDto } from '../infrastructure/dtos/findArtistByRange.dto';
 
 @Injectable()
-export class FindArtistByRangeUseCase extends BaseUseCase {
+export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly artistsLocationService: ArtistLocationsService,
     private readonly artistsService: ArtistsService,
@@ -40,12 +43,12 @@ export class FindArtistByRangeUseCase extends BaseUseCase {
 
     try {
       const artists = await this.artistsService.findByIds(
-        result.map((location) => location.location_artist_id),
+        result.map(location => location.location_artist_id),
       );
 
-      result.forEach((location) => {
+      result.forEach(location => {
         location.artist = artists.filter(
-          (artist) => artist.id === location.location_artist_id,
+          artist => artist.id === location.location_artist_id,
         );
       });
 

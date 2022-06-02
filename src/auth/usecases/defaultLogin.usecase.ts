@@ -4,8 +4,13 @@ import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { CustomersService } from '../../customers/domain/customers.service';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { DomainBadRule } from '../../global/domain/exceptions/domainBadRule.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersService } from '../../users/domain/services/users.service';
 import { User } from '../../users/infrastructure/entities/user.entity';
@@ -14,24 +19,33 @@ import { LoginParams } from './interfaces/defaultLogin.params';
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 // TODO: EXTEND BASE USECASE
 @Injectable()
-export class DefaultLoginUseCase {
+export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
     private artistsService: ArtistsService,
     private customersService: CustomersService,
-  ) {}
+  ) {
+    super(DefaultLoginUseCase.name);
+  }
 
   async execute(
     loginParams: LoginParams,
   ): Promise<DefaultLoginResult | DomainException> {
+    this.logger.log({ loginParams });
     const user = await this.usersService.findByType(
       loginParams.loginType,
       loginParams.identifier,
     );
 
-    if (!user || !user.active) {
+    this.logger.log({ user });
+
+    if (!user) {
       return new DomainConflictException('Invalid credentials');
+    }
+
+    if (!user.active) {
+      return new DomainBadRule('User is not active');
     }
 
     return this.defaultLogin(user, loginParams);

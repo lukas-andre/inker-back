@@ -18,8 +18,8 @@ import { tap } from 'rxjs/operators';
 export class LoggingInterceptor implements NestInterceptor {
   private readonly ctxPrefix: string = LoggingInterceptor.name;
   private readonly logger: Logger = new Logger(this.ctxPrefix);
-  private userPrefix: string = '';
-  private minify: boolean = false;
+  private userPrefix = '';
+  private minify = false;
 
   /**
    * User prefix setter
@@ -41,8 +41,8 @@ export class LoggingInterceptor implements NestInterceptor {
     const req: Request = context.switchToHttp().getRequest();
     const now = new Date();
     const { method, url, body, headers } = req;
-    const ctx: string = `${this.userPrefix}${this.ctxPrefix} - ${method} - ${url}`;
-    const message: string = `Incoming request - ${method} - ${url}`;
+    const ctx = `${this.userPrefix}${this.ctxPrefix} - ${method} - ${url}`;
+    const message = `Incoming request - ${method} - ${url}`;
 
     this.logger.log(
       {
@@ -81,8 +81,8 @@ export class LoggingInterceptor implements NestInterceptor {
     const res: Response = context.switchToHttp().getResponse<Response>();
     const { method, url } = req;
     const { statusCode } = res;
-    const ctx: string = `${this.userPrefix}${this.ctxPrefix} - ${statusCode} - ${method} - ${url}`;
-    const message: string = `Outgoing response - ${statusCode} - ${method} - ${url}`;
+    const ctx = `${this.userPrefix}${this.ctxPrefix} - ${statusCode} - ${method} - ${url}`;
+    const message = `Outgoing response - ${statusCode} - ${method} - ${url}`;
 
     this.logger.log(
       {
@@ -110,8 +110,8 @@ export class LoggingInterceptor implements NestInterceptor {
 
     if (error instanceof HttpException) {
       const statusCode: number = error.getStatus();
-      const ctx: string = `${this.userPrefix}${this.ctxPrefix} - ${statusCode} - ${method} - ${url}`;
-      const message: string = `Outgoing response - ${statusCode} - ${method} - ${url}`;
+      const ctx = `${this.userPrefix}${this.ctxPrefix} - ${statusCode} - ${method} - ${url}`;
+      const message = `Outgoing response - ${statusCode} - ${method} - ${url}`;
 
       if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
         this.logger.error(
