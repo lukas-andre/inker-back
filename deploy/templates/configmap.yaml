@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "inker-back.fullname" . }}
+  labels:
+    {{- include "inker-back.labels" . | nindent 4 }}
+data:
+  {{- range $key, $val := .Values.env.normal }}
+  {{ $key | toString }}: {{ $val | quote }}
+  {{- end}}

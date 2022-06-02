@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { CreatePostDto } from '../posts/infrastructure/dtos/createPost.dto';
@@ -21,15 +21,15 @@ export class TagsService {
     private readonly tagsRepository: Repository<Tag>,
   ) {}
 
-  async findById(id: string) {
-    return this.tagsRepository.findOne(id);
+  async findById(id: number) {
+    return this.tagsRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<Tag>) {
     return this.tagsRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<Tag>) {
+  async findByKey(findConditions: FindOptionsWhere<Tag>) {
     return this.tagsRepository.find({
       select: ['id', 'name', 'createdAt', 'updatedAt'],
       where: {

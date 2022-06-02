@@ -9,7 +9,7 @@ export default registerAs('locationDb', () => ({
   database: 'inker-location',
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../locations/**/*.entity{.ts,.js}'],
-  synchronize: process.env.TYPEORM_SYNC,
+  synchronize: Boolean(process.env.TYPEORM_SYNC),
   logging: ['error'],
   cache: true,
 }));

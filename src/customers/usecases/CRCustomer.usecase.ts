@@ -29,7 +29,7 @@ export class CRCustomerUseCase extends BaseUseCase {
     return this.customersService.find(options);
   }
 
-  async findById(id: string): Promise<Customer> {
+  async findById(id: number): Promise<Customer> {
     return this.customersService.findById(id);
   }
 }

@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { Activity } from '../../infrastructure/entities/activity.entity';
@@ -20,8 +20,8 @@ export class ActivitiesService {
     private readonly activitiesRepository: Repository<Activity>,
   ) {}
 
-  async findById(id: string) {
-    return this.activitiesRepository.findOne(id);
+  async findById(id: number) {
+    return this.activitiesRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<Activity>) {
@@ -29,7 +29,7 @@ export class ActivitiesService {
   }
 
   async findByKey(
-    findConditions: FindConditions<Activity>,
+    findConditions: FindOptionsWhere<Activity>,
     select: (keyof Activity)[],
   ) {
     return this.activitiesRepository.find({

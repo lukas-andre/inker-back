@@ -9,7 +9,7 @@ export default registerAs('reactionDb', () => ({
   database: 'inker-reaction',
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../reactions/**/*.entity{.ts,.js}'],
-  synchronize: process.env.TYPEORM_SYNC,
+  synchronize: Boolean(process.env.TYPEORM_SYNC),
   logging: false,
   cache: true,
 }));

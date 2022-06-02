@@ -3,14 +3,17 @@ import { DomainException } from '../../global/domain/exceptions/domain.exception
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
-export class AddEventUseCase extends BaseUseCase {
+export class AddEventUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly agendaService: AgendaService,
     private readonly agendaEventService: AgendaEventService,

@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
 } from 'typeorm';
 import { CreateArtistDto } from '../../artists/infrastructure/dtos/createArtist.dto';
@@ -22,14 +22,14 @@ export class AgendaService extends BaseService {
   }
 
   async findById(id: number) {
-    return this.agendaRepository.findOne(id);
+    return this.agendaRepository.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<Agenda>) {
     return this.agendaRepository.find(options);
   }
 
-  async findByKey(findConditions: FindConditions<Agenda>) {
+  async findByKey(findConditions: FindOptionsWhere<Agenda>) {
     return this.agendaRepository.find({
       select: ['id', 'createdAt', 'updatedAt'],
       where: {
@@ -48,7 +48,7 @@ export class AgendaService extends BaseService {
     };
 
     try {
-      return this.save(agenda);
+      return await this.save(agenda);
     } catch (error) {
       return this.serviceError(
         this.createWithArtistDto,

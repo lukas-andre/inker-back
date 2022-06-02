@@ -9,7 +9,7 @@ export default registerAs('customerFeedDb', () => ({
   database: 'inker-customer-feed',
   port: parseInt(process.env.DB_PORT, 5432),
   entities: [__dirname + '/../customer-feed/**/*.entity{.ts,.js}'],
-  synchronize: process.env.TYPEORM_SYNC,
+  synchronize: Boolean(process.env.TYPEORM_SYNC),
   logging: ['error'],
   cache: true,
 }));

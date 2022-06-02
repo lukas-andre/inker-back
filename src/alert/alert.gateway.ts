@@ -24,12 +24,12 @@ export class AlertGateway
 
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log('New Connection!');
-    this.logger.log(inspect(client.json));
+    this.logger.log(inspect(client));
   }
 
   handleDisconnect(client: Socket) {
     this.logger.log('Disconection');
-    this.logger.log(inspect(client.json));
+    this.logger.log(inspect(client));
   }
 
   @SubscribeMessage('sendAlert')

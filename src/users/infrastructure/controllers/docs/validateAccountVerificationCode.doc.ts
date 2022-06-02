@@ -10,11 +10,11 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defaultResponse.dto';
-import { VerificationType } from '../../entities/verificationHash.entity';
+import { NotificationType } from '../../entities/verificationHash.entity';
 
-export function ValidateVerificationCodeDoc() {
+export function ValidateAccountVerificationCodeDoc() {
   return applyDecorators(
-    ApiOperation({ summary: 'Validate Verification Code' }),
+    ApiOperation({ summary: 'Validate Account Verification Code' }),
     ApiParam({
       name: 'userId',
       description: 'User id',
@@ -22,15 +22,23 @@ export function ValidateVerificationCodeDoc() {
       example: 1,
       type: Number,
     }),
+    ApiParam({
+      name: 'code',
+      description: 'Verification code',
+      required: true,
+      example: 1000,
+      type: Number,
+    }),
     ApiQuery({
-      name: 'type',
-      description: 'Sending type event',
-      enum: VerificationType,
-      example: VerificationType.SMS,
+      name: 'notificationType',
+      description: 'Notification type',
+      enum: NotificationType,
+      enumName: 'NotificationType',
+      example: NotificationType.SMS,
       required: true,
     }),
     ApiOkResponse({
-      description: 'Validated',
+      description: 'Account validate',
       type: DefaultResponseDto,
     }),
     ApiNotFoundResponse({ description: 'Hash for user not found' }),
