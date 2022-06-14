@@ -16,5 +16,5 @@ export interface JwtPayload {
 
 export interface FullJwtPayload extends JwtPayload {
   accessToken: string;
-  expiresIn: number;
+  expiresIn: string;
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
 
 import { AgendaModule } from './agenda/agenda.module';
@@ -39,4 +39,10 @@ import { UsersModule } from './users/users.module';
   ],
   providers: [ChatGateway, AlertGateway, ModulesContainer],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationShutdown {
+  private readonly logger = new Logger(AppModule.name);
+
+  onApplicationShutdown(signal: string) {
+    this.logger.log(`🛑 ${signal} received, exiting now...`);
+  }
+}

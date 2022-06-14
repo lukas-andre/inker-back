@@ -43,7 +43,7 @@ export class RolesService {
   }
 
   async findById(id: number): Promise<Role> {
-    return this.rolesRepository.findOne( {
+    return this.rolesRepository.findOne({
       where: {
         id,
       },
