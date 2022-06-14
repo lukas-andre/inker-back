@@ -70,9 +70,9 @@ export class LoginResDto {
   accessToken: string;
 
   @ApiProperty({
-    example: '3000',
+    example: '3d',
     description: 'token expiration',
   })
-  @IsNumber()
-  expiresIn: number;
+  @IsString()
+  expiresIn: string;
 }

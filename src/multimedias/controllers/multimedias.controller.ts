@@ -4,8 +4,8 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
+import { FileFastifyInterceptor } from 'fastify-file-interceptor';
 import { MultimediasService } from '../services/multimedias.service';
 
 @ApiTags('multimedias')
@@ -14,7 +14,7 @@ export class MultimediasController {
   constructor(private readonly multimediasService: MultimediasService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileFastifyInterceptor('file'))
   async upload(@UploadedFile() file) {
     console.log('file: ', file);
     return this.multimediasService.upload(file);
