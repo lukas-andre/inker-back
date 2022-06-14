@@ -3,6 +3,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
+import Joi from 'joi';
 import config from '../config';
 import { LoggingInterceptor } from './aspects/logging.interceptor';
 import { BaseHandler } from './infrastructure/base.handler';
@@ -16,6 +17,7 @@ import { SMSClient } from './infrastructure/clients/sms.client';
     ConfigModule.forRoot({
       isGlobal: true,
       load: config,
+      // validationSchema: Joi.object(),
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],

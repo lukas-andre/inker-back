@@ -132,7 +132,7 @@ deploy:
     - kubectl config get-contexts
     - kubectl config use-context inker-studio/inker-terraform-gke:gke-agent
   script:
-    - helm upgrade $CI_PROJECT_TITLE ./deploy --install
+    - helm upgrade $CHART_NAME ./deploy --install
       $IMAGE_COFIG $ENV_CONFIG
       --namespace $NAMESPACE
       --values $VALUES_PATH
