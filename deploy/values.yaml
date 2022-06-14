@@ -33,9 +33,9 @@ env:
     AWS_ARTISTS_BUCKET: ''
     CLOUD_FRONT_URL: ''
     # Account verification configuration
-    VERIFICATION_HASH_SALT_LEN: ''
-    ACCOUNT_VERIFICATION_MAX_SMS_TRIES: ''
-    FORGOT_PASSWORD_VERIFICATION_MAX_SMS_TRIES: ''
+    # VERIFICATION_HASH_SALT_LEN: ''
+    # ACCOUNT_VERIFICATION_MAX_SMS_TRIES: ''
+    # FORGOT_PASSWORD_VERIFICATION_MAX_SMS_TRIES: ''
     # Timezone
     TZ: America/Santiago
   secret:

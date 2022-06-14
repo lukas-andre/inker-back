@@ -17,7 +17,6 @@ import { User } from '../../users/infrastructure/entities/user.entity';
 import { AuthService } from '../domain/auth.service';
 import { LoginParams } from './interfaces/defaultLogin.params';
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
-// TODO: EXTEND BASE USECASE
 @Injectable()
 export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   constructor(
