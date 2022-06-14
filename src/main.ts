@@ -1,4 +1,4 @@
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
@@ -7,6 +7,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { configure } from './configure';
 import { SERVICE_NAME } from './constants';
+import { appConfig } from './config/app.config';
 import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
@@ -18,9 +19,8 @@ async function bootstrap() {
 
   await configure(app);
 
-  const configService: ConfigService = app.get(ConfigService);
-  const port = configService.get('app.port', 3000);
-  await app.listen(port, '0.0.0.0');
+  const appConf: ConfigType<typeof appConfig> = app.get(appConfig.KEY);
+  await app.listen(appConf.port, appConf.host);
 
   Logger.log(
     `🚀 Application ${SERVICE_NAME} is running on: ${await app.getUrl()}`,

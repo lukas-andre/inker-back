@@ -3,12 +3,18 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import Joi from 'joi';
-import config from '../config';
+import { Config } from '../config/config';
 import { LoggingInterceptor } from './aspects/logging.interceptor';
 import { BaseHandler } from './infrastructure/base.handler';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { SMSClient } from './infrastructure/clients/sms.client';
+import * as Joi from 'joi';
+import { appConfigSchema } from '../config/app.config';
+import { oasConfigSchema } from '../config/oas.config';
+import { databaseConfigSchema } from '../config/database/config';
+import { authConfigSchema } from '../config/auth.config';
+import { verificationHashConfigSchema } from '../config/verificationHash';
+import { AWSConfigSchema } from '../config/aws.config';
 
 @Global()
 @Module({
@@ -16,8 +22,14 @@ import { SMSClient } from './infrastructure/clients/sms.client';
     HttpModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: config,
-      // validationSchema: Joi.object(),
+      load: Config,
+      validationSchema: Joi.object()
+        .concat(appConfigSchema)
+        .concat(authConfigSchema)
+        .concat(oasConfigSchema)
+        .concat(verificationHashConfigSchema)
+        .concat(AWSConfigSchema)
+        .concat(databaseConfigSchema),
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],
