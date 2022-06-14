@@ -10,7 +10,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -22,6 +21,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { FileFastifyInterceptor } from 'fastify-file-interceptor';
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
 import { ArtistsHandler } from './artists.handler';
@@ -55,7 +55,7 @@ export class ArtistsController {
   })
   @ApiParam({ name: 'id', required: true, type: Number })
   @Post('/:id/profile-picture')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileFastifyInterceptor('file'))
   async updateProfileProfilePicture(
     @UploadedFile() file,
     @Param('id', ParseIntPipe) id: number,

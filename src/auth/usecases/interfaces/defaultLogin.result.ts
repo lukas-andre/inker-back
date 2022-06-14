@@ -25,6 +25,6 @@ export class DefaultLoginResult {
   @IsString()
   accessToken: string;
 
-  @IsNumber()
-  expiresIn: number;
+  @IsString()
+  expiresIn: string;
 }

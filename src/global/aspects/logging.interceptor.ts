@@ -7,7 +7,7 @@ import {
   Logger,
   NestInterceptor,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -77,8 +77,12 @@ export class LoggingInterceptor implements NestInterceptor {
     context: ExecutionContext,
     executionTime: string,
   ): void {
-    const req: Request = context.switchToHttp().getRequest<Request>();
-    const res: Response = context.switchToHttp().getResponse<Response>();
+    const req: FastifyRequest = context
+      .switchToHttp()
+      .getRequest<FastifyRequest>();
+    const res: FastifyReply = context
+      .switchToHttp()
+      .getResponse<FastifyReply>();
     const { method, url } = req;
     const { statusCode } = res;
     const ctx = `${this.userPrefix}${this.ctxPrefix} - ${statusCode} - ${method} - ${url}`;

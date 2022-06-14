@@ -8,6 +8,7 @@ import customerFeedDatabase from './customerFeedDatabase';
 import followDatabase from './followDatabase';
 import genreDatabase from './genreDatabase';
 import locationDatabase from './locationDatabase';
+import { oasConfig } from './oas';
 import postDatabase from './postDatabase';
 import reactionDatabase from './reactionDatabase';
 import tagDatabase from './tagDatabase';
@@ -30,4 +31,5 @@ export default [
   agendaDatabase,
   locationDatabase,
   customerFeedDatabase,
+  oasConfig,
 ];
