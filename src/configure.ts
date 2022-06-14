@@ -5,7 +5,7 @@ import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'fastify-helmet';
 import { join } from 'path';
-import { oasConfig } from './config/oas';
+import { oasConfig } from './config/oas.config';
 import {
   corsOptions,
   helmetOptions,
@@ -15,12 +15,11 @@ import {
 
 const configureOAS = async (app: NestFastifyApplication) => {
   const oasConf: ConfigType<typeof oasConfig> = app.get(oasConfig.KEY);
-
   if (oasConf.enabled) {
     const config = new DocumentBuilder()
       .setTitle('Inker Backend Service')
       .setDescription('Backend manager for Inker')
-      .setVersion('0.0.1')
+      .setVersion('0.1')
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
         'bearer',

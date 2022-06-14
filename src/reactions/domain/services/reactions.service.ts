@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceError } from 'src/global/domain/interfaces/serviceError';
-import { BaseService } from 'src/global/domain/services/base.service';
+import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { BaseService } from '../../../global/domain/services/base.service';
 import {
   DeepPartial,
   DeleteResult,
