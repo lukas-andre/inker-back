@@ -43,10 +43,6 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
       return new DomainConflictException('Invalid credentials');
     }
 
-    if (!user.active) {
-      return new DomainBadRule('User is not active');
-    }
-
     return this.defaultLogin(user, loginParams);
   }
 
@@ -61,6 +57,10 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
 
     if (!result) {
       return new DomainConflictException('Invalid credentials');
+    }
+
+    if (!user.active) {
+      return new DomainBadRule('User is not active');
     }
 
     const entity = await this.findUserEntityByType(user.userType, user.id);
