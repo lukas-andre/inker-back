@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AgendaService } from '../../../agenda/domain/agenda.service';
-import { ArtistsService } from '../../../artists/domain/services/artists.service';
+import { ArtistsDbService } from '../../../artists/infrastructure/database/services/artistsDb.service';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
@@ -21,14 +21,14 @@ import { ArtistLocation } from '../../../locations/infrastructure/entities/artis
 import { UserType } from '../../domain/enums/userType.enum';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
-
+import * as stringify from 'json-stringify-safe';
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()
 export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersService: UsersService,
-    private readonly artistsService: ArtistsService,
+    private readonly artistsDbService: ArtistsDbService,
     private readonly customerService: CustomersService,
     private readonly rolesService: RolesService,
     private readonly agendaService: AgendaService,
@@ -82,24 +82,27 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     return createByType[dto.userType]();
   }
 
-  private async createArtist(createArtistDto: CreateArtistDto) {
-    const artist = await this.artistsService.create(createArtistDto);
+  private async createArtist(createArtistParams: CreateArtistParams) {
+    const artist = await this.artistsDbService.create(createArtistParams);
 
     if (isServiceError(artist))
       return new DomainConflictException(this.handleServiceError(artist));
 
-    const agenda = await this.agendaService.createWithArtistDto(
-      createArtistDto,
+    this.logger.log(`🟢 Artist created: ${artist.id}`);
+
+    const agenda = await this.agendaService.createWithArtistInfo(
+      createArtistParams,
     );
 
     if (isServiceError(agenda)) {
-      await this.artistsService.delete(artist.id);
+      await this.artistsDbService.delete(artist.id);
 
       return new DomainConflictException(this.handleServiceError(agenda));
     }
+    this.logger.log(`🟢 Agenda created: ${agenda.id}`);
 
     const artistLocation = await this.artistLocationsService.save(
-      this.mapCreateArtistDtoToArtistLocation(artist, createArtistDto),
+      this.mapCreateArtistInfoToArtistLocation(artist, createArtistParams),
     );
 
     if (isServiceError(artistLocation)) {
@@ -110,6 +113,9 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       );
     }
 
+    this.logger.log(`🟢 ArtistLocation created: ${artistLocation.id}`);
+
+    this.logger.log(`🟢 Artist created: ${stringify(artist)}`);
     return artist;
   }
 
@@ -132,7 +138,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     return error;
   }
 
-  private mapCreateArtistDtoToArtistLocation(
+  private mapCreateArtistInfoToArtistLocation(
     artist: Artist,
     createArtistDto: CreateArtistDto,
   ): Partial<ArtistLocation> {
@@ -146,13 +152,14 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       city: createArtistDto.address.city,
       country: createArtistDto.address.country,
       state: createArtistDto.address.state,
-      latitud: createArtistDto.address.latitud,
-      longitud: createArtistDto.address.longitud,
+      lat: createArtistDto.address.geometry.location.lat,
+      lng: createArtistDto.address.geometry.location.lng,
+      viewport: createArtistDto.address.geometry.viewport,
       location: {
         type: 'Point',
         coordinates: [
-          createArtistDto.address.latitud,
-          createArtistDto.address.longitud,
+          createArtistDto.address.geometry.location.lat,
+          createArtistDto.address.geometry.location.lng,
         ],
       },
     };
@@ -165,7 +172,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     return {
       userId,
       username: dto.username,
-      phoneNumber: dto.phoneNumber,
+      phoneNumberDetails: dto.phoneNumberDetails,
       contactEmail: dto.email,
       firstName: dto.firstName,
       lastName: dto.lastName,
@@ -185,7 +192,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       firstName: dto.firstName,
       lastName: dto.lastName,
       contactEmail: dto.email,
-      phoneNumber: dto.phoneNumber,
+      phoneNumber: dto.phoneNumberDetails.number,
     };
   }
 }

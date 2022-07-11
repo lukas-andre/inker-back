@@ -9,7 +9,7 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { MultimediasService } from '../../multimedias/services/multimedias.service';
-import { ArtistsService } from '../domain/services/artists.service';
+import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 @Injectable()
 export class UpdateArtistProfilePictureUseCase
@@ -17,7 +17,7 @@ export class UpdateArtistProfilePictureUseCase
   implements UseCase
 {
   constructor(
-    private readonly artistsService: ArtistsService,
+    private readonly artistsDbService: ArtistsDbService,
     private readonly multimediasService: MultimediasService,
   ) {
     super(UpdateArtistProfilePictureUseCase.name);
@@ -29,7 +29,7 @@ export class UpdateArtistProfilePictureUseCase
     this.logger.log(`id:  ${id}`);
     this.logger.log(`file:  ${stringify(file)}`);
 
-    let artist = await this.artistsService.findById(id);
+    let artist = await this.artistsDbService.findById(id);
 
     if (isServiceError(artist)) {
       return new DomainConflictException(this.handleServiceError(artist));
@@ -51,7 +51,7 @@ export class UpdateArtistProfilePictureUseCase
 
     artist.profileThumbnail = cloudFrontUrl;
 
-    artist = await this.artistsService.save(artist);
+    artist = await this.artistsDbService.save(artist);
 
     this.logger.log(`artist: ' ${stringify(artist)}`);
 

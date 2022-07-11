@@ -10,22 +10,23 @@ import {
   In,
   Repository,
 } from 'typeorm';
-import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { BaseService } from '../../../global/domain/services/base.service';
-import { CreateArtistDto } from '../../infrastructure/dtos/createArtist.dto';
-import { Artist } from '../../infrastructure/entities/artist.entity';
+import { ExistsQueryResult } from '../../../../global/domain/interfaces/existsQueryResult.interface';
+import { ServiceError } from '../../../../global/domain/interfaces/serviceError';
+import { BaseService } from '../../../../global/domain/services/base.service';
+import { CreateArtistParams } from '../../../usecases/interfaces/createArtist.params';
+import { Artist } from '../../entities/artist.entity';
+import { Contact } from '../../entities/contact.entity';
 
 @Injectable()
-export class ArtistsService extends BaseService {
+export class ArtistsDbService extends BaseService {
   constructor(
     @InjectRepository(Artist, 'artist-db')
     private readonly artistsRepository: Repository<Artist>,
   ) {
-    super(ArtistsService.name);
+    super(ArtistsDbService.name);
   }
 
-  async create(dto: CreateArtistDto): Promise<Artist | ServiceError> {
+  async create(dto: CreateArtistParams): Promise<Artist | ServiceError> {
     const exists = await this.artistsRepository.findOne({
       where: {
         userId: dto.userId,
@@ -43,16 +44,23 @@ export class ArtistsService extends BaseService {
     artist.userId = dto.userId;
     artist.firstName = dto.firstName;
     artist.lastName = dto.lastName;
-    artist.contactEmail = dto.contactEmail;
-    artist.contactPhoneNumber = dto.phoneNumber;
     artist.username = dto.username;
+
+    const contact = new Contact();
+
+    contact.email = dto.contactEmail;
+    contact.phone = dto.phoneNumberDetails.number;
+    contact.phoneDialCode = dto.phoneNumberDetails.dialCode;
+    contact.phoneCountryIsoCode = dto.phoneNumberDetails.countryCode;
+
+    artist.contact = contact;
 
     try {
       return await this.artistsRepository.save(artist);
     } catch (error) {
       return this.serviceError(
         this.create,
-        `Trouble creating artist ${stringify(artist)}`,
+        `Trouble creating artist ${artist.username}`,
         error.message,
       );
     }
@@ -86,8 +94,6 @@ export class ArtistsService extends BaseService {
         'shortDescription',
         'tags',
         'userId',
-        'contactEmail',
-        'contactPhoneNumber',
         'firstName',
       ],
       where: {

@@ -1,4 +1,5 @@
 import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
+import { PhoneNumberDetailsInterface } from '../../../users/infrastructure/dtos/phoneNumberDetails.dto';
 
 export interface CreateArtistParams {
   userId: number;
@@ -6,7 +7,7 @@ export interface CreateArtistParams {
   firstName: string;
   lastName: string;
   contactEmail?: string;
-  phoneNumber?: string;
+  phoneNumberDetails?: PhoneNumberDetailsInterface;
   address: AddressInterface;
   agendaWorkingDays: string[];
   agendaIsPublic: boolean;

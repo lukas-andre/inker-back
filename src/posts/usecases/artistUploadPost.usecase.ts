@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as stringify from 'json-stringify-safe';
-import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { GenreInterface } from '../../genres/genre.interface';
 import { GenresService } from '../../genres/genres.service';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
@@ -24,7 +24,7 @@ import { Post } from '../infrastructure/entities/post.entity';
 export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly postService: PostsService,
-    private readonly artistsService: ArtistsService,
+    private readonly artistsDbService: ArtistsDbService,
     private readonly genresService: GenresService,
     private readonly tagsService: TagsService,
     private readonly multimediasService: MultimediasService,
@@ -41,7 +41,7 @@ export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
       return new DomainNotFoundException('Not valid files to upload');
     }
 
-    const artist = await this.artistsService.findById(jwtPayload.userTypeId);
+    const artist = await this.artistsDbService.findById(jwtPayload.userTypeId);
     if (isServiceError(artist)) {
       return new DomainConflictException(this.handleServiceError(artist));
     }

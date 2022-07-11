@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { getConnection } from 'typeorm';
-import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
@@ -15,7 +15,7 @@ import { FollowArtistParams } from './interfaces/followArtist.param';
 export class FollowUseCase {
   constructor(
     private readonly usersService: UsersService,
-    private readonly artistsService: ArtistsService,
+    private readonly artistsDbService: ArtistsDbService,
     private readonly followedsService: FollowedsService,
   ) {}
 
@@ -45,7 +45,7 @@ export class FollowUseCase {
     }
 
     // TODO: This could be came from in the front request
-    const artistData = await this.artistsService.findOne({
+    const artistData = await this.artistsDbService.findOne({
       select: [
         'id',
         'userId',

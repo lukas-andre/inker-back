@@ -1,3 +1,5 @@
+import { GeometryInterface } from './geometry.interface';
+
 export interface AddressInterface {
   address1: string;
   address2: string;
@@ -5,6 +7,5 @@ export interface AddressInterface {
   city?: string;
   state?: string;
   country?: string;
-  latitud: number;
-  longitud: number;
+  geometry?: GeometryInterface;
 }

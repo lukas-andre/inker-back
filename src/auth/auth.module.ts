@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ArtistsModule } from '../artists/artists.module';
+import { ArtistsDatabaseModule } from '../artists/infrastructure/database/artistDatabase.module';
 import { CustomersModule } from '../customers/customers.module';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './domain/auth.service';
@@ -8,7 +9,7 @@ import { AuthHandler } from './infrastructure/auth.handler';
 import { DefaultLoginUseCase } from './usecases/defaultLogin.usecase';
 
 @Module({
-  imports: [UsersModule, ArtistsModule, CustomersModule],
+  imports: [ArtistsDatabaseModule, UsersModule, ArtistsModule, CustomersModule],
   controllers: [AuthController],
   providers: [AuthHandler, AuthService, DefaultLoginUseCase],
 })
