@@ -1,6 +1,7 @@
 import { IsEmail, IsOptional, IsString } from 'class-validator';
 import { UserType } from '../../../domain/enums/userType.enum';
 import { ArtistInfoInterface } from '../../../infrastructure/dtos/artistInfo.dto';
+import { PhoneNumberDetailsInterface } from '../../../infrastructure/dtos/phoneNumberDetails.dto';
 
 export class CreateUserByTypeParams {
   @IsString()
@@ -14,9 +15,7 @@ export class CreateUserByTypeParams {
   @IsString()
   password: string;
 
-  @IsString()
-  @IsOptional()
-  phoneNumber?: string;
+  phoneNumberDetails: PhoneNumberDetailsInterface;
 
   @IsString()
   @IsOptional()

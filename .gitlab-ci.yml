@@ -22,7 +22,6 @@ stages:
 
 install-dependencies:
   stage: setup
-  interruptible: true
   extends: [.node-job]
   cache:
     key: !reference [.node-job, cache, key]

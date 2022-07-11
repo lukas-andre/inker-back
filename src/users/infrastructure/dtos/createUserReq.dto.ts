@@ -11,6 +11,10 @@ import {
 } from 'class-validator';
 import { UserType } from '../../domain/enums/userType.enum';
 import { ArtistInfoDto, ArtistInfoInterface } from './artistInfo.dto';
+import {
+  PhoneNumberDetailsDto,
+  PhoneNumberDetailsInterface,
+} from './phoneNumberDetails.dto';
 
 export class CreateUserReqDto {
   @ApiProperty({
@@ -39,13 +43,17 @@ export class CreateUserReqDto {
   readonly password: string;
 
   @ApiProperty({
-    example: '+56964484712',
-    description: 'User phone number',
-    required: false,
+    description: 'User Phone Number',
+    required: true,
+    example: {
+      countryCode: 'CL',
+      number: '+56964484712',
+      dialCode: '+56',
+    } as PhoneNumberDetailsInterface,
   })
-  @IsString()
-  @IsOptional()
-  readonly phoneNumber?: string;
+  @Type(() => PhoneNumberDetailsDto)
+  @ValidateNested()
+  readonly phoneNumberDetails: PhoneNumberDetailsDto;
 
   @ApiProperty({
     example: 'Lucas',
@@ -82,5 +90,5 @@ export class CreateUserReqDto {
   @ValidateNested()
   @IsInstance(ArtistInfoDto)
   @Type(() => ArtistInfoDto)
-  readonly artistInfo: ArtistInfoInterface;
+  readonly artistInfo: ArtistInfoDto;
 }

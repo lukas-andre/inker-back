@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Point } from 'geojson';
-import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
@@ -16,7 +16,7 @@ import { FindArtistByArtistDto } from '../infrastructure/dtos/findArtistByRange.
 export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly artistsLocationService: ArtistLocationsService,
-    private readonly artistsService: ArtistsService,
+    private readonly artistsDbService: ArtistsDbService,
   ) {
     super(FindArtistByRangeUseCase.name);
   }
@@ -42,7 +42,7 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
     }
 
     try {
-      const artists = await this.artistsService.findByIds(
+      const artists = await this.artistsDbService.findByIds(
         result.map(location => location.location_artist_id),
       );
 

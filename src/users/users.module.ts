@@ -2,6 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgendaModule } from '../agenda/agenda.module';
 import { ArtistsModule } from '../artists/artists.module';
+import { ArtistsDatabaseModule } from '../artists/infrastructure/database/artistDatabase.module';
 import { CustomersModule } from '../customers/customers.module';
 import { LocationsModule } from '../locations/locations.module';
 import { InitialPermissionsService } from './domain/services/initialPermissions.service';
@@ -36,6 +37,7 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
 
 @Module({
   imports: [
+    ArtistsDatabaseModule,
     TypeOrmModule.forFeature(
       [User, Role, Permission, VerificationHash],
       'user-db',

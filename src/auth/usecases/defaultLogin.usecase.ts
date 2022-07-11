@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { CustomersService } from '../../customers/domain/customers.service';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
@@ -22,7 +22,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-    private artistsService: ArtistsService,
+    private artistsDbService: ArtistsDbService,
     private customersService: CustomersService,
   ) {
     super(DefaultLoginUseCase.name);
@@ -84,7 +84,9 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
         });
         break;
       case UserType.ARTIST:
-        userFounded = await this.artistsService.findOne({ where: { userId } });
+        userFounded = await this.artistsDbService.findOne({
+          where: { userId },
+        });
         break;
     }
     return userFounded;

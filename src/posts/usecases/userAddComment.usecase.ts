@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ArtistsService } from '../../artists/domain/services/artists.service';
+import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
@@ -19,7 +19,7 @@ import { ParentCommentEnum } from '../infrastructure/enum/parentComment.enum';
 export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly commentsService: CommentsService,
-    private readonly artistsService: ArtistsService,
+    private readonly artistsDbService: ArtistsDbService,
     private readonly postsService: PostsService,
   ) {
     super(UserAddCommentUseCase.name);
@@ -29,7 +29,7 @@ export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
     jwtPayload: JwtPayload,
     createCommentDto: CreateCommentDto,
   ): Promise<Comment | DomainException> {
-    const artist = await this.artistsService.findById(jwtPayload.userTypeId);
+    const artist = await this.artistsDbService.findById(jwtPayload.userTypeId);
 
     if (isServiceError(artist)) {
       return new DomainConflictException(artist);

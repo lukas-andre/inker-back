@@ -17,7 +17,7 @@ export class ArtistInfoDto {
   })
   @ValidateNested()
   @Type(() => AddressDto)
-  readonly address: AddressInterface;
+  readonly address: AddressDto;
 
   @ApiProperty({
     example: ['2', '3', '4', '5', '6'],
@@ -33,8 +33,9 @@ export class ArtistInfoDto {
     description: 'True if artist set agenda public',
     required: false,
   })
+  @IsBoolean()
   @Transform(value => Boolean(value.value === 'true' || value.value === true))
-  readonly agendaIsPublic: boolean;
+  readonly agendaIsPublic?: boolean;
 
   @ApiProperty({
     example: true,
