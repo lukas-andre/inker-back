@@ -8,14 +8,14 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistsService } from '../domain/services/artists.service';
+import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { CreateArtistParams } from './interfaces/createArtist.params';
 
 @Injectable()
 export class CreateArtistUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly artistsService: ArtistsService,
+    private readonly artistsDbService: ArtistsDbService,
     private readonly agendaService: AgendaService,
   ) {
     super(CreateArtistUseCase.name);
@@ -24,7 +24,7 @@ export class CreateArtistUseCase extends BaseUseCase implements UseCase {
   async execute(
     createArtistDto: CreateArtistParams,
   ): Promise<Artist | DomainException> {
-    const created = await this.artistsService.create(createArtistDto);
+    const created = await this.artistsDbService.create(createArtistDto);
     if (isServiceError(created)) {
       return new DomainConflictException(this.handleServiceError(created));
     }
@@ -37,7 +37,7 @@ export class CreateArtistUseCase extends BaseUseCase implements UseCase {
 
     const savedAgenda = await this.agendaService.save(agenda);
     if (isServiceError(savedAgenda)) {
-      await this.artistsService.delete(created.id);
+      await this.artistsDbService.delete(created.id);
       return new DomainConflictException(this.handleServiceError(savedAgenda));
     }
 

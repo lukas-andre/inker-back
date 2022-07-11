@@ -20,8 +20,8 @@ export const helmetOptions: FastifyHelmetOptions = {
 
 export const validationPipeOptions: ValidationPipeOptions = {
   whitelist: true,
-  transform: true,
   forbidNonWhitelisted: true,
+  transform: true,
   transformOptions: {
     enableImplicitConversion: true,
   },

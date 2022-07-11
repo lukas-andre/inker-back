@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
-import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
 import { AddressDto } from '../../../global/infrastructure/dtos/address.dto';
 
 export class CreateArtistDto {
@@ -54,7 +53,7 @@ export class CreateArtistDto {
   })
   @ValidateNested()
   @Type(() => AddressDto)
-  address: AddressInterface;
+  address: AddressDto;
 
   @ApiProperty({
     example: ['2', '3', '4', '5', '6'],

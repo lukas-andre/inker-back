@@ -27,11 +27,11 @@ export class AddLocationByApiUseCase extends BaseUseCase implements UseCase {
         city: addLocationDto.city,
         state: addLocationDto.state,
         country: addLocationDto.country,
-        longitud: addLocationDto.longitud,
-        latitud: addLocationDto.latitud,
+        lat: addLocationDto.lng,
+        lng: addLocationDto.lat,
         location: {
           type: 'Point',
-          coordinates: [addLocationDto.latitud, addLocationDto.longitud],
+          coordinates: [addLocationDto.lat, addLocationDto.lng],
         } as Point,
       });
     } catch (error) {

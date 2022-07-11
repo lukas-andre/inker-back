@@ -1,7 +1,14 @@
-import { Column, DeleteDateColumn, Entity } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { GenreInterface } from '../../../genres/genre.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { TagInterface } from '../../../tags/tag.interface';
+import { Contact } from './contact.entity';
 
 @Entity()
 export class Artist extends BaseEntity {
@@ -17,17 +24,15 @@ export class Artist extends BaseEntity {
   @Column({ name: 'last_name', nullable: true })
   lastName: string;
 
-  @Column({ name: 'contact_email', nullable: true })
-  contactEmail: string;
-
-  @Column({ name: 'contact_phone_number', nullable: true })
-  contactPhoneNumber: string;
-
   @Column({ name: 'short_description', nullable: true })
   shortDescription: string;
 
   @Column({ name: 'profile_thumbnail', nullable: true })
   profileThumbnail: string;
+
+  @OneToOne(() => Contact, contact => contact.artist, { cascade: true })
+  @JoinColumn()
+  contact: Contact;
 
   @Column('jsonb', { nullable: true })
   tags: TagInterface[];

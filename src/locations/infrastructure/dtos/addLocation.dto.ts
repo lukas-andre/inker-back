@@ -62,7 +62,7 @@ export class AddLocationDto implements AddressInterface {
   })
   @IsNotEmpty()
   @IsNumber()
-  readonly latitud: number;
+  readonly lat: number;
 
   @ApiProperty({
     example: -70.60971,
@@ -70,5 +70,5 @@ export class AddLocationDto implements AddressInterface {
   })
   @IsNotEmpty()
   @IsNumber()
-  readonly longitud: number;
+  readonly lng: number;
 }
