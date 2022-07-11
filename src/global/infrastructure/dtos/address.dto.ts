@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { AddressInterface } from '../../domain/interfaces/address.interface';
+import { GeometryDto } from './geometry.dto';
 
 export class AddressDto implements AddressInterface {
   @ApiProperty({
@@ -57,18 +64,11 @@ export class AddressDto implements AddressInterface {
   readonly country?: string;
 
   @ApiProperty({
-    example: -33.0244,
-    description: 'Latitud',
+    description: 'geometry',
+    required: false,
+    type: GeometryDto,
   })
-  @IsNotEmpty()
-  @IsNumber()
-  readonly latitud: number;
-
-  @ApiProperty({
-    example: -71.5517,
-    description: 'Longitud',
-  })
-  @IsNotEmpty()
-  @IsNumber()
-  readonly longitud: number;
+  @ValidateNested()
+  @Type(() => GeometryDto)
+  readonly geometry?: GeometryDto;
 }

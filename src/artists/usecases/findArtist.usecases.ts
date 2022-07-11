@@ -8,14 +8,14 @@ import { DomainNotFoundException } from '../../global/domain/exceptions/domainNo
 import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { ServiceError } from '../../global/domain/interfaces/serviceError';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
-import { ArtistsService } from '../domain/services/artists.service';
+import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 import { FindArtistByIdResult } from './interfaces/findArtistById.result';
 
 @Injectable()
 export class FindArtistsUseCases extends BaseUseCase {
   constructor(
-    private readonly artistsService: ArtistsService,
+    private readonly artistsDbService: ArtistsDbService,
     private readonly followedsService: FollowedsService,
     private readonly followingService: FollowingsService,
   ) {
@@ -24,7 +24,7 @@ export class FindArtistsUseCases extends BaseUseCase {
 
   async findById(id: number): Promise<FindArtistByIdResult | DomainException> {
     const artist: Partial<FindArtistByIdResult> | ServiceError =
-      await this.artistsService.findById(id);
+      await this.artistsDbService.findById(id);
 
     if (isServiceError(artist)) {
       return new DomainConflictException(this.handleServiceError(artist));
@@ -44,10 +44,10 @@ export class FindArtistsUseCases extends BaseUseCase {
   }
 
   async findOne(options: FindManyOptions<Artist>) {
-    return this.artistsService.findOne(options);
+    return this.artistsDbService.findOne(options);
   }
 
   async findAll(options: FindManyOptions<Artist>): Promise<Artist[]> {
-    return this.artistsService.find(options);
+    return this.artistsDbService.find(options);
   }
 }

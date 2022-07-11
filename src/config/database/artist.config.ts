@@ -16,7 +16,7 @@ export const artistDatabaseConf = registerAs<ArtistDbConfig>(
       name: ARTIST_DB_CONNECTION_NAME,
       database: ARTIST_DB_NAME,
       entities: ARTIST_ENTITIES,
-      logging: ['error'],
+      logging: ['info', 'query', 'error'],
       keepConnectionAlive: true,
     }),
 );

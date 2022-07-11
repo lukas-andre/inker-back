@@ -9,6 +9,7 @@ import {
   Repository,
 } from 'typeorm';
 import { CreateArtistDto } from '../../artists/infrastructure/dtos/createArtist.dto';
+import { CreateArtistParams } from '../../artists/usecases/interfaces/createArtist.params';
 import { BaseService } from '../../global/domain/services/base.service';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 
@@ -39,7 +40,7 @@ export class AgendaService extends BaseService {
   }
 
   // * this function could be more generic
-  async createWithArtistDto(dto: CreateArtistDto) {
+  async createWithArtistInfo(dto: CreateArtistParams) {
     const agenda: Partial<Agenda> = {
       open: dto.agendaIsOpen,
       public: dto.agendaIsPublic,
@@ -51,7 +52,7 @@ export class AgendaService extends BaseService {
       return await this.save(agenda);
     } catch (error) {
       return this.serviceError(
-        this.createWithArtistDto,
+        this.createWithArtistInfo,
         'Problems saving agenda',
         error.message,
       );

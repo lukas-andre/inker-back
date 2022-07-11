@@ -1,5 +1,6 @@
 import { Point } from 'geojson';
 import { Column, Entity, Index } from 'typeorm';
+import { ViewportInterface } from '../../../global/domain/interfaces/geometry.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity({ synchronize: false })
@@ -23,10 +24,13 @@ export class LocationEntity extends BaseEntity {
   country?: string;
 
   @Column({ type: 'double precision' })
-  latitud: number;
+  lat: number;
 
   @Column({ type: 'double precision' })
-  longitud: number;
+  lng: number;
+
+  @Column({ type: 'jsonb', nullable: true })
+  viewport?: ViewportInterface;
 
   @Index({ spatial: true })
   @Column({
