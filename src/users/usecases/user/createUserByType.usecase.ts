@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import stringify from 'fast-safe-stringify';
 import { AgendaService } from '../../../agenda/domain/agenda.service';
 import { ArtistsDbService } from '../../../artists/infrastructure/database/services/artistsDb.service';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
@@ -16,12 +17,11 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { ArtistLocationsService } from '../../../locations/domain/artistLocations.service';
+import { ArtistLocationsDbService } from '../../../locations/infrastructure/database/services/artistLocationsDb.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
-import * as stringify from 'json-stringify-safe';
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     private readonly customerService: CustomersService,
     private readonly rolesService: RolesService,
     private readonly agendaService: AgendaService,
-    private readonly artistLocationsService: ArtistLocationsService,
+    private readonly artistLocationsDbService: ArtistLocationsDbService,
     private readonly configService: ConfigService,
   ) {
     super(CreateUserByTypeUseCase.name);
@@ -101,7 +101,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     }
     this.logger.log(`🟢 Agenda created: ${agenda.id}`);
 
-    const artistLocation = await this.artistLocationsService.save(
+    const artistLocation = await this.artistLocationsDbService.save(
       this.mapCreateArtistInfoToArtistLocation(artist, createArtistParams),
     );
 
