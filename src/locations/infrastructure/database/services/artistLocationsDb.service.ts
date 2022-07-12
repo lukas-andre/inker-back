@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import stringify from 'fast-safe-stringify';
 import { Point } from 'geojson';
-import * as stringify from 'json-stringify-safe';
 import {
   DeepPartial,
   DeleteResult,
@@ -9,13 +9,13 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { ArtistLocation } from '../infrastructure/entities/artistLocation.entity';
-import { ArtistByRangeLocation } from '../usecases/interfaces/artistByRange.interface';
+import { ServiceError } from '../../../../global/domain/interfaces/serviceError';
+import { ArtistByRangeLocation } from '../../../usecases/interfaces/artistByRange.interface';
+import { ArtistLocation } from '../../entities/artistLocation.entity';
 
 @Injectable()
-export class ArtistLocationsService {
-  private readonly serviceName: string = ArtistLocationsService.name;
+export class ArtistLocationsDbService {
+  private readonly serviceName: string = ArtistLocationsDbService.name;
   private readonly logger = new Logger(this.serviceName);
   constructor(
     @InjectRepository(ArtistLocation, 'location-db')

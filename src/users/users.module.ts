@@ -2,8 +2,9 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgendaModule } from '../agenda/agenda.module';
 import { ArtistsModule } from '../artists/artists.module';
-import { ArtistsDatabaseModule } from '../artists/infrastructure/database/artistDatabase.module';
+import { ArtistsDbModule as ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
 import { CustomersModule } from '../customers/customers.module';
+import { LocationDbModule } from '../locations/infrastructure/database/locationDb.module';
 import { LocationsModule } from '../locations/locations.module';
 import { InitialPermissionsService } from './domain/services/initialPermissions.service';
 import { PermissionsService } from './domain/services/permissions.service';
@@ -29,7 +30,7 @@ import { FindOneRoleUseCase } from './usecases/role/findOneRole.usecase';
 import { InitRolesUseCase } from './usecases/role/initRoles.usecase';
 import { CreateUserByTypeUseCase } from './usecases/user/createUserByType.usecase';
 import { SendSMSAccountVerificationCodeUseCase } from './usecases/user/sendSMSAccountVerificationCode.usecase';
-import { SendSMSForgotPasswordCodeUseCase } from './usecases/user/sendSMSForgotPasswordCode.usecas';
+import { SendSMSForgotPasswordCodeUseCase } from './usecases/user/sendSMSForgotPasswordCode.usecase';
 import { UpdateUserEmailUseCase } from './usecases/user/updateUserEmail.usecase';
 import { UpdateUserPasswordUseCase } from './usecases/user/updateUserPassword.usecase';
 import { UpdateUserUsernameUseCase } from './usecases/user/updateUserUsername.usecase';
@@ -37,7 +38,8 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
 
 @Module({
   imports: [
-    ArtistsDatabaseModule,
+    ArtistsDbModule,
+    LocationDbModule,
     TypeOrmModule.forFeature(
       [User, Role, Permission, VerificationHash],
       'user-db',

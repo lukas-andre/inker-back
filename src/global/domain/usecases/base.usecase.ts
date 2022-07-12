@@ -1,4 +1,4 @@
-import * as stringify from 'json-stringify-safe';
+import stringify from 'fast-safe-stringify';
 import { ServiceError } from '../../../global/domain/interfaces/serviceError';
 import { DomainException } from '../exceptions/domain.exception';
 import { BaseService } from '../services/base.service';
