@@ -10,4 +10,4 @@ import { ContactDbService } from './services/contactDb.service';
   providers: [ArtistsDbService, ContactDbService],
   exports: [ArtistsDbService, ContactDbService],
 })
-export class ArtistsDatabaseModule {}
+export class ArtistsDbModule {}

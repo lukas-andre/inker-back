@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as stringify from 'json-stringify-safe';
+import stringify from 'fast-safe-stringify';
 import { DomainException } from '../../global/domain/exceptions/domain.exception';
 import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
 import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';

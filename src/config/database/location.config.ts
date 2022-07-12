@@ -16,7 +16,7 @@ export const locationDatabaseConf = registerAs<LocationDbConfig>(
       name: LOCATION_DB_CONNECTION_NAME,
       database: LOCATION_DB_NAME,
       entities: LOCATION_ENTITIES,
-      logging: ['error'],
+      logging: ['info', 'query', 'error'],
       keepConnectionAlive: true,
     }),
 );

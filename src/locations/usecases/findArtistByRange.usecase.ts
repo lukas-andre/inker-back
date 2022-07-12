@@ -9,13 +9,13 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { logCatchedError } from '../../global/domain/utils/logCatchedError';
-import { ArtistLocationsService } from '../domain/artistLocations.service';
+import { ArtistLocationsDbService } from '../infrastructure/database/services/artistLocationsDb.service';
 import { FindArtistByArtistDto } from '../infrastructure/dtos/findArtistByRange.dto';
 
 @Injectable()
 export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly artistsLocationService: ArtistLocationsService,
+    private readonly artistsLocationDbService: ArtistLocationsDbService,
     private readonly artistsDbService: ArtistsDbService,
   ) {
     super(FindArtistByRangeUseCase.name);
@@ -32,7 +32,7 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
       ],
     };
 
-    const result = await this.artistsLocationService.findByRange(
+    const result = await this.artistsLocationDbService.findByRange(
       origin,
       findArtistByArtistDto.range,
     );
