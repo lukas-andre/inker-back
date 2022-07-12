@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FindManyOptions } from 'typeorm';
 import { FollowedsService } from '../../follows/domain/services/followeds.service';
 import { FollowingsService } from '../../follows/domain/services/followings.service';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
+import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
@@ -22,16 +18,12 @@ export class FindArtistsUseCases extends BaseUseCase {
     super(FindArtistsUseCases.name);
   }
 
-  async findById(id: number): Promise<FindArtistByIdResult | DomainException> {
-    const artist: Partial<FindArtistByIdResult> | ServiceError =
+  async findById(id: number): Promise<FindArtistByIdResult> {
+    const artist: Partial<FindArtistByIdResult> =
       await this.artistsDbService.findById(id);
 
-    if (isServiceError(artist)) {
-      return new DomainConflictException(this.handleServiceError(artist));
-    }
-
     if (!artist) {
-      return new DomainNotFoundException('Artist not found');
+      throw new DomainNotFound('Artist not found');
     }
 
     // TODO: ESTO PUEDE SER EN PARALELO

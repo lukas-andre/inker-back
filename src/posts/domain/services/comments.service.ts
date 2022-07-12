@@ -8,12 +8,15 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { BaseService } from '../../../global/domain/services/base.service';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import {
+  DBServiceFindException,
+  DBServiceSaveException,
+} from '../../../global/infrastructure/exceptions/dbService.exception';
 import { Comment } from '../../../posts/infrastructure/entities/comment.entity';
 
 @Injectable()
-export class CommentsService extends BaseService {
+export class CommentsService extends BaseComponent {
   constructor(
     @InjectRepository(Comment, 'post-db')
     private readonly commentsRepository: Repository<Comment>,
@@ -25,17 +28,11 @@ export class CommentsService extends BaseService {
     return this.commentsRepository.findOne({ where: { id } });
   }
 
-  async find(
-    options: FindManyOptions<Comment>,
-  ): Promise<Comment[] | ServiceError> {
+  async find(options: FindManyOptions<Comment>): Promise<Comment[]> {
     try {
       return this.commentsRepository.find(options);
     } catch (error) {
-      return this.serviceError(
-        this.find,
-        'Problems finding comments',
-        error.message,
-      );
+      throw new DBServiceFindException(this, 'Problems finding comment', error);
     }
   }
 
@@ -64,15 +61,11 @@ export class CommentsService extends BaseService {
     return this.commentsRepository.findOne(options);
   }
 
-  async save(comment: DeepPartial<Comment>): Promise<Comment | ServiceError> {
+  async save(comment: DeepPartial<Comment>): Promise<Comment> {
     try {
       return this.commentsRepository.save(comment);
     } catch (error) {
-      return this.serviceError(
-        this.save,
-        'Problems saving comment',
-        error.message,
-      );
+      throw new DBServiceSaveException(this, 'Problems saving comment', error);
     }
   }
 

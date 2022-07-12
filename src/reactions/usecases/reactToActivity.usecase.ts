@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { Injectable } from '@nestjs/common';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { FindReactionAndReactionTypeGroup } from '../domain/interfaces/findReactionAndReactionTypeGroup.interface';
 import { ActivitiesService } from '../domain/services/activities.service';
 import { ReactionsService } from '../domain/services/reactions.service';
@@ -9,18 +9,18 @@ import { Reaction } from '../infrastructure/entities/reaction.entity';
 import { ReactionToActivityDto } from '../infrastructure/reactionToActivity.dto';
 
 @Injectable()
-export class ReactToActivityUseCase {
-  private readonly logger = new Logger(ReactToActivityUseCase.name);
-
+export class ReactToActivityUseCase extends BaseUseCase {
   constructor(
     private readonly activitiesService: ActivitiesService,
     private readonly reactionsService: ReactionsService,
-  ) {}
+  ) {
+    super(ReactToActivityUseCase.name);
+  }
 
   async execute(
     jwtPayload: JwtPayload,
     reactionDto: ReactionToActivityDto,
-  ): Promise<FindReactionAndReactionTypeGroup | DomainException> {
+  ): Promise<FindReactionAndReactionTypeGroup> {
     const isSameReaction = await this.validateSameUserReaction(
       jwtPayload,
       reactionDto,

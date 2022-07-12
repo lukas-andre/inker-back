@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import {
   BaseUseCase,
   UseCase,
@@ -23,7 +20,7 @@ export class GetRepliesFromCommentUseCase
   async execute(
     commentId: number,
     pagination: PaginationDto,
-  ): Promise<Comment[] | DomainException> {
+  ): Promise<Comment[]> {
     const replies = await this.commentsService.find({
       where: {
         parentId: commentId,
@@ -32,10 +29,6 @@ export class GetRepliesFromCommentUseCase
       take: pagination.limit,
       skip: pagination.offset,
     });
-
-    if (isServiceError(replies)) {
-      return new DomainConflictException(this.handleServiceError(replies));
-    }
 
     return replies.length ? replies : [];
   }

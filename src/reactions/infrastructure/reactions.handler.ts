@@ -24,9 +24,7 @@ export class ReactionsHandler extends BaseHandler {
     request: any,
   ): Promise<ReactionToActivityResponseDto> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    return this.resolve(
-      await this.reactToActivityUseCase.execute(jwtPayload, dto),
-    );
+    return this.reactToActivityUseCase.execute(jwtPayload, dto);
   }
 
   async handleGetReactionsDetail(
@@ -35,12 +33,10 @@ export class ReactionsHandler extends BaseHandler {
     request: any,
   ): Promise<ReactionToActivityResponseDto> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    return this.resolve(
-      await this.getReactionsDetailByActivityUseCase.execute(
-        jwtPayload,
-        activityId,
-        activity,
-      ),
+    return this.getReactionsDetailByActivityUseCase.execute(
+      jwtPayload,
+      activityId,
+      activity,
     );
   }
 
@@ -50,12 +46,10 @@ export class ReactionsHandler extends BaseHandler {
     request: any,
   ): Promise<ReactionToActivityResponseDto> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    return this.resolve(
-      await this.getActivityReactionsResumeUseCase.execute(
-        jwtPayload,
-        activityId,
-        activity,
-      ),
+    return this.getActivityReactionsResumeUseCase.execute(
+      jwtPayload,
+      activityId,
+      activity,
     );
   }
 }

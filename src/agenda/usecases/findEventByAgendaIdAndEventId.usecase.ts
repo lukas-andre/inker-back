@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import {
+  DomainException,
+  DomainNotFound,
+} from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -31,24 +32,19 @@ export class FindEventByAgendaIdAndEventIdUseCase
     console.timeEnd('agendaService.findById');
 
     if (!existsAgenda) {
-      return new DomainNotFoundException('Agenda not found');
+      throw new DomainNotFound('Agenda not found');
     }
 
-    try {
-      console.time('agendaEventService.findOne');
-      const result = this.agendaEventService.findOne({
-        where: {
-          id: eventId,
-          agenda: {
-            id: existsAgenda.id,
-          },
+    console.time('agendaEventService.findOne');
+    const result = await this.agendaEventService.findOne({
+      where: {
+        id: eventId,
+        agenda: {
+          id: existsAgenda.id,
         },
-      });
-      console.timeEnd('agendaEventService.findOne');
-      return result;
-    } catch (error) {
-      this.logger.log(`Adding event error ${error.message}`);
-      return new DomainInternalServerErrorException('Failed saving event');
-    }
+      },
+    });
+    console.timeEnd('agendaEventService.findOne');
+    return result;
   }
 }

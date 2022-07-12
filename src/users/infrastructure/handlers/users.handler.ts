@@ -36,27 +36,21 @@ export class UsersHandler extends BaseHandler {
   }
 
   public async handleCreate(dto: CreateUserReqDto): Promise<any> {
-    return this.resolve(
-      await this.createUserByTypeUseCase.execute(dto as CreateUserByTypeParams),
-    );
+    return this.createUserByTypeUseCase.execute(dto as CreateUserByTypeParams);
   }
 
   public async handleUpdateUserEmail(
     userId: number,
     dto: UpdateUserEmailReqDto,
   ) {
-    return this.resolve(
-      await this.updateUserEmailUseCase.execute(userId, dto.email),
-    );
+    return this.updateUserEmailUseCase.execute(userId, dto.email);
   }
 
   public async handleUpdateUserUsername(
     userId: number,
     dto: UpdateUserUsernameReqDto,
   ) {
-    return this.resolve(
-      await this.updateUserUsernameUseCase.execute(userId, dto.username),
-    );
+    return this.updateUserUsernameUseCase.execute(userId, dto.username);
   }
 
   public async handleUpdateUserPassword(
@@ -65,14 +59,12 @@ export class UsersHandler extends BaseHandler {
     query: UpdateUserPasswordQueryDto,
     dto: UpdateUserPasswordReqDto,
   ) {
-    return this.resolve(
-      await this.updateUserPasswordUseCase.execute(
-        userId,
-        code,
-        query.notificationType,
-        dto.password,
-        dto.repeatedPassword,
-      ),
+    return this.updateUserPasswordUseCase.execute(
+      userId,
+      code,
+      query.notificationType,
+      dto.password,
+      dto.repeatedPassword,
     );
   }
 
@@ -84,11 +76,9 @@ export class UsersHandler extends BaseHandler {
       case NotificationType.EMAIL:
         throw Error('Not implemented');
       case NotificationType.SMS:
-        return this.resolve(
-          await this.sendSMSForgotPasswordCodeUseCase.execute(
-            userId,
-            query.phoneNumber,
-          ),
+        return this.sendSMSForgotPasswordCodeUseCase.execute(
+          userId,
+          query.phoneNumber,
         );
     }
   }
@@ -99,11 +89,9 @@ export class UsersHandler extends BaseHandler {
   ) {
     switch (query.notificationType) {
       case NotificationType.SMS:
-        return this.resolve(
-          await this.sendSMSAccountVerificationCodeUseCase.execute(
-            userId,
-            query.phoneNumber,
-          ),
+        return this.sendSMSAccountVerificationCodeUseCase.execute(
+          userId,
+          query.phoneNumber,
         );
       case NotificationType.EMAIL:
         // TODO: IMPLEMENT EMAIL VERIFICATION TOKEN USE CASE
@@ -121,11 +109,9 @@ export class UsersHandler extends BaseHandler {
         throw new Error('Function not implemented.');
 
       case NotificationType.SMS:
-        return this.resolve(
-          await this.validateSMSAccountVerificationCodeUseCase.execute(
-            userId,
-            code,
-          ),
+        return this.validateSMSAccountVerificationCodeUseCase.execute(
+          userId,
+          code,
         );
     }
   }

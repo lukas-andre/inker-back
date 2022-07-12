@@ -25,9 +25,7 @@ export class PostsHandler extends BaseHandler {
     request: any,
   ) {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    return this.resolve(
-      await this.uploadPostUseCase.execute(jwtPayload, files, dto),
-    );
+    return this.uploadPostUseCase.execute(jwtPayload, files, dto);
   }
 
   public async listArtistPostByUserId(
@@ -35,8 +33,6 @@ export class PostsHandler extends BaseHandler {
     query: ListAllArtistPostsQueryDto,
     pagination: PaginationDto,
   ) {
-    return this.resolve(
-      await this.getAllArtistPostsUseCase.execute(userId, query, pagination),
-    );
+    return this.getAllArtistPostsUseCase.execute(userId, query, pagination);
   }
 }

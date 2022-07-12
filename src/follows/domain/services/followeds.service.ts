@@ -8,17 +8,19 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { DbServiceNotFound } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { Followed } from '../../infrastructure/entities/followed.entity';
 
 @Injectable()
-export class FollowedsService {
-  private readonly serviceName: string = FollowedsService.name;
-
+export class FollowedsService extends BaseComponent {
   constructor(
     @InjectRepository(Followed, 'follow-db')
     private readonly followersRepository: Repository<Followed>,
-  ) {}
+  ) {
+    super(FollowedsService.name);
+  }
 
   async findById(id: number) {
     return this.followersRepository.findOne({ where: { id } });
@@ -29,20 +31,24 @@ export class FollowedsService {
   }
 
   async findByKey(findConditions: FindOptionsWhere<Followed>) {
-    return this.followersRepository.find({
-      select: [
-        'userFollowedId',
-        'userId',
-        'userType',
-        'userTypeId',
-        'username',
-        'fullname',
-        'profileThumbnail',
-      ],
-      where: {
-        ...findConditions,
-      },
-    });
+    try {
+      return await this.followersRepository.find({
+        select: [
+          'userFollowedId',
+          'userId',
+          'userType',
+          'userTypeId',
+          'username',
+          'fullname',
+          'profileThumbnail',
+        ],
+        where: {
+          ...findConditions,
+        },
+      });
+    } catch (error) {
+      throw new DbServiceNotFound(this, 'Trouble finding event', error);
+    }
   }
 
   async findAndCount(options: FindManyOptions<Followed>) {

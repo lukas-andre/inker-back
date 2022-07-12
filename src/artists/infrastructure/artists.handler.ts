@@ -21,20 +21,18 @@ export class ArtistsHandler extends BaseHandler {
   }
 
   async handleCreate(dto: CreateArtistDto): Promise<BaseArtistResponse> {
-    return this.resolve(await this.createArtistUseCase.execute(dto));
+    return this.createArtistUseCase.execute(dto);
   }
 
   async handleUpdateProfileProfilePicture(
     id: number,
     file: any,
   ): Promise<BaseArtistResponse> {
-    return this.resolve(
-      await this.updateArtistProfilePictureUseCase.execute(id, file),
-    );
+    return this.updateArtistProfilePictureUseCase.execute(id, file);
   }
 
   async handleFindById(id: number): Promise<BaseArtistResponse> {
-    return this.resolve(await this.findArtistsUseCases.findById(id));
+    return this.findArtistsUseCases.findById(id);
   }
   async handleGetAll(): Promise<BaseArtistResponse[]> {
     return this.findArtistsUseCases.findAll({});
@@ -44,8 +42,6 @@ export class ArtistsHandler extends BaseHandler {
     id: number,
     dto: UpdateArtistDto,
   ): Promise<BaseArtistResponse> {
-    return this.resolve(
-      await this.updateArtistBasicInfoUseCase.execute(id, dto),
-    );
+    return this.updateArtistBasicInfoUseCase.execute(id, dto);
   }
 }

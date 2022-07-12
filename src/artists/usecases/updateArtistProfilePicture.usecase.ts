@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import stringify from 'fast-safe-stringify';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import {
+  DomainBadRequest,
+  DomainNotFound,
+} from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -23,19 +23,19 @@ export class UpdateArtistProfilePictureUseCase
     super(UpdateArtistProfilePictureUseCase.name);
   }
 
-  async execute(id: number, file: any): Promise<Artist | DomainException> {
-    if (!file) return new DomainNotFoundException('Not valid file to upload');
+  async execute(id: number, file: any): Promise<Artist> {
+    if (!file) {
+      throw new DomainBadRequest('Not valid file to upload');
+    }
 
     this.logger.log(`id:  ${id}`);
     this.logger.log(`file:  ${stringify(file)}`);
 
     let artist = await this.artistsDbService.findById(id);
 
-    if (isServiceError(artist)) {
-      return new DomainConflictException(this.handleServiceError(artist));
+    if (!artist) {
+      throw new DomainNotFound('Artists not found');
     }
-
-    if (!artist) return new DomainNotFoundException('Artists not found');
 
     const source = `artist/${id}`;
     const fileName = `profile_picture_${id}`;
@@ -55,8 +55,6 @@ export class UpdateArtistProfilePictureUseCase
 
     this.logger.log(`artist: ' ${stringify(artist)}`);
 
-    return isServiceError(artist)
-      ? new DomainConflictException(artist)
-      : artist;
+    return artist;
   }
 }

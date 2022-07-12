@@ -1,6 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { Injectable } from '@nestjs/common';
 import { FindAllPermissionsUseCase } from '../../usecases/permission/findAllPermissions.usecase';
 import { FindAllRoutesUseCase } from '../../usecases/permission/findAllRoutes.usecase';
 import { FindOnePermissionUseCase } from '../../usecases/permission/findOnePermission.usecase';
@@ -17,15 +15,7 @@ export class PermissionsHandler {
   ) {}
 
   async handleInitial(): Promise<Permission[]> {
-    const result = await this.initPermissionsUseCase.execute();
-
-    if (isServiceError(result)) {
-      throw new ConflictException(
-        `Controller ${(result as ServiceError).service} already exists`,
-      );
-    }
-
-    return result;
+    return this.initPermissionsUseCase.execute();
   }
 
   async findRoutes() {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsLatitude,
   IsLongitude,
@@ -25,6 +25,7 @@ export class LocationDto implements LocationInterface {
   })
   @IsNumber()
   @IsLatitude()
+  @Expose()
   lat: number;
 
   @ApiProperty({
@@ -34,6 +35,7 @@ export class LocationDto implements LocationInterface {
   })
   @IsNumber()
   @IsLongitude()
+  @Expose()
   lng: number;
 }
 
@@ -46,6 +48,7 @@ export class ViewPortDto implements ViewportInterface {
   })
   @ValidateNested()
   @Type(() => LocationDto)
+  @Expose()
   northeast: LocationDto;
 
   @ApiProperty({
@@ -56,6 +59,7 @@ export class ViewPortDto implements ViewportInterface {
   })
   @ValidateNested()
   @Type(() => LocationDto)
+  @Expose()
   southwest: LocationDto;
 }
 
@@ -67,6 +71,7 @@ export class GeometryDto implements GeometryInterface {
   })
   @ValidateNested()
   @Type(() => LocationDto)
+  @Expose()
   location: LocationDto;
 
   @ApiProperty({
@@ -79,5 +84,6 @@ export class GeometryDto implements GeometryInterface {
   })
   @ValidateNested()
   @Type(() => ViewPortDto)
+  @Expose()
   viewport: ViewPortDto;
 }

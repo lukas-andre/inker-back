@@ -1,9 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Repository } from 'typeorm';
-import { BaseService } from '../../../../global/domain/services/base.service';
+import { BaseComponent } from '../../../../global/domain/components/base.component';
 import { Contact } from '../../entities/contact.entity';
 
-export class ContactDbService extends BaseService {
+export class ContactDbService extends BaseComponent {
   constructor(
     @InjectRepository(Contact, 'artist-db')
     private readonly contactRepository: Repository<Contact>,

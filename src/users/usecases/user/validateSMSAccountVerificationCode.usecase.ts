@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../../global/domain/exceptions/domainNotFound.exception';
-import { UnprocessableDomainException } from '../../../global/domain/exceptions/unprocessableDomain.exception';
-import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
+import {
+  DomainConflict,
+  DomainException,
+  DomainNotFound,
+  DomainUnProcessableEntity,
+} from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import { UsersService } from '../../domain/services/users.service';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
@@ -47,7 +49,7 @@ export class ValidateSMSAccountVerificationCodeUseCase
     this.logger.log({ userHash });
 
     if (!userHash) {
-      return new DomainNotFoundException(`Hash for userId ${userId} not found`);
+      throw new DomainNotFound(`Hash for userId ${userId} not found`);
     }
 
     const isValidCode =
@@ -58,22 +60,23 @@ export class ValidateSMSAccountVerificationCodeUseCase
     this.logger.log({ isValidCode });
 
     if (!isValidCode) {
-      return new DomainConflictException('Invalid code');
+      throw new DomainConflict('Invalid code');
     }
 
-    const activateUserResult = await this.usersService.activate(userId);
-    this.logger.log({ activateUserResult });
+    try {
+      // TODO: - this should be done in a transaction
+      const activateUserResult = await this.usersService.activate(userId);
+      this.logger.log({ activateUserResult });
+      if (activateUserResult.affected >= 1) {
+        await this.verificationHashService.delete(userHash.id);
+      }
 
-    if (isServiceError(activateUserResult)) {
-      return new UnprocessableDomainException(
-        this.handleServiceError(activateUserResult),
-      );
+      return DefaultResponseHelper.ok;
+    } catch (error) {
+      if (error instanceof DbServiceException) {
+        throw new DomainUnProcessableEntity(error.publicError);
+      }
+      throw error;
     }
-
-    if (activateUserResult.affected >= 1) {
-      await this.verificationHashService.delete(userHash.id);
-    }
-
-    return DefaultResponseHelper.ok;
   }
 }

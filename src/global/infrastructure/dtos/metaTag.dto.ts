@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class MetaTagDto {
@@ -10,6 +10,7 @@ export class MetaTagDto {
   @IsOptional()
   @IsNumber()
   @Transform(value => (value ? value : ''))
+  @Expose()
   readonly id?: number;
 
   @ApiProperty({
@@ -19,5 +20,6 @@ export class MetaTagDto {
   @IsOptional()
   @IsString()
   @Transform(value => (value ? value : ''))
+  @Expose()
   readonly name?: string;
 }

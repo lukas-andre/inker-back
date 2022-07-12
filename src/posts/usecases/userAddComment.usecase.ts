@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import {
   BaseUseCase,
@@ -28,15 +25,11 @@ export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
   public async execute(
     jwtPayload: JwtPayload,
     createCommentDto: CreateCommentDto,
-  ): Promise<Comment | DomainException> {
+  ): Promise<Comment> {
     const artist = await this.artistsDbService.findById(jwtPayload.userTypeId);
 
-    if (isServiceError(artist)) {
-      return new DomainConflictException(artist);
-    }
-
     if (!artist) {
-      return new DomainNotFoundException('Artists not found');
+      throw new DomainNotFound('Artists not found');
     }
 
     if (
@@ -45,7 +38,7 @@ export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
         createCommentDto.parentType,
       ))
     ) {
-      return new DomainNotFoundException('Comment parent is not valid');
+      throw new DomainNotFound('Comment parent is not valid');
     }
 
     const savedComment = await this.commentsService.save({
@@ -60,9 +53,7 @@ export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
       username: jwtPayload.username,
     });
 
-    return isServiceError(savedComment)
-      ? new DomainConflictException(this.handleServiceError(savedComment))
-      : savedComment;
+    return savedComment;
   }
 
   private async validParent(

@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -23,23 +20,17 @@ export class UpdateArtistBasicInfoUseCase
   async execute(
     id: number,
     updateArtistDto: UpdateArtistDto,
-  ): Promise<BaseArtistResponse | DomainException> {
+  ): Promise<BaseArtistResponse> {
     let result = await this.artistsDbService.findById(id);
 
-    if (isServiceError(result)) {
-      return new DomainConflictException(this.handleServiceError(result));
-    }
-
     if (!result) {
-      return new DomainNotFoundException('Artist not found');
+      throw new DomainNotFound('Artist not found');
     }
 
     result = await this.artistsDbService.save(
       Object.assign(result, updateArtistDto),
     );
 
-    return isServiceError(result)
-      ? new DomainConflictException(this.handleServiceError(result))
-      : result;
+    return result;
   }
 }
