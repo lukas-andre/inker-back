@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { resolveDomainException } from '../../global/infrastructure/exceptions/resolveDomainException';
 import { LoginType } from '../domain/enums/loginType.enum';
 import { DefaultLoginUseCase } from '../usecases/defaultLogin.usecase';
 import { LoginParams } from '../usecases/interfaces/defaultLogin.params';
@@ -12,7 +10,7 @@ export class AuthHandler {
   constructor(private readonly loginUseCase: DefaultLoginUseCase) {}
 
   async handleLogin(dto: LoginReqDto): Promise<LoginResDto> {
-    let result: LoginResDto | DomainException;
+    let result: LoginResDto;
 
     switch (dto.loginType) {
       case LoginType.FACEBOOK:
@@ -22,10 +20,6 @@ export class AuthHandler {
       default:
         result = await this.loginUseCase.execute(dto as LoginParams);
         break;
-    }
-
-    if (result instanceof DomainException) {
-      throw resolveDomainException(result);
     }
 
     return result;

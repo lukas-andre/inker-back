@@ -1,9 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DomainException } from '../../../global/domain/exceptions/domain.exception';
-import { DomainBadRule } from '../../../global/domain/exceptions/domainBadRule.exception';
-import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { DomainBadRule } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -44,7 +41,7 @@ export class SendSMSAccountVerificationCodeUseCase
   public async execute(
     userId: number,
     phoneNumber: string,
-  ): Promise<DefaultResponseDto | DomainException> {
+  ): Promise<DefaultResponseDto> {
     const verificationCode =
       this.verificationHashService.generateVerificationCode();
 
@@ -59,10 +56,10 @@ export class SendSMSAccountVerificationCodeUseCase
     });
     this.logger.log({ isSmsAlreadySent });
 
-    let verificationHash: VerificationHash | ServiceError;
+    let verificationHash: VerificationHash;
     if (isSmsAlreadySent) {
       if (isSmsAlreadySent.tries >= this.maxTries) {
-        return new DomainBadRule('Max sms tries reached');
+        throw new DomainBadRule('Max sms tries reached');
       }
       verificationHash = await this.generateNewValidationHash(
         isSmsAlreadySent,
@@ -78,12 +75,6 @@ export class SendSMSAccountVerificationCodeUseCase
       );
     }
 
-    if (verificationHash instanceof ServiceError) {
-      return new DomainConflictException(
-        this.handleServiceError(verificationHash),
-      );
-    }
-
     const smsMessage = `Ingrese ${verificationCode} para activar su cuenta en Inker`;
 
     const snsResult = await this.smsClient.sendSMS(phoneNumber, smsMessage);
@@ -96,7 +87,7 @@ export class SendSMSAccountVerificationCodeUseCase
   private async generateNewValidationHash(
     previousHash: VerificationHash,
     verificationCode: string,
-  ): Promise<VerificationHash | ServiceError> {
+  ): Promise<VerificationHash> {
     return this.verificationHashService.edit(previousHash.id, {
       ...previousHash,
       tries: ++previousHash.tries,

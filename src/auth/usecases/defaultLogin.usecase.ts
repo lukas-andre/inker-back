@@ -3,10 +3,11 @@ import { ArtistsDbService } from '../../artists/infrastructure/database/services
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { CustomersService } from '../../customers/domain/customers.service';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainBadRule } from '../../global/domain/exceptions/domainBadRule.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import {
+  DomainBadRule,
+  DomainConflict,
+  DomainNotFound,
+} from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -28,9 +29,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
     super(DefaultLoginUseCase.name);
   }
 
-  async execute(
-    loginParams: LoginParams,
-  ): Promise<DefaultLoginResult | DomainException> {
+  async execute(loginParams: LoginParams): Promise<DefaultLoginResult> {
     this.logger.log({ loginParams });
     const user = await this.usersService.findByType(
       loginParams.loginType,
@@ -40,7 +39,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
     this.logger.log({ user });
 
     if (!user) {
-      return new DomainConflictException('Invalid credentials');
+      throw new DomainConflict('Invalid credentials');
     }
 
     return this.defaultLogin(user, loginParams);
@@ -49,24 +48,24 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   private async defaultLogin(
     user: User,
     loginParams: LoginParams,
-  ): Promise<DefaultLoginResult | DomainException> {
+  ): Promise<DefaultLoginResult> {
     const result = await this.usersService.validatePassword(
       loginParams.password,
       user.password,
     );
 
     if (!result) {
-      return new DomainConflictException('Invalid credentials');
+      throw new DomainConflict('Invalid credentials');
     }
 
     if (!user.active) {
-      return new DomainBadRule('User is not active');
+      throw new DomainBadRule('User is not active');
     }
 
     const entity = await this.findUserEntityByType(user.userType, user.id);
 
     if (!entity) {
-      return new DomainNotFoundException(`User not found`);
+      throw new DomainNotFound(`User not found`);
     }
 
     return this.authService.generateJwtByUserType(user.userType, user, entity);

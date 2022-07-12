@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import stringify from 'fast-safe-stringify';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import {
+  DomainInternalServerError,
+  DomainNotFound,
+} from '../../global/domain/exceptions/domain.exception';
+
 import {
   BaseUseCase,
   UseCase,
@@ -20,20 +22,17 @@ export class CancelEventUseCase extends BaseUseCase implements UseCase {
     super(CancelEventUseCase.name);
   }
 
-  async execute(
-    eventId: number,
-    agendaId: number,
-  ): Promise<Agenda | DomainException> {
+  async execute(eventId: number, agendaId: number): Promise<Agenda> {
     const existsAgenda = await this.agendaService.findById(agendaId);
 
     if (!existsAgenda) {
-      return new DomainNotFoundException('Agenda not found');
+      throw new DomainNotFound('Agenda not found');
     }
 
     const event = await this.agendaEventService.findById(eventId);
 
     if (!event) {
-      return new DomainNotFoundException('Event not found');
+      throw new DomainNotFound('Event not found');
     }
 
     try {
@@ -42,14 +41,10 @@ export class CancelEventUseCase extends BaseUseCase implements UseCase {
       if (result.affected) {
         return existsAgenda;
       }
-      return new DomainInternalServerErrorException(
-        'Fail when event is canceled',
-      );
+      throw new DomainInternalServerError('Fail when event is canceled');
     } catch (error) {
-      this.logger.log(`Adding event error ${error.message}`);
-      return new DomainInternalServerErrorException(
-        'Fail when event is canceled',
-      );
+      this.logger.error(`Adding event error ${error.message}`);
+      throw new DomainInternalServerError('Fail when event is canceled');
     }
   }
 }

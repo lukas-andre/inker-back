@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import stringify from 'fast-safe-stringify';
 import { Point } from 'geojson';
@@ -9,18 +9,22 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
-import { ServiceError } from '../../../../global/domain/interfaces/serviceError';
+import { BaseComponent } from '../../../../global/domain/components/base.component';
+import {
+  DBServiceFindException,
+  DBServiceSaveException,
+} from '../../../../global/infrastructure/exceptions/dbService.exception';
 import { ArtistByRangeLocation } from '../../../usecases/interfaces/artistByRange.interface';
 import { ArtistLocation } from '../../entities/artistLocation.entity';
 
 @Injectable()
-export class ArtistLocationsDbService {
-  private readonly serviceName: string = ArtistLocationsDbService.name;
-  private readonly logger = new Logger(this.serviceName);
+export class ArtistLocationsDbService extends BaseComponent {
   constructor(
     @InjectRepository(ArtistLocation, 'location-db')
     private readonly artistLocationsRepository: Repository<ArtistLocation>,
-  ) {}
+  ) {
+    super(ArtistLocationsDbService.name);
+  }
 
   async findById(id: number) {
     return this.artistLocationsRepository.findOne({ where: { id } });
@@ -30,9 +34,12 @@ export class ArtistLocationsDbService {
     return this.artistLocationsRepository.find(options);
   }
 
-  async findByRange(originPoint: Point, range = 1000) {
+  async findByRange(
+    originPoint: Point,
+    range = 1000,
+  ): Promise<ArtistByRangeLocation[]> {
     try {
-      return this.artistLocationsRepository
+      return await this.artistLocationsRepository
         .createQueryBuilder('location')
         .select()
         .addSelect(
@@ -48,12 +55,11 @@ export class ArtistLocationsDbService {
         })
         .getRawMany<ArtistByRangeLocation>();
     } catch (error) {
-      return {
-        service: this.serviceName,
-        method: this.findByRange.name,
-        publicErrorMessage: 'Trouble find locations by range',
-        catchedErrorMessage: error.message,
-      } as ServiceError;
+      throw new DBServiceFindException(
+        this,
+        'Trouble finding locations',
+        error,
+      );
     }
   }
 
@@ -68,7 +74,11 @@ export class ArtistLocationsDbService {
   }
 
   async save(location: DeepPartial<ArtistLocation>): Promise<ArtistLocation> {
-    return this.artistLocationsRepository.save(location);
+    try {
+      return await this.artistLocationsRepository.save(location);
+    } catch (error) {
+      throw new DBServiceSaveException(this, 'Trouble saving location', error);
+    }
   }
 
   async delete(id: string): Promise<DeleteResult> {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, Max, Min } from 'class-validator';
 
 export class PaginationDto {
@@ -13,6 +13,7 @@ export class PaginationDto {
   @Min(1)
   @Max(50)
   @Transform(value => Number(value))
+  @Expose()
   readonly limit: number;
 
   @ApiProperty({
@@ -24,5 +25,6 @@ export class PaginationDto {
   @IsNumber()
   @Min(0)
   @Transform(value => Number(value))
+  @Expose()
   readonly offset: number;
 }

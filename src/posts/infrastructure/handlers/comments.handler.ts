@@ -17,8 +17,6 @@ export class CommentsHandler extends BaseHandler {
   async handleCreateComment(dto: CreateCommentDto, request: any) {
     console.log('dto: ', dto);
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
-    return this.resolve(
-      await this.userAddCommentUseCase.execute(jwtPayload, dto),
-    );
+    return this.userAddCommentUseCase.execute(jwtPayload, dto);
   }
 }

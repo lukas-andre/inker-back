@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import stringify from 'fast-safe-stringify';
 import { AgendaService } from '../../../agenda/domain/agenda.service';
+import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
 import { ArtistsDbService } from '../../../artists/infrastructure/database/services/artistsDb.service';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
@@ -10,14 +11,16 @@ import { CreateArtistParams } from '../../../artists/usecases/interfaces/createA
 import { CustomersService } from '../../../customers/domain/customers.service';
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
 import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
-import { DomainException } from '../../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
-import { isServiceError } from '../../../global/domain/guards/isServiceError.guard';
+import {
+  DomainConflict,
+  DomainException,
+} from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { Transform } from '../../../global/domain/utils/transformTo';
+import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { ArtistLocationsDbService } from '../../../locations/infrastructure/database/services/artistLocationsDb.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
@@ -42,39 +45,45 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
 
   public async execute(
     createUserParams: CreateUserByTypeParams,
-  ): Promise<Customer | Artist | CreateArtistUserResDto | DomainException> {
+  ): Promise<Customer | CreateArtistUserResDto> {
     const role = await this.rolesService.findOne({
       where: { name: createUserParams.userType.toLocaleLowerCase() },
+      // where: { name: createUserParams.userType },
     });
 
-    if (!role) return new DomainConflictException('Role not exists');
+    if (!role) {
+      throw new DomainConflict('Role not exists');
+    }
 
     const created = await this.usersService.create(createUserParams, role);
 
-    if (typeof created === 'boolean')
-      return new DomainConflictException('User already exists');
-
-    const response = await this.handleCreateByUserType(
-      created.id,
-      createUserParams,
-    );
-
-    if (response instanceof Artist && !(response instanceof DomainException)) {
-      const resp = await Transform.to(CreateArtistUserResDto, response);
-
-      this.logger.log(`🟢 Artist dtoResponse: ${stringify(resp)}`);
-      return resp;
+    if (typeof created === 'boolean') {
+      throw new DomainConflict('User already exists');
     }
 
-    return response instanceof DomainException
-      ? this.handleCreateError(created.id, response)
-      : response;
+    try {
+      const response = await this.handleCreateByUserType(
+        created.id,
+        createUserParams,
+      );
+
+      if (response instanceof Artist) {
+        const resp = await Transform.to(CreateArtistUserResDto, response);
+
+        this.logger.log(`🟢 Artist dtoResponse: ${stringify(resp)}`);
+        return resp;
+      }
+      // TODO: Handle customer creation
+    } catch (error) {
+      await this.handleCreateError(created.id, error);
+      throw error;
+    }
   }
 
   private async handleCreateByUserType(
     userId: number,
     dto: CreateUserByTypeParams,
-  ): Promise<Customer | Artist | DomainException> {
+  ): Promise<Customer | Artist> {
     const createByType = {
       [UserType.CUSTOMER]: async () => {
         return this.createCustomer(
@@ -94,32 +103,34 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   private async createArtist(createArtistParams: CreateArtistParams) {
     const artist = await this.artistsDbService.create(createArtistParams);
 
-    if (isServiceError(artist))
-      return new DomainConflictException(this.handleServiceError(artist));
-
     this.logger.log(`🟢 Artist created: ${artist.id}`);
 
-    const agenda = await this.agendaService.createWithArtistInfo(
-      createArtistParams,
-    );
-
-    if (isServiceError(agenda)) {
+    let agenda: Agenda;
+    try {
+      agenda = await this.agendaService.createWithArtistInfo(
+        createArtistParams,
+      );
+    } catch (error) {
       await this.artistsDbService.delete(artist.id);
-
-      return new DomainConflictException(this.handleServiceError(agenda));
+      throw new DomainConflict(error.publicMessage);
     }
+
     this.logger.log(`🟢 Agenda created: ${agenda.id}`);
 
-    const artistLocation = await this.artistLocationsDbService.save(
-      this.mapCreateArtistInfoToArtistLocation(artist, createArtistParams),
-    );
-
-    if (isServiceError(artistLocation)) {
-      await this.agendaService.delete(agenda.id);
-
-      return new DomainConflictException(
-        this.handleServiceError(artistLocation),
+    let artistLocation: ArtistLocation;
+    try {
+      artistLocation = await this.artistLocationsDbService.save(
+        this.mapCreateArtistInfoToArtistLocation(artist, createArtistParams),
       );
+    } catch (error) {
+      if (error instanceof DbServiceException) {
+        await Promise.all([
+          await this.artistsDbService.delete(artist.id),
+          await this.agendaService.delete(agenda.id),
+        ]);
+        throw new DomainConflict(error.publicError);
+      }
+      throw error;
     }
 
     this.logger.log(`🟢 ArtistLocation created: ${artistLocation.id}`);
@@ -129,12 +140,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   }
 
   private async createCustomer(createCustomerDto: CreateCustomerParams) {
-    const result = await this.customerService.create(createCustomerDto);
-
-    if (isServiceError(result))
-      return new DomainConflictException(this.handleServiceError(result));
-
-    return result;
+    return this.customerService.create(createCustomerDto);
   }
 
   private async rollbackCreate(userId: number) {

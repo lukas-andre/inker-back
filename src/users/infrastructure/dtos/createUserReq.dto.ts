@@ -4,7 +4,6 @@ import {
   IsEmail,
   IsEnum,
   IsInstance,
-  IsOptional,
   IsString,
   ValidateIf,
   ValidateNested,
@@ -23,7 +22,6 @@ export class CreateUserReqDto {
     required: false,
   })
   @IsString()
-  @IsOptional()
   readonly username: string;
 
   @ApiProperty({
@@ -32,7 +30,6 @@ export class CreateUserReqDto {
     required: false,
   })
   @IsEmail()
-  @IsOptional()
   readonly email: string;
 
   @ApiProperty({
@@ -61,7 +58,6 @@ export class CreateUserReqDto {
     required: false,
   })
   @IsString()
-  @IsOptional()
   readonly firstName: string;
 
   @ApiProperty({
@@ -70,7 +66,6 @@ export class CreateUserReqDto {
     required: false,
   })
   @IsString()
-  @IsOptional()
   readonly lastName: string;
 
   @ApiProperty({

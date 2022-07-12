@@ -9,10 +9,8 @@ import {
   Put,
   Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { LoggingInterceptor } from '../../../global/aspects/logging.interceptor';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
 import { GetForgotPasswordCodeQueryDto } from '../dtos/getForgotPasswordCodeQuery.dto';
@@ -36,7 +34,6 @@ import {
 
 @ApiTags('users')
 @Controller('users')
-@UseInterceptors(LoggingInterceptor)
 export class UsersController {
   private logger = new Logger(UsersController.name);
 
