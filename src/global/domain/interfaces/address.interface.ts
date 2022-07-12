@@ -7,5 +7,7 @@ export interface AddressInterface {
   city?: string;
   state?: string;
   country?: string;
+  formattedAddress?: string;
+  googlePlaceId?: string;
   geometry?: GeometryInterface;
 }

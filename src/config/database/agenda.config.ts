@@ -7,9 +7,9 @@ export const AGENDA_DB_CONFIG_NAME = 'agendaDb';
 const AGENDA_DB_NAME = 'inker-agenda';
 const AGENDA_ENTITIES = [__dirname + '/../../agenda/**/*.entity{.ts,.js}'];
 
-export type AgendateDbConfig = TypeOrmConfig;
+export type AgendaDbConfig = TypeOrmConfig;
 
-export const agendaDatabaseConf = registerAs<AgendateDbConfig>(
+export const agendaDatabaseConf = registerAs<AgendaDbConfig>(
   AGENDA_DB_CONFIG_NAME,
   () =>
     createDatabaseConnection({

@@ -1,8 +1,8 @@
 import { BaseModelType } from '../../../global/domain/models/base.model';
-import { IPermission } from './permission.model';
+import { PermissionInterface } from './permission.model';
 
-export interface IRole extends BaseModelType {
+export interface RoleInterface extends BaseModelType {
   name?: string;
   description?: string;
-  permissions?: IPermission[];
+  permissions?: PermissionInterface[];
 }

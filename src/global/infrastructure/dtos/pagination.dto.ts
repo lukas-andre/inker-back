@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, Max, Min } from 'class-validator';
 
 export class PaginationDto {
-  @Expose()
   @ApiProperty({
     description: 'How many items per page',
     example: 50,
@@ -16,7 +15,6 @@ export class PaginationDto {
   @Transform(value => Number(value))
   readonly limit: number;
 
-  @Expose()
   @ApiProperty({
     description: 'From which record you want to start to count',
     example: 1,

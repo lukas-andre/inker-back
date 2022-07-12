@@ -17,11 +17,13 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
+import { Transform } from '../../../global/domain/utils/transformTo';
 import { ArtistLocationsDbService } from '../../../locations/infrastructure/database/services/artistLocationsDb.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
+import { CreateArtistUserResDto } from '../../infrastructure/dtos/createUserRes.dto';
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()
@@ -40,7 +42,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
 
   public async execute(
     createUserParams: CreateUserByTypeParams,
-  ): Promise<Customer | Artist | DomainException> {
+  ): Promise<Customer | Artist | CreateArtistUserResDto | DomainException> {
     const role = await this.rolesService.findOne({
       where: { name: createUserParams.userType.toLocaleLowerCase() },
     });
@@ -56,6 +58,13 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       created.id,
       createUserParams,
     );
+
+    if (response instanceof Artist && !(response instanceof DomainException)) {
+      const resp = await Transform.to(CreateArtistUserResDto, response);
+
+      this.logger.log(`🟢 Artist dtoResponse: ${stringify(resp)}`);
+      return resp;
+    }
 
     return response instanceof DomainException
       ? this.handleCreateError(created.id, response)
@@ -152,6 +161,8 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       city: createArtistDto.address.city,
       country: createArtistDto.address.country,
       state: createArtistDto.address.state,
+      formattedAddress: createArtistDto.address.formattedAddress,
+      googlePlaceId: createArtistDto.address.googlePlaceId,
       lat: createArtistDto.address.geometry.location.lat,
       lng: createArtistDto.address.geometry.location.lng,
       viewport: createArtistDto.address.geometry.viewport,
