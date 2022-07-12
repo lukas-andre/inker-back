@@ -6,7 +6,7 @@ import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/
 import { IUser } from '../../domain/models/user.model';
 import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
 import { SendSMSAccountVerificationCodeUseCase } from '../../usecases/user/sendSMSAccountVerificationCode.usecase';
-import { SendSMSForgotPasswordCodeUseCase } from '../../usecases/user/sendSMSForgotPasswordCode.usecas';
+import { SendSMSForgotPasswordCodeUseCase } from '../../usecases/user/sendSMSForgotPasswordCode.usecase';
 import { UpdateUserEmailUseCase } from '../../usecases/user/updateUserEmail.usecase';
 import { UpdateUserPasswordUseCase } from '../../usecases/user/updateUserPassword.usecase';
 import { UpdateUserUsernameUseCase } from '../../usecases/user/updateUserUsername.usecase';

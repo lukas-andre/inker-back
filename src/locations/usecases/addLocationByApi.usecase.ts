@@ -6,13 +6,15 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistLocationsService } from '../domain/artistLocations.service';
+import { ArtistLocationsDbService } from '../infrastructure/database/services/artistLocationsDb.service';
 import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
 import { ArtistLocation } from '../infrastructure/entities/artistLocation.entity';
 
 @Injectable()
 export class AddLocationByApiUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly artistsLocationService: ArtistLocationsService) {
+  constructor(
+    private readonly artistLocationsDbService: ArtistLocationsDbService,
+  ) {
     super(AddLocationByApiUseCase.name);
   }
 
@@ -20,7 +22,7 @@ export class AddLocationByApiUseCase extends BaseUseCase implements UseCase {
     addLocationDto: AddLocationDto,
   ): Promise<ArtistLocation | DomainException> {
     try {
-      return this.artistsLocationService.save({
+      return this.artistLocationsDbService.save({
         address1: addLocationDto.address1,
         address2: addLocationDto.address2,
         address3: addLocationDto.address3,

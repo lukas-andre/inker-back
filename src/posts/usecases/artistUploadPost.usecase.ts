@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as stringify from 'json-stringify-safe';
+import stringify from 'fast-safe-stringify';
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { GenreInterface } from '../../genres/genre.interface';
 import { GenresService } from '../../genres/genres.service';
