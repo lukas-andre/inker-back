@@ -10,8 +10,6 @@ import { appConfig } from './config/app.config';
 import { configure } from './configure';
 import { SERVICE_NAME } from './constants';
 
-declare const module: any;
-
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -28,11 +26,6 @@ async function bootstrap() {
     `🚀 Application ${SERVICE_NAME} is runninggs on: ${await app.getUrl()}`,
     'Bootstrap',
   );
-
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
-  }
 }
 
 bootstrap();
