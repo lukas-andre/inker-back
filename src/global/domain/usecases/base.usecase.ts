@@ -1,34 +1,12 @@
-import stringify from 'fast-safe-stringify';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { BaseComponent } from '../components/base.component';
 import { DomainException } from '../exceptions/domain.exception';
-import { BaseService } from '../services/base.service';
 
 export interface UseCase {
   execute(...args: any[]): Promise<any | DomainException>;
 }
 
-export class BaseUseCase extends BaseService {
+export class BaseUseCase extends BaseComponent {
   constructor(readonly serviceName: string) {
     super(serviceName);
-  }
-
-  protected handleServiceError(
-    serviceError: ServiceError,
-    errorMessage?: string,
-  ): string {
-    const catchedErrorMessage =
-      typeof serviceError.catchedErrorMessage === 'string'
-        ? serviceError.catchedErrorMessage
-        : stringify(serviceError.catchedErrorMessage);
-
-    this.logger.error(
-      stringify({
-        service: serviceError.service,
-        method: serviceError.method,
-        message: serviceError.publicErrorMessage,
-        error: catchedErrorMessage,
-      }),
-    );
-    return errorMessage ? errorMessage : serviceError.publicErrorMessage;
   }
 }

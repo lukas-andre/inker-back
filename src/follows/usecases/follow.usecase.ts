@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { getConnection } from 'typeorm';
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
+import { BaseComponent } from '../../global/domain/components/base.component';
+import {
+  DomainBadRequest,
+  DomainConflict,
+  DomainException,
+  DomainInternalServerError,
+} from '../../global/domain/exceptions/domain.exception';
+import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
+import { DefaultResponseHelper } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersService } from '../../users/domain/services/users.service';
 import { FollowedsService } from '../domain/services/followeds.service';
@@ -12,18 +18,20 @@ import { Following } from '../infrastructure/entities/following.entity';
 import { FollowArtistParams } from './interfaces/followArtist.param';
 // TODO: EXTEND BASE USECASE
 @Injectable()
-export class FollowUseCase {
+export class FollowUseCase extends BaseComponent {
   constructor(
     private readonly usersService: UsersService,
     private readonly artistsDbService: ArtistsDbService,
     private readonly followedsService: FollowedsService,
-  ) {}
+  ) {
+    super(FollowUseCase.name);
+  }
 
   async execute(
     followedUserId: number,
     follower: FollowArtistParams,
-  ): Promise<boolean | DomainException> {
-    let result: boolean | DomainException;
+  ): Promise<DefaultResponseDto> {
+    let exception: DomainException;
 
     const connection = getConnection('follow-db');
     const queryRunner = connection.createQueryRunner();
@@ -32,7 +40,7 @@ export class FollowUseCase {
 
     // ! THIS IS LIMITING THAT ONLY ARTISTS ARE FOLLOWED
     if (!(await this.usersService.existsArtist(followedUserId))) {
-      return new DomainConflictException('Artist not exists');
+      throw new DomainBadRequest('Artist not exists');
     }
 
     if (
@@ -41,7 +49,7 @@ export class FollowUseCase {
         follower.userId,
       )
     ) {
-      return new DomainConflictException('Follower already exists');
+      throw new DomainConflict('Follower already exists');
     }
 
     // TODO: This could be came from in the front request
@@ -81,13 +89,16 @@ export class FollowUseCase {
 
       await queryRunner.commitTransaction();
     } catch (error) {
-      result = new DomainInternalServerErrorException(
-        'Fail follow transaction',
-      );
+      exception = new DomainInternalServerError('Fail follow transaction');
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
     }
-    return result instanceof DomainException ? result : true;
+
+    if (exception instanceof DomainException) {
+      throw exception;
+    }
+
+    return DefaultResponseHelper.ok;
   }
 }

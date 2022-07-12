@@ -17,7 +17,7 @@ import { tap } from 'rxjs/operators';
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
   private readonly ctxPrefix: string = LoggingInterceptor.name;
-  private readonly logger: Logger = new Logger(this.ctxPrefix);
+  private readonly logger: Logger = new Logger();
   private userPrefix = '';
   private minify = false;
 
@@ -96,6 +96,7 @@ export class LoggingInterceptor implements NestInterceptor {
       },
       ctx,
     );
+    return;
   }
 
   /**
@@ -130,6 +131,7 @@ export class LoggingInterceptor implements NestInterceptor {
           error.stack,
           ctx,
         );
+        return;
       } else {
         this.logger.warn(
           {
@@ -142,6 +144,7 @@ export class LoggingInterceptor implements NestInterceptor {
           },
           ctx,
         );
+        return;
       }
     } else {
       this.logger.error(

@@ -8,13 +8,17 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { BaseService } from '../../global/domain/services/base.service';
+import { BaseComponent } from '../../global/domain/components/base.component';
+import {
+  DBServiceCreateException,
+  DbServiceNotFound,
+  DBServiceSaveException,
+} from '../../global/infrastructure/exceptions/dbService.exception';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 @Injectable()
-export class AgendaEventService extends BaseService {
+export class AgendaEventService extends BaseComponent {
   constructor(
     @InjectRepository(AgendaEvent, 'agenda-db')
     private readonly agendaEventRepository: Repository<AgendaEvent>,
@@ -46,11 +50,19 @@ export class AgendaEventService extends BaseService {
   async findOne(
     options?: FindOneOptions<AgendaEvent>,
   ): Promise<AgendaEvent | undefined> {
-    return this.agendaEventRepository.findOne(options);
+    try {
+      return await this.agendaEventRepository.findOne(options);
+    } catch (error) {
+      throw new DbServiceNotFound(this, 'Trouble finding event', error);
+    }
   }
 
   async save(agendaEvent: DeepPartial<AgendaEvent>): Promise<AgendaEvent> {
-    return this.agendaEventRepository.save(agendaEvent);
+    try {
+      return await this.agendaEventRepository.save(agendaEvent);
+    } catch (error) {
+      throw new DBServiceSaveException(this, 'Trouble saving event', error);
+    }
   }
 
   async delete(id: number): Promise<DeleteResult> {
@@ -66,7 +78,7 @@ export class AgendaEventService extends BaseService {
     startDate: string,
     endDate: string,
     eventId?: number,
-  ): Promise<boolean | ServiceError> {
+  ): Promise<boolean> {
     const qb = this.agendaEventRepository
       .createQueryBuilder('agenda_event')
       .select('COUNT(agenda_event.id)')
@@ -90,12 +102,11 @@ export class AgendaEventService extends BaseService {
       const { count } = await qb.getRawOne<{ count: string }>();
       return !!Number(count);
     } catch (error) {
-      return {
-        service: this.serviceName,
-        method: this.existEventBetweenStartDateAndEndDate.name,
-        publicErrorMessage: 'Trouble finding available event date ',
-        catchedErrorMessage: error.message,
-      };
+      throw new DbServiceNotFound(
+        this,
+        'Trouble checking if event exists',
+        error,
+      );
     }
   }
 
@@ -103,7 +114,7 @@ export class AgendaEventService extends BaseService {
     agendaId: number,
     start: string,
     end: string,
-  ): Promise<AgendaEvent[] | ServiceError> {
+  ): Promise<AgendaEvent[]> {
     const qb = this.agendaEventRepository
       .createQueryBuilder('agenda_event')
       .select()
@@ -116,19 +127,18 @@ export class AgendaEventService extends BaseService {
     try {
       return await qb.getMany();
     } catch (error) {
-      return {
-        service: this.serviceName,
-        method: this.findByDateRange.name,
-        publicErrorMessage: 'Trouble finding event dates in range ',
-        catchedErrorMessage: error.message,
-      };
+      throw new DbServiceNotFound(
+        this,
+        'Trouble finding events in dates range',
+        error,
+      );
     }
   }
 
   async saveWithAddEventDto(
     dto: AddEventReqDto,
     agenda: Agenda,
-  ): Promise<AgendaEvent | ServiceError> {
+  ): Promise<AgendaEvent> {
     try {
       return await this.save({
         agenda,
@@ -140,11 +150,7 @@ export class AgendaEventService extends BaseService {
         notification: dto.notification,
       });
     } catch (error) {
-      return this.serviceError(
-        this.saveWithAddEventDto,
-        'Problems saving event',
-        error.message,
-      );
+      throw new DBServiceCreateException(this, 'Trouble saving event', error);
     }
   }
 }

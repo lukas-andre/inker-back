@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import stringify from 'fast-safe-stringify';
+import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -18,21 +18,17 @@ export class FindFollowersUseCase extends BaseUseCase implements UseCase {
     super(FindFollowersUseCase.name);
   }
 
-  async execute(userId: number): Promise<FollowedType[] | DomainException> {
-    let result: FollowedType[] | DomainException;
-
+  async execute(userId: number): Promise<FollowedType[]> {
     if (!(await this.usersService.exists(userId))) {
-      result = new DomainNotFoundException('User not found');
+      throw new DomainNotFound('User not found');
     }
 
-    result = await this.followedsService.findByKey({
+    const result = await this.followedsService.findByKey({
       userType: UserType.ARTIST,
       userFollowedId: userId,
     });
 
-    this.logger.log(
-      `FindArtistFollowersUseCases result: ${JSON.stringify(result)}`,
-    );
+    this.logger.log(`FindArtistFollowersUseCases result: ${stringify(result)}`);
     return result;
   }
 }

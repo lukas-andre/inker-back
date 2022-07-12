@@ -1,38 +1,39 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import { Injectable } from '@nestjs/common';
+import {
+  DomainConflict,
+  DomainNotFound,
+} from '../../global/domain/exceptions/domain.exception';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { AgendaService } from '../domain/agenda.service';
 import { AgendaEventService } from '../domain/agendaEvent.service';
 import { UpdateEventReqDto } from '../infrastructure/dtos/updateEventReq.dto';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
-export class UpdateEventUseCase {
-  private readonly logger = new Logger(UpdateEventUseCase.name);
-
+export class UpdateEventUseCase extends BaseUseCase {
   constructor(
     private readonly agendaService: AgendaService,
     private readonly agendaEventService: AgendaEventService,
-  ) {}
+  ) {
+    super(UpdateEventUseCase.name);
+  }
 
   async execute(
     updateEventReqDto: UpdateEventReqDto,
     eventId: number,
-  ): Promise<AgendaEvent | DomainException> {
+  ): Promise<AgendaEvent> {
     const existsAgenda = await this.agendaService.findById(
       updateEventReqDto.agendaId,
     );
 
     if (!existsAgenda) {
-      return new DomainNotFoundException('Agenda not found');
+      throw new DomainNotFound('Agenda not found');
     }
 
     const event = await this.agendaEventService.findById(eventId);
 
     if (!event) {
-      return new DomainNotFoundException('Event not found');
+      throw new DomainNotFound('Event not found');
     }
 
     const dateRangeIsInUse =
@@ -44,9 +45,7 @@ export class UpdateEventUseCase {
       );
 
     if (dateRangeIsInUse) {
-      return new DomainConflictException(
-        'Already exists event in current date range',
-      );
+      throw new DomainConflict('Already exists event in current date range');
     }
 
     event.title = updateEventReqDto.title
@@ -67,11 +66,6 @@ export class UpdateEventUseCase {
         ? updateEventReqDto.notification
         : event.notification;
 
-    try {
-      return this.agendaEventService.save(event);
-    } catch (error) {
-      this.logger.log(`Adding event error ${error.message}`);
-      return new DomainInternalServerErrorException('Failed saving event');
-    }
+    return this.agendaEventService.save(event);
   }
 }

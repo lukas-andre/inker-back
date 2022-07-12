@@ -1,17 +1,16 @@
 import rateLimit from '@fastify/rate-limit';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
+import { HttpAdapterHost } from '@nestjs/core';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import helmet from 'fastify-helmet';
-import { join } from 'path';
 import { oasConfig } from './config/oas.config';
 import {
   corsOptions,
-  helmetOptions,
   rateLimitOptions,
   validationPipeOptions,
 } from './constants';
+import { AllExceptionsFilter } from './global/infrastructure/exception-filters/all-exception.filter';
 
 const configureOAS = async (app: NestFastifyApplication) => {
   const oasConf: ConfigType<typeof oasConfig> = app.get(oasConfig.KEY);
@@ -44,6 +43,8 @@ export const configure = async (app: NestFastifyApplication) => {
   await app.register(rateLimit, rateLimitOptions);
 
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
+
+  app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
 
   await configureOAS(app);
 

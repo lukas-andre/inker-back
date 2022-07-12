@@ -1,6 +1,5 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FindOneOptions } from 'typeorm';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { CustomersService } from '../domain/customers.service';
 import { Customer } from '../infrastructure/entities/customer.entity';
@@ -14,9 +13,6 @@ export class CRCustomerUseCase extends BaseUseCase {
 
   async create(params: CreateCustomerParams): Promise<Customer> {
     const created = await this.customersService.create(params);
-    if (isServiceError(created)) {
-      throw new ConflictException(this.handleServiceError(created));
-    }
 
     return created;
   }

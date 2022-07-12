@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { endOfWeek, format, startOfWeek } from 'date-fns';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import {
+  DomainBadRequest,
+  DomainNotFound,
+} from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -28,13 +27,13 @@ export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
   async execute(
     agendaId: number,
     listEventByViewTypeQueryDto: ListEventByViewTypeQueryDto,
-  ): Promise<AgendaEvent[] | DomainException> {
-    let result: AgendaEvent[] | DomainException;
+  ): Promise<AgendaEvent[]> {
+    let result: AgendaEvent[];
 
     const existsAgenda = await this.agendaService.findById(agendaId);
 
     if (!existsAgenda) {
-      return new DomainNotFoundException('Agenda not found');
+      throw new DomainNotFound('Agenda not found');
     }
 
     switch (listEventByViewTypeQueryDto.agendaViewType) {
@@ -53,8 +52,7 @@ export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
         break;
 
       default:
-        result = new DomainInternalServerErrorException('Failed saving event');
-        break;
+        throw new DomainBadRequest('Invalid agenda view type');
     }
     return result;
   }
@@ -62,7 +60,7 @@ export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
   private async handleDayViewType(
     agenda: Agenda,
     date: string,
-  ): Promise<AgendaEvent[] | DomainException> {
+  ): Promise<AgendaEvent[]> {
     // ESTA ES LA MANERA MAS POCO ELEGANTE DE CREAR EL INICIO Y EL FIN
     // DE UN DIA EN UNA DATE CON FORMATO yyyy-MM-dd
     const startOfDay = date + ' 00:00:00';
@@ -74,17 +72,13 @@ export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
       endOfDay,
     );
 
-    if (isServiceError(result)) {
-      return new DomainConflictException(this.handleServiceError(result));
-    }
-
     return result;
   }
 
   private async handleWeekViewType(
     agenda: Agenda,
     date: string,
-  ): Promise<AgendaEvent[] | DomainException> {
+  ): Promise<AgendaEvent[]> {
     const startOfAgendaWeek = startOfWeek(new Date(date), { weekStartsOn: 1 });
     const endOfAgendaWeek = endOfWeek(new Date(date), { weekStartsOn: 1 });
 
@@ -103,8 +97,6 @@ export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
       stringEndOfAgendaWeek,
     );
 
-    return isServiceError(result)
-      ? new DomainConflictException(this.handleServiceError(result))
-      : result;
+    return result;
   }
 }

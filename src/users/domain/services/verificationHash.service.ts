@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService, ConfigType } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcryptjs';
 import {
@@ -9,8 +9,9 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { BaseService } from '../../../global/domain/services/base.service';
+import { verificationHashConf } from '../../../config/verificationHash';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { DBServiceCreateException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import {
   NotificationType,
   VerificationHash,
@@ -19,10 +20,10 @@ import {
 
 @Injectable()
 export class VerificationHashService
-  extends BaseService
+  extends BaseComponent
   implements OnModuleInit
 {
-  private saltLength: number;
+  private conf: ConfigType<typeof verificationHashConf>;
 
   constructor(
     @InjectRepository(VerificationHash, 'user-db')
@@ -33,7 +34,7 @@ export class VerificationHashService
   }
 
   onModuleInit() {
-    this.saltLength = this.configService.get('verificationHash.saltLength');
+    this.conf = this.configService.get('verificationHash');
   }
 
   public async create(
@@ -42,7 +43,7 @@ export class VerificationHashService
     notificationType: NotificationType,
     verificationType: VerificationType,
     tries: number,
-  ): Promise<VerificationHash | ServiceError> {
+  ): Promise<VerificationHash> {
     const verificationHash = await this.hashVerificationCode(verificationCode);
 
     try {
@@ -54,9 +55,9 @@ export class VerificationHashService
         tries,
       });
     } catch (error) {
-      return this.serviceError(
-        this.create,
-        'Problems creating verification hash',
+      throw new DBServiceCreateException(
+        this,
+        'Problem creating verification hash',
         error,
       );
     }
@@ -96,7 +97,7 @@ export class VerificationHashService
   }
 
   public async hashVerificationCode(code: string): Promise<string> {
-    return hash(code, this.saltLength);
+    return hash(code, this.conf.saltLength);
   }
 
   public async validateVerificationCode(

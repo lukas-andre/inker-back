@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import {
+  DomainBadRule,
+  DomainNotFound,
+} from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -21,15 +21,13 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
     super(AddEventUseCase.name);
   }
 
-  async execute(
-    addEventDto: AddEventReqDto,
-  ): Promise<AgendaEvent | DomainException> {
+  async execute(addEventDto: AddEventReqDto): Promise<AgendaEvent> {
     const existsAgenda = await this.agendaService.findById(
       addEventDto.agendaId,
     );
 
     if (!existsAgenda) {
-      return new DomainNotFoundException('Agenda not found');
+      throw new DomainNotFound('Agenda not found');
     }
 
     const dateRangeIsInUse =
@@ -39,25 +37,13 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
         addEventDto.end,
       );
 
-    if (isServiceError(dateRangeIsInUse)) {
-      return new DomainConflictException(
-        this.handleServiceError(dateRangeIsInUse),
-      );
-    }
-
     if (dateRangeIsInUse) {
-      return new DomainConflictException(
-        'Already exists event in current date range',
-      );
+      throw new DomainBadRule('Already exists event in current date range');
     }
 
-    const savedAgendaEvent = await this.agendaEventService.saveWithAddEventDto(
+    return await this.agendaEventService.saveWithAddEventDto(
       addEventDto,
       existsAgenda,
     );
-
-    return isServiceError(savedAgendaEvent)
-      ? new DomainConflictException(this.handleServiceError(savedAgendaEvent))
-      : savedAgendaEvent;
   }
 }

@@ -17,12 +17,12 @@ export class LocationsHandler extends BaseHandler {
   }
 
   public async handleAddLocation(dto: AddLocationDto) {
-    return this.resolve(this.addLocationByApiUseCase.execute(dto));
+    return this.addLocationByApiUseCase.execute(dto);
   }
 
   public async handleFindArtistByRange(
     dto: FindArtistByArtistDto,
   ): Promise<any> {
-    return this.resolve(this.findArtistByRangeUseCase.execute(dto));
+    return this.findArtistByRangeUseCase.execute(dto);
   }
 }

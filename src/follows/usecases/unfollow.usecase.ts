@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { getConnection } from 'typeorm';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainInternalServerErrorException } from '../../global/domain/exceptions/domainInternalServerError.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
+import {
+  DomainBadRequest,
+  DomainException,
+  DomainInternalServerError,
+} from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
+import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
+import { DefaultResponseHelper } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
@@ -19,8 +23,8 @@ export class UnfollowUseCase extends BaseUseCase implements UseCase {
   async execute(
     artistUserId: number,
     userId: number,
-  ): Promise<boolean | DomainException> {
-    let result: boolean | DomainException;
+  ): Promise<DefaultResponseDto> {
+    let exception: DomainException;
     const connection = getConnection('follow-db');
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
@@ -30,7 +34,7 @@ export class UnfollowUseCase extends BaseUseCase implements UseCase {
       userId,
     );
     if (!existsFollower) {
-      return new DomainNotFoundException('Follower not exist');
+      throw new DomainBadRequest('Follower not exist');
     }
 
     await queryRunner.startTransaction();
@@ -46,13 +50,16 @@ export class UnfollowUseCase extends BaseUseCase implements UseCase {
 
       await queryRunner.commitTransaction();
     } catch (error) {
-      result = new DomainInternalServerErrorException(
-        'Fail follow transaction',
-      );
+      exception = new DomainInternalServerError('Fail follow transaction');
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
     }
-    return result instanceof DomainException ? result : true;
+
+    if (exception instanceof DomainException) {
+      throw exception;
+    }
+
+    return DefaultResponseHelper.ok;
   }
 }

@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import stringify from 'fast-safe-stringify';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import {
   BaseUseCase,
@@ -23,15 +20,11 @@ export class GetReactionsDetailByActivityUseCase
     jwtPayload: JwtPayload,
     activityId: number,
     activity: string,
-  ): Promise<any | DomainException> {
+  ): Promise<any> {
     const result = await this.reactionsService.findByActivityIdAndActivityType(
       activityId,
       activity,
     );
-
-    if (isServiceError(result)) {
-      return new DomainConflictException(this.handleServiceError(result));
-    }
 
     this.logger.log(`result:  ${stringify(result)}`);
     return result;

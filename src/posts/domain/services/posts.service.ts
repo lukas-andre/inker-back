@@ -8,13 +8,16 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { BaseService } from '../../../global/domain/services/base.service';
+import { BaseComponent } from '../../../global/domain/components/base.component';
 import { PaginationDto } from '../../../global/infrastructure/dtos/pagination.dto';
+import {
+  DBServiceFindException,
+  DBServiceSaveException,
+} from '../../../global/infrastructure/exceptions/dbService.exception';
 import { Post } from '../../../posts/infrastructure/entities/post.entity';
 
 @Injectable()
-export class PostsService extends BaseService {
+export class PostsService extends BaseComponent {
   constructor(
     @InjectRepository(Post, 'post-db')
     private readonly postsRepository: Repository<Post>,
@@ -56,15 +59,11 @@ export class PostsService extends BaseService {
     return this.postsRepository.findOne(options);
   }
 
-  async save(post: DeepPartial<Post>): Promise<Post | ServiceError> {
+  async save(post: DeepPartial<Post>): Promise<Post> {
     try {
-      return this.postsRepository.save(post);
+      return await this.postsRepository.save(post);
     } catch (error) {
-      return this.serviceError(
-        this.save,
-        'Problems saving post',
-        error.message,
-      );
+      throw new DBServiceSaveException(this, 'Trouble saving post', error);
     }
   }
 
@@ -77,7 +76,7 @@ export class PostsService extends BaseService {
     genres: string[],
     tags: string[],
     pagination: PaginationDto,
-  ): Promise<Post[] | ServiceError> {
+  ): Promise<Post[]> {
     try {
       const qb = this.postsRepository
         .createQueryBuilder('posts')
@@ -97,13 +96,12 @@ export class PostsService extends BaseService {
         });
       }
 
-      return qb.limit(pagination.limit).offset(pagination.offset).getMany();
+      return await qb
+        .limit(pagination.limit)
+        .offset(pagination.offset)
+        .getMany();
     } catch (error) {
-      return this.serviceError(
-        this.findByUserId,
-        'Problems finding artists',
-        error.message,
-      );
+      throw new DBServiceFindException(this, 'Trouble finding posts', error);
     }
   }
 }
