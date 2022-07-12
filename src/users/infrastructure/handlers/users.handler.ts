@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { BaseHandler } from '../../../global/infrastructure/base.handler';
 import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
-import { IUser } from '../../domain/models/user.model';
 import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
 import { SendSMSAccountVerificationCodeUseCase } from '../../usecases/user/sendSMSAccountVerificationCode.usecase';
 import { SendSMSForgotPasswordCodeUseCase } from '../../usecases/user/sendSMSForgotPasswordCode.usecase';
@@ -36,7 +35,7 @@ export class UsersHandler extends BaseHandler {
     super(jwtService);
   }
 
-  public async handleCreate(dto: CreateUserReqDto): Promise<IUser> {
+  public async handleCreate(dto: CreateUserReqDto): Promise<any> {
     return this.resolve(
       await this.createUserByTypeUseCase.execute(dto as CreateUserByTypeParams),
     );

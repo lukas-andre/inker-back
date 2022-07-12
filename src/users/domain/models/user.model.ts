@@ -1,10 +1,10 @@
 import { BaseModelType } from '../../../global/domain/models/base.model';
-import { IRole } from './role.model';
+import { RoleInterface } from './role.model';
 
-export interface IUser extends BaseModelType {
-  username?: string;
-  email?: string;
-  active?: boolean;
-  userType?: string;
-  role?: IRole;
+export interface UserInterface extends BaseModelType {
+  username: string;
+  email: string;
+  userType: string;
+  role?: RoleInterface;
+  active: boolean;
 }
