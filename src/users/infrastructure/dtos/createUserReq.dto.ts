@@ -10,7 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { UserType } from '../../domain/enums/userType.enum';
-import { ArtistInfoDto, ArtistInfoInterface } from './artistInfo.dto';
+import { ArtistInfoDto } from './artistInfo.dto';
 import {
   PhoneNumberDetailsDto,
   PhoneNumberDetailsInterface,

@@ -9,7 +9,7 @@ import {
 import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
 import { AddressDto } from '../../../global/infrastructure/dtos/address.dto';
 
-export class ArtistInfoDto {
+export class ArtistInfoDto implements ArtistInfoInterface {
   @ApiProperty({
     description: 'Address',
     required: false,
@@ -35,7 +35,7 @@ export class ArtistInfoDto {
   })
   @IsBoolean()
   @Transform(value => Boolean(value.value === 'true' || value.value === true))
-  readonly agendaIsPublic?: boolean;
+  readonly agendaIsPublic: boolean;
 
   @ApiProperty({
     example: true,
