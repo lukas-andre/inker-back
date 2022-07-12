@@ -64,6 +64,23 @@ export class AddressDto implements AddressInterface {
   readonly country?: string;
 
   @ApiProperty({
+    example: 'Av Vicuña Mackenna 6130 Depto 1303',
+    description: 'Direccion completa',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  readonly formattedAddress?: string;
+
+  @ApiProperty({
+    example: 'ChIJve_jt4TRYpYR_g66EFqd7GQ',
+    description: 'Google Maps Place ID',
+    required: false,
+  })
+  @IsString()
+  readonly googlePlaceId?: string;
+
+  @ApiProperty({
     description: 'geometry',
     required: false,
     type: GeometryDto,

@@ -16,7 +16,7 @@ import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/
 import { Role } from '../../infrastructure/entities/role.entity';
 import { User } from '../../infrastructure/entities/user.entity';
 import { UserType } from '../enums/userType.enum';
-import { IUser } from '../models/user.model';
+import { UserInterface } from '../models/user.model';
 @Injectable()
 export class UsersService extends BaseService {
   constructor(
@@ -30,7 +30,7 @@ export class UsersService extends BaseService {
   async create(
     createUserParams: CreateUserByTypeParams,
     role: Role,
-  ): Promise<IUser | boolean> {
+  ): Promise<UserInterface | boolean> {
     const exists: number = await this.usersRepository.count({
       where: [
         { username: createUserParams.username },
@@ -51,7 +51,7 @@ export class UsersService extends BaseService {
 
     const { password, ...result } = await this.usersRepository.save(user);
 
-    return result as IUser;
+    return result as UserInterface;
   }
 
   async findById(id: number) {

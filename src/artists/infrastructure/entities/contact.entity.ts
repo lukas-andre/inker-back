@@ -1,9 +1,10 @@
 import { Column, Entity, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+import { ContactInterface } from '../../domain/contact.interface';
 import { Artist } from './artist.entity';
 
 @Entity()
-export class Contact extends BaseEntity {
+export class Contact extends BaseEntity implements ContactInterface {
   @OneToOne(() => Artist, artist => artist.contact)
   artist: Artist;
 

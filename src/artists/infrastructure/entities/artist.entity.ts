@@ -8,20 +8,21 @@ import {
 import { GenreInterface } from '../../../genres/genre.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { TagInterface } from '../../../tags/tag.interface';
+import { ArtistType } from '../../domain/artistType';
 import { Contact } from './contact.entity';
 
 @Entity()
-export class Artist extends BaseEntity {
+export class Artist extends BaseEntity implements ArtistType {
   @Column({ name: 'user_id' })
   userId: number;
 
   @Column({ name: 'username' })
   username: string;
 
-  @Column({ name: 'first_name', nullable: true })
+  @Column({ name: 'first_name' })
   firstName: string;
 
-  @Column({ name: 'last_name', nullable: true })
+  @Column({ name: 'last_name' })
   lastName: string;
 
   @Column({ name: 'short_description', nullable: true })
