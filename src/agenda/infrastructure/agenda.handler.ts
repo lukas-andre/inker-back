@@ -24,37 +24,28 @@ export class AgendaHandler extends BaseHandler {
   }
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
-    return this.resolve(this.addEventUseCase.execute(dto));
+    return this.addEventUseCase.execute(dto);
   }
 
   async handleUpdateEvent(dto: UpdateEventReqDto, id: number): Promise<any> {
-    return this.resolve(this.updateEventUseCase.execute(dto, id));
+    return this.updateEventUseCase.execute(dto, id);
   }
 
   async handleCancelEvent(eventId: number, agendaId: number): Promise<any> {
-    return this.resolve(
-      await this.cancelEventUseCase.execute(eventId, agendaId),
-    );
+    return this.cancelEventUseCase.execute(eventId, agendaId);
   }
 
   async handleListEventByViewType(
     agendaId: number,
     query: ListEventByViewTypeQueryDto,
   ): Promise<any> {
-    return this.resolve(
-      await this.listEventByViewTypeUseCase.execute(agendaId, query),
-    );
+    return this.listEventByViewTypeUseCase.execute(agendaId, query);
   }
 
   async handleGetEventByEventId(
     agendaId: number,
     eventId: number,
   ): Promise<any> {
-    return this.resolve(
-      await this.findEventByAgendaIdAndEventIdUseCase.execute(
-        agendaId,
-        eventId,
-      ),
-    );
+    return this.findEventByAgendaIdAndEventIdUseCase.execute(agendaId, eventId);
   }
 }

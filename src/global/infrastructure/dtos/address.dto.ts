@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -16,6 +16,7 @@ export class AddressDto implements AddressInterface {
   })
   @IsNotEmpty()
   @IsString()
+  @Expose()
   readonly address1: string;
 
   @ApiProperty({
@@ -24,6 +25,7 @@ export class AddressDto implements AddressInterface {
   })
   @IsNotEmpty()
   @IsString()
+  @Expose()
   readonly address2: string;
 
   @ApiProperty({
@@ -34,6 +36,7 @@ export class AddressDto implements AddressInterface {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
+  @Expose()
   readonly address3?: string;
 
   @ApiProperty({
@@ -43,6 +46,7 @@ export class AddressDto implements AddressInterface {
   })
   @IsString()
   @IsOptional()
+  @Expose()
   readonly city?: string;
 
   @ApiProperty({
@@ -52,6 +56,7 @@ export class AddressDto implements AddressInterface {
   })
   @IsString()
   @IsOptional()
+  @Expose()
   readonly state?: string;
 
   @ApiProperty({
@@ -61,6 +66,7 @@ export class AddressDto implements AddressInterface {
   })
   @IsString()
   @IsOptional()
+  @Expose()
   readonly country?: string;
 
   @ApiProperty({
@@ -70,6 +76,7 @@ export class AddressDto implements AddressInterface {
   })
   @IsString()
   @IsOptional()
+  @Expose()
   readonly formattedAddress?: string;
 
   @ApiProperty({
@@ -78,6 +85,7 @@ export class AddressDto implements AddressInterface {
     required: false,
   })
   @IsString()
+  @Expose()
   readonly googlePlaceId?: string;
 
   @ApiProperty({
@@ -87,5 +95,6 @@ export class AddressDto implements AddressInterface {
   })
   @ValidateNested()
   @Type(() => GeometryDto)
+  @Expose()
   readonly geometry?: GeometryDto;
 }

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../../global/domain/exceptions/domain.exception';
-import { DomainBadRule } from '../../../global/domain/exceptions/domainBadRule.exception';
+import { DomainBadRule } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -18,19 +17,20 @@ export class UpdateUserUsernameUseCase extends BaseUseCase implements UseCase {
   public async execute(
     userId: number,
     newUsername: string,
-  ): Promise<DomainException | DefaultResponseDto> {
+  ): Promise<DefaultResponseDto> {
+    // TODO: Replace with efficient query
     const usernameExists = await this.usersService.findOne({
       where: { username: newUsername },
     });
 
     if (usernameExists) {
-      return new DomainBadRule('Username already used');
+      throw new DomainBadRule('Username already used');
     }
 
     const user = await this.usersService.findById(userId);
 
     if (user.username === newUsername) {
-      return new DomainBadRule('The username must be different');
+      throw new DomainBadRule('The username must be different');
     }
 
     user.username = newUsername;

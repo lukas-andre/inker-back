@@ -16,7 +16,7 @@ export class CustomerHandler extends BaseHandler {
   }
 
   async handleCreate(createCustomerDto: CreateCustomerReqDto) {
-    return this.resolve(this.cRCustomerUseCase.create(createCustomerDto));
+    return this.cRCustomerUseCase.create(createCustomerDto);
   }
 
   async handleFindAll(options: FindOneOptions<Customer>): Promise<Customer[]> {

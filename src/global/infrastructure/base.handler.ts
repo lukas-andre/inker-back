@@ -1,10 +1,8 @@
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ExtractJwt } from 'passport-jwt';
-import { DomainException } from '../domain/exceptions/domain.exception';
 import { JwtPayload } from '../domain/interfaces/jwtPayload.interface';
 import { logCatchedError } from '../domain/utils/logCatchedError';
-import { resolveDomainException } from './exceptions/resolveDomainException';
 
 @Injectable()
 export class BaseHandler {
@@ -21,11 +19,5 @@ export class BaseHandler {
       logCatchedError(e.message, this.logger);
       throw new ForbiddenException('Invalid JWT');
     }
-  }
-
-  resolve<T>(result: DomainException | T) {
-    if (result instanceof DomainException) throw resolveDomainException(result);
-
-    return result;
   }
 }

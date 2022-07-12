@@ -1,19 +1,19 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
+import { Injectable } from '@nestjs/common';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
+import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { ActivitiesService } from '../domain/services/activities.service';
 
 @Injectable()
-export class GetActivityReactionsResumeUseCase {
-  private readonly logger = new Logger(GetActivityReactionsResumeUseCase.name);
-
-  constructor(private readonly activitiesService: ActivitiesService) {}
+export class GetActivityReactionsResumeUseCase extends BaseUseCase {
+  constructor(private readonly activitiesService: ActivitiesService) {
+    super(GetActivityReactionsResumeUseCase.name);
+  }
 
   async execute(
     jwtPayload: JwtPayload,
     activityId: number,
     activity: string,
-  ): Promise<any | DomainException> {
+  ): Promise<any> {
     const result =
       await this.activitiesService.findAllWithTotalReactionsAndReactionGroup(
         activityId,

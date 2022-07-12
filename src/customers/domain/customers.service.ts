@@ -7,14 +7,17 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
-import { ServiceError } from '../../global/domain/interfaces/serviceError';
-import { BaseService } from '../../global/domain/services/base.service';
+import { BaseComponent } from '../../global/domain/components/base.component';
+import {
+  DbServiceBadRule,
+  DBServiceCreateException,
+} from '../../global/infrastructure/exceptions/dbService.exception';
 import { Customer } from '../infrastructure/entities/customer.entity';
 import { CreateCustomerParams } from '../usecases/interfaces/createCustomer.params';
 import { FollowTopic } from './interfaces/customerFollows.interface';
 
 @Injectable()
-export class CustomersService extends BaseService {
+export class CustomersService extends BaseComponent {
   constructor(
     @InjectRepository(Customer, 'customer-db')
     private readonly customersRepository: Repository<Customer>,
@@ -22,7 +25,7 @@ export class CustomersService extends BaseService {
     super(CustomersService.name);
   }
 
-  async create(params: CreateCustomerParams): Promise<Customer | ServiceError> {
+  async create(params: CreateCustomerParams): Promise<Customer> {
     const exists = await this.customersRepository.findOne({
       where: {
         userId: params.userId,
@@ -30,14 +33,14 @@ export class CustomersService extends BaseService {
     });
 
     if (exists) {
-      return this.serviceError(
-        this.create,
+      throw new DbServiceBadRule(
+        this,
         `Customer with user id: ${params.userId} already exist`,
       );
     }
 
     try {
-      return this.customersRepository.save({
+      return await this.customersRepository.save({
         userId: params.userId,
         firstName: params.firstName,
         lastName: params.lastName,
@@ -45,10 +48,10 @@ export class CustomersService extends BaseService {
         contactEmail: params.contactEmail,
       });
     } catch (error) {
-      return this.serviceError(
-        this.create,
+      throw new DBServiceCreateException(
+        this,
         'Problems saving customer',
-        error.message,
+        error,
       );
     }
   }

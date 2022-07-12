@@ -9,15 +9,19 @@ import {
   In,
   Repository,
 } from 'typeorm';
+import { BaseComponent } from '../../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../../global/domain/interfaces/existsQueryResult.interface';
-import { ServiceError } from '../../../../global/domain/interfaces/serviceError';
-import { BaseService } from '../../../../global/domain/services/base.service';
+import {
+  DbServiceBadRule,
+  DBServiceFindOneException,
+  DBServiceSaveException,
+} from '../../../../global/infrastructure/exceptions/dbService.exception';
 import { CreateArtistParams } from '../../../usecases/interfaces/createArtist.params';
 import { Artist } from '../../entities/artist.entity';
 import { Contact } from '../../entities/contact.entity';
 
 @Injectable()
-export class ArtistsDbService extends BaseService {
+export class ArtistsDbService extends BaseComponent {
   constructor(
     @InjectRepository(Artist, 'artist-db')
     private readonly artistsRepository: Repository<Artist>,
@@ -25,7 +29,7 @@ export class ArtistsDbService extends BaseService {
     super(ArtistsDbService.name);
   }
 
-  async create(dto: CreateArtistParams): Promise<Artist | ServiceError> {
+  async create(dto: CreateArtistParams): Promise<Artist> {
     const exists = await this.artistsRepository.findOne({
       where: {
         userId: dto.userId,
@@ -33,10 +37,7 @@ export class ArtistsDbService extends BaseService {
     });
 
     if (exists) {
-      return this.serviceError(
-        this.create,
-        `Artists with user id: ${dto.userId} already exist`,
-      );
+      throw new DbServiceBadRule(this, 'Artist already exists');
     }
 
     const artist = this.artistsRepository.create();
@@ -57,10 +58,10 @@ export class ArtistsDbService extends BaseService {
     try {
       return await this.artistsRepository.save(artist);
     } catch (error) {
-      return this.serviceError(
-        this.create,
-        `Trouble creating artist ${artist.username}`,
-        error.message,
+      throw new DBServiceSaveException(
+        this,
+        `Problems saving artist ${artist.id}`,
+        error,
       );
     }
   }
@@ -101,24 +102,32 @@ export class ArtistsDbService extends BaseService {
     });
   }
 
-  async findById(id: number): Promise<Artist | ServiceError> {
+  async findById(id: number): Promise<Artist> {
     try {
       return await this.artistsRepository.findOne({ where: { id } });
     } catch (error) {
-      return this.serviceError(
-        this.findById,
-        'Problems finding artist by id',
-        error.message,
+      throw new DBServiceFindOneException(
+        this,
+        'Problems finding artist',
+        error,
       );
     }
   }
 
   async findByIds(ids: number[]) {
-    return this.artistsRepository.find({
-      where: {
-        id: In(ids),
-      },
-    });
+    try {
+      return await this.artistsRepository.find({
+        where: {
+          id: In(ids),
+        },
+      });
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        'Problems finding artist',
+        error,
+      );
+    }
   }
 
   async find(options: FindManyOptions<Artist>) {
@@ -133,15 +142,11 @@ export class ArtistsDbService extends BaseService {
     return this.artistsRepository.findOne(options);
   }
 
-  async save(artist: DeepPartial<Artist>): Promise<Artist | ServiceError> {
+  async save(artist: DeepPartial<Artist>): Promise<Artist> {
     try {
       return await this.artistsRepository.save(artist);
     } catch (error) {
-      return this.serviceError(
-        this.save,
-        'Problems saving artist',
-        error.message,
-      );
+      throw new DBServiceSaveException(this, 'Problems saving artist', error);
     }
   }
 

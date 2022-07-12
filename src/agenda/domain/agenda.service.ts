@@ -8,13 +8,13 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { CreateArtistDto } from '../../artists/infrastructure/dtos/createArtist.dto';
 import { CreateArtistParams } from '../../artists/usecases/interfaces/createArtist.params';
-import { BaseService } from '../../global/domain/services/base.service';
+import { BaseComponent } from '../../global/domain/components/base.component';
+import { DBServiceSaveException } from '../../global/infrastructure/exceptions/dbService.exception';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 
 @Injectable()
-export class AgendaService extends BaseService {
+export class AgendaService extends BaseComponent {
   constructor(
     @InjectRepository(Agenda, 'agenda-db')
     private readonly agendaRepository: Repository<Agenda>,
@@ -51,10 +51,10 @@ export class AgendaService extends BaseService {
     try {
       return await this.save(agenda);
     } catch (error) {
-      return this.serviceError(
-        this.createWithArtistInfo,
-        'Problems saving agenda',
-        error.message,
+      throw new DBServiceSaveException(
+        this,
+        `Problems saving agenda for user ${dto.userId}`,
+        error,
       );
     }
   }
@@ -68,7 +68,11 @@ export class AgendaService extends BaseService {
   }
 
   async save(agenda: DeepPartial<Agenda>): Promise<Agenda> {
-    return this.agendaRepository.save(agenda);
+    try {
+      return await this.agendaRepository.save(agenda);
+    } catch (error) {
+      throw new DBServiceSaveException(this, 'Trouble saving agenda', error);
+    }
   }
 
   async delete(id: number): Promise<DeleteResult> {

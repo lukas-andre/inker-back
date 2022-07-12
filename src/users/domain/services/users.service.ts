@@ -10,15 +10,19 @@ import {
   Repository,
 } from 'typeorm';
 import { LoginType } from '../../../auth/domain/enums/loginType.enum';
+import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-import { BaseService } from '../../../global/domain/services/base.service';
+import {
+  DbServiceBadRule,
+  DBServiceUpdateException,
+} from '../../../global/infrastructure/exceptions/dbService.exception';
 import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
 import { Role } from '../../infrastructure/entities/role.entity';
 import { User } from '../../infrastructure/entities/user.entity';
 import { UserType } from '../enums/userType.enum';
 import { UserInterface } from '../models/user.model';
 @Injectable()
-export class UsersService extends BaseService {
+export class UsersService extends BaseComponent {
   constructor(
     @InjectRepository(User, 'user-db')
     private readonly usersRepository: Repository<User>,
@@ -39,7 +43,7 @@ export class UsersService extends BaseService {
     });
 
     if (exists) {
-      return false;
+      throw new DbServiceBadRule(this, 'User already exists');
     }
 
     const user = this.usersRepository.create();
@@ -92,7 +96,7 @@ export class UsersService extends BaseService {
         .where('id = :userId', { userId })
         .execute();
     } catch (error) {
-      return this.serviceError(this.activate, 'Error activating user', error);
+      throw new DBServiceUpdateException(this, 'Error activating user', error);
     }
   }
 

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../../global/domain/exceptions/domain.exception';
-import { DomainBadRule } from '../../../global/domain/exceptions/domainBadRule.exception';
+import { DomainBadRule } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -18,19 +17,19 @@ export class UpdateUserEmailUseCase extends BaseUseCase implements UseCase {
   public async execute(
     userId: number,
     newEmail: string,
-  ): Promise<DomainException | DefaultResponseDto> {
+  ): Promise<DefaultResponseDto> {
     const emailExists = await this.usersService.findOne({
       where: { email: newEmail },
     });
 
     if (emailExists) {
-      return new DomainBadRule('Email already used');
+      throw new DomainBadRule('Email already used');
     }
 
     const user = await this.usersService.findById(userId);
 
     if (user.email === newEmail) {
-      return new DomainBadRule('The emails must be different');
+      throw new DomainBadRule('The emails must be different');
     }
 
     user.email = newEmail;

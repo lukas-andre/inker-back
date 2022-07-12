@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DomainException } from '../../../global/domain/exceptions/domain.exception';
-import { DomainBadRule } from '../../../global/domain/exceptions/domainBadRule.exception';
-import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../../global/domain/exceptions/domainNotFound.exception';
+import {
+  DomainBadRule,
+  DomainConflict,
+} from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
@@ -31,9 +31,9 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
     notificationType: NotificationType,
     password: string,
     newPassword: string,
-  ): Promise<DomainException | DefaultResponseDto> {
+  ): Promise<DefaultResponseDto> {
     if (password !== newPassword) {
-      return new DomainBadRule('Password must match');
+      throw new DomainBadRule('Password must match');
     }
 
     const userHash = await this.verificationHashService.findOne({
@@ -47,7 +47,7 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
     this.logger.log({ userHash });
 
     if (!userHash) {
-      return new DomainNotFoundException(`Hash for userId ${userId} not found`);
+      throw new DomainBadRule(`Hash for userId ${userId} not found`);
     }
 
     const isValidCode =
@@ -59,7 +59,7 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
     this.logger.log({ isValidCode });
 
     if (!isValidCode) {
-      return new DomainConflictException('Invalid code');
+      throw new DomainConflict('Invalid code');
     }
 
     await this.usersService.edit(userId, {

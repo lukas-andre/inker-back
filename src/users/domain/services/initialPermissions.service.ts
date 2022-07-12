@@ -1,21 +1,21 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { DbServiceInternalServerError } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { Permission } from '../../infrastructure/entities/permission.entity';
 
 @Injectable()
-export class InitialPermissionsService {
-  private readonly serviceName = InitialPermissionsService.name;
-  private readonly logger = new Logger(this.serviceName);
-
+export class InitialPermissionsService extends BaseComponent {
   constructor(
     // @Inject('ModulesContainer') private readonly container: ModulesContainer,
     @InjectRepository(Permission, 'user-db')
     private readonly permissionsRepository: Repository<Permission>,
-  ) {}
+  ) {
+    super(InitialPermissionsService.name);
+  }
 
-  async initPermissions(): Promise<Permission[] | ServiceError> {
+  async initPermissions(): Promise<Permission[]> {
     const controllersNames = new Set<string>();
 
     // const providers = [...this.container.values()];
@@ -35,19 +35,14 @@ export class InitialPermissionsService {
       try {
         await this.permissionsRepository.save(permission);
       } catch (error) {
-        return {
-          service: this.serviceName,
-          method: this.initPermissions.name,
-          catchedErrorMessage: error.detail,
-          publicErrorMessage: 'Trouble saving permissions',
-        };
+        throw new DbServiceInternalServerError(this, error.detail, error);
       }
     }
 
     return this.permissionsRepository.find();
   }
 
-  async getAllRoutes(): Promise<Permission[] | ServiceError> {
+  async getAllRoutes(): Promise<Permission[]> {
     return this.permissionsRepository.find();
   }
 }

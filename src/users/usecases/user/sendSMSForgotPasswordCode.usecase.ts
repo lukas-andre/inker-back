@@ -1,15 +1,16 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DomainException } from '../../../global/domain/exceptions/domain.exception';
-import { DomainBadRule } from '../../../global/domain/exceptions/domainBadRule.exception';
-import { DomainConflictException } from '../../../global/domain/exceptions/domainConflict.exception';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
+import {
+  DomainBadRule,
+  DomainConflict,
+} from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import { DbServiceConflict } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import {
@@ -44,7 +45,7 @@ export class SendSMSForgotPasswordCodeUseCase
   public async execute(
     userId: number,
     phoneNumber: string,
-  ): Promise<DefaultResponseDto | DomainException> {
+  ): Promise<DefaultResponseDto> {
     const verificationCode =
       this.verificationHashService.generateVerificationCode();
 
@@ -59,29 +60,30 @@ export class SendSMSForgotPasswordCodeUseCase
     });
     this.logger.log({ isSmsAlreadySent });
 
-    let verificationHash: VerificationHash | ServiceError;
+    let verificationHash: VerificationHash;
     if (isSmsAlreadySent) {
       if (isSmsAlreadySent.tries >= this.maxTries) {
-        return new DomainBadRule('Max sms tries reached');
+        throw new DomainBadRule('Max sms tries reached');
       }
       verificationHash = await this.generateNewValidationHash(
         isSmsAlreadySent,
         verificationCode,
       );
     } else {
-      verificationHash = await this.verificationHashService.create(
-        userId,
-        verificationCode,
-        NotificationType.SMS,
-        this.verificationType,
-        1,
-      );
-    }
-
-    if (verificationHash instanceof ServiceError) {
-      return new DomainConflictException(
-        this.handleServiceError(verificationHash),
-      );
+      try {
+        verificationHash = await this.verificationHashService.create(
+          userId,
+          verificationCode,
+          NotificationType.SMS,
+          this.verificationType,
+          1,
+        );
+      } catch (error) {
+        if (error instanceof DbServiceConflict) {
+          throw new DomainConflict(error.publicError);
+        }
+        throw error;
+      }
     }
 
     const smsMessage = `Ingrese ${verificationCode} para cambiar su contraseña en Inker`;
@@ -96,7 +98,7 @@ export class SendSMSForgotPasswordCodeUseCase
   private async generateNewValidationHash(
     previousHash: VerificationHash,
     verificationCode: string,
-  ): Promise<VerificationHash | ServiceError> {
+  ): Promise<VerificationHash> {
     return this.verificationHashService.edit(previousHash.id, {
       ...previousHash,
       tries: ++previousHash.tries,

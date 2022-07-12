@@ -3,10 +3,10 @@ import stringify from 'fast-safe-stringify';
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { GenreInterface } from '../../genres/genre.interface';
 import { GenresService } from '../../genres/genres.service';
-import { DomainException } from '../../global/domain/exceptions/domain.exception';
-import { DomainConflictException } from '../../global/domain/exceptions/domainConflict.exception';
-import { DomainNotFoundException } from '../../global/domain/exceptions/domainNotFound.exception';
-import { isServiceError } from '../../global/domain/guards/isServiceError.guard';
+import {
+  DomainBadRequest,
+  DomainNotFound,
+} from '../../global/domain/exceptions/domain.exception';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import {
   BaseUseCase,
@@ -36,18 +36,15 @@ export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
     jwtPayload: JwtPayload,
     files: FileInterface[],
     createPostDto: CreatePostDto,
-  ): Promise<Post | DomainException> {
+  ): Promise<Post> {
     if (!files) {
-      return new DomainNotFoundException('Not valid files to upload');
+      throw new DomainBadRequest('Not valid files to upload');
     }
 
     const artist = await this.artistsDbService.findById(jwtPayload.userTypeId);
-    if (isServiceError(artist)) {
-      return new DomainConflictException(this.handleServiceError(artist));
-    }
 
     if (!artist) {
-      return new DomainNotFoundException('Artist not found');
+      throw new DomainNotFound('Artist not found');
     }
 
     const genres: GenreInterface[] = [],
@@ -67,7 +64,7 @@ export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
     console.log('genres: ', genres);
     console.log('tags: ', tags);
 
-    let post = await this.postService.save({
+    const post = await this.postService.save({
       content: createPostDto.content,
       location: createPostDto.location,
       profileThumbnail: jwtPayload.profileThumbnail,
@@ -79,20 +76,12 @@ export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
       username: jwtPayload.username,
     });
 
-    if (isServiceError(post)) {
-      return new DomainConflictException(this.handleServiceError(post));
-    }
-
     post.multimedia = await this.multimediasService.handlePostMultimedias(
       files,
       jwtPayload.userTypeId,
       post.id,
     );
 
-    post = await this.postService.save(post);
-
-    return isServiceError(post)
-      ? new DomainConflictException(this.handleServiceError(post))
-      : post;
+    return this.postService.save(post);
   }
 }

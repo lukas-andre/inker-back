@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceError } from '../../../global/domain/interfaces/serviceError';
-import { BaseService } from '../../../global/domain/services/base.service';
 import {
   DeepPartial,
   DeleteResult,
@@ -10,11 +8,13 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { DBServiceFindException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { Reaction } from '../../../reactions/infrastructure/entities/reaction.entity';
 import { GroupedReactionsInterface } from '../interfaces/groupedReactions.interface';
 
 @Injectable()
-export class ReactionsService extends BaseService {
+export class ReactionsService extends BaseComponent {
   constructor(
     @InjectRepository(Reaction, 'reaction-db')
     private readonly reactionsRepository: Repository<Reaction>,
@@ -64,7 +64,7 @@ export class ReactionsService extends BaseService {
   async findByActivityIdAndActivityType(
     activityId: number,
     activity: string,
-  ): Promise<GroupedReactionsInterface[] | ServiceError> {
+  ): Promise<GroupedReactionsInterface[]> {
     try {
       return await this.reactionsRepository
         .createQueryBuilder('reactions')
@@ -79,10 +79,10 @@ export class ReactionsService extends BaseService {
         .groupBy('reactions.reaction_type')
         .getRawMany();
     } catch (error) {
-      return this.serviceError(
-        this.findByActivityIdAndActivityType,
-        'Problems listing reactions',
-        error.message,
+      throw new DBServiceFindException(
+        this,
+        'Problems finding reactions',
+        error,
       );
     }
   }
