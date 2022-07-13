@@ -14,6 +14,7 @@ import { CreateCustomerParams } from '../../../customers/usecases/interfaces/cre
 import {
   DomainConflict,
   DomainException,
+  DomainUnProcessableEntity,
 } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
@@ -48,7 +49,6 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   ): Promise<Customer | CreateArtistUserResDto> {
     const role = await this.rolesService.findOne({
       where: { name: createUserParams.userType.toLocaleLowerCase() },
-      // where: { name: createUserParams.userType },
     });
 
     if (!role) {
@@ -56,10 +56,6 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     }
 
     const created = await this.usersService.create(createUserParams, role);
-
-    if (typeof created === 'boolean') {
-      throw new DomainConflict('User already exists');
-    }
 
     try {
       const response = await this.handleCreateByUserType(
@@ -112,7 +108,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       );
     } catch (error) {
       await this.artistsDbService.delete(artist.id);
-      throw new DomainConflict(error.publicMessage);
+      throw new DomainUnProcessableEntity(error.publicMessage);
     }
 
     this.logger.log(`🟢 Agenda created: ${agenda.id}`);
@@ -128,7 +124,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
           await this.artistsDbService.delete(artist.id),
           await this.agendaService.delete(agenda.id),
         ]);
-        throw new DomainConflict(error.publicError);
+        throw new DomainUnProcessableEntity(error.publicError);
       }
       throw error;
     }

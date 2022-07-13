@@ -34,7 +34,7 @@ export class UsersService extends BaseComponent {
   async create(
     createUserParams: CreateUserByTypeParams,
     role: Role,
-  ): Promise<UserInterface | boolean> {
+  ): Promise<UserInterface> {
     const exists: number = await this.usersRepository.count({
       where: [
         { username: createUserParams.username },
