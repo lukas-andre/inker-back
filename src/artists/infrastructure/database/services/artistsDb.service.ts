@@ -60,7 +60,7 @@ export class ArtistsDbService extends BaseComponent {
     } catch (error) {
       throw new DBServiceSaveException(
         this,
-        `Problems saving artist ${artist.id}`,
+        `Problems creating artist ${artist.id}`,
         error,
       );
     }

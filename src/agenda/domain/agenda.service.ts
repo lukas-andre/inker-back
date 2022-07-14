@@ -11,6 +11,7 @@ import {
 import { CreateArtistParams } from '../../artists/usecases/interfaces/createArtist.params';
 import { BaseComponent } from '../../global/domain/components/base.component';
 import { DBServiceSaveException } from '../../global/infrastructure/exceptions/dbService.exception';
+import { PROBLEMS_SAVING_AGENDA_FOR_USER } from '../../users/domain/errors/codes';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 
 @Injectable()
@@ -53,7 +54,7 @@ export class AgendaService extends BaseComponent {
     } catch (error) {
       throw new DBServiceSaveException(
         this,
-        `Problems saving agenda for user ${dto.userId}`,
+        `${PROBLEMS_SAVING_AGENDA_FOR_USER} ${dto.userId}`,
         error,
       );
     }
