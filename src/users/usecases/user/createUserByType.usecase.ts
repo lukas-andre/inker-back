@@ -160,6 +160,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       address1: createArtistDto.address.address1,
       address2: createArtistDto.address.address2,
       address3: createArtistDto.address.address3,
+      addressType: createArtistDto.address.addressType,
       city: createArtistDto.address.city,
       country: createArtistDto.address.country,
       state: createArtistDto.address.state,

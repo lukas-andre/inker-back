@@ -14,6 +14,7 @@ import {
   DBServiceFindException,
   DBServiceSaveException,
 } from '../../../../global/infrastructure/exceptions/dbService.exception';
+import { TROUBLE_SAVING_LOCATION } from '../../../../users/domain/errors/codes';
 import { ArtistByRangeLocation } from '../../../usecases/interfaces/artistByRange.interface';
 import { ArtistLocation } from '../../entities/artistLocation.entity';
 
@@ -77,7 +78,7 @@ export class ArtistLocationsDbService extends BaseComponent {
     try {
       return await this.artistLocationsRepository.save(location);
     } catch (error) {
-      throw new DBServiceSaveException(this, 'Trouble saving location', error);
+      throw new DBServiceSaveException(this, TROUBLE_SAVING_LOCATION, error);
     }
   }
 

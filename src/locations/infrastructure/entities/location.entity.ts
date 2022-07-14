@@ -1,5 +1,6 @@
 import { Point } from 'geojson';
 import { Column, Entity, Index } from 'typeorm';
+import { AddressType } from '../../../global/domain/interfaces/address.interface';
 import { ViewportInterface } from '../../../global/domain/interfaces/geometry.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
@@ -13,6 +14,15 @@ export class LocationEntity extends BaseEntity {
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   address3?: string;
+
+  @Column({
+    type: 'enum',
+    enum: AddressType,
+    enumName: 'AddressType',
+    name: 'address_type',
+    default: AddressType.HOME,
+  })
+  addressType: AddressType;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   state?: string;
