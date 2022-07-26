@@ -8,6 +8,10 @@ import {
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
+import {
+  USER_ID_PIPE_FAILED,
+  USER_NOT_ACCEPTED,
+} from '../../domain/errors/codes';
 import { UsersService } from '../../domain/services/users.service';
 
 @Injectable()
@@ -27,12 +31,12 @@ export class UserIdPipe
     const errors = await validate(object);
     if (errors.length > 0) {
       this.logger.log({ errors });
-      throw new BadRequestException('Validation failed');
+      throw new BadRequestException(USER_ID_PIPE_FAILED);
     }
 
     const userId = parseInt(value);
     if (!(await this.usersService.exists(userId))) {
-      throw new NotAcceptableException('User not accepted ');
+      throw new NotAcceptableException(USER_NOT_ACCEPTED);
     }
 
     return userId;
@@ -41,7 +45,7 @@ export class UserIdPipe
   parseInt(val: string) {
     const value = parseInt(val, 10);
     if (isNaN(value)) {
-      throw new BadRequestException('Validation failed');
+      throw new BadRequestException(USER_ID_PIPE_FAILED);
     }
     return value;
   }

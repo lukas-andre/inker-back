@@ -8,6 +8,11 @@ import {
 import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
+import {
+  MAX_SMS_ATTEMPTS_REACHED,
+  USER_ALREADY_VERIFIED,
+} from '../../domain/errors/codes';
+import { UsersService } from '../../domain/services/users.service';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import {
   NotificationType,
@@ -25,6 +30,7 @@ export class SendSMSAccountVerificationCodeUseCase
 
   constructor(
     private readonly verificationHashService: VerificationHashService,
+    private readonly usersService: UsersService,
     private readonly smsClient: SMSClient,
     private readonly configService: ConfigService,
   ) {
@@ -42,6 +48,14 @@ export class SendSMSAccountVerificationCodeUseCase
     userId: number,
     phoneNumber: string,
   ): Promise<DefaultResponseDto> {
+    const userIsAlreadyVerified = await this.usersService.existsAndIsValid(
+      userId,
+    );
+
+    if (userIsAlreadyVerified) {
+      throw new DomainBadRule(USER_ALREADY_VERIFIED);
+    }
+
     const verificationCode =
       this.verificationHashService.generateVerificationCode();
 
@@ -56,17 +70,13 @@ export class SendSMSAccountVerificationCodeUseCase
     });
     this.logger.log({ isSmsAlreadySent });
 
-    let verificationHash: VerificationHash;
     if (isSmsAlreadySent) {
       if (isSmsAlreadySent.tries >= this.maxTries) {
-        throw new DomainBadRule('Max sms tries reached');
+        throw new DomainBadRule(MAX_SMS_ATTEMPTS_REACHED);
       }
-      verificationHash = await this.generateNewValidationHash(
-        isSmsAlreadySent,
-        verificationCode,
-      );
+      await this.generateNewValidationHash(isSmsAlreadySent, verificationCode);
     } else {
-      verificationHash = await this.verificationHashService.create(
+      await this.verificationHashService.create(
         userId,
         verificationCode,
         NotificationType.SMS,
@@ -75,7 +85,7 @@ export class SendSMSAccountVerificationCodeUseCase
       );
     }
 
-    const smsMessage = `Ingrese ${verificationCode} para activar su cuenta en Inker`;
+    const smsMessage = `Para activar su cuenta en Inker ingrese el siguiente code: ${verificationCode} `;
 
     const snsResult = await this.smsClient.sendSMS(phoneNumber, smsMessage);
     this.logger.log({ smsMessage });

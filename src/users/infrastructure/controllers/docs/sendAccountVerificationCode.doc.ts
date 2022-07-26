@@ -1,13 +1,22 @@
 import { applyDecorators } from '@nestjs/common';
 import {
-  ApiConflictResponse,
-  ApiNotFoundResponse,
+  ApiBadRequestResponse,
+  ApiNotAcceptableResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defaultResponse.dto';
+import { errorCodesToOASDescription } from '../../../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
+import {
+  MAX_SMS_ATTEMPTS_REACHED,
+  PROBLEMS_CREATING_VERIFICATION_HASH,
+  USER_ALREADY_VERIFIED,
+  USER_ID_PIPE_FAILED,
+  USER_NOT_ACCEPTED,
+} from '../../../domain/errors/codes';
 import { NotificationType } from '../../entities/verificationHash.entity';
 
 export function SendAccountVerificationCodeDoc() {
@@ -38,7 +47,19 @@ export function SendAccountVerificationCodeDoc() {
       description: 'SMS has been sended',
       type: DefaultResponseDto,
     }),
-    ApiNotFoundResponse({ description: 'User does not exists' }),
-    ApiConflictResponse({ description: 'SMS already sended' }),
+    ApiNotAcceptableResponse({
+      description: USER_NOT_ACCEPTED,
+    }),
+    ApiBadRequestResponse({
+      description: errorCodesToOASDescription([
+        USER_ID_PIPE_FAILED,
+        USER_ALREADY_VERIFIED,
+        MAX_SMS_ATTEMPTS_REACHED,
+      ]),
+    }),
+    ApiUnprocessableEntityResponse({
+      description: PROBLEMS_CREATING_VERIFICATION_HASH,
+    }),
+    // Api
   );
 }
