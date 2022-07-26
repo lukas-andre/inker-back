@@ -8,6 +8,7 @@ export enum AddressType {
 }
 export interface AddressInterface {
   address1: string;
+  shortAddress1: string;
   address2: string;
   address3?: string;
   addressType: AddressType;

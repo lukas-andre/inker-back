@@ -6,7 +6,7 @@ import { Role } from './role.entity';
 
 @Entity()
 export class User extends BaseEntity implements UserInterface {
-  @Column({ length: 20 })
+  @Column({ length: 100 })
   username: string;
 
   @Column()

@@ -1,5 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
@@ -10,6 +11,15 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defaultResponse.dto';
+import { errorCodesToOASDescription } from '../../../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
+import {
+  ERROR_ACTIVATING_USER,
+  HASH_NOT_FOUND_FOR_USER_ID,
+  INVALID_VERIFICATION_CODE,
+  USER_ALREADY_VERIFIED,
+  USER_ID_PIPE_FAILED,
+  USER_NOT_ACCEPTED,
+} from '../../../domain/errors/codes';
 import { NotificationType } from '../../entities/verificationHash.entity';
 
 export function ValidateAccountVerificationCodeDoc() {
@@ -41,9 +51,23 @@ export function ValidateAccountVerificationCodeDoc() {
       description: 'Account validate',
       type: DefaultResponseDto,
     }),
-    ApiNotFoundResponse({ description: 'Hash for user not found' }),
-    ApiNotAcceptableResponse({ description: 'User does not exists' }),
-    ApiUnprocessableEntityResponse({ description: 'Could not activate user' }),
-    ApiConflictResponse({ description: 'Invalid code' }),
+    ApiNotAcceptableResponse({
+      description: USER_NOT_ACCEPTED,
+    }),
+    ApiBadRequestResponse({
+      description: errorCodesToOASDescription([
+        USER_ID_PIPE_FAILED,
+        USER_ALREADY_VERIFIED,
+      ]),
+    }),
+    ApiNotFoundResponse({
+      description: HASH_NOT_FOUND_FOR_USER_ID,
+    }),
+    ApiConflictResponse({
+      description: INVALID_VERIFICATION_CODE,
+    }),
+    ApiUnprocessableEntityResponse({
+      description: ERROR_ACTIVATING_USER,
+    }),
   );
 }

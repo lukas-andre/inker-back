@@ -30,11 +30,7 @@ export class ArtistsDbService extends BaseComponent {
   }
 
   async create(dto: CreateArtistParams): Promise<Artist> {
-    const exists = await this.artistsRepository.findOne({
-      where: {
-        userId: dto.userId,
-      },
-    });
+    const exists = await this.existArtistByUserId(dto.userId);
 
     if (exists) {
       throw new DbServiceBadRule(this, 'Artist already exists');

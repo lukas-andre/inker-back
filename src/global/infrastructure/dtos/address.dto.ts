@@ -16,13 +16,22 @@ import { GeometryDto } from './geometry.dto';
 
 export class AddressDto implements AddressInterface {
   @ApiProperty({
-    example: 'Av vicuña mackenna',
+    example: 'Avenida Vicuña Mackenna Poniente',
     description: 'Calle',
   })
   @IsNotEmpty()
   @IsString()
   @Expose()
   readonly address1: string;
+
+  @ApiProperty({
+    example: 'Av. Vicuña Mackenna Pte.',
+    description: 'Calle',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  readonly shortAddress1: string;
 
   @ApiProperty({
     example: '6130',

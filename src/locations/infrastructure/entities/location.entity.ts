@@ -9,6 +9,14 @@ export class LocationEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 100 })
   address1: string;
 
+  @Column({
+    type: 'varchar',
+    length: 100,
+    name: 'short_address1',
+    nullable: true,
+  })
+  shortAddress1: string;
+
   @Column({ type: 'varchar', length: 50 })
   address2: string;
 
