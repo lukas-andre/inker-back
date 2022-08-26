@@ -3,9 +3,10 @@ import { Column, Entity, Index } from 'typeorm';
 import { AddressType } from '../../../global/domain/interfaces/address.interface';
 import { ViewportInterface } from '../../../global/domain/interfaces/geometry.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+import { LocationModel } from '../../domain/model/location.model';
 
 @Entity({ synchronize: false })
-export class LocationEntity extends BaseEntity {
+export class LocationEntity extends BaseEntity implements LocationModel {
   @Column({ type: 'varchar', length: 100 })
   address1: string;
 

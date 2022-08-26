@@ -20,7 +20,7 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { Transform } from '../../../global/domain/utils/transformTo';
+import { TypeTransform } from '../../../global/domain/utils/typeTransform';
 import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { ArtistLocationsDbService } from '../../../locations/infrastructure/database/services/artistLocationsDb.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
@@ -70,12 +70,12 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
 
       console.log(response);
       if (response instanceof Artist) {
-        const resp = await Transform.to(CreateArtistUserResDto, response);
+        const resp = await TypeTransform.to(CreateArtistUserResDto, response);
 
         this.logger.log(`🟢 Artist dtoResponse: ${stringify(resp)}`);
         return resp;
       }
-      const resp = await Transform.to(CreateCustomerUserResDto, response);
+      const resp = await TypeTransform.to(CreateCustomerUserResDto, response);
       this.logger.log(`🟢 Customer created: ${stringify(resp)}`);
       return resp;
     } catch (error) {
@@ -185,9 +185,10 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       viewport: createArtistDto.address.geometry.viewport,
       location: {
         type: 'Point',
+        // TODO: DAR VUELTA
         coordinates: [
-          createArtistDto.address.geometry.location.lat,
           createArtistDto.address.geometry.location.lng,
+          createArtistDto.address.geometry.location.lat,
         ],
       },
     };

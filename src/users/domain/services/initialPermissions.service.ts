@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ModulesContainer } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseComponent } from '../../../global/domain/components/base.component';
@@ -8,7 +9,7 @@ import { Permission } from '../../infrastructure/entities/permission.entity';
 @Injectable()
 export class InitialPermissionsService extends BaseComponent {
   constructor(
-    // @Inject('ModulesContainer') private readonly container: ModulesContainer,
+    private modulesContainer: ModulesContainer,
     @InjectRepository(Permission, 'user-db')
     private readonly permissionsRepository: Repository<Permission>,
   ) {
@@ -18,12 +19,12 @@ export class InitialPermissionsService extends BaseComponent {
   async initPermissions(): Promise<Permission[]> {
     const controllersNames = new Set<string>();
 
-    // const providers = [...this.container.values()];
-    // providers.forEach((modules) => {
-    //   modules.controllers.forEach((controller) =>
-    //     controllersNames.add(controller.name),
-    //   );
-    // });
+    const providers = [...this.modulesContainer.values()];
+    providers.forEach(modules => {
+      modules.controllers.forEach(controller =>
+        controllersNames.add(controller.name),
+      );
+    });
 
     const controllersNamesList = [...controllersNames.values()].sort();
     for (const [index, controllerName] of controllersNamesList.entries()) {

@@ -16,6 +16,7 @@ import {
   DBServiceFindOneException,
   DBServiceSaveException,
 } from '../../../../global/infrastructure/exceptions/dbService.exception';
+import { RawFindByArtistIdsResponse } from '../../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
 import { CreateArtistParams } from '../../../usecases/interfaces/createArtist.params';
 import { Artist } from '../../entities/artist.entity';
 import { Contact } from '../../entities/contact.entity';
@@ -124,6 +125,34 @@ export class ArtistsDbService extends BaseComponent {
         error,
       );
     }
+  }
+
+  async rawFindByArtistIds(
+    artistIds: number[],
+  ): Promise<RawFindByArtistIdsResponse[]> {
+    const vars = artistIds.map((_, index) => `$${++index}`).join(',');
+    return this.artistsRepository.query(
+      `SELECT
+        json_build_object(
+          'phone', c.phone,
+          'email', c.email,
+          'country', c.phone_country_iso_code
+        )  as "contact",
+        a.id,
+        a.username,
+        a.first_name as "firstName",
+        a.last_name as "lastName",
+        a.short_description as "shortDescription",
+        a.profile_thumbnail as "profileThumbnail",
+        a.rating
+      FROM
+        artist a
+      INNER JOIN contact c ON c.id = a.contact_id  
+      WHERE
+        ( (a.id in (${vars})) )
+      AND ( a.deleted_at is null )`,
+      artistIds,
+    );
   }
 
   async find(options: FindManyOptions<Artist>) {

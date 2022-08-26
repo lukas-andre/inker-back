@@ -1,7 +1,7 @@
 version: '3'
 services:
   database:
-    image: 'postgres'
+    image: 'postgis/postgis'
     env_file:
       - database.env
     ports:

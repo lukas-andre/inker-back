@@ -6,7 +6,11 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { ArtistLocationsDbService } from '../infrastructure/database/services/artistLocationsDb.service';
-import { FindArtistByArtistDto } from '../infrastructure/dtos/findArtistByRange.dto';
+import { FindArtistByArtistDtoRequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
+import {
+  FindArtistByRangeResponseDto,
+  RawFindByArtistIdsResponse,
+} from '../infrastructure/dtos/findArtistByRangeResponse.dto';
 
 @Injectable()
 export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
@@ -17,30 +21,44 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
     super(FindArtistByRangeUseCase.name);
   }
 
-  async execute(findArtistByArtistDto: FindArtistByArtistDto): Promise<any> {
+  async execute(
+    findArtistByArtistDto: FindArtistByArtistDtoRequest,
+  ): Promise<FindArtistByRangeResponseDto[]> {
     const origin: Point = {
       type: 'Point',
       coordinates: [
-        findArtistByArtistDto.latitud,
         findArtistByArtistDto.longitud,
+        findArtistByArtistDto.latitud,
       ],
     };
 
-    const result = await this.artistsLocationDbService.findByRange(
+    console.time(FindArtistByRangeUseCase.name + '_findLocations');
+    const locations = await this.artistsLocationDbService.findByRange(
       origin,
       findArtistByArtistDto.range,
     );
+    console.timeEnd(FindArtistByRangeUseCase.name + '_findLocations');
 
-    const artists = await this.artistsDbService.findByIds(
-      result.map(location => location.location_artist_id),
-    );
+    console.time(FindArtistByRangeUseCase.name + '_findArtists');
+    const artistIds = [];
+    for (let i = 0; i < locations.length; i++) {
+      artistIds.push(locations[i].artistId);
+    }
+    const artists = await this.artistsDbService.rawFindByArtistIds(artistIds);
+    console.timeEnd(FindArtistByRangeUseCase.name + '_findArtists');
 
-    result.forEach(location => {
-      location.artist = artists.filter(
-        artist => artist.id === location.location_artist_id,
-      );
+    console.time(FindArtistByRangeUseCase.name + '_merge');
+    const artistByArtistId: Map<number, RawFindByArtistIdsResponse> = new Map();
+    for (let i = 0; i < artists.length; i++) {
+      if (!artistByArtistId[artists[i].id]) {
+        artistByArtistId.set(artists[i].id, artists[i]);
+      }
+    }
+
+    locations.forEach(location => {
+      location.artist = artistByArtistId.get(location.artistId);
     });
-
-    return result;
+    console.timeEnd(FindArtistByRangeUseCase.name + '_merge');
+    return locations;
   }
 }

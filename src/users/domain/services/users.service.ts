@@ -105,7 +105,7 @@ export class UsersService extends BaseComponent {
 
   async activate(userId: number) {
     try {
-      return await this.usersRepository
+      const result = await this.usersRepository
         .createQueryBuilder()
         .update(User)
         .set({
@@ -113,6 +113,13 @@ export class UsersService extends BaseComponent {
         })
         .where('id = :userId', { userId })
         .execute();
+      if (result.affected === 0) {
+        throw new DBServiceUpdateException(
+          this,
+          `${ERROR_ACTIVATING_USER} no user is found`,
+        );
+      }
+      return result;
     } catch (error) {
       throw new DBServiceUpdateException(
         this,
