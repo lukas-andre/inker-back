@@ -1,7 +1,8 @@
 import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AddLocationDto } from './dtos/addLocation.dto';
-import { FindArtistByArtistDto } from './dtos/findArtistByRange.dto';
+import { FindArtistByArtistDtoRequest } from './dtos/findArtistByRangeRequest.dto';
+import { FindArtistByRangeResponseDto } from './dtos/findArtistByRangeResponse.dto';
 import { LocationsHandler } from './locations.handler';
 
 @ApiTags('locations')
@@ -23,10 +24,13 @@ export class LocationsController {
   @ApiOperation({ summary: 'Find artist by range in Kilometers' })
   @ApiOkResponse({
     description: 'Artists successfully found',
-    type: null,
+    type: FindArtistByRangeResponseDto,
+    isArray: true,
   })
   @Post('artist')
-  async findArtistByRange(@Body() body: FindArtistByArtistDto): Promise<any> {
+  async findArtistByRange(
+    @Body() body: FindArtistByArtistDtoRequest,
+  ): Promise<any> {
     return this.locationsHandler.handleFindArtistByRange(body);
   }
 }

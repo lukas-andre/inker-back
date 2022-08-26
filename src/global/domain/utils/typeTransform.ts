@@ -2,7 +2,7 @@ import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
-export class Transform {
+export class TypeTransform {
   static logger = new Logger('Transform');
   static async to<T>(cls: ClassConstructor<T>, plain: Object): Promise<T> {
     const newInstance = plainToInstance(cls, plain, {
@@ -11,7 +11,7 @@ export class Transform {
     });
     const errors = await validate(newInstance as Object);
     if (errors.length > 0) {
-      Transform.logger.error({ errors });
+      TypeTransform.logger.error({ errors });
       throw new InternalServerErrorException('Validation failed');
     }
     return newInstance;

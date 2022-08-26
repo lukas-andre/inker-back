@@ -16,7 +16,7 @@ export const agendaDatabaseConf = registerAs<AgendaDbConfig>(
       name: AGENDA_DB_CONNECTION_NAME,
       database: AGENDA_DB_NAME,
       entities: AGENDA_ENTITIES,
-      logging: ['info', 'query', 'error'],
+      logging: ['error'],
       keepConnectionAlive: true,
     }),
 );

@@ -32,7 +32,7 @@ export class Artist extends BaseEntity implements ArtistType {
   profileThumbnail: string;
 
   @OneToOne(() => Contact, contact => contact.artist, { cascade: true })
-  @JoinColumn()
+  @JoinColumn({ name: 'contact_id' })
   contact: Contact;
 
   @Column('jsonb', { nullable: true })
