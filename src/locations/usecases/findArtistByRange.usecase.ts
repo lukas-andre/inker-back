@@ -32,22 +32,18 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
       ],
     };
 
-    console.time(FindArtistByRangeUseCase.name + '_findLocations');
     const locations = await this.artistsLocationDbService.findByRange(
       origin,
       findArtistByArtistDto.range,
     );
-    console.timeEnd(FindArtistByRangeUseCase.name + '_findLocations');
 
-    console.time(FindArtistByRangeUseCase.name + '_findArtists');
     const artistIds = [];
     for (let i = 0; i < locations.length; i++) {
       artistIds.push(locations[i].artistId);
     }
-    const artists = await this.artistsDbService.rawFindByArtistIds(artistIds);
-    console.timeEnd(FindArtistByRangeUseCase.name + '_findArtists');
 
-    console.time(FindArtistByRangeUseCase.name + '_merge');
+    const artists = await this.artistsDbService.rawFindByArtistIds(artistIds);
+
     const artistByArtistId: Map<number, RawFindByArtistIdsResponseDto> =
       new Map();
     for (let i = 0; i < artists.length; i++) {
@@ -59,7 +55,6 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
     locations.forEach(location => {
       location.artist = artistByArtistId.get(location.artistId);
     });
-    console.timeEnd(FindArtistByRangeUseCase.name + '_merge');
     return locations;
   }
 }

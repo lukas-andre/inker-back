@@ -30,7 +30,7 @@ export class LocationsController {
   @Post('artist')
   async findArtistByRange(
     @Body() body: FindArtistByArtistDtoRequest,
-  ): Promise<any> {
+  ): Promise<FindArtistByRangeResponseDto[]> {
     return this.locationsHandler.handleFindArtistByRange(body);
   }
 }
