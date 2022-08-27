@@ -7,7 +7,6 @@ import {
   Post,
   Put,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -22,7 +21,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
-import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
 import { ArtistsHandler } from './artists.handler';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
@@ -32,7 +30,7 @@ import { UpdateArtistDto } from './dtos/updateArtist.dto';
 @ApiBearerAuth()
 @ApiTags('artists')
 @Controller('artist')
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 export class ArtistsController {
   constructor(private readonly artistHandler: ArtistsHandler) {}
 
