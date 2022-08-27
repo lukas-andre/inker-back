@@ -3,7 +3,6 @@ import { ConfigType } from '@nestjs/config';
 import { HttpAdapterHost } from '@nestjs/core';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import multipart from 'fastify-multipart';
 import { oasConfig } from './config/oas.config';
 import { corsOptions, validationPipeOptions } from './constants';
 import { AllExceptionsFilter } from './global/infrastructure/exception-filters/all-exception.filter';
@@ -39,7 +38,8 @@ export const configure = async (app: NestFastifyApplication) => {
   // TODO: USE THROTTLE MIDDLEWARE https://docs.nestjs.com/security/rate-limiting#rate-limiting
   // await app.register(rateLimit, rateLimitOptions);
 
-  await app.register(multipart);
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  await app.register(require('@fastify/multipart'));
 
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
 
