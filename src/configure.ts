@@ -1,15 +1,11 @@
-import rateLimit from '@fastify/rate-limit';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { HttpAdapterHost } from '@nestjs/core';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import multipart from 'fastify-multipart';
 import { oasConfig } from './config/oas.config';
-import {
-  corsOptions,
-  rateLimitOptions,
-  validationPipeOptions,
-} from './constants';
+import { corsOptions, validationPipeOptions } from './constants';
 import { AllExceptionsFilter } from './global/infrastructure/exception-filters/all-exception.filter';
 
 const configureOAS = async (app: NestFastifyApplication) => {
@@ -40,19 +36,11 @@ export const configure = async (app: NestFastifyApplication) => {
   app.enableCors(corsOptions);
 
   // await app.register(helmet, helmetOptions);
-  await app.register(rateLimit, rateLimitOptions);
+  // TODO: USE THROTTLE MIDDLEWARE https://docs.nestjs.com/security/rate-limiting#rate-limiting
+  // await app.register(rateLimit, rateLimitOptions);
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  // await app.register(require('@fastify/multipart'), {
-  //   limits: {
-  //     fieldNameSize: 100, // Max field name size in bytes
-  //     fieldSize: 100, // Max field value size in bytes
-  //     fields: 10, // Max number of non-file fields
-  //     fileSize: 1000000, // For multipart forms, the max file size in bytes
-  //     files: 1, // Max number of file fields
-  //     headerPairs: 2000, // Max number of header key=>value pairs
-  //   },
-  // });
+  await app.register(multipart);
+
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
 
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
