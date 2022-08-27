@@ -8,6 +8,18 @@ import {
 } from 'class-validator';
 import { ArtistLocationDto } from './artistLocation.dto';
 
+class Location {
+  @ApiProperty({
+    description: 'Type of the location',
+    example: 'Point',
+  })
+  @IsString()
+  readonly type: string;
+
+  @ApiProperty({ description: 'Coordinates', example: [37.7749, -122.4194] })
+  @IsString()
+  readonly coordinates: number[];
+}
 export class FindArtistByRangeResponseDto extends OmitType(ArtistLocationDto, [
   'createdAt',
   'viewport',
@@ -15,58 +27,55 @@ export class FindArtistByRangeResponseDto extends OmitType(ArtistLocationDto, [
   'location',
 ]) {
   @ApiProperty({
-    description: 'Artist id',
+    description: 'Position of the artist',
     example: {
       coordinates: [37.7749, -122.4194],
       type: 'Point',
     } as Location,
   })
-  location: Location;
+  readonly location: Location;
 
   @ApiProperty({ description: 'Distance unit', example: 'Km' })
   @IsString()
-  distanceUnit: string;
+  readonly distanceUnit: string;
+
   @ApiProperty({ description: 'Distance', example: 0.5 })
   @IsNumber()
-  distance: number;
+  readonly distance: number;
 
-  artist: RawFindByArtistIdsResponse;
-}
-
-export interface Location {
-  type: string;
-  coordinates: number[];
+  artist: RawFindByArtistIdsResponseDto;
 }
 
 export class RawContactResponseDto {
   @ApiProperty({ description: 'Phone number', example: '+56912345678' })
   @IsString()
-  phone: string;
+  readonly phone: string;
 
   @ApiProperty({ description: 'Email', example: 'example@gmail.com' })
   @IsString()
-  email: string;
+  readonly email: string;
 
   @ApiProperty({ description: 'Contact country', example: 'CL' })
   @IsString()
-  country: string;
+  readonly country: string;
 }
 
-export class RawFindByArtistIdsResponse {
+export class RawFindByArtistIdsResponseDto {
   @ApiProperty({
     description: 'contact',
   })
   @ValidateNested()
   @IsInstance(RawContactResponseDto)
   @Type(() => RawContactResponseDto)
-  contact: RawContactResponseDto;
+  readonly contact: RawContactResponseDto;
 
   @ApiProperty({ description: 'Artist id', example: 1 })
   @IsNumber()
-  id: number;
+  readonly id: number;
+
   @ApiProperty({ description: 'Username', example: 'Juanart' })
   @IsString()
-  username: string;
+  readonly username: string;
 
   @ApiProperty({ description: 'Name', example: 'Juan' })
   @IsString()
@@ -74,22 +83,22 @@ export class RawFindByArtistIdsResponse {
 
   @ApiProperty({ description: 'Last name', example: 'Art' })
   @IsString()
-  lastName: string;
+  readonly lastName: string;
 
   @ApiProperty({
     description: 'Short description',
     example: 'Juanart description',
   })
   @IsString()
-  shortDescription?: string;
+  readonly shortDescription?: string;
 
   @ApiProperty({
     description: 'Profile thumbnail',
     example: 'https://www.google.com/',
   })
-  profileThumbnail?: string;
+  readonly profileThumbnail?: string;
 
   @ApiProperty({ description: 'rating', example: 4.5 })
   @IsNumber()
-  rating: number;
+  readonly rating: number;
 }

@@ -9,7 +9,7 @@ import { ArtistLocationsDbService } from '../infrastructure/database/services/ar
 import { FindArtistByArtistDtoRequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
 import {
   FindArtistByRangeResponseDto,
-  RawFindByArtistIdsResponse,
+  RawFindByArtistIdsResponseDto,
 } from '../infrastructure/dtos/findArtistByRangeResponse.dto';
 
 @Injectable()
@@ -48,7 +48,8 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
     console.timeEnd(FindArtistByRangeUseCase.name + '_findArtists');
 
     console.time(FindArtistByRangeUseCase.name + '_merge');
-    const artistByArtistId: Map<number, RawFindByArtistIdsResponse> = new Map();
+    const artistByArtistId: Map<number, RawFindByArtistIdsResponseDto> =
+      new Map();
     for (let i = 0; i < artists.length; i++) {
       if (!artistByArtistId[artists[i].id]) {
         artistByArtistId.set(artists[i].id, artists[i]);
