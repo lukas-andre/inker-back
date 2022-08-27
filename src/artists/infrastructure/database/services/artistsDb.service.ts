@@ -16,7 +16,7 @@ import {
   DBServiceFindOneException,
   DBServiceSaveException,
 } from '../../../../global/infrastructure/exceptions/dbService.exception';
-import { RawFindByArtistIdsResponse } from '../../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
+import { RawFindByArtistIdsResponseDto } from '../../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
 import { CreateArtistParams } from '../../../usecases/interfaces/createArtist.params';
 import { Artist } from '../../entities/artist.entity';
 import { Contact } from '../../entities/contact.entity';
@@ -129,7 +129,7 @@ export class ArtistsDbService extends BaseComponent {
 
   async rawFindByArtistIds(
     artistIds: number[],
-  ): Promise<RawFindByArtistIdsResponse[]> {
+  ): Promise<RawFindByArtistIdsResponseDto[]> {
     const vars = artistIds.map((_, index) => `$${++index}`).join(',');
     return this.artistsRepository.query(
       `SELECT
