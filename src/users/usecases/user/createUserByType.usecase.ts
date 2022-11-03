@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
 import stringify from 'fast-safe-stringify';
+
 import { AgendaService } from '../../../agenda/domain/agenda.service';
 import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
 import { ArtistsDbService } from '../../../artists/infrastructure/database/services/artistsDb.service';
@@ -31,6 +31,7 @@ import {
   CreateArtistUserResDto,
   CreateCustomerUserResDto,
 } from '../../infrastructure/dtos/createUserRes.dto';
+
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()

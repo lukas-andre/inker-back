@@ -8,6 +8,7 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { Following } from '../../infrastructure/entities/following.entity';
 

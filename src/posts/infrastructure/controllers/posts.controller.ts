@@ -21,6 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
+
 import { PaginationDto } from '../../../global/infrastructure/dtos/pagination.dto';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { CreatePostDto } from '../dtos/createPost.dto';

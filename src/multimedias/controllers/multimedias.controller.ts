@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
+
 import { MultimediasService } from '../services/multimedias.service';
 
 @ApiTags('multimedias')

@@ -1,7 +1,8 @@
+import { Readable } from 'stream';
+
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as AWS from 'aws-sdk';
-import { Readable } from 'stream';
+import { S3 } from 'aws-sdk';
 
 @Injectable()
 export class S3Client {
@@ -9,7 +10,7 @@ export class S3Client {
 
   constructor(private readonly configService: ConfigService) {
     if (!this.client) {
-      this.client = new AWS.S3({
+      this.client = new S3({
         accessKeyId: this.configService.get('aws.accessKey'),
         secretAccessKey: this.configService.get('aws.secretKey'),
         region: this.configService.get('aws.region'),

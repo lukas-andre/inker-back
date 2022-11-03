@@ -1,6 +1,6 @@
 import { FastifyRateLimitOptions } from '@fastify/rate-limit';
-import { ValidationPipeOptions } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { ValidationPipeOptions } from '@nestjs/common/pipes/validation.pipe';
 // import { FastifyHelmetOptions } from 'fastify-helmet';
 
 export const SERVICE_NAME = 'com.inkerapp.api-service';

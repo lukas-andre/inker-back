@@ -1,7 +1,9 @@
 import { Column, DeleteDateColumn, Entity, Index, ManyToOne } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import { UserInterface } from '../../domain/models/user.model';
+
 import { Role } from './role.entity';
 
 @Entity()

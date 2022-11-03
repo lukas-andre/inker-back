@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
+
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { Permission } from '../../infrastructure/entities/permission.entity';
 import { Role } from '../../infrastructure/entities/role.entity';

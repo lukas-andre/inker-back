@@ -1,4 +1,5 @@
 import { Column, DeleteDateColumn, Entity } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { CustomerFollows } from '../../domain/interfaces/customerFollows.interface';
 

@@ -8,12 +8,13 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import {
   DBServiceFindException,
   DBServiceSaveException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { Comment } from '../../../posts/infrastructure/entities/comment.entity';
+import { Comment } from '../../infrastructure/entities/comment.entity';
 
 @Injectable()
 export class CommentsService extends BaseComponent {

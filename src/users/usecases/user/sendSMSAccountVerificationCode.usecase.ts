@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
 import { DomainBadRule } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,

@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ExtractJwt } from 'passport-jwt';
+
 import { JwtPayload } from '../domain/interfaces/jwtPayload.interface';
 import { logCatchedError } from '../domain/utils/logCatchedError';
 

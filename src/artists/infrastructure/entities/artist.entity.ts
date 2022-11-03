@@ -5,10 +5,12 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
+
 import { GenreInterface } from '../../../genres/genre.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { TagInterface } from '../../../tags/tag.interface';
 import { ArtistType } from '../../domain/artistType';
+
 import { Contact } from './contact.entity';
 
 @Entity()

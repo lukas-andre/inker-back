@@ -8,7 +8,9 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+
 import { CreatePostDto } from '../posts/infrastructure/dtos/createPost.dto';
+
 import { Genrer } from './genre.entity';
 import { GenreInterface } from './genre.interface';
 

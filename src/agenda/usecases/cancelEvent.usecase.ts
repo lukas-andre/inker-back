@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import stringify from 'fast-safe-stringify';
+
 import {
   DomainInternalServerError,
   DomainNotFound,
 } from '../../global/domain/exceptions/domain.exception';
-
 import {
   BaseUseCase,
   UseCase,

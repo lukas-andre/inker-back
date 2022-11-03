@@ -8,7 +8,9 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
+
 import { UserType } from '../../domain/enums/userType.enum';
+
 import { ArtistInfoDto } from './artistInfo.dto';
 import {
   PhoneNumberDetailsDto,

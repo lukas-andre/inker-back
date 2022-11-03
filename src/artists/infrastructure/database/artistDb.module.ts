@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { Artist } from '../entities/artist.entity';
 import { Contact } from '../entities/contact.entity';
+
 import { ArtistsDbService } from './services/artistsDb.service';
 import { ContactDbService } from './services/contactDb.service';
 

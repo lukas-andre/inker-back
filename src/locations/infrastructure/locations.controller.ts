@@ -13,12 +13,14 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import {
   NO_ARTISTS_FOUND,
   PROBLEMS_FILTERING_ARTISTS,
   TROUBLE_FINDING_LOCATIONS,
 } from '../domain/codes/codes';
+
 import { AddLocationDto } from './dtos/addLocation.dto';
 import { FindArtistByArtistDtoRequest } from './dtos/findArtistByRangeRequest.dto';
 import { FindArtistByRangeResponseDto } from './dtos/findArtistByRangeResponse.dto';

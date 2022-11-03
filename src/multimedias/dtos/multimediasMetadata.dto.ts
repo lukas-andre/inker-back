@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, ValidateNested } from 'class-validator';
+
 import { MultimediaMetadataDto } from './multimediaMetadata.dto';
 
 export class MultimediasMetadataDto {

@@ -1,4 +1,5 @@
 import { registerAs } from '@nestjs/config';
+
 import { createDatabaseConnection, TypeOrmConfig } from './config';
 
 export const USER_DB_CONNECTION_NAME = 'user-db';

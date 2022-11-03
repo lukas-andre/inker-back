@@ -1,4 +1,5 @@
 import { IsEnum, IsString } from 'class-validator';
+
 import { NotificationType } from '../entities/verificationHash.entity';
 
 export class SendAccountVerificationCodeQueryDto {
