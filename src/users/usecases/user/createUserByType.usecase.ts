@@ -14,19 +14,23 @@ import { CreateCustomerParams } from '../../../customers/usecases/interfaces/cre
 import {
   DomainConflict,
   DomainException,
+  DomainUnProcessableEntity,
 } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { Transform } from '../../../global/domain/utils/transformTo';
+import { TypeTransform } from '../../../global/domain/utils/typeTransform';
 import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { ArtistLocationsDbService } from '../../../locations/infrastructure/database/services/artistLocationsDb.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import { RolesService } from '../../domain/services/roles.service';
 import { UsersService } from '../../domain/services/users.service';
-import { CreateArtistUserResDto } from '../../infrastructure/dtos/createUserRes.dto';
+import {
+  CreateArtistUserResDto,
+  CreateCustomerUserResDto,
+} from '../../infrastructure/dtos/createUserRes.dto';
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()
@@ -45,21 +49,18 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
 
   public async execute(
     createUserParams: CreateUserByTypeParams,
-  ): Promise<Customer | CreateArtistUserResDto> {
-    const role = await this.rolesService.findOne({
-      where: { name: createUserParams.userType.toLocaleLowerCase() },
-      // where: { name: createUserParams.userType },
-    });
-
-    if (!role) {
+  ): Promise<CreateCustomerUserResDto | CreateArtistUserResDto> {
+    const existsRole = await this.rolesService.exists(
+      createUserParams.userType.toLocaleLowerCase(),
+    );
+    if (!existsRole) {
       throw new DomainConflict('Role not exists');
     }
 
+    const role = await this.rolesService.findOne({
+      where: { name: createUserParams.userType.toLocaleLowerCase() },
+    });
     const created = await this.usersService.create(createUserParams, role);
-
-    if (typeof created === 'boolean') {
-      throw new DomainConflict('User already exists');
-    }
 
     try {
       const response = await this.handleCreateByUserType(
@@ -67,13 +68,16 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
         createUserParams,
       );
 
+      console.log(response);
       if (response instanceof Artist) {
-        const resp = await Transform.to(CreateArtistUserResDto, response);
+        const resp = await TypeTransform.to(CreateArtistUserResDto, response);
 
         this.logger.log(`🟢 Artist dtoResponse: ${stringify(resp)}`);
         return resp;
       }
-      // TODO: Handle customer creation
+      const resp = await TypeTransform.to(CreateCustomerUserResDto, response);
+      this.logger.log(`🟢 Customer created: ${stringify(resp)}`);
+      return resp;
     } catch (error) {
       await this.handleCreateError(created.id, error);
       throw error;
@@ -112,7 +116,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       );
     } catch (error) {
       await this.artistsDbService.delete(artist.id);
-      throw new DomainConflict(error.publicMessage);
+      throw new DomainUnProcessableEntity(error.publicMessage);
     }
 
     this.logger.log(`🟢 Agenda created: ${agenda.id}`);
@@ -128,7 +132,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
           await this.artistsDbService.delete(artist.id),
           await this.agendaService.delete(agenda.id),
         ]);
-        throw new DomainConflict(error.publicError);
+        throw new DomainUnProcessableEntity(error.publicError);
       }
       throw error;
     }
@@ -139,15 +143,20 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     return artist;
   }
 
-  private async createCustomer(createCustomerDto: CreateCustomerParams) {
+  private async createCustomer(
+    createCustomerDto: CreateCustomerParams,
+  ): Promise<Customer> {
     return this.customerService.create(createCustomerDto);
   }
 
-  private async rollbackCreate(userId: number) {
+  private async rollbackCreate(userId: number): Promise<void> {
     await this.usersService.delete(userId);
   }
 
-  private async handleCreateError(userId: number, error: DomainException) {
+  private async handleCreateError(
+    userId: number,
+    error: DomainException,
+  ): Promise<DomainException> {
     await this.rollbackCreate(userId);
 
     return error;
@@ -162,8 +171,10 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       name: [artist.firstName, artist.lastName].join(' '),
       profileThumbnail: artist.profileThumbnail,
       address1: createArtistDto.address.address1,
+      shortAddress1: createArtistDto.address.shortAddress1,
       address2: createArtistDto.address.address2,
       address3: createArtistDto.address.address3,
+      addressType: createArtistDto.address.addressType,
       city: createArtistDto.address.city,
       country: createArtistDto.address.country,
       state: createArtistDto.address.state,
@@ -174,9 +185,10 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       viewport: createArtistDto.address.geometry.viewport,
       location: {
         type: 'Point',
+        // TODO: DAR VUELTA
         coordinates: [
-          createArtistDto.address.geometry.location.lat,
           createArtistDto.address.geometry.location.lng,
+          createArtistDto.address.geometry.location.lat,
         ],
       },
     };

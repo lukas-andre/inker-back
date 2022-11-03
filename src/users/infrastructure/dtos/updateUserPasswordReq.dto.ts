@@ -7,6 +7,7 @@ export class UpdateUserPasswordReqDto {
     example: '1qaz2wsx',
     description: 'New Password',
     required: true,
+    pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})',
   })
   @IsString()
   @MinLength(6)

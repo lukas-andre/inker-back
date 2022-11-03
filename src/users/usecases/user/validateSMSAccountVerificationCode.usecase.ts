@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import {
+  DomainBadRule,
   DomainConflict,
   DomainException,
   DomainNotFound,
-  DomainUnProcessableEntity,
 } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
-import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
+import {
+  HASH_NOT_FOUND_FOR_USER_ID,
+  INVALID_VERIFICATION_CODE,
+  USER_ALREADY_VERIFIED,
+} from '../../domain/errors/codes';
 import { UsersService } from '../../domain/services/users.service';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import {
@@ -38,6 +42,13 @@ export class ValidateSMSAccountVerificationCodeUseCase
     code: string,
   ): Promise<DomainException | DefaultResponseDto> {
     this.logger.log(`userId ${userId}`);
+    const userIsAlreadyVerified = await this.usersService.existsAndIsValid(
+      userId,
+    );
+
+    if (userIsAlreadyVerified) {
+      throw new DomainBadRule(USER_ALREADY_VERIFIED);
+    }
 
     const userHash = await this.verificationHashService.findOne({
       where: {
@@ -49,7 +60,7 @@ export class ValidateSMSAccountVerificationCodeUseCase
     this.logger.log({ userHash });
 
     if (!userHash) {
-      throw new DomainNotFound(`Hash for userId ${userId} not found`);
+      throw new DomainNotFound(`${HASH_NOT_FOUND_FOR_USER_ID} ${userId}`);
     }
 
     const isValidCode =
@@ -60,23 +71,16 @@ export class ValidateSMSAccountVerificationCodeUseCase
     this.logger.log({ isValidCode });
 
     if (!isValidCode) {
-      throw new DomainConflict('Invalid code');
+      throw new DomainConflict(INVALID_VERIFICATION_CODE);
     }
 
-    try {
-      // TODO: - this should be done in a transaction
-      const activateUserResult = await this.usersService.activate(userId);
-      this.logger.log({ activateUserResult });
-      if (activateUserResult.affected >= 1) {
-        await this.verificationHashService.delete(userHash.id);
-      }
-
-      return DefaultResponseHelper.ok;
-    } catch (error) {
-      if (error instanceof DbServiceException) {
-        throw new DomainUnProcessableEntity(error.publicError);
-      }
-      throw error;
+    // TODO: - this should be done in a transaction
+    const activateUserResult = await this.usersService.activate(userId);
+    this.logger.log({ activateUserResult });
+    if (activateUserResult.affected >= 1) {
+      await this.verificationHashService.delete(userHash.id);
     }
+
+    return DefaultResponseHelper.ok;
   }
 }

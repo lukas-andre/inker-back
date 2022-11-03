@@ -1,15 +1,10 @@
-import rateLimit from '@fastify/rate-limit';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { HttpAdapterHost } from '@nestjs/core';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { oasConfig } from './config/oas.config';
-import {
-  corsOptions,
-  rateLimitOptions,
-  validationPipeOptions,
-} from './constants';
+import { corsOptions, validationPipeOptions } from './constants';
 import { AllExceptionsFilter } from './global/infrastructure/exception-filters/all-exception.filter';
 
 const configureOAS = async (app: NestFastifyApplication) => {
@@ -29,10 +24,10 @@ const configureOAS = async (app: NestFastifyApplication) => {
 
     Logger.log(
       `📖 Open API Specification is enabled under /${oasConf.path} path`,
-      'Configure',
+      'OpenAPISpecification',
     );
   } else {
-    Logger.log(`📖 Open API Specification is disabled`, 'Configure');
+    Logger.log(`📖 Open API Specification is disabled`, 'OpenAPISpecification');
   }
 };
 
@@ -40,7 +35,11 @@ export const configure = async (app: NestFastifyApplication) => {
   app.enableCors(corsOptions);
 
   // await app.register(helmet, helmetOptions);
-  await app.register(rateLimit, rateLimitOptions);
+  // TODO: USE THROTTLE MIDDLEWARE https://docs.nestjs.com/security/rate-limiting#rate-limiting
+  // await app.register(rateLimit, rateLimitOptions);
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  await app.register(require('@fastify/multipart'));
 
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
 

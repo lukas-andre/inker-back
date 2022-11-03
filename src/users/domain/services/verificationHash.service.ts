@@ -17,6 +17,7 @@ import {
   VerificationHash,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
+import { PROBLEMS_CREATING_VERIFICATION_HASH } from '../errors/codes';
 
 @Injectable()
 export class VerificationHashService
@@ -57,7 +58,7 @@ export class VerificationHashService
     } catch (error) {
       throw new DBServiceCreateException(
         this,
-        'Problem creating verification hash',
+        PROBLEMS_CREATING_VERIFICATION_HASH,
         error,
       );
     }

@@ -1,23 +1,37 @@
+import { ValidateIf } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import {
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { AddressInterface } from '../../domain/interfaces/address.interface';
+import {
+  AddressInterface,
+  AddressType,
+} from '../../domain/interfaces/address.interface';
 import { GeometryDto } from './geometry.dto';
 
 export class AddressDto implements AddressInterface {
   @ApiProperty({
-    example: 'Av vicuña mackenna',
+    example: 'Avenida Vicuña Mackenna Poniente',
     description: 'Calle',
   })
   @IsNotEmpty()
   @IsString()
   @Expose()
   readonly address1: string;
+
+  @ApiProperty({
+    example: 'Av. Vicuña Mackenna Pte.',
+    description: 'Calle',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  readonly shortAddress1: string;
 
   @ApiProperty({
     example: '6130',
@@ -34,10 +48,17 @@ export class AddressDto implements AddressInterface {
     required: false,
   })
   @IsString()
-  @IsNotEmpty()
-  @IsOptional()
+  @ValidateIf((o: AddressDto) => o.addressType !== AddressType.HOME)
   @Expose()
   readonly address3?: string;
+
+  @ApiProperty({
+    example: AddressType.HOME,
+    description: 'Tipo de direccion',
+    required: true,
+  })
+  @IsEnum(AddressType)
+  readonly addressType: AddressType;
 
   @ApiProperty({
     example: 'La Florida',

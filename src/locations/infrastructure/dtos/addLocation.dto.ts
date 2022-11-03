@@ -1,6 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
+import { Expose } from 'class-transformer';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import {
+  AddressInterface,
+  AddressType,
+} from '../../../global/domain/interfaces/address.interface';
 
 export class AddLocationDto implements AddressInterface {
   @ApiProperty({
@@ -10,6 +20,15 @@ export class AddLocationDto implements AddressInterface {
   @IsNotEmpty()
   @IsString()
   readonly address1: string;
+
+  @ApiProperty({
+    example: 'Av. Vicuña Mackenna Pte.',
+    description: 'Calle',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  readonly shortAddress1: string;
 
   @ApiProperty({
     example: '6130',
@@ -28,6 +47,14 @@ export class AddLocationDto implements AddressInterface {
   @IsNotEmpty()
   @IsOptional()
   readonly address3?: string;
+
+  @ApiProperty({
+    example: AddressType.HOME,
+    description: 'Tipo de direccion',
+    required: true,
+  })
+  @IsEnum(AddressType)
+  readonly addressType: AddressType;
 
   @ApiProperty({
     example: 'La Florida',

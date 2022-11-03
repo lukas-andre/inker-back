@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { Permission } from '../../infrastructure/entities/permission.entity';
 import { Role } from '../../infrastructure/entities/role.entity';
 import { initRolePermissions } from '../data/initRolePermission.data';
@@ -27,6 +28,14 @@ export class RolesService {
     }
 
     return this.findAll({});
+  }
+
+  async exists(roleName: string): Promise<boolean> {
+    const result: ExistsQueryResult[] = await this.rolesRepository.query(
+      'SELECT EXISTS(SELECT 1 FROM role WHERE name=$1)',
+      [roleName],
+    );
+    return result.pop().exists;
   }
 
   async findAll(query: any): Promise<Role[]> {
