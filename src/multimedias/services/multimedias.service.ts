@@ -4,6 +4,11 @@ import { S3Client } from '../../global/infrastructure/clients/s3.client';
 import { FileInterface } from '../interfaces/file.interface';
 import { MultimediasMetadataInterface } from '../interfaces/multimediasMetadata.interface';
 
+export interface UploadToS3Result {
+  aws: AWS.S3.ManagedUpload.SendData;
+  cloudFrontUrl: string;
+}
+
 @Injectable()
 export class MultimediasService {
   constructor(
@@ -15,7 +20,7 @@ export class MultimediasService {
     file: FileInterface,
     source?: string,
     fileName?: string,
-  ): Promise<{ aws: AWS.S3.ManagedUpload.SendData; cloudFrontUrl: string }> {
+  ): Promise<UploadToS3Result> {
     source = source ? source : 'inker';
     fileName = fileName ? fileName : file.originalname;
     const urlKey = [source, fileName].join('/');

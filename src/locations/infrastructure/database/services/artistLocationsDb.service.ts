@@ -14,7 +14,9 @@ import {
   DBServiceFindException,
   DBServiceSaveException,
 } from '../../../../global/infrastructure/exceptions/dbService.exception';
-import { ArtistByRangeLocation } from '../../../usecases/interfaces/artistByRange.interface';
+import { TROUBLE_SAVING_LOCATION } from '../../../../users/domain/errors/codes';
+import { TROUBLE_FINDING_LOCATIONS } from '../../../domain/codes/codes';
+import { FindArtistByRangeResponseDto } from '../../dtos/findArtistByRangeResponse.dto';
 import { ArtistLocation } from '../../entities/artistLocation.entity';
 
 @Injectable()
@@ -37,11 +39,24 @@ export class ArtistLocationsDbService extends BaseComponent {
   async findByRange(
     originPoint: Point,
     range = 1000,
-  ): Promise<ArtistByRangeLocation[]> {
+  ): Promise<FindArtistByRangeResponseDto[]> {
     try {
       return await this.artistLocationsRepository
         .createQueryBuilder('location')
-        .select()
+        .select('id')
+        .addSelect('artist_id', 'artistId')
+        .addSelect('name')
+        .addSelect('country')
+        .addSelect('address1')
+        .addSelect('address2')
+        .addSelect('address3')
+        .addSelect('lat')
+        .addSelect('lng')
+        .addSelect('address_type', 'addressType')
+        .addSelect('formatted_address', 'formattedAddress')
+        .addSelect('city')
+        .addSelect('google_place_id', 'googlePlaceId')
+        .addSelect(`'Km'`, 'distanceUnit')
         .addSelect(
           'ST_Distance(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)))/1000 AS distance',
         )
@@ -53,13 +68,9 @@ export class ArtistLocationsDbService extends BaseComponent {
           origin: stringify(originPoint),
           range: range * 1000, // KM Conversion
         })
-        .getRawMany<ArtistByRangeLocation>();
+        .getRawMany<FindArtistByRangeResponseDto>();
     } catch (error) {
-      throw new DBServiceFindException(
-        this,
-        'Trouble finding locations',
-        error,
-      );
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
     }
   }
 
@@ -77,7 +88,7 @@ export class ArtistLocationsDbService extends BaseComponent {
     try {
       return await this.artistLocationsRepository.save(location);
     } catch (error) {
-      throw new DBServiceSaveException(this, 'Trouble saving location', error);
+      throw new DBServiceSaveException(this, TROUBLE_SAVING_LOCATION, error);
     }
   }
 

@@ -20,6 +20,7 @@ import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/
 import { Role } from '../../infrastructure/entities/role.entity';
 import { User } from '../../infrastructure/entities/user.entity';
 import { UserType } from '../enums/userType.enum';
+import { ERROR_ACTIVATING_USER, USER_ALREADY_EXISTS } from '../errors/codes';
 import { UserInterface } from '../models/user.model';
 @Injectable()
 export class UsersService extends BaseComponent {
@@ -34,16 +35,14 @@ export class UsersService extends BaseComponent {
   async create(
     createUserParams: CreateUserByTypeParams,
     role: Role,
-  ): Promise<UserInterface | boolean> {
-    const exists: number = await this.usersRepository.count({
-      where: [
-        { username: createUserParams.username },
-        { email: createUserParams.email },
-      ],
-    });
+  ): Promise<UserInterface> {
+    const exists = await this.existsByUsernameAndEmail(
+      createUserParams.email,
+      createUserParams.username,
+    );
 
     if (exists) {
-      throw new DbServiceBadRule(this, 'User already exists');
+      throw new DbServiceBadRule(this, USER_ALREADY_EXISTS);
     }
 
     const user = this.usersRepository.create();
@@ -69,10 +68,29 @@ export class UsersService extends BaseComponent {
     });
   }
 
+  async existsByUsernameAndEmail(
+    email: string,
+    username: string,
+  ): Promise<boolean> {
+    const result: ExistsQueryResult[] = await this.usersRepository.query(
+      'SELECT EXISTS(SELECT 1 FROM public.user WHERE email = $1 AND username = $2)',
+      [email, username],
+    );
+    return result.pop().exists;
+  }
+
   async exists(userId: number): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.usersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1)`,
       [userId],
+    );
+    return result.pop().exists;
+  }
+
+  async existsAndIsValid(userId: number): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.usersRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u.active = $2)`,
+      [userId, true],
     );
     return result.pop().exists;
   }
@@ -87,7 +105,7 @@ export class UsersService extends BaseComponent {
 
   async activate(userId: number) {
     try {
-      return await this.usersRepository
+      const result = await this.usersRepository
         .createQueryBuilder()
         .update(User)
         .set({
@@ -95,8 +113,19 @@ export class UsersService extends BaseComponent {
         })
         .where('id = :userId', { userId })
         .execute();
+      if (result.affected === 0) {
+        throw new DBServiceUpdateException(
+          this,
+          `${ERROR_ACTIVATING_USER} no user is found`,
+        );
+      }
+      return result;
     } catch (error) {
-      throw new DBServiceUpdateException(this, 'Error activating user', error);
+      throw new DBServiceUpdateException(
+        this,
+        `${ERROR_ACTIVATING_USER} ${userId}`,
+        error,
+      );
     }
   }
 

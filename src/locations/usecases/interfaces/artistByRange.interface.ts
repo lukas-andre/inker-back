@@ -15,7 +15,7 @@ export interface ArtistByRangeLocation {
   location_name: string;
   location_profile_thumbnail: null;
   distance: number;
-  artist: any[];
+  artist: any;
 }
 export interface LocationLocation {
   type: string;

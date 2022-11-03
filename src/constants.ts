@@ -1,22 +1,22 @@
 import { FastifyRateLimitOptions } from '@fastify/rate-limit';
 import { ValidationPipeOptions } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { FastifyHelmetOptions } from 'fastify-helmet';
+// import { FastifyHelmetOptions } from 'fastify-helmet';
 
 export const SERVICE_NAME = 'com.inkerapp.api-service';
 
 export const corsOptions: CorsOptions = {};
 
-export const helmetOptions: FastifyHelmetOptions = {
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: [`'self'`],
-      styleSrc: [`'self'`, `'unsafe-inline'`],
-      imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
-      scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
-    },
-  },
-};
+// export const helmetOptions: FastifyHelmetOptions = {
+//   contentSecurityPolicy: {
+//     directives: {
+//       defaultSrc: [`'self'`],
+//       styleSrc: [`'self'`, `'unsafe-inline'`],
+//       imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+//       scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+//     },
+//   },
+// };
 
 export const validationPipeOptions: ValidationPipeOptions = {
   whitelist: true,

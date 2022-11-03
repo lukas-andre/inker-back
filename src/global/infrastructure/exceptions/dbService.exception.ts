@@ -5,6 +5,7 @@ export abstract class DbServiceException extends Error {
   public readonly publicError: string;
   public readonly service: string;
   public readonly error?: any;
+
   constructor({ name }: BaseComponent, publicError: string, error: any = null) {
     super(publicError);
     this.publicError = publicError;
