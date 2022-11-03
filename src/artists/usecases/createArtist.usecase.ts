@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { AgendaService } from '../../agenda/domain/agenda.service';
 import { Agenda } from '../../agenda/infrastructure/entities/agenda.entity';
 import {
@@ -7,6 +8,7 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
+
 import { CreateArtistParams } from './interfaces/createArtist.params';
 
 @Injectable()

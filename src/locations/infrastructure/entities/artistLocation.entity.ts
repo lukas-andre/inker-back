@@ -1,4 +1,5 @@
 import { Column, Entity, Index } from 'typeorm';
+
 import { LocationEntity } from './location.entity';
 
 @Entity()

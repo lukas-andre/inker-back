@@ -5,6 +5,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+
 import { AppModule } from './app.module';
 import { appConfig } from './config/app.config';
 import { configure } from './configure';

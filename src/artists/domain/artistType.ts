@@ -1,6 +1,7 @@
 import { GenreInterface } from '../../genres/genre.interface';
 import { BaseModelType } from '../../global/domain/models/base.model';
 import { TagInterface } from '../../tags/tag.interface';
+
 import { ContactInterface } from './interfaces/contact.interface';
 
 export type ArtistType = {

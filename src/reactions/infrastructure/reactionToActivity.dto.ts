@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
+
 import { ActivityTypeEnum } from './enums/activity.enum';
 import { ReactionTypeEnum } from './enums/reaction.enum';
 

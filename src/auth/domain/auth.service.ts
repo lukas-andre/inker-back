@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
 import {

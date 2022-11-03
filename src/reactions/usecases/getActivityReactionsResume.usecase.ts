@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { ActivitiesService } from '../domain/services/activities.service';

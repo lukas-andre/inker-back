@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { CustomerFeedController } from './customerFeed.controller';
 import { CustomerFeed } from './customerFeed.entity';
 

@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+
 import { BaseComponent } from '../../domain/components/base.component';
 
 export abstract class DbServiceException extends Error {

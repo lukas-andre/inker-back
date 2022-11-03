@@ -1,8 +1,10 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { ArtistsModule } from '../artists/artists.module';
 import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
 import { UsersModule } from '../users/users.module';
+
 import { FollowedsService } from './domain/services/followeds.service';
 import { FollowingsService } from './domain/services/followings.service';
 import { Followed } from './infrastructure/entities/followed.entity';

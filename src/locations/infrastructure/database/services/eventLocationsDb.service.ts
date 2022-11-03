@@ -7,6 +7,7 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
+
 import { EventLocation } from '../../entities/eventLocation.entity';
 
 @Injectable()

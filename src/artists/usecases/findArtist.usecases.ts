@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FindManyOptions } from 'typeorm';
+
 import { FollowedsService } from '../../follows/domain/services/followeds.service';
 import { FollowingsService } from '../../follows/domain/services/followings.service';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
+
 import { FindArtistByIdResult } from './interfaces/findArtistById.result';
 
 @Injectable()

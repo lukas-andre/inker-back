@@ -1,4 +1,5 @@
 import { IsEmail, IsOptional, IsString } from 'class-validator';
+
 import { UserType } from '../../../domain/enums/userType.enum';
 import { ArtistInfoDto } from '../../../infrastructure/dtos/artistInfo.dto';
 import { PhoneNumberDetailsDto } from '../../../infrastructure/dtos/phoneNumberDetails.dto';

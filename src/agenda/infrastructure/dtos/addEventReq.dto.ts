@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
+
 import { IsEndDate } from '../../../global/domain/validators/isEndDate.validator';
 import { ValidateDateFormat } from '../../../global/domain/validators/isOnlyDate.validator';
 import { IsStartDate } from '../../../global/domain/validators/isStartDate.validator';

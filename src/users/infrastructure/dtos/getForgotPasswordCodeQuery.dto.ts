@@ -5,6 +5,7 @@ import {
   IsString,
   ValidateIf,
 } from 'class-validator';
+
 import { NotificationType } from '../entities/verificationHash.entity';
 
 export class GetForgotPasswordCodeQueryDto {

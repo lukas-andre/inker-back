@@ -1,4 +1,5 @@
 import { Column, Entity, Index } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { UserType } from '../../../users/domain/enums/userType.enum';
 

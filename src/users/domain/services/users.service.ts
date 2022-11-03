@@ -9,6 +9,7 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
+
 import { LoginType } from '../../../auth/domain/enums/loginType.enum';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
@@ -16,9 +17,9 @@ import {
   DbServiceBadRule,
   DBServiceUpdateException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
 import { Role } from '../../infrastructure/entities/role.entity';
 import { User } from '../../infrastructure/entities/user.entity';
+import { CreateUserByTypeParams } from '../../usecases/user/interfaces/createUserByType.params';
 import { UserType } from '../enums/userType.enum';
 import { ERROR_ACTIVATING_USER, USER_ALREADY_EXISTS } from '../errors/codes';
 import { UserInterface } from '../models/user.model';

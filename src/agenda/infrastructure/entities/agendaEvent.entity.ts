@@ -5,7 +5,9 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+
 import { Agenda } from './agenda.entity';
 
 @Entity()

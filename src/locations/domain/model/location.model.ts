@@ -1,4 +1,5 @@
 import { Point } from 'geojson';
+
 import { AddressType } from '../../../global/domain/interfaces/address.interface';
 import { ViewportInterface } from '../../../global/domain/interfaces/geometry.interface';
 import { BaseModelType } from '../../../global/domain/models/base.model';

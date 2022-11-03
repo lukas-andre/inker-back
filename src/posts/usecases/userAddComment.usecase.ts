@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import stringify from 'fast-safe-stringify';
+
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import {
   BaseUseCase,

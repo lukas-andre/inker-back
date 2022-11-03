@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
+
 import { ParentCommentEnum } from '../enum/parentComment.enum';
 
 export class CreateCommentDto {
