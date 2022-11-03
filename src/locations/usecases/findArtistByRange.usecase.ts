@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Point } from 'geojson';
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
+import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
+import { NO_ARTISTS_FOUND } from '../domain/codes/codes';
 import { ArtistLocationsDbService } from '../infrastructure/database/services/artistLocationsDb.service';
 import { FindArtistByArtistDtoRequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
 import {
@@ -26,16 +28,17 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   ): Promise<FindArtistByRangeResponseDto[]> {
     const origin: Point = {
       type: 'Point',
-      coordinates: [
-        findArtistByArtistDto.longitud,
-        findArtistByArtistDto.latitud,
-      ],
+      coordinates: [findArtistByArtistDto.lng, findArtistByArtistDto.lat],
     };
 
     const locations = await this.artistsLocationDbService.findByRange(
       origin,
       findArtistByArtistDto.range,
     );
+
+    if (!locations.length) {
+      throw new DomainNotFound(NO_ARTISTS_FOUND);
+    }
 
     const artistIds = [];
     for (let i = 0; i < locations.length; i++) {

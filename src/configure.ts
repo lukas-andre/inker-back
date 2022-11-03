@@ -24,10 +24,10 @@ const configureOAS = async (app: NestFastifyApplication) => {
 
     Logger.log(
       `📖 Open API Specification is enabled under /${oasConf.path} path`,
-      'Configure',
+      'OpenAPISpecification',
     );
   } else {
-    Logger.log(`📖 Open API Specification is disabled`, 'Configure');
+    Logger.log(`📖 Open API Specification is disabled`, 'OpenAPISpecification');
   }
 };
 

@@ -10,22 +10,33 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
+import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
+import {
+  ARTIST_NOT_FOUND,
+  ERROR_UPLOADING_FILE,
+  NOT_VALID_FILE_TO_UPLOAD,
+  PROBLEMS_UPDATING_STUDIO_PHOTO,
+} from '../domain/errors/codes';
 import { ArtistsHandler } from './artists.handler';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { CreateArtistDto } from './dtos/createArtist.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
+import { UpdateStudioPhotoResponseDto } from './dtos/updateStudioPhotoResponse.dto';
 
 @ApiBearerAuth()
 @ApiTags('artists')
@@ -45,21 +56,50 @@ export class ArtistsController {
     return this.artistHandler.handleCreate(createArtistDto);
   }
 
+  @ApiOperation({ summary: 'Upload artist profile picture' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ description: 'profile picture', type: FileUploadDto })
+  @ApiBody({ description: 'Profile picture', type: FileUploadDto })
   @ApiCreatedResponse({
     description: 'Artist profile picture was uploaded',
     type: BaseArtistResponse,
   })
-  @ApiParam({ name: 'id', required: true, type: Number })
+  @ApiParam({ name: 'id', required: true, type: Number, example: 1 })
   @Post('/:id/profile-picture')
   @UseInterceptors(FileFastifyInterceptor('file'))
-  async updateProfileProfilePicture(
+  async updateProfilePicture(
     @UploadedFile() file,
     @Param('id', ParseIntPipe) id: number,
   ) {
     console.log('file: ', file);
-    return this.artistHandler.handleUpdateProfileProfilePicture(id, file);
+    return this.artistHandler.handleUpdateProfilePicture(id, file);
+  }
+
+  @ApiOperation({ summary: 'Upload artist studio photo' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ description: 'Studio photo', type: FileUploadDto })
+  @ApiCreatedResponse({
+    description: 'Artist studio photo was uploaded',
+    type: UpdateStudioPhotoResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: errorCodesToOASDescription([
+      NOT_VALID_FILE_TO_UPLOAD,
+      ERROR_UPLOADING_FILE,
+    ]),
+  })
+  @ApiNotFoundResponse({ description: ARTIST_NOT_FOUND })
+  @ApiInternalServerErrorResponse({
+    description: PROBLEMS_UPDATING_STUDIO_PHOTO,
+  })
+  @ApiParam({ name: 'id', required: true, type: Number, example: 1 })
+  @Post('/:id/studio-photo')
+  @UseInterceptors(FileFastifyInterceptor('file'))
+  async updateStudioPhoto(
+    @UploadedFile() file,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    console.log('file: ', file);
+    return this.artistHandler.handleUpdateStudioPhoto(id, file);
   }
 
   @ApiOperation({ summary: 'Find all Artists' })

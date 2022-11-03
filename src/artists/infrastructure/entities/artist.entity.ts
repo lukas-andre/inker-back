@@ -26,23 +26,26 @@ export class Artist extends BaseEntity implements ArtistType {
   lastName: string;
 
   @Column({ name: 'short_description', nullable: true })
-  shortDescription: string;
+  shortDescription?: string;
 
   @Column({ name: 'profile_thumbnail', nullable: true })
-  profileThumbnail: string;
+  profileThumbnail?: string;
 
   @OneToOne(() => Contact, contact => contact.artist, { cascade: true })
   @JoinColumn({ name: 'contact_id' })
   contact: Contact;
 
   @Column('jsonb', { nullable: true })
-  tags: TagInterface[];
+  tags?: TagInterface[];
 
   @Column('jsonb', { nullable: true })
-  genres: GenreInterface[];
+  genres?: GenreInterface[];
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;
+
+  @Column({ name: 'studio_photo', nullable: true })
+  studioPhoto?: string;
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;

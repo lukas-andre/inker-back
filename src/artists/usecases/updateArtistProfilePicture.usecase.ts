@@ -10,12 +10,14 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
+import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import {
   MultimediasService,
-  UploadResult,
+  UploadToS3Result,
 } from '../../multimedias/services/multimedias.service';
 import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
+
 @Injectable()
 export class UpdateArtistProfilePictureUseCase
   extends BaseUseCase
@@ -29,7 +31,7 @@ export class UpdateArtistProfilePictureUseCase
     super(UpdateArtistProfilePictureUseCase.name);
   }
 
-  async execute(id: number, file: any): Promise<Artist> {
+  async execute(id: number, file: FileInterface): Promise<Artist> {
     if (!file) {
       throw new DomainBadRequest('Not valid file to upload');
     }
@@ -46,7 +48,7 @@ export class UpdateArtistProfilePictureUseCase
 
     const source = `artist/${id}`;
     console.time('uploadFile');
-    let uploadResult: UploadResult[];
+    let uploadResult: UploadToS3Result[];
     try {
       uploadResult = await Promise.all([
         this.uploadNormal(file, source, fileExtension),

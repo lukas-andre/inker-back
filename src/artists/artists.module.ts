@@ -9,6 +9,7 @@ import { CreateArtistUseCase } from './usecases/createArtist.usecase';
 import { FindArtistsUseCases } from './usecases/findArtist.usecases';
 import { UpdateArtistBasicInfoUseCase } from './usecases/updateArtistBasicInfo.usecase';
 import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfilePicture.usecase';
+import { UpdateArtistStudioPhotoUseCase } from './usecases/updateArtistStudioPhoto.usecase';
 
 @Module({
   imports: [ArtistsDbModule, MultimediasModule, FollowsModule, AgendaModule],
@@ -18,6 +19,7 @@ import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfil
     FindArtistsUseCases,
     UpdateArtistProfilePictureUseCase,
     UpdateArtistBasicInfoUseCase,
+    UpdateArtistStudioPhotoUseCase,
   ],
   controllers: [ArtistsController],
 })
