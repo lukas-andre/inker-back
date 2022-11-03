@@ -26,15 +26,6 @@ export class FindArtistByRangeResponseDto extends OmitType(ArtistLocationDto, [
   'updatedAt',
   'location',
 ]) {
-  @ApiProperty({
-    description: 'Position of the artist',
-    example: {
-      coordinates: [37.7749, -122.4194],
-      type: 'Point',
-    } as Location,
-  })
-  readonly location: Location;
-
   @ApiProperty({ description: 'Distance unit', example: 'Km' })
   @IsString()
   readonly distanceUnit: string;

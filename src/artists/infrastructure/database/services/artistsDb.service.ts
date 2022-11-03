@@ -5,9 +5,9 @@ import {
   DeleteResult,
   FindManyOptions,
   FindOneOptions,
-  FindOptionsWhere,
   In,
   Repository,
+  UpdateResult,
 } from 'typeorm';
 import { BaseComponent } from '../../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../../global/domain/interfaces/existsQueryResult.interface';
@@ -16,7 +16,9 @@ import {
   DBServiceFindOneException,
   DBServiceSaveException,
 } from '../../../../global/infrastructure/exceptions/dbService.exception';
+import { PROBLEMS_FILTERING_ARTISTS } from '../../../../locations/domain/codes/codes';
 import { RawFindByArtistIdsResponseDto } from '../../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
+import { PROBLEMS_UPDATING_STUDIO_PHOTO } from '../../../domain/errors/codes';
 import { CreateArtistParams } from '../../../usecases/interfaces/createArtist.params';
 import { Artist } from '../../entities/artist.entity';
 import { Contact } from '../../entities/contact.entity';
@@ -81,24 +83,6 @@ export class ArtistsDbService extends BaseComponent {
     return result.pop().exists;
   }
 
-  async findByKey(options: FindOptionsWhere<Artist>) {
-    return this.artistsRepository.find({
-      select: [
-        'id',
-        'genres',
-        'lastName',
-        'profileThumbnail',
-        'shortDescription',
-        'tags',
-        'userId',
-        'firstName',
-      ],
-      where: {
-        ...options,
-      },
-    });
-  }
-
   async findById(id: number): Promise<Artist> {
     try {
       return await this.artistsRepository.findOne({ where: { id } });
@@ -131,28 +115,58 @@ export class ArtistsDbService extends BaseComponent {
     artistIds: number[],
   ): Promise<RawFindByArtistIdsResponseDto[]> {
     const vars = artistIds.map((_, index) => `$${++index}`).join(',');
-    return this.artistsRepository.query(
-      `SELECT
-        json_build_object(
-          'phone', c.phone,
-          'email', c.email,
-          'country', c.phone_country_iso_code
-        )  as "contact",
-        a.id,
-        a.username,
-        a.first_name as "firstName",
-        a.last_name as "lastName",
-        a.short_description as "shortDescription",
-        a.profile_thumbnail as "profileThumbnail",
-        a.rating
-      FROM
-        artist a
-      INNER JOIN contact c ON c.id = a.contact_id  
-      WHERE
-        ( (a.id in (${vars})) )
-      AND ( a.deleted_at is null )`,
-      artistIds,
-    );
+
+    try {
+      return await this.artistsRepository.query(
+        `SELECT
+          json_build_object(
+            'phone', c.phone,
+            'email', c.email,
+            'country', c.phone_country_iso_code
+          )  as "contact",
+          a.id,
+          a.username,
+          a.first_name as "firstName",
+          a.last_name as "lastName",
+          a.studio_photo as "studioPhoto",
+          a.short_description as "shortDescription",
+          a.profile_thumbnail as "profileThumbnail",
+          a.rating
+        FROM
+          artist a
+        INNER JOIN contact c ON c.id = a.contact_id  
+        WHERE
+          ( (a.id in (${vars})) )
+        AND ( a.deleted_at is null )`,
+        artistIds,
+      );
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        PROBLEMS_FILTERING_ARTISTS,
+        error,
+      );
+    }
+  }
+
+  async updateStudioPhoto(
+    artistId: number,
+    studioPhoto: string,
+  ): Promise<UpdateResult> {
+    try {
+      return this.artistsRepository
+        .createQueryBuilder()
+        .select('id')
+        .where({ id: artistId })
+        .update({ studioPhoto })
+        .execute();
+    } catch (error) {
+      throw new DBServiceSaveException(
+        this,
+        PROBLEMS_UPDATING_STUDIO_PHOTO,
+        error,
+      );
+    }
   }
 
   async find(options: FindManyOptions<Artist>) {

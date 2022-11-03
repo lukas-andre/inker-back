@@ -15,6 +15,7 @@ import {
   DBServiceSaveException,
 } from '../../../../global/infrastructure/exceptions/dbService.exception';
 import { TROUBLE_SAVING_LOCATION } from '../../../../users/domain/errors/codes';
+import { TROUBLE_FINDING_LOCATIONS } from '../../../domain/codes/codes';
 import { FindArtistByRangeResponseDto } from '../../dtos/findArtistByRangeResponse.dto';
 import { ArtistLocation } from '../../entities/artistLocation.entity';
 
@@ -49,11 +50,12 @@ export class ArtistLocationsDbService extends BaseComponent {
         .addSelect('address1')
         .addSelect('address2')
         .addSelect('address3')
+        .addSelect('lat')
+        .addSelect('lng')
         .addSelect('address_type', 'addressType')
         .addSelect('formatted_address', 'formattedAddress')
         .addSelect('city')
         .addSelect('google_place_id', 'googlePlaceId')
-        .addSelect('location.location', 'location')
         .addSelect(`'Km'`, 'distanceUnit')
         .addSelect(
           'ST_Distance(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)))/1000 AS distance',
@@ -68,11 +70,7 @@ export class ArtistLocationsDbService extends BaseComponent {
         })
         .getRawMany<FindArtistByRangeResponseDto>();
     } catch (error) {
-      throw new DBServiceFindException(
-        this,
-        'Trouble finding locations',
-        error,
-      );
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
     }
   }
 

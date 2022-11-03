@@ -99,6 +99,17 @@ export class ArtistDto extends BaseDto implements ArtistType {
   genres?: MetaTagsDto[];
 
   @ApiProperty({
+    description: 'Artist studio photo',
+    required: false,
+    type: String,
+    example: 'www.example.com/artist/studio/thumbnail.jpg',
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  studioPhoto?: string;
+
+  @ApiProperty({
     description: 'Artist contacts',
     required: false,
     type: ContactDto,

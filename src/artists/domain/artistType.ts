@@ -1,20 +1,7 @@
 import { GenreInterface } from '../../genres/genre.interface';
 import { BaseModelType } from '../../global/domain/models/base.model';
 import { TagInterface } from '../../tags/tag.interface';
-import { ContactInterface } from './contact.interface';
-
-export type ArtistTypeProps =
-  | 'id'
-  | 'userId'
-  | 'firstName'
-  | 'lastName'
-  | 'shortDescription'
-  | 'profileThumbnail'
-  | 'tags'
-  | 'genders'
-  | 'rating'
-  | 'created_at'
-  | 'updated_at';
+import { ContactInterface } from './interfaces/contact.interface';
 
 export type ArtistType = {
   userId: number;
@@ -26,5 +13,6 @@ export type ArtistType = {
   tags?: TagInterface[];
   genres?: GenreInterface[];
   contact?: ContactInterface;
+  studioPhoto?: string;
   rating: number;
 } & BaseModelType;

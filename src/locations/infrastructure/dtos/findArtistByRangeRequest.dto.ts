@@ -16,7 +16,7 @@ export class FindArtistByArtistDtoRequest {
   })
   @IsNotEmpty()
   @IsNumber()
-  readonly latitud: number;
+  readonly lat: number;
 
   @ApiProperty({
     example: -70.60971,
@@ -24,5 +24,5 @@ export class FindArtistByArtistDtoRequest {
   })
   @IsNotEmpty()
   @IsNumber()
-  readonly longitud: number;
+  readonly lng: number;
 }
