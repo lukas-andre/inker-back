@@ -13,12 +13,37 @@
 #   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 #   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
+# stages:
+#   # - setup
+#   # - main
+#   # - build
+#   - release
+#   # - deploy
+
 stages:
-  # - setup
-  # - main
-  # - build
-  - release
-  # - deploy
+    - test
+    - release
+
+before_script:
+  - npm install
+
+node:10:
+  image: node:10
+  stage: test
+  script:
+    - npm test
+
+node:12:
+  image: node:12
+  stage: test
+  script:
+    - npm test
+
+publish:
+  image: node:12
+  stage: release
+  script:
+    - npx semantic-release
 
 # install-dependencies:
 #   stage: setup
@@ -74,18 +99,6 @@ stages:
 #       --tag $CONTAINER_TEST_IMAGE
 #       .
 #     - docker push $CONTAINER_TEST_IMAGE
-
-release:
-  image: node:16.14.2-alpine
-  stage: release
-  script:
-    - npm ci --cache .npm --prefer-offline
-    - npm install @semantic-release/gitlab
-    - npx semantic-release
-  only:
-    - master
-    - /^v\d+\.\d+\.\d+$/
-    - /^alpha-v\d+\.\d+\.\d+$/
 
 
 # TODO: Add build for release
