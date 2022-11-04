@@ -14,66 +14,80 @@ variables:
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
 stages:
-  - setup
-  - main
-  - build
-  # - release
-  - deploy
+  # - setup
+  # - main
+  # - build
+  - release
+  # - deploy
 
-install-dependencies:
-  stage: setup
-  extends: [.node-job]
-  cache:
-    key: !reference [.node-job, cache, key]
-    paths: !reference [.node-job, cache, paths]
-    policy: pull-push
-  script:
-    - echo "Done!..."
-  rules:
-    - changes:
-        - package-lock.json
+# install-dependencies:
+#   stage: setup
+#   extends: [.node-job]
+#   cache:
+#     key: !reference [.node-job, cache, key]
+#     paths: !reference [.node-job, cache, paths]
+#     policy: pull-push
+#   script:
+#     - echo "Done!..."
+#   rules:
+#     - changes:
+#         - package-lock.json
 
-main:
-  stage: main
-  extends: [.node-job, .require-install-deps]
-  before_script:
-    - apk add --no-cache git
-    - !reference [.node-job, before_script]
-  script:
-    - npx prettier --check src/**/*.ts
-    - npx eslint src/**/*.ts
-    - npm run build
-  artifacts:
-    paths:
-      - dist/
+# main:
+#   stage: main
+#   extends: [.node-job, .require-install-deps]
+#   before_script:
+#     - apk add --no-cache git
+#     - !reference [.node-job, before_script]
+#   script:
+#     - npx prettier --check src/**/*.ts
+#     - npx eslint src/**/*.ts
+#     - npm run build
+#   artifacts:
+#     paths:
+#       - dist/
 
-build:
+# build:
+#   dependencies:
+#     - main
+#   stage: build
+#   image: docker:20.10.12-dind
+#   services:
+#     - docker:20.10.12-dind
+#   before_script:
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   script:
+#     # fetches the latest image (not failing if image is not found)
+#     - docker pull $CONTAINER_TEST_IMAGE || true
+#     # builds the project, using OCI labels, notice the cache-from, which is going
+#     # to use the image we just pulled locally the built image is tagged locally with
+#     # the commit SHA, and then pushed to the GitLab registry
+#     - >
+#       docker build
+#       --cache-from $CONTAINER_TEST_IMAGE
+#       --label "org.opencontainers.image.title=$CI_PROJECT_TITLE"
+#       --label "org.opencontainers.image.url=$CI_PROJECT_URL"
+#       --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT"
+#       --label "org.opencontainers.image.revision=$CI_COMMIT_SHA"
+#       --label "org.opencontainers.image.version=$CI_COMMIT_REF_NAME"
+#       --progress auto
+#       --tag $CONTAINER_TEST_IMAGE
+#       .
+#     - docker push $CONTAINER_TEST_IMAGE
+
+semantic-release:
   dependencies:
-    - main
-  stage: build
-  image: docker:20.10.12-dind
-  services:
-    - docker:20.10.12-dind
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - build
+  stage: release
+  extends: [.node-job, .require-install-deps]
   script:
-    # fetches the latest image (not failing if image is not found)
-    - docker pull $CONTAINER_TEST_IMAGE || true
-    # builds the project, using OCI labels, notice the cache-from, which is going
-    # to use the image we just pulled locally the built image is tagged locally with
-    # the commit SHA, and then pushed to the GitLab registry
-    - >
-      docker build
-      --cache-from $CONTAINER_TEST_IMAGE
-      --label "org.opencontainers.image.title=$CI_PROJECT_TITLE"
-      --label "org.opencontainers.image.url=$CI_PROJECT_URL"
-      --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT"
-      --label "org.opencontainers.image.revision=$CI_COMMIT_SHA"
-      --label "org.opencontainers.image.version=$CI_COMMIT_REF_NAME"
-      --progress auto
-      --tag $CONTAINER_TEST_IMAGE
-      .
-    - docker push $CONTAINER_TEST_IMAGE
+    - npm install @semantic-release/gitlab
+    - npx semantic-release
+  only:
+    - master
+    - /^v\d+\.\d+\.\d+$/
+    - /^alpha-v\d+\.\d+\.\d+$/
+
 
 # TODO: Add build for release
 # TODO: Add release image only for master
@@ -97,44 +111,44 @@ build:
 #   only:
 #     - main
 
-deploy:
-  stage: deploy
-  image:
-    name: dtzar/helm-kubectl:3.8.2
-    entrypoint: ['']
-  variables:
-    IMAGE_COFIG: --set-string imageCredentials.username=$DEPLOY_USER
-      --set-string imageCredentials.password=$DEPLOY_TOKEN
-      --set-string imageCredentials.registry=$CI_REGISTRY
-      --set-string image.tag=$CI_COMMIT_REF_SLUG
-      --set-string image.repository=$CI_REGISTRY_IMAGE
-    ENV_CONFIG: --set-string env.normal.PORT=$PORT
-      --set-string env.normal.AWS_REGION=$AWS_REGION
-      --set-string env.normal.AWS_ARTISTS_BUCKET=$AWS_ARTISTS_BUCKET
-      --set-string env.normal.CLOUD_FRONT_URL=$CLOUD_FRONT_URL
-      --set-string env.secret.JWT_ISSUER=$JWT_ISSUER
-      --set-string env.secret.JWT_SECRET_KEY=$JWT_SECRET_KEY
-      --set-string env.secret.JWT_EXPIRATION=$JWT_EXPIRATION
-      --set-string env.secret.AWS_ACCESS_KEY=$AWS_ACCESS_KEY
-      --set-string env.secret.AWS_ACCESS_SECRET=$AWS_ACCESS_SECRET
-      --set-string env.secret.SMS_AWS_ACCESS_KEY=$SMS_AWS_ACCESS_KEY
-      --set-string env.secret.SMS_AWS_ACCESS_SECRET=$SMS_AWS_ACCESS_SECRET
-      --set-string env.secret.DB_HOST=$DB_HOST
-      --set-string env.secret.DB_PASSWORD=$DB_PASSWORD
-      --set-string env.secret.DB_USERNAME=$DB_USERNAME
-      --set-string env.secret.DB_PORT=$DB_PORT
-      --set-string env.secret.TYPEORM_SYNC=$TYPEORM_SYNC
-    NAMESPACE: development
-    VALUES_PATH: ./deploy/values.yaml
-    CHART_NAME: $CI_PROJECT_TITLE
-  before_script:
-    - kubectl config get-contexts
-    - kubectl config use-context inker-studio/inker-terraform-gke:gke-agent
-  script:
-    - helm upgrade $CHART_NAME ./deploy --install
-      $IMAGE_COFIG $ENV_CONFIG
-      --namespace $NAMESPACE
-      --values $VALUES_PATH
-      --cleanup-on-fail
-      --timeout 5m
-      --wait
+# deploy:
+#   stage: deploy
+#   image:
+#     name: dtzar/helm-kubectl:3.8.2
+#     entrypoint: ['']
+#   variables:
+#     IMAGE_COFIG: --set-string imageCredentials.username=$DEPLOY_USER
+#       --set-string imageCredentials.password=$DEPLOY_TOKEN
+#       --set-string imageCredentials.registry=$CI_REGISTRY
+#       --set-string image.tag=$CI_COMMIT_REF_SLUG
+#       --set-string image.repository=$CI_REGISTRY_IMAGE
+#     ENV_CONFIG: --set-string env.normal.PORT=$PORT
+#       --set-string env.normal.AWS_REGION=$AWS_REGION
+#       --set-string env.normal.AWS_ARTISTS_BUCKET=$AWS_ARTISTS_BUCKET
+#       --set-string env.normal.CLOUD_FRONT_URL=$CLOUD_FRONT_URL
+#       --set-string env.secret.JWT_ISSUER=$JWT_ISSUER
+#       --set-string env.secret.JWT_SECRET_KEY=$JWT_SECRET_KEY
+#       --set-string env.secret.JWT_EXPIRATION=$JWT_EXPIRATION
+#       --set-string env.secret.AWS_ACCESS_KEY=$AWS_ACCESS_KEY
+#       --set-string env.secret.AWS_ACCESS_SECRET=$AWS_ACCESS_SECRET
+#       --set-string env.secret.SMS_AWS_ACCESS_KEY=$SMS_AWS_ACCESS_KEY
+#       --set-string env.secret.SMS_AWS_ACCESS_SECRET=$SMS_AWS_ACCESS_SECRET
+#       --set-string env.secret.DB_HOST=$DB_HOST
+#       --set-string env.secret.DB_PASSWORD=$DB_PASSWORD
+#       --set-string env.secret.DB_USERNAME=$DB_USERNAME
+#       --set-string env.secret.DB_PORT=$DB_PORT
+#       --set-string env.secret.TYPEORM_SYNC=$TYPEORM_SYNC
+#     NAMESPACE: development
+#     VALUES_PATH: ./deploy/values.yaml
+#     CHART_NAME: $CI_PROJECT_TITLE
+#   before_script:
+#     - kubectl config get-contexts
+#     - kubectl config use-context inker-studio/inker-terraform-gke:gke-agent
+#   script:
+#     - helm upgrade $CHART_NAME ./deploy --install
+#       $IMAGE_COFIG $ENV_CONFIG
+#       --namespace $NAMESPACE
+#       --values $VALUES_PATH
+#       --cleanup-on-fail
+#       --timeout 5m
+#       --wait
