@@ -76,10 +76,7 @@ stages:
 #     - docker push $CONTAINER_TEST_IMAGE
 
 semantic-release:
-  dependencies:
-    - build
   stage: release
-  extends: [.node-job, .require-install-deps]
   script:
     - npm install @semantic-release/gitlab
     - npx semantic-release
