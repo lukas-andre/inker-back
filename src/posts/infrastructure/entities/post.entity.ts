@@ -1,4 +1,5 @@
 import { Column, DeleteDateColumn, Entity, Index } from 'typeorm';
+
 import { GenreInterface } from '../../../genres/genre.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';

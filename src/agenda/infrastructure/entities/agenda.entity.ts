@@ -1,5 +1,7 @@
 import { Column, DeleteDateColumn, Entity, Index, OneToMany } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+
 import { AgendaEvent } from './agendaEvent.entity';
 
 @Entity()

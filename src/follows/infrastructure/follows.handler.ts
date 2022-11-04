@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+
 import { FollowerDto } from '../../artists/infrastructure/dtos/follow.dto';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import { BaseHandler } from '../../global/infrastructure/base.handler';

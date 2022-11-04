@@ -6,6 +6,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+
 import { AddressInterface } from '../../../global/domain/interfaces/address.interface';
 import { AddressDto } from '../../../global/infrastructure/dtos/address.dto';
 

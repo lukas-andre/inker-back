@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { FindOneOptions } from 'typeorm';
+
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { CustomersService } from '../domain/customers.service';
 import { Customer } from '../infrastructure/entities/customer.entity';
+
 import { CreateCustomerParams } from './interfaces/createCustomer.params';
 
 @Injectable()

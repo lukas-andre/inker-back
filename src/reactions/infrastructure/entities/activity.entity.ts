@@ -1,4 +1,5 @@
 import { Column, Entity, Index } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { ActivityTypeEnum } from '../enums/activity.enum';
 import { ReactionTypeEnum } from '../enums/reaction.enum';

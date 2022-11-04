@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { FindAllPermissionsUseCase } from '../../usecases/permission/findAllPermissions.usecase';
 import { FindAllRoutesUseCase } from '../../usecases/permission/findAllRoutes.usecase';
 import { FindOnePermissionUseCase } from '../../usecases/permission/findOnePermission.usecase';

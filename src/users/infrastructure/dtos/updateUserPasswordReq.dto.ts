@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+
 import { Match } from '../../../global/domain/validators/match.validator';
 
 export class UpdateUserPasswordReqDto {

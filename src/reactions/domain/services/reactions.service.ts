@@ -8,9 +8,10 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { DBServiceFindException } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { Reaction } from '../../../reactions/infrastructure/entities/reaction.entity';
+import { Reaction } from '../../infrastructure/entities/reaction.entity';
 import { GroupedReactionsInterface } from '../interfaces/groupedReactions.interface';
 
 @Injectable()

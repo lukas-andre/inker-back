@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
+
 import { ReactionTypeEnum } from './enums/reaction.enum';
 
 export class ReactionToActivityResponseDto {

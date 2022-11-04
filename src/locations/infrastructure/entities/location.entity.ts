@@ -1,5 +1,6 @@
 import { Point } from 'geojson';
 import { Column, Entity, Index } from 'typeorm';
+
 import { AddressType } from '../../../global/domain/interfaces/address.interface';
 import { ViewportInterface } from '../../../global/domain/interfaces/geometry.interface';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';

@@ -1,6 +1,8 @@
 import { registerAs } from '@nestjs/config';
-import * as Joi from 'joi';
+import Joi from 'joi';
+
 import { oasConfig } from '../oas.config';
+
 import { agendaDatabaseConf } from './agenda.config';
 import { artistDatabaseConf } from './artist.config';
 import { customerDatabaseConf } from './customer.config';

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { InitialPermissionsService } from '../../domain/services/initialPermissions.service';
 
 @Injectable()

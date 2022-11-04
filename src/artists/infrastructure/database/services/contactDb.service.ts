@@ -1,5 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Repository } from 'typeorm';
+
 import { BaseComponent } from '../../../../global/domain/components/base.component';
 import { Contact } from '../../entities/contact.entity';
 

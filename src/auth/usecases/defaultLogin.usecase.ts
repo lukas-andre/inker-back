@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { CustomersService } from '../../customers/domain/customers.service';
@@ -16,6 +17,7 @@ import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersService } from '../../users/domain/services/users.service';
 import { User } from '../../users/infrastructure/entities/user.entity';
 import { AuthService } from '../domain/auth.service';
+
 import { LoginParams } from './interfaces/defaultLogin.params';
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 @Injectable()

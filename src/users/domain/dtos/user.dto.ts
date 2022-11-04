@@ -1,4 +1,5 @@
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
+
 import { BaseDto } from '../../../global/domain/dtos/base.dto';
 import { UserType } from '../enums/userType.enum';
 import { RoleInterface } from '../models/role.model';

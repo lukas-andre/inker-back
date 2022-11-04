@@ -1,5 +1,6 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
+
 import { CreateArtistDto } from './createArtist.dto';
 
 export class UpdateArtistDto extends PartialType(

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
+
 import { CreateCustomerParams } from '../../usecases/interfaces/createCustomer.params';
 
 export class CreateCustomerReqDto implements CreateCustomerParams {

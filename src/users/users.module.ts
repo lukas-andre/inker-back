@@ -1,11 +1,13 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AgendaModule } from '../agenda/agenda.module';
 import { ArtistsModule } from '../artists/artists.module';
 import { ArtistsDbModule as ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
 import { CustomersModule } from '../customers/customers.module';
 import { LocationDbModule } from '../locations/infrastructure/database/locationDb.module';
 import { LocationsModule } from '../locations/locations.module';
+
 import { InitialPermissionsService } from './domain/services/initialPermissions.service';
 import { PermissionsService } from './domain/services/permissions.service';
 import { RolesService } from './domain/services/roles.service';

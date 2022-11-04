@@ -6,6 +6,7 @@ import {
   IsNumber,
   ValidateNested,
 } from 'class-validator';
+
 import {
   GeometryInterface,
   LocationInterface,

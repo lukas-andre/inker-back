@@ -1,6 +1,8 @@
 import { Column, Entity, OneToOne } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { ContactInterface } from '../../domain/interfaces/contact.interface';
+
 import { Artist } from './artist.entity';
 
 @Entity()

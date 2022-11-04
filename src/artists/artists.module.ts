@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
+
 import { AgendaModule } from '../agenda/agenda.module';
 import { FollowsModule } from '../follows/follows.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
+
 import { ArtistsController } from './infrastructure/artists.controller';
 import { ArtistsHandler } from './infrastructure/artists.handler';
 import { ArtistsDbModule } from './infrastructure/database/artistDb.module';

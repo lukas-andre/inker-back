@@ -7,6 +7,7 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
+
 import { BaseComponent } from '../../global/domain/components/base.component';
 import {
   DbServiceBadRule,
@@ -14,6 +15,7 @@ import {
 } from '../../global/infrastructure/exceptions/dbService.exception';
 import { Customer } from '../infrastructure/entities/customer.entity';
 import { CreateCustomerParams } from '../usecases/interfaces/createCustomer.params';
+
 import { FollowTopic } from './interfaces/customerFollows.interface';
 
 @Injectable()

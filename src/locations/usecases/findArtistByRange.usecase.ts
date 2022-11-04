@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Point } from 'geojson';
+
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import {

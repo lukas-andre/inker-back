@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { endOfWeek, format, startOfWeek } from 'date-fns';
+
 import {
   DomainBadRequest,
   DomainNotFound,
@@ -14,7 +15,6 @@ import { AgendaViewType } from '../domain/enum/agendaViewType.enum';
 import { ListEventByViewTypeQueryDto } from '../infrastructure/dtos/listEventByViewTypeQuery.dto';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-
 @Injectable()
 export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
   constructor(

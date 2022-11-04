@@ -1,6 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
+
 import { ArtistsModule } from '../artists/artists.module';
 import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+
 import { LocationDbModule } from './infrastructure/database/locationDb.module';
 import { LocationsController } from './infrastructure/locations.controller';
 import { LocationsHandler } from './infrastructure/locations.handler';

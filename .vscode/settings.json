@@ -1,5 +1,10 @@
 {
   "compile-hero.disable-compile-files-on-did-save-code": true,
+  "editor.formatOnSave": false,
+  "eslint.validate": ["typescript"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
   "cSpell.words": [
     "activar",
     "c",

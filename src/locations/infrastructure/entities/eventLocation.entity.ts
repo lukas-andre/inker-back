@@ -1,4 +1,5 @@
 import { Entity } from 'typeorm';
+
 import { LocationEntity } from './location.entity';
 
 @Entity()

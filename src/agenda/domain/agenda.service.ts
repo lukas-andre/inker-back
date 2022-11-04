@@ -8,6 +8,7 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+
 import { CreateArtistParams } from '../../artists/usecases/interfaces/createArtist.params';
 import { BaseComponent } from '../../global/domain/components/base.component';
 import { DBServiceSaveException } from '../../global/infrastructure/exceptions/dbService.exception';

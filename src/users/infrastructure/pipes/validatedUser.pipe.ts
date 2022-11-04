@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
+
 import { UsersService } from '../../domain/services/users.service';
 
 @Injectable()
