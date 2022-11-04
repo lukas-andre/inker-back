@@ -33,7 +33,7 @@ publish:
     - /^v\d+\.\d+\.\d+(-.*)?$/
     - /^alpha\/.*$/
   script:
-    - apt install -y git
+    - apt-get install -y git
     - npm install @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator
     - npx semantic-release
 
