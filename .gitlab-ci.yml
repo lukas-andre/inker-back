@@ -24,15 +24,16 @@ stages:
     # - build
     - release
 
-before_script:
-  - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates
-  - npm install -g semantic-release @semantic-release/gitlab
-
 publish:
   image: node:16.14.2-alpine
   stage: release
+  only:
+    - master
+    - /^v\d+\.\d+\.\d+(-.*)?$/
+    - /^alpha\/.*$/
   script:
-    - semantic-release
+    - npm install @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+    - npx semantic-release
 
 # install-dependencies:
 #   stage: setup
