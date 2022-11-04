@@ -2,16 +2,16 @@
 #   - template: Workflows/MergeRequest-Pipelines.gitlab-ci.yml
   # - local: .gitlab/templates.yml
 
-variables:
-  DOCKER_HOST: tcp://docker:2376
-  DOCKER_TLS_CERTDIR: '/certs'
-  # These are usually specified by the entrypoint, however the
-  # Kubernetes executor doesn't run entrypoints
-  # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4125
-  DOCKER_TLS_VERIFY: 1
-  DOCKER_CERT_PATH: '$DOCKER_TLS_CERTDIR/client'
-  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+# variables:
+#   DOCKER_HOST: tcp://docker:2376
+#   DOCKER_TLS_CERTDIR: '/certs'
+#   # These are usually specified by the entrypoint, however the
+#   # Kubernetes executor doesn't run entrypoints
+#   # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4125
+#   DOCKER_TLS_VERIFY: 1
+#   DOCKER_CERT_PATH: '$DOCKER_TLS_CERTDIR/client'
+#   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+#   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
 stages:
   # - setup
