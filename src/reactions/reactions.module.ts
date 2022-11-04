@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { ActivitiesService } from './domain/services/activities.service';
 import { ReactionsService } from './domain/services/reactions.service';
 import { Activity } from './infrastructure/entities/activity.entity';

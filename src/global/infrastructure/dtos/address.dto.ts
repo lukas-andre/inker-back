@@ -8,10 +8,12 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+
 import {
   AddressInterface,
   AddressType,
 } from '../../domain/interfaces/address.interface';
+
 import { GeometryDto } from './geometry.dto';
 
 export class AddressDto implements AddressInterface {

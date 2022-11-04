@@ -24,6 +24,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
+
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
 import {
@@ -32,6 +33,7 @@ import {
   NOT_VALID_FILE_TO_UPLOAD,
   PROBLEMS_UPDATING_STUDIO_PHOTO,
 } from '../domain/errors/codes';
+
 import { ArtistsHandler } from './artists.handler';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { CreateArtistDto } from './dtos/createArtist.dto';

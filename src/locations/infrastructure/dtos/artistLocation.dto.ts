@@ -1,6 +1,7 @@
 import { IsString } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
+
 import { LocationDto } from './location.dto';
 
 export class ArtistLocationDto extends LocationDto {

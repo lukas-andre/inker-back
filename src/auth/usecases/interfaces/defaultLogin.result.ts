@@ -1,4 +1,5 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+
 import { JwtPermission } from '../../../global/domain/interfaces/jwtPayload.interface';
 
 export class DefaultLoginResult {

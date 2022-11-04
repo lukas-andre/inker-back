@@ -3,6 +3,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import * as Joi from 'joi';
+
 import { appConfigSchema } from '../config/app.config';
 import { authConfigSchema } from '../config/auth.config';
 import { AWSConfigSchema } from '../config/aws.config';
@@ -10,6 +11,7 @@ import { Config } from '../config/config';
 import { databaseConfigSchema } from '../config/database/config';
 import { oasConfigSchema } from '../config/oas.config';
 import { verificationHashConfigSchema } from '../config/verificationHash';
+
 import { BaseHandler } from './infrastructure/base.handler';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { SMSClient } from './infrastructure/clients/sms.client';

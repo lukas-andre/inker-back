@@ -7,6 +7,7 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
+
 import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defaultResponse.dto';
 import { NotificationType } from '../../entities/verificationHash.entity';
 

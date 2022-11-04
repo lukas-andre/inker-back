@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsEmail, IsString } from 'class-validator';
+
 import { BaseDto } from '../../../global/domain/dtos/base.dto';
 import { ContactInterface } from '../interfaces/contact.interface';
 

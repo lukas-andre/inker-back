@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { DomainBadRule } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,

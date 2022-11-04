@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as AWS from 'aws-sdk';
 import { SNS } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 
@@ -12,7 +11,7 @@ export class SMSClient {
 
   getClient(): AWS.SNS {
     if (!this.client) {
-      this.client = new AWS.SNS({
+      this.client = new SNS({
         accessKeyId: this.configService.get('aws.smsAccessKey'),
         secretAccessKey: this.configService.get('aws.smsSecretKey'),
         region: this.configService.get('aws.region'),

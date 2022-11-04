@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AgendaService } from './domain/agenda.service';
 import { AgendaEventService } from './domain/agendaEvent.service';
 import { AgendaController } from './infrastructure/agenda.controller';

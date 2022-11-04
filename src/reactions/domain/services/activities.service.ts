@@ -8,6 +8,7 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { DBServiceFindException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { Activity } from '../../infrastructure/entities/activity.entity';

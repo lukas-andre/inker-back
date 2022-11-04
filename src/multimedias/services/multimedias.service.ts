@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
 import { S3Client } from '../../global/infrastructure/clients/s3.client';
 import { FileInterface } from '../interfaces/file.interface';
 import { MultimediasMetadataInterface } from '../interfaces/multimediasMetadata.interface';

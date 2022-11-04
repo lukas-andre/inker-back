@@ -1,3 +1,5 @@
+import { inspect } from 'util';
+
 import { Logger } from '@nestjs/common';
 import {
   OnGatewayConnection,
@@ -8,7 +10,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { inspect } from 'util';
 
 @WebSocketGateway(3012, { namespace: 'chat' })
 export class ChatGateway

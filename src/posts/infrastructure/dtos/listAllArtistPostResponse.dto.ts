@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+
 import { MetaTagDto } from '../../../global/infrastructure/dtos/metaTag.dto';
 import { MultimediasMetadataDto } from '../../../multimedias/dtos/multimediasMetadata.dto';
 

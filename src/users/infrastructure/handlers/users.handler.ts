@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+
 import { BaseHandler } from '../../../global/infrastructure/base.handler';
-import { CreateUserByTypeParams } from '../../../users/usecases/user/interfaces/createUserByType.params';
 import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
+import { CreateUserByTypeParams } from '../../usecases/user/interfaces/createUserByType.params';
 import { SendSMSAccountVerificationCodeUseCase } from '../../usecases/user/sendSMSAccountVerificationCode.usecase';
 import { SendSMSForgotPasswordCodeUseCase } from '../../usecases/user/sendSMSForgotPasswordCode.usecase';
 import { UpdateUserEmailUseCase } from '../../usecases/user/updateUserEmail.usecase';

@@ -6,6 +6,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+
 import { ArtistLocationDto } from './artistLocation.dto';
 
 class Location {

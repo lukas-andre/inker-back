@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { getConnection } from 'typeorm';
+
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { BaseComponent } from '../../global/domain/components/base.component';
 import {
@@ -15,6 +16,7 @@ import { UsersService } from '../../users/domain/services/users.service';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
+
 import { FollowArtistParams } from './interfaces/followArtist.param';
 // TODO: EXTEND BASE USECASE
 @Injectable()
@@ -22,7 +24,7 @@ export class FollowUseCase extends BaseComponent {
   constructor(
     private readonly usersService: UsersService,
     private readonly artistsDbService: ArtistsDbService,
-    private readonly followedsService: FollowedsService,
+    private readonly followedsService: FollowedsService, // @InjectDataSource('follow-db') // private followDbDataSource: DataSource,
   ) {
     super(FollowUseCase.name);
   }
@@ -32,6 +34,9 @@ export class FollowUseCase extends BaseComponent {
     follower: FollowArtistParams,
   ): Promise<DefaultResponseDto> {
     let exception: DomainException;
+
+    // TODO: TEST THIS FOR ERROR DEPRECATED METHOD
+    // const queryRunner2 = this.followDbDataSource.createQueryRunner();
 
     const connection = getConnection('follow-db');
     const queryRunner = connection.createQueryRunner();

@@ -8,13 +8,14 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { PaginationDto } from '../../../global/infrastructure/dtos/pagination.dto';
 import {
   DBServiceFindException,
   DBServiceSaveException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { Post } from '../../../posts/infrastructure/entities/post.entity';
+import { Post } from '../../infrastructure/entities/post.entity';
 
 @Injectable()
 export class PostsService extends BaseComponent {

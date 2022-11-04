@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ExtractJwt } from 'passport-jwt';
 import { Observable } from 'rxjs';
+
 import { JwtPayload } from '../../domain/interfaces/jwtPayload.interface';
 
 @Injectable()

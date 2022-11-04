@@ -12,7 +12,9 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+
 import { FollowerDto } from '../../artists/infrastructure/dtos/follow.dto';
+
 import { FollowsHandler } from './follows.handler';
 
 @ApiTags('follow')

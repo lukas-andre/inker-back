@@ -1,4 +1,5 @@
 import { Column, DeleteDateColumn, Entity, Index } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 @Entity()
