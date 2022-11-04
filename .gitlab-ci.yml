@@ -79,6 +79,7 @@ release:
   image: node:16.14.2-alpine
   stage: release
   script:
+    - npm ci --cache .npm --prefer-offline
     - npm install @semantic-release/gitlab
     - npx semantic-release
   only:
