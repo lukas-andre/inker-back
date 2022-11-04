@@ -34,8 +34,12 @@ publish:
     - /^alpha\/.*$/
   script:
     - apk add --no-cache git
-    - npm install @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+    - touch CHANGELOG.md
+    - npm install @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/changelog
     - npx semantic-release
+  artifacts:
+    paths:
+      - CHANGELOG.md    
 
 # install-dependencies:
 #   stage: setup
