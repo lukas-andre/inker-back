@@ -76,6 +76,7 @@ stages:
 #     - docker push $CONTAINER_TEST_IMAGE
 
 release:
+  image: node:16.14.2-alpine
   stage: release
   script:
     - npm install @semantic-release/gitlab
