@@ -25,13 +25,14 @@ stages:
     - release
 
 before_script:
-  - npm install
+  - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates
+  - npm install -g semantic-release @semantic-release/gitlab
 
 publish:
   image: node:16.14.2-alpine
   stage: release
   script:
-    - npx semantic-release
+    - semantic-release
 
 # install-dependencies:
 #   stage: setup
