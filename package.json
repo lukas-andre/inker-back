@@ -1,6 +1,6 @@
 {
   "name": "inker-back",
-  "version": "0.0.0-dev",
+  "version": "1.0.2",
   "description": "",
   "author": "",
   "private": true,
@@ -41,6 +41,8 @@
     "@nestjs/terminus": "^9.1.1",
     "@nestjs/typeorm": "^9.0.1",
     "@nestjs/websockets": "^9.0.11",
+    "@semantic-release/commit-analyzer": "^9.0.2",
+    "@semantic-release/release-notes-generator": "^10.0.3",
     "@types/passport-jwt": "^3.0.6",
     "@types/sharp": "^0.30.5",
     "aws-sdk": "^2.1204.0",
