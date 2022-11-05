@@ -1,3 +1,11 @@
+## [1.1.2](https://gitlab.com/inker-studio/inker-back/compare/v1.1.1...v1.1.2) (2022-11-05)
+
+
+### Bug Fixes
+
+* **ci:** fix ci templates use ([fb31d4c](https://gitlab.com/inker-studio/inker-back/commit/fb31d4c9ae5256e54b44e73cbd08bd8783bfa4a6))
+* **ci:** fix Install Dependencies (Merge Pipeline) ([5115722](https://gitlab.com/inker-studio/inker-back/commit/511572212bb9560b53341b90721b675f99aa6515))
+
 ## [1.1.1](https://gitlab.com/inker-studio/inker-back/compare/v1.1.0...v1.1.1) (2022-11-05)
 
 
