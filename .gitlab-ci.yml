@@ -36,8 +36,8 @@ Lint, Test & Build (Merge Pipeline):
 Install Dependencies (Hotfix Pipeline):
   stage: setup
   extends: [.setup-job]
-  only:
-    !reference [.hotfix-job, only]
+  rules:
+    !reference [.hotfix-job, rules]
 
 Lint, Test & Build (Hotfix Pipeline):
   stage: main

@@ -74,7 +74,13 @@ variables:
       - master
     variables:
       - $CI_COMMIT_MESSAGE !~ $RELEASE_COMMIT_PATTERN && $CI_COMMIT_MESSAGE !~ $MERGE_COMMIT_PATTERN
-
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" &&  $CI_COMMIT_MESSAGE !~ $RELEASE_COMMIT_PATTERN && $CI_COMMIT_MESSAGE !~ $MERGE_COMMIT_PATTERN
+      when: always
+      changes:
+        - package.json
+        - package-lock.json
+    
 .mr-job:
     rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
