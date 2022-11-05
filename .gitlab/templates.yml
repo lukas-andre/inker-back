@@ -75,14 +75,12 @@ variables:
     variables:
       - $CI_COMMIT_MESSAGE =~ $RELEASE_COMMIT_PATTERN && $CI_COMMIT_MESSAGE !~ $MERGE_COMMIT_PATTERN
 
-.mr-job-setup-rules:
-  rules:
+.mr-job:
+    rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
       changes:
         - package.json
         - package-lock.json
- 
-.mr-job-only:
-  only:
-  - merge_requests
+    only:
+    - merge_requests
