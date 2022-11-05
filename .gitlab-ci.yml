@@ -21,7 +21,7 @@ stages:
 
 Install Dependencies (Merge Pipeline):
   stage: setup
-  extends: [.setup-job, .mr-job]
+  extends: [.setup-job]
   rules:
     - !reference [.mr-job, rules]
 
