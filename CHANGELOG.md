@@ -1,3 +1,18 @@
+# [1.1.0](https://gitlab.com/inker-studio/inker-back/compare/v1.0.9...v1.1.0) (2022-11-05)
+
+
+### Bug Fixes
+
+* **ci-cd:** add lints jobs to pacakges.json and use it in gitlab-ci.yml ([0836230](https://gitlab.com/inker-studio/inker-back/commit/083623046fae02a81b5a7e36d4efa120a2a0e0a1))
+* **ci-cd:** remove changes for rules on Install Dependencies ([9351271](https://gitlab.com/inker-studio/inker-back/commit/93512718b3922fcc74fa1cf65ce425e10db94a54))
+* **ci-template:** update .require-install-deps needs job ([a523df9](https://gitlab.com/inker-studio/inker-back/commit/a523df91273360ba9db4fdb724eb47e21a4fe8e3))
+* **ci-cd:** update rules for Install Dependencies job ([782dd09](https://gitlab.com/inker-studio/inker-back/commit/782dd09b3ff4f3cc4dcee1949050529c6d835a2c))
+
+
+### Features
+
+* **ci-cd:** on marge request workflow ([99b5e83](https://gitlab.com/inker-studio/inker-back/commit/99b5e831946ac0d96cf84ea8d67504d67272a9ca))
+
 ## [1.0.9](https://gitlab.com/inker-studio/inker-back/compare/v1.0.8...v1.0.9) (2022-11-05)
 
 
