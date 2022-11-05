@@ -32,9 +32,9 @@ Install Dependencies:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
-      changes:
-        - package.json
-        - package-lock.json
+      # changes:
+      #   - package.json
+      #   - package-lock.json
 
 
 Lint, Test & Build:
