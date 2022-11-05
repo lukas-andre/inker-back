@@ -19,45 +19,25 @@ stages:
   - package
   - release
 
-# ############################### CI Setup Or Merge Request Pipeline ###############################
-Install Dependencies:
+Install Dependencies (Merge Pipeline):
   stage: setup
-  extends: [.node-job]
-  cache:
-    key: !reference [.node-job, cache, key]
-    paths: !reference [.node-job, cache, paths]
-    policy: pull-push
-  script:
-    - echo "Done!..."
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
-      changes:
-        - package.json
-        - package-lock.json
+  extends: [.setup-job, .mr-job-setup-rules]
 
-Lint, Test & Build:
+Lint, Test & Build (Merge Pipeline):
   stage: main
-  extends: [.node-job, .require-install-deps]
-  only:
-    - merge_requests
-  before_script:
-    - apk add --no-cache git
-    - !reference [.node-job, before_script]
-  script:
-    - npm run prettier
-    - npm run lint
-    - npm run build
-  artifacts:
-    paths:
-      - dist/
+  extends: [.verify-job, .mr-job-only]
 
-# ############################### Review Apps ###############################
-# TODO: Add review apps job
+# TODO: Add review apps job for Merge Pipeline
 
+Install Dependencies (Hotfix Pipeline):
+  stage: setup
+  extends: [.setup-job, .hotfix-job-only]
 
-# ############################### Package Setup Or Master/Main Pipeline ###############################
-Setup Package:
+Lint, Test & Build (Hotfix Pipeline):
+  stage: main
+  extends: [.verify-job, .hotfix-job-only]
+
+Setup Package (Master/Main Pipeline):
   extends: [.pre-release-job]
   stage: package
   before_script:
@@ -66,15 +46,12 @@ Setup Package:
   script:
     - npx semantic-release
 
-# ############################### CD Setup Or Tag Pipeline ###############################
-Release:
+Release (Tag Pipeline):
   extends: [.release-job]
   stage: release
   script:
     - echo "Deploying to production"
   
-
-
 # build:
 #   dependencies:
 #     - main
