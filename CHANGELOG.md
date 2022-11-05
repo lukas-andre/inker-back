@@ -1,3 +1,10 @@
+## [1.1.1](https://gitlab.com/inker-studio/inker-back/compare/v1.1.0...v1.1.1) (2022-11-05)
+
+
+### Bug Fixes
+
+* **ci:** divide in Merge, Main and Tag Pipelines ([40f441b](https://gitlab.com/inker-studio/inker-back/commit/40f441be251bfb6766a5667a333f2222489b8b92))
+
 # [1.1.0](https://gitlab.com/inker-studio/inker-back/compare/v1.0.9...v1.1.0) (2022-11-05)
 
 
