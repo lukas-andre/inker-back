@@ -19,7 +19,7 @@ variables:
 
 .require-install-deps:
   needs:
-    - job: install-dependencies
+    - job: Install Dependencies
       optional: true
 
 .pre-release-job:
