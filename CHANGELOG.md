@@ -1,3 +1,10 @@
+## [1.1.4](https://gitlab.com/inker-studio/inker-back/compare/v1.1.3...v1.1.4) (2022-11-05)
+
+
+### Bug Fixes
+
+* **ci:** enhace ci for mr and hotfix ([d113285](https://gitlab.com/inker-studio/inker-back/commit/d113285ed17f73be622a9ec60f1db71c23cd2877))
+
 ## [1.1.3](https://gitlab.com/inker-studio/inker-back/compare/v1.1.2...v1.1.3) (2022-11-05)
 
 
