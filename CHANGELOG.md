@@ -1,3 +1,10 @@
+## [1.1.5](https://gitlab.com/inker-studio/inker-back/compare/v1.1.4...v1.1.5) (2022-11-05)
+
+
+### Bug Fixes
+
+* **hot:** hotfix test ([67fd2b2](https://gitlab.com/inker-studio/inker-back/commit/67fd2b220a4d11f57e88857e1e450fb2707d6aa5))
+
 ## [1.1.4](https://gitlab.com/inker-studio/inker-back/compare/v1.1.3...v1.1.4) (2022-11-05)
 
 
