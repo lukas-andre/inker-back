@@ -45,7 +45,7 @@ variables:
     - npm run build
   artifacts:
     paths:
-      - dist/   
+      - dist/
 
 .pre-release-job:
   extends: [.node-job]
@@ -66,7 +66,7 @@ variables:
     refs:
       - tags
     variables:
-      - $CI_COMMIT_MESSAGE =~ $RELEASE_COMMIT_PATTERN && $CI_COMMIT_TAG 
+      - $CI_COMMIT_MESSAGE =~ $RELEASE_COMMIT_PATTERN && $CI_COMMIT_TAG
 
 .hotfix-job:
   only:
@@ -80,13 +80,13 @@ variables:
       changes:
         - package.json
         - package-lock.json
-    
+
 .mr-job:
-    rules:
+  only:
+    - merge_requests
+  rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
       changes:
         - package.json
         - package-lock.json
-    only:
-    - merge_requests
