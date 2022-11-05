@@ -21,21 +21,29 @@ stages:
 
 Install Dependencies (Merge Pipeline):
   stage: setup
-  extends: [.setup-job, .mr-job-setup-rules]
+  extends: [.setup-job, .mr-job]
+  rules:
+    - !reference [.mr-job, rules]
 
 Lint, Test & Build (Merge Pipeline):
   stage: main
-  extends: [.verify-job, .mr-job-only]
+  extends: [.verify-job]
+  only:
+    !reference [.mr-job, only]
 
 # TODO: Add review apps job for Merge Pipeline
 
 Install Dependencies (Hotfix Pipeline):
   stage: setup
-  extends: [.setup-job, .hotfix-job-only]
+  extends: [.setup-job]
+  only:
+    !reference [.hotfix-job, only]
 
 Lint, Test & Build (Hotfix Pipeline):
   stage: main
-  extends: [.verify-job, .hotfix-job-only]
+  extends: [.verify-job]
+  only:
+    !reference [.hotfix-job, only]
 
 Setup Package (Master/Main Pipeline):
   extends: [.pre-release-job]
