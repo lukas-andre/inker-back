@@ -1,3 +1,11 @@
+## [1.0.7](https://gitlab.com/inker-studio/inker-back/compare/v1.0.6...v1.0.7) (2022-11-05)
+
+
+### Bug Fixes
+
+* **semantic-release:** remove [skip ci] from release commit message ([bb19f0a](https://gitlab.com/inker-studio/inker-back/commit/bb19f0a5a476e99a088b13c6b8fee1a2f0e7914f))
+* **ci:** update regex for master only job ([70854cc](https://gitlab.com/inker-studio/inker-back/commit/70854cceeb398529e774a0082b540b6917994f62))
+
 ## [1.0.6](https://gitlab.com/inker-studio/inker-back/compare/v1.0.5...v1.0.6) (2022-11-04)
 
 
