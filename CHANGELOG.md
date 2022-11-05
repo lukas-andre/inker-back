@@ -1,3 +1,13 @@
+## [1.0.9](https://gitlab.com/inker-studio/inker-back/compare/v1.0.8...v1.0.9) (2022-11-05)
+
+
+### Bug Fixes
+
+* **ci:** fix only condition on pre-release-job again ([365eb49](https://gitlab.com/inker-studio/inker-back/commit/365eb49fac664482c2568a4905a62318e85244fa))
+* **ci:** fix only refs on pre-release-job ([2160de0](https://gitlab.com/inker-studio/inker-back/commit/2160de0f905c35ecdffc12f4a23d743cbf744a31))
+* **ci:** include local template ([3857793](https://gitlab.com/inker-studio/inker-back/commit/38577938506203409b50d17074be9d0cf60ab0a5))
+* **ci:** update pre-release-job only condition ([c93bc53](https://gitlab.com/inker-studio/inker-back/commit/c93bc53e949b91901a0eb094033beccc20bafc6c))
+
 ## [1.0.8](https://gitlab.com/inker-studio/inker-back/compare/v1.0.7...v1.0.8) (2022-11-05)
 
 
