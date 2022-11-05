@@ -23,8 +23,6 @@ stages:
 Install Dependencies:
   stage: setup
   extends: [.node-job]
-  only:
-    - merge_requests
   cache:
     key: !reference [.node-job, cache, key]
     paths: !reference [.node-job, cache, paths]
@@ -32,8 +30,12 @@ Install Dependencies:
   script:
     - echo "Done!..."
   rules:
-    - changes:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+      changes:
+        - package.json
         - package-lock.json
+
 
 Lint, Test & Build:
   stage: main
