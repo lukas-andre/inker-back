@@ -28,22 +28,19 @@ Install Dependencies (Merge Pipeline):
 Lint, Test & Build (Merge Pipeline):
   stage: main
   extends: [.verify-job]
-  only:
-    !reference [.mr-job, only]
+  only: !reference [.mr-job, only]
 
 # TODO: Add review apps job for Merge Pipeline
 
 Install Dependencies (Hotfix Pipeline):
   stage: setup
   extends: [.setup-job]
-  only:
-    !reference [.hotfix-job, only]
+  rules: !reference [.hotfix-job, rules]
 
 Lint, Test & Build (Hotfix Pipeline):
   stage: main
   extends: [.verify-job]
-  only:
-    !reference [.hotfix-job, only]
+  only: !reference [.hotfix-job, only]
 
 Setup Package (Master/Main Pipeline):
   extends: [.pre-release-job]
@@ -59,7 +56,6 @@ Release (Tag Pipeline):
   stage: release
   script:
     - echo "Deploying to production"
-  
 # build:
 #   dependencies:
 #     - main
@@ -87,7 +83,6 @@ Release (Tag Pipeline):
 #       --tag $CONTAINER_TEST_IMAGE
 #       .
 #     - docker push $CONTAINER_TEST_IMAGE
-
 
 # TODO: Add build for release
 # TODO: Add release image only for master
