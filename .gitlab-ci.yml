@@ -38,7 +38,7 @@ stages:
     refs:
       - master
     variables:
-      - $CI_COMMIT_MESSAGE =~ $RELEASE_COMMIT_PATTERN
+      - $CI_COMMIT_MESSAGE !~ $RELEASE_COMMIT_PATTERN
   artifacts:
     paths:
       - CHANGELOG.md
