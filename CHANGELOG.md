@@ -1,3 +1,10 @@
+## [1.1.3](https://gitlab.com/inker-studio/inker-back/compare/v1.1.2...v1.1.3) (2022-11-05)
+
+
+### Bug Fixes
+
+* **ci:** fix rule for start hotfix pipelines ([6935641](https://gitlab.com/inker-studio/inker-back/commit/69356418afbd9196fad480e0480eae0a041d13e8))
+
 ## [1.1.2](https://gitlab.com/inker-studio/inker-back/compare/v1.1.1...v1.1.2) (2022-11-05)
 
 
