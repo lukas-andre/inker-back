@@ -35,7 +35,6 @@ Deploy Tag:
     variables:
       - $CI_COMMIT_MESSAGE =~ /chore(release).*/ && $CI_COMMIT_TAG 
   script:
-    - echo env | grep CI
     - echo "Deploying to production"
     
 Test MR:
@@ -44,7 +43,6 @@ Test MR:
     - merge_requests
   image: node:16.14.2-alpine
   script:
-    - echo env | grep CI
     - echo "Hello World"
 
 Release:
@@ -56,7 +54,6 @@ Release:
     variables:
       - $CI_COMMIT_MESSAGE !~ /chore(release).*/
   before_script:
-    - echo env | grep CI
     - apk add --no-cache git
     - touch CHANGELOG.md
     - npm install @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/changelog
