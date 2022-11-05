@@ -41,7 +41,7 @@ Deploy Tag:
 Test MR:
   stage: test
   only:
-    - mr
+    - merge_requests
   image: node:16.14.2-alpine
   script:
     - echo env | grep CI
