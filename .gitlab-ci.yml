@@ -19,7 +19,7 @@ stages:
   - package
   - release
 
-
+# ############################### CI Setup ###############################
 Install Dependencies:
   stage: setup
   extends: [.node-job]
@@ -32,10 +32,9 @@ Install Dependencies:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
-      # changes:
-      #   - package.json
-      #   - package-lock.json
-
+      changes:
+        - package.json
+        - package-lock.json
 
 Lint, Test & Build:
   stage: main
@@ -46,19 +45,18 @@ Lint, Test & Build:
     - apk add --no-cache git
     - !reference [.node-job, before_script]
   script:
-    - npx prettier --check src/**/*.ts
-    - npx eslint src/**/*.ts
+    - npm run prettier
+    - npm run lint
     - npm run build
   artifacts:
     paths:
       - dist/
 
-Release:
-  extends: [.release-job]
-  stage: release
-  script:
-    - echo "Deploying to production"
-  
+# ############################### Review Apps ###############################
+# TODO: Add review apps job
+
+
+# ############################### Package Setup ###############################
 Setup Package:
   extends: [.pre-release-job]
   stage: package
@@ -67,6 +65,15 @@ Setup Package:
     - npm install @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/changelog
   script:
     - npx semantic-release
+
+# ############################### CD Setup ###############################
+Release:
+  extends: [.release-job]
+  stage: release
+  script:
+    - echo "Deploying to production"
+  
+
 
 # build:
 #   dependencies:
