@@ -1,3 +1,10 @@
+## [1.0.8](https://gitlab.com/inker-studio/inker-back/compare/v1.0.7...v1.0.8) (2022-11-05)
+
+
+### Bug Fixes
+
+* **ci:** update release commit pattern ([49444b1](https://gitlab.com/inker-studio/inker-back/commit/49444b150b8bcfe083368ec18c4200f069008a68))
+
 ## [1.0.7](https://gitlab.com/inker-studio/inker-back/compare/v1.0.6...v1.0.7) (2022-11-05)
 
 
