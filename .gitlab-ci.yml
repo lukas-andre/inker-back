@@ -23,23 +23,49 @@
 
 stages:
     # - build
+    - test
     - release
+    - deploy
+
+deploy:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /chore(release).*/
+  script:
+    - echo env | grep CI
+    - echo "Deploying to production"
+  only:
+    - tags
+    
+test:
+  stage: test
+  only:
+    - mr
+  image: node:16.14.2-alpine
+  script:
+    - echo env | grep CI
+    - echo "Hello World"
 
 publish:
   image: node:16.14.2-alpine
   stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_MESSAGE !~ /chore(release).*/
   only:
     - master
     - /^v\d+\.\d+\.\d+(-.*)?$/
     - /^alpha\/.*$/
-  script:
+  before_script:
+    - echo env | grep CI
     - apk add --no-cache git
     - touch CHANGELOG.md
     - npm install @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/changelog
+  script:
     - npx semantic-release
   artifacts:
     paths:
-      - CHANGELOG.md    
+      - CHANGELOG.md   
+
 
 # install-dependencies:
 #   stage: setup
