@@ -27,17 +27,18 @@ stages:
     - release
     - deploy
 
-deploy:
+Deploy Tag:
   stage: deploy
-  rules:
-    - if: $CI_COMMIT_MESSAGE =~ /chore(release).*/
+  only:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /chore(release).*/ && $CI_COMMIT_TAG 
   script:
     - echo env | grep CI
     - echo "Deploying to production"
-  only:
-    - tags
     
-test:
+Test MR:
   stage: test
   only:
     - mr
@@ -46,15 +47,14 @@ test:
     - echo env | grep CI
     - echo "Hello World"
 
-publish:
+Release:
   image: node:16.14.2-alpine
   stage: release
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_MESSAGE !~ /chore(release).*/
   only:
-    - master
-    - /^v\d+\.\d+\.\d+(-.*)?$/
-    - /^alpha\/.*$/
+    refs:
+      - master
+    variables:
+      - $CI_COMMIT_MESSAGE !~ /chore(release).*/
   before_script:
     - echo env | grep CI
     - apk add --no-cache git
