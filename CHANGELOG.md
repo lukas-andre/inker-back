@@ -1,3 +1,10 @@
+## [1.1.6](https://gitlab.com/inker-studio/inker-back/compare/v1.1.5...v1.1.6) (2022-11-06)
+
+
+### Bug Fixes
+
+* **ci:** test changes in packages.json ([ac78abb](https://gitlab.com/inker-studio/inker-back/commit/ac78abbb8b04ca80805c8dbeb01a9933be7902a0))
+
 ## [1.1.5](https://gitlab.com/inker-studio/inker-back/compare/v1.1.4...v1.1.5) (2022-11-05)
 
 
