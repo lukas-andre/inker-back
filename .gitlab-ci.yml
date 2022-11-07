@@ -30,7 +30,7 @@ Lint, Test & Build (Merge Pipeline):
   extends: [.verify-job]
   only: !reference [.mr-job, only]
 
-# TODO: Add review  apps job for Merge Pipeline
+# TODO: Add review  apps job for Merge Pipeline test
 
 Install Dependencies (Hotfix Pipeline):
   stage: setup
