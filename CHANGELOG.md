@@ -1,3 +1,10 @@
+## [1.1.7](https://gitlab.com/inker-studio/inker-back/compare/v1.1.6...v1.1.7) (2022-11-07)
+
+
+### Bug Fixes
+
+* **test-ci:** test ci for demostration ([343e1a5](https://gitlab.com/inker-studio/inker-back/commit/343e1a502170da153fe19a385281501050abf170))
+
 ## [1.1.6](https://gitlab.com/inker-studio/inker-back/compare/v1.1.5...v1.1.6) (2022-11-06)
 
 
