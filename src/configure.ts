@@ -15,7 +15,7 @@ const configureOAS = async (app: NestFastifyApplication) => {
   const oasConf: ConfigType<typeof oasConfig> = app.get(oasConfig.KEY);
   if (oasConf.enabled) {
     const config = new DocumentBuilder()
-      .setTitle('Inker Backend Service')
+      .setTitle('Inker Backend API')
       .setDescription('Backend manager for Inker')
       .setVersion('0.1')
       .addBearerAuth(
