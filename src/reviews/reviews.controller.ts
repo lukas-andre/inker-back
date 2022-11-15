@@ -6,7 +6,7 @@ import {
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { AgendaEventIdPipe } from '../agenda/infrastructure/pipes/agendaEventId.pipe';
 import { ArtistIdPipe } from '../artists/infrastructure/pipes/artistId.pipe';
@@ -16,12 +16,14 @@ import { ArtistIdPipe } from '../artists/infrastructure/pipes/artistId.pipe';
 export class RatingsController {
   private readonly logger = new Logger(RatingsController.name);
 
+  @ApiOperation({ summary: 'Find all reviews' })
   @ApiParam({ name: 'artistId', type: 'number' })
   @Get(':artistId')
   async findAll(@Param('artistId', ParseIntPipe) params: number) {
     return params;
   }
 
+  @ApiOperation({ summary: 'Create a new review for an artist' })
   @ApiParam({ name: 'artistId', type: 'number' })
   @ApiParam({ name: 'eventId', type: 'number' })
   @Post(':artistId/events/:eventId')
