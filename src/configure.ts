@@ -24,7 +24,7 @@ const configureOAS = async (app: NestFastifyApplication) => {
       )
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    fs.writeFileSync('./docs/oas.json', stringify(document));
+    fs.writeFileSync('./postman/schemas/oas.json', stringify(document));
     SwaggerModule.setup(oasConf.path, app, document);
 
     Logger.log(
