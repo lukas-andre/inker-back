@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { AgendaModule } from '../agenda/agenda.module';
+import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
 import { FollowsModule } from '../follows/follows.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
 
@@ -14,7 +14,12 @@ import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfil
 import { UpdateArtistStudioPhotoUseCase } from './usecases/updateArtistStudioPhoto.usecase';
 
 @Module({
-  imports: [ArtistsDbModule, MultimediasModule, FollowsModule, AgendaModule],
+  imports: [
+    ArtistsDbModule,
+    AgendaProviderModule,
+    MultimediasModule,
+    FollowsModule,
+  ],
   providers: [
     ArtistsHandler,
     CreateArtistUseCase,

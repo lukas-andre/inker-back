@@ -9,14 +9,19 @@ import {
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
-import { UsersService } from '../../domain/services/users.service';
+import {
+  ARTIST_ID_PIPE_FAILED,
+  ARTIST_INVALID_ID_TYPE,
+  ARTIST_NOT_ACCEPTED,
+} from '../../domain/errors/codes';
+import { ArtistsDbService } from '../database/services/artistsDb.service';
 
 @Injectable()
-export class UserIdPipe
+export class ArtistIdPipe
   implements PipeTransform<string, Promise<string | number>>
 {
-  private readonly logger = new Logger(UserIdPipe.name);
-  constructor(private readonly usersService: UsersService) {}
+  private readonly logger = new Logger(ArtistIdPipe.name);
+  constructor(private readonly artistsDbService: ArtistsDbService) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || !this.toValidate(metatype)) {
@@ -28,21 +33,21 @@ export class UserIdPipe
     const errors = await validate(object);
     if (errors.length > 0) {
       this.logger.log({ errors });
-      throw new BadRequestException('Validation failed');
+      throw new BadRequestException(ARTIST_ID_PIPE_FAILED);
     }
 
-    const userId = parseInt(value);
-    if (!(await this.usersService.existsAndIsValid(userId))) {
-      throw new NotAcceptableException('User not accepted ');
+    const id = parseInt(value);
+    if (!(await this.artistsDbService.exists(id))) {
+      throw new NotAcceptableException(ARTIST_NOT_ACCEPTED);
     }
 
-    return userId;
+    return id;
   }
 
   parseInt(val: string) {
     const value = parseInt(val, 10);
     if (isNaN(value)) {
-      throw new BadRequestException('Validation failed');
+      throw new BadRequestException(ARTIST_INVALID_ID_TYPE);
     }
     return value;
   }

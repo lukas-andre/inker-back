@@ -1,8 +1,11 @@
+import fs from 'fs';
+
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { HttpAdapterHost } from '@nestjs/core';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import stringify from 'fast-safe-stringify';
 
 import { oasConfig } from './config/oas.config';
 import { corsOptions, validationPipeOptions } from './constants';
@@ -21,6 +24,7 @@ const configureOAS = async (app: NestFastifyApplication) => {
       )
       .build();
     const document = SwaggerModule.createDocument(app, config);
+    fs.writeFileSync('./oas.json', stringify(document));
     SwaggerModule.setup(oasConf.path, app, document);
 
     Logger.log(

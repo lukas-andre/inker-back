@@ -9,17 +9,18 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { AgendaService } from '../domain/agenda.service';
-import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaViewType } from '../domain/enum/agendaViewType.enum';
 import { ListEventByViewTypeQueryDto } from '../infrastructure/dtos/listEventByViewTypeQuery.dto';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
+import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
+import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+
 @Injectable()
 export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly agendaService: AgendaService,
-    private readonly agendaEventService: AgendaEventService,
+    private readonly agendaProvider: AgendaProvider,
+    private readonly agendaEventProvider: AgendaEventProvider,
   ) {
     super(ListEventByViewTypeUseCase.name);
   }
@@ -30,7 +31,7 @@ export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
   ): Promise<AgendaEvent[]> {
     let result: AgendaEvent[];
 
-    const existsAgenda = await this.agendaService.findById(agendaId);
+    const existsAgenda = await this.agendaProvider.findById(agendaId);
 
     if (!existsAgenda) {
       throw new DomainNotFound('Agenda not found');
@@ -66,7 +67,7 @@ export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
     const startOfDay = date + ' 00:00:00';
     const endOfDay = date + ' 23:59:59';
 
-    const result = await this.agendaEventService.findByDateRange(
+    const result = await this.agendaEventProvider.findByDateRange(
       agenda.id,
       startOfDay,
       endOfDay,
@@ -91,7 +92,7 @@ export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
       'yyyy-MM-dd hh:mm:ss',
     );
 
-    const result = await this.agendaEventService.findByDateRange(
+    const result = await this.agendaEventProvider.findByDateRange(
       agenda.id,
       stringStartOfAgendaWeek,
       stringEndOfAgendaWeek,

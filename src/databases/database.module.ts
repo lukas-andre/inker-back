@@ -92,6 +92,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       },
       inject: [ConfigService],
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: 'review-db',
+      useFactory: (configService: ConfigService) => {
+        return configService.get('reviewDb');
+      },
+      inject: [ConfigService],
+    }),
   ],
 })
 export class DatabasesModule {}

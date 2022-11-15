@@ -1,6 +1,7 @@
 import { registerAs } from '@nestjs/config';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 
-import { createDatabaseConnection, TypeOrmConfig } from './config';
+import { createDatabaseConnection } from './config';
 
 export const AGENDA_DB_CONNECTION_NAME = 'agenda-db';
 export const AGENDA_DB_CONFIG_NAME = 'agendaDb';
@@ -8,7 +9,7 @@ export const AGENDA_DB_CONFIG_NAME = 'agendaDb';
 const AGENDA_DB_NAME = 'inker-agenda';
 const AGENDA_ENTITIES = [__dirname + '/../../agenda/**/*.entity{.ts,.js}'];
 
-export type AgendaDbConfig = TypeOrmConfig;
+export type AgendaDbConfig = TypeOrmModuleOptions;
 
 export const agendaDatabaseConf = registerAs<AgendaDbConfig>(
   AGENDA_DB_CONFIG_NAME,

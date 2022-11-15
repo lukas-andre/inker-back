@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 
 import {
   DomainBadRequest,
@@ -47,7 +47,7 @@ export class UpdateArtistStudioPhotoUseCase
 
     this.logger.log(`id:  ${id}`);
     console.time('existArtist');
-    const artist = await this.artistsDbService.existArtist(id);
+    const artist = await this.artistsDbService.exists(id);
     console.timeEnd('existArtist');
 
     if (!artist) {
