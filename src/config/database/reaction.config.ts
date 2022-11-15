@@ -1,6 +1,7 @@
 import { registerAs } from '@nestjs/config';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 
-import { createDatabaseConnection, TypeOrmConfig } from './config';
+import { createDatabaseConnection } from './config';
 
 export const REACTION_DB_CONNECTION_NAME = 'reaction-db';
 export const REACTION_DB_CONFIG_NAME = 'reactionDb';
@@ -8,7 +9,7 @@ export const REACTION_DB_CONFIG_NAME = 'reactionDb';
 const REACTION_DB_NAME = 'inker-reaction';
 const REACTION_ENTITIES = [__dirname + '/../../reactions/**/*.entity{.ts,.js}'];
 
-export type ReactionDbConfig = TypeOrmConfig;
+export type ReactionDbConfig = TypeOrmModuleOptions;
 
 export const reactionDatabaseConf = registerAs<ReactionDbConfig>(
   REACTION_DB_CONFIG_NAME,

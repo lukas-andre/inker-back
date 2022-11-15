@@ -1,0 +1,15 @@
+import { Module } from '@nestjs/common';
+
+import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
+import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+
+import { ReviewProviderModule } from './database/reviewProvider.module';
+import { RatingsController } from './reviews.controller';
+import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
+
+@Module({
+  imports: [ReviewProviderModule, ArtistsDbModule, AgendaProviderModule],
+  controllers: [RatingsController],
+  providers: [RatingArtistUsecase],
+})
+export class ReviewsModule {}

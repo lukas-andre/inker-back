@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import stringify from 'fast-safe-stringify';
 
-import { AgendaService } from '../../../agenda/domain/agenda.service';
 import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
+import { AgendaProvider } from '../../../agenda/infrastructure/providers/agenda.provider';
 import { ArtistsDbService } from '../../../artists/infrastructure/database/services/artistsDb.service';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
@@ -41,7 +41,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     private readonly artistsDbService: ArtistsDbService,
     private readonly customerService: CustomersService,
     private readonly rolesService: RolesService,
-    private readonly agendaService: AgendaService,
+    private readonly agendaProvider: AgendaProvider,
     private readonly artistLocationsDbService: ArtistLocationsDbService,
     private readonly configService: ConfigService,
   ) {
@@ -112,7 +112,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
 
     let agenda: Agenda;
     try {
-      agenda = await this.agendaService.createWithArtistInfo(
+      agenda = await this.agendaProvider.createWithArtistInfo(
         createArtistParams,
       );
     } catch (error) {
@@ -131,7 +131,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       if (error instanceof DbServiceException) {
         await Promise.all([
           await this.artistsDbService.delete(artist.id),
-          await this.agendaService.delete(agenda.id),
+          await this.agendaProvider.delete(agenda.id),
         ]);
         throw new DomainUnProcessableEntity(error.publicError);
       }

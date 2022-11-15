@@ -9,22 +9,33 @@ import {
   Repository,
 } from 'typeorm';
 
-import { BaseComponent } from '../../global/domain/components/base.component';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
   DBServiceCreateException,
   DbServiceNotFound,
   DBServiceSaveException,
-} from '../../global/infrastructure/exceptions/dbService.exception';
-import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
-import { Agenda } from '../infrastructure/entities/agenda.entity';
-import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
+} from '../../../global/infrastructure/exceptions/dbService.exception';
+import { AddEventReqDto } from '../dtos/addEventReq.dto';
+import { Agenda } from '../entities/agenda.entity';
+import { AgendaEvent } from '../entities/agendaEvent.entity';
+
 @Injectable()
-export class AgendaEventService extends BaseComponent {
+export class AgendaEventProvider extends BaseComponent {
   constructor(
     @InjectRepository(AgendaEvent, 'agenda-db')
     private readonly agendaEventRepository: Repository<AgendaEvent>,
   ) {
-    super(AgendaEventService.name);
+    super(AgendaEventProvider.name);
+  }
+
+  async exists(id: number): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.agendaEventRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM agenda_event a WHERE a.id = $1)`,
+      [id],
+    );
+
+    return result.pop().exists;
   }
 
   async findById(id: number) {

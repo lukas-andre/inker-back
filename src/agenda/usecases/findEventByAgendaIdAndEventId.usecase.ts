@@ -8,9 +8,9 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { AgendaService } from '../domain/agenda.service';
-import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
+import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
+import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
 
 @Injectable()
 export class FindEventByAgendaIdAndEventIdUseCase
@@ -18,8 +18,8 @@ export class FindEventByAgendaIdAndEventIdUseCase
   implements UseCase
 {
   constructor(
-    private readonly agendaService: AgendaService,
-    private readonly agendaEventService: AgendaEventService,
+    private readonly agendaProvider: AgendaProvider,
+    private readonly agendaEventProvider: AgendaEventProvider,
   ) {
     super(FindEventByAgendaIdAndEventIdUseCase.name);
   }
@@ -29,7 +29,7 @@ export class FindEventByAgendaIdAndEventIdUseCase
     eventId: number,
   ): Promise<AgendaEvent | DomainException> {
     console.time('agendaService.findById');
-    const existsAgenda = await this.agendaService.findById(agendaId);
+    const existsAgenda = await this.agendaProvider.findById(agendaId);
     console.timeEnd('agendaService.findById');
 
     if (!existsAgenda) {
@@ -37,7 +37,7 @@ export class FindEventByAgendaIdAndEventIdUseCase
     }
 
     console.time('agendaEventService.findOne');
-    const result = await this.agendaEventService.findOne({
+    const result = await this.agendaEventProvider.findOne({
       where: {
         id: eventId,
         agenda: {

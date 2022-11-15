@@ -16,23 +16,25 @@ import { LocationsModule } from './locations/locations.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { PostsModule } from './posts/posts.module';
 import { ReactionsModule } from './reactions/reactions.module';
+import { ReviewsModule } from './reviews/reviews.module';
 import { TagsModule } from './tags/tags.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    GlobalModule,
-    DatabasesModule,
     AgendaModule,
     ArtistsModule,
     AuthModule,
     CustomersModule,
+    DatabasesModule,
     FollowsModule,
     GenresModule,
+    GlobalModule,
     HealthModule,
     LocationsModule,
     MultimediasModule,
     PostsModule,
+    ReviewsModule,
     ReactionsModule,
     TagsModule,
     UsersModule,
