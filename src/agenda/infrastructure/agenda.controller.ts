@@ -23,6 +23,8 @@ import { AgendaHandler } from './agenda.handler';
 import { AddEventReqDto } from './dtos/addEventReq.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
+import { AgendaEventIdPipe } from './pipes/agendaEventId.pipe';
+import { AgendaIdPipe } from './pipes/agendaId.pipe';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -96,6 +98,24 @@ export class AgendaController {
     @Param('eventId', ParseIntPipe) eventId: number,
   ): Promise<any> {
     return this.agendaHandler.handleGetEventByEventId(agendaId, eventId);
+  }
+
+  @ApiOperation({ summary: 'Mark event as done' })
+  @HttpCode(200)
+  @ApiOkResponse({
+    description: 'Event marked as done successful.',
+    type: undefined,
+  })
+  @ApiConflictResponse({ description: 'Trouble marking event as done.' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number })
+  @ApiParam({ name: 'eventId', required: true, type: Number })
+  @Put(':agendaId/event/:eventId/done')
+  async markEventAsDone(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('eventId', AgendaEventIdPipe) eventId: number,
+  ): Promise<any> {
+    return agendaId;
+    // return this.agendaHandler.handleMarkEventAsDone(agendaId, eventId);
   }
 
   // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,

@@ -16,7 +16,7 @@ import { ArtistIdPipe } from '../artists/infrastructure/pipes/artistId.pipe';
 export class RatingsController {
   private readonly logger = new Logger(RatingsController.name);
 
-  @ApiOperation({ summary: 'Find all reviews' })
+  @ApiOperation({ summary: 'Find all reviews for an artist' })
   @ApiParam({ name: 'artistId', type: 'number' })
   @Get(':artistId')
   async findAll(@Param('artistId', ParseIntPipe) params: number) {
