@@ -10,18 +10,18 @@ import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
 import {
-  AGENDA_EVENT_ID_PIPE_FAILED,
-  AGENDA_EVENT_INVALID_ID_TYPE,
-  AGENDA_EVENT_NOT_ACCEPTED,
+  AGENDA_ID_PIPE_FAILED,
+  AGENDA_INVALID_ID_TYPE,
+  AGENDA_NOT_ACCEPTED,
 } from '../../domain/errors/codes';
 import { AgendaEventProvider } from '../providers/agendaEvent.provider';
 
 @Injectable()
-export class AgendaEventIdPipe
+export class AgendaIdPipe
   implements PipeTransform<string, Promise<string | number>>
 {
-  private readonly logger = new Logger(AgendaEventIdPipe.name);
-  constructor(private readonly agendaEventProvider: AgendaEventProvider) {}
+  private readonly logger = new Logger(AgendaIdPipe.name);
+  constructor(private readonly agendaProvider: AgendaEventProvider) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || !this.toValidate(metatype)) {
@@ -33,12 +33,12 @@ export class AgendaEventIdPipe
     const errors = await validate(object);
     if (errors.length > 0) {
       this.logger.log({ errors });
-      throw new BadRequestException(AGENDA_EVENT_ID_PIPE_FAILED);
+      throw new BadRequestException(AGENDA_ID_PIPE_FAILED);
     }
 
     const id = parseInt(value);
-    if (!(await this.agendaEventProvider.exists(id))) {
-      throw new NotAcceptableException(AGENDA_EVENT_NOT_ACCEPTED);
+    if (!(await this.agendaProvider.exists(id))) {
+      throw new NotAcceptableException(AGENDA_NOT_ACCEPTED);
     }
 
     return id;
@@ -47,7 +47,7 @@ export class AgendaEventIdPipe
   parseInt(val: string) {
     const value = parseInt(val, 10);
     if (isNaN(value)) {
-      throw new BadRequestException(AGENDA_EVENT_INVALID_ID_TYPE);
+      throw new BadRequestException(AGENDA_INVALID_ID_TYPE);
     }
     return value;
   }
