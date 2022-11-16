@@ -9,10 +9,6 @@ export interface ReviewReactionsDetail {
 
 @Entity()
 export class Review extends BaseEntity {
-  @Column({ type: 'int', nullable: false, name: 'user_id' })
-  @Index()
-  userId: number;
-
   @Column({ type: 'int', nullable: false, name: 'artist_id' })
   @Index()
   artistId: number;
@@ -21,13 +17,13 @@ export class Review extends BaseEntity {
   @Index()
   eventId: number;
 
-  @Column({ type: 'int', nullable: false, name: 'value' })
+  @Column({ type: 'int', nullable: true, name: 'value' })
   value: number;
 
   @Column({
     type: 'varchar',
     length: 30,
-    nullable: false,
+    nullable: true,
     name: 'header',
   })
   header: string;

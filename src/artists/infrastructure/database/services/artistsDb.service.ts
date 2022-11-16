@@ -33,6 +33,10 @@ export class ArtistsDbService extends BaseComponent {
     super(ArtistsDbService.name);
   }
 
+  repo() {
+    return this.artistsRepository;
+  }
+
   async create(dto: CreateArtistParams): Promise<Artist> {
     const exists = await this.existArtistByUserId(dto.userId);
 
