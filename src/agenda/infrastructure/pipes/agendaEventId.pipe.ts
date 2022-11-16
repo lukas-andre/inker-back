@@ -3,7 +3,7 @@ import {
   BadRequestException,
   Injectable,
   Logger,
-  NotAcceptableException,
+  NotFoundException,
   PipeTransform,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
@@ -12,7 +12,7 @@ import { validate } from 'class-validator';
 import {
   AGENDA_EVENT_ID_PIPE_FAILED,
   AGENDA_EVENT_INVALID_ID_TYPE,
-  AGENDA_EVENT_NOT_ACCEPTED,
+  AGENDA_EVENT_NOT_EXISTS,
 } from '../../domain/errors/codes';
 import { AgendaEventProvider } from '../providers/agendaEvent.provider';
 
@@ -38,7 +38,7 @@ export class AgendaEventIdPipe
 
     const id = parseInt(value);
     if (!(await this.agendaEventProvider.exists(id))) {
-      throw new NotAcceptableException(AGENDA_EVENT_NOT_ACCEPTED);
+      throw new NotFoundException(AGENDA_EVENT_NOT_EXISTS);
     }
 
     return id;
@@ -53,7 +53,7 @@ export class AgendaEventIdPipe
   }
 
   private toValidate(metatype: Function): boolean {
-    const types: Function[] = [String, Boolean, Number, Array, Object];
+    const types: Function[] = [String, Boolean, Array, Object];
     return !types.includes(metatype);
   }
 }

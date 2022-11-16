@@ -6,6 +6,7 @@ import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
 import { FindEventByAgendaIdAndEventIdUseCase } from '../usecases/findEventByAgendaIdAndEventId.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
+import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
 import { AddEventReqDto } from './dtos/addEventReq.dto';
@@ -20,6 +21,7 @@ export class AgendaHandler extends BaseHandler {
     private readonly cancelEventUseCase: CancelEventUseCase,
     private readonly listEventByViewTypeUseCase: ListEventByViewTypeUseCase,
     private readonly findEventByAgendaIdAndEventIdUseCase: FindEventByAgendaIdAndEventIdUseCase,
+    private readonly markEventAsDoneUseCase: MarkEventAsDoneUseCase,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);
@@ -49,5 +51,9 @@ export class AgendaHandler extends BaseHandler {
     eventId: number,
   ): Promise<any> {
     return this.findEventByAgendaIdAndEventIdUseCase.execute(agendaId, eventId);
+  }
+
+  async handleMarkEventAsDone(eventId: number, agendaId: number): Promise<any> {
+    return this.markEventAsDoneUseCase.execute(eventId, agendaId);
   }
 }

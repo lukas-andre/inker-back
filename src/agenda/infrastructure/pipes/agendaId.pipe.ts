@@ -12,16 +12,16 @@ import { validate } from 'class-validator';
 import {
   AGENDA_ID_PIPE_FAILED,
   AGENDA_INVALID_ID_TYPE,
-  AGENDA_NOT_ACCEPTED,
+  AGENDA_NOT_EXISTS,
 } from '../../domain/errors/codes';
-import { AgendaEventProvider } from '../providers/agendaEvent.provider';
+import { AgendaProvider } from '../providers/agenda.provider';
 
 @Injectable()
 export class AgendaIdPipe
   implements PipeTransform<string, Promise<string | number>>
 {
   private readonly logger = new Logger(AgendaIdPipe.name);
-  constructor(private readonly agendaProvider: AgendaEventProvider) {}
+  constructor(private readonly agendaProvider: AgendaProvider) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || !this.toValidate(metatype)) {
@@ -38,7 +38,7 @@ export class AgendaIdPipe
 
     const id = parseInt(value);
     if (!(await this.agendaProvider.exists(id))) {
-      throw new NotAcceptableException(AGENDA_NOT_ACCEPTED);
+      throw new NotAcceptableException(AGENDA_NOT_EXISTS);
     }
 
     return id;
@@ -53,7 +53,7 @@ export class AgendaIdPipe
   }
 
   private toValidate(metatype: Function): boolean {
-    const types: Function[] = [String, Boolean, Number, Array, Object];
+    const types: Function[] = [String, Boolean, Array, Object];
     return !types.includes(metatype);
   }
 }

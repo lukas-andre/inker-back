@@ -5,11 +5,12 @@ import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.mod
 
 import { ReviewProviderModule } from './database/reviewProvider.module';
 import { RatingsController } from './reviews.controller';
+import { ReviewHandler } from './reviews.handler';
 import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
 
 @Module({
   imports: [ReviewProviderModule, ArtistsDbModule, AgendaProviderModule],
   controllers: [RatingsController],
-  providers: [RatingArtistUsecase],
+  providers: [ReviewHandler, RatingArtistUsecase],
 })
 export class ReviewsModule {}
