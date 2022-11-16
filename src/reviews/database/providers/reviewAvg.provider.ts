@@ -3,16 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../../config/database/review.config';
-import { Review } from '../entities/review.entity';
+import { ReviewAvg } from '../entities/reviewAvg.entity';
 
 @Injectable()
-export class ReviewProvider {
+export class ReviewAvgProvider {
   constructor(
-    @InjectRepository(Review, REVIEW_DB_CONNECTION_NAME)
-    private readonly repository: Repository<Review>,
+    @InjectRepository(ReviewAvg, REVIEW_DB_CONNECTION_NAME)
+    private readonly repository: Repository<ReviewAvg>,
   ) {}
 
-  repo(): Repository<Review> {
+  repo(): Repository<ReviewAvg> {
     return this.repository;
   }
 

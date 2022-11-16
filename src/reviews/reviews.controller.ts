@@ -11,6 +11,7 @@ import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { AgendaEventIdPipe } from '../agenda/infrastructure/pipes/agendaEventId.pipe';
 import { ArtistIdPipe } from '../artists/infrastructure/pipes/artistId.pipe';
+import { UserIdPipe } from '../users/infrastructure/pipes/userId.pipe';
 
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { ReviewHandler } from './reviews.handler';
@@ -19,7 +20,7 @@ import { ReviewHandler } from './reviews.handler';
 @Controller('reviews')
 export class RatingsController {
   private readonly logger = new Logger(RatingsController.name);
-  constructor(private readonly reviewHandler: ReviewHandler) {}
+  constructor(private readonly handler: ReviewHandler) {}
 
   @ApiOperation({ summary: 'Find all reviews for an artist' })
   @ApiParam({ name: 'artistId', type: 'number' })
@@ -29,16 +30,17 @@ export class RatingsController {
   }
 
   @ApiOperation({ summary: 'Create a new review for an artist' })
-  @ApiParam({ name: 'artistId', type: 'number' })
-  @ApiParam({ name: 'eventId', type: 'number' })
-  @Post(':artistId/events/:eventId')
+  @ApiParam({ name: 'artistId', type: Number, example: 1 })
+  @ApiParam({ name: 'eventId', type: Number, example: 1 })
+  @Post(':artistId/events/:eventId/users/:userId')
   async reviewArtist(
     @Param('eventId', AgendaEventIdPipe) eventId: number,
     @Param('artistId', ArtistIdPipe) artistId: number,
+    @Param('userId', UserIdPipe) userId: number,
     @Body() body: ReviewArtistRequestDto,
   ) {
     this.logger.log(`artistId: ${artistId} eventId: ${eventId}`);
-    this.logger.log(`body: ${JSON.stringify(body)}`);
-    return artistId;
+    this.logger.log({ body });
+    return this.handler.reviewArtist(eventId, artistId, userId, body);
   }
 }

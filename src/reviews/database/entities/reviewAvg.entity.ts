@@ -49,4 +49,7 @@ export class ReviewAvg extends BaseEntity {
     default: defaultRatingDetail,
   })
   detail: RatingDetail[];
+
+  @Column({ type: 'int', nullable: false, name: 'count', default: 0 })
+  count: number;
 }
