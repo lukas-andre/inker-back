@@ -39,6 +39,5 @@ export class AgendaEvent extends BaseEntity {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
-
   // TODO: HACER RELACION OneToOne A UNA ENTIDAD customer que tenga su informacion basica;
 }

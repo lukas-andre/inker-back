@@ -34,6 +34,10 @@ export class AgendaProvider extends BaseComponent {
     return result.pop().exists;
   }
 
+  repo(): Repository<Agenda> {
+    return this.agendaRepository;
+  }
+
   async findById(id: number) {
     return this.agendaRepository.findOne({ where: { id } });
   }

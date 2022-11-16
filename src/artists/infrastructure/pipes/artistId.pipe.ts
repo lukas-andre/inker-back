@@ -53,7 +53,7 @@ export class ArtistIdPipe
   }
 
   private toValidate(metatype: Function): boolean {
-    const types: Function[] = [String, Boolean, Number, Array, Object];
+    const types: Function[] = [String, Boolean, Array, Object];
     return !types.includes(metatype);
   }
 }

@@ -7,6 +7,7 @@ import { AddEventUseCase } from './usecases/addEvent.usecase';
 import { CancelEventUseCase } from './usecases/cancelEvent.usecase';
 import { FindEventByAgendaIdAndEventIdUseCase } from './usecases/findEventByAgendaIdAndEventId.usecase';
 import { ListEventByViewTypeUseCase } from './usecases/listEventByViewType.usecase';
+import { MarkEventAsDoneUseCase } from './usecases/markEventAsDone.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 
 @Module({
@@ -18,6 +19,7 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     CancelEventUseCase,
     ListEventByViewTypeUseCase,
     FindEventByAgendaIdAndEventIdUseCase,
+    MarkEventAsDoneUseCase,
   ],
   controllers: [AgendaController],
 })
