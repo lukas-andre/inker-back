@@ -9,7 +9,7 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
-import { DefaultResponseHelper } from '../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import {
   AGENDA_EVENT_IS_ALREADY_DONE,
   AGENDA_EVENT_NOT_EXISTS,
@@ -41,6 +41,6 @@ export class MarkEventAsDoneUseCase extends BaseUseCase implements UseCase {
 
     await this.agendaEventProvider.markAsDone(agendaId, eventId);
 
-    return DefaultResponseHelper.ok;
+    return DefaultResponse.ok;
   }
 }

@@ -10,7 +10,7 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { DefaultResponseHelper } from '../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import {
   MultimediasService,
@@ -79,7 +79,7 @@ export class UpdateArtistStudioPhotoUseCase
     console.timeEnd('updateStudioPhoto');
 
     return {
-      ...DefaultResponseHelper.ok,
+      ...DefaultResponse.ok,
       data: { cloudFrontUrl, id },
     } as UpdateStudioPhotoResponseDto;
   }

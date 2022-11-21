@@ -11,7 +11,7 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
-import { DefaultResponseHelper } from '../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
@@ -61,6 +61,6 @@ export class UnfollowUseCase extends BaseUseCase implements UseCase {
       throw exception;
     }
 
-    return DefaultResponseHelper.ok;
+    return DefaultResponse.ok;
   }
 }

@@ -42,6 +42,7 @@ export function isDtoValidationException(
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionsFilter.name);
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
@@ -122,7 +123,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     httpAdapter: AbstractHttpAdapter<any, any, any>,
     ctx: HttpArgumentsHost,
   ) {
-    Logger.log({ exception }, 'UnhandledException');
+    if (exception instanceof Error) {
+      Logger.error(exception.stack, 'UnhandledException');
+    } else {
+      Logger.error(exception, 'UnhandledException');
+    }
 
     const responseBody = {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

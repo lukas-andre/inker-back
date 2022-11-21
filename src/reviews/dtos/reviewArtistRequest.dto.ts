@@ -1,18 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+
+import { RatingRate } from '../database/entities/reviewAvg.entity';
 
 export class ReviewArtistRequestDto {
   @ApiProperty({
     type: Number,
     description: 'The rating of the artist',
-    minimum: 1,
-    maximum: 5,
+    // minimum: 1,
+    // maximum: 5,
     required: true,
-    example: 4,
+    enum: RatingRate,
+    enumName: 'RatingRate',
+    example: RatingRate.FOUR,
   })
-  @IsNumber()
-  @IsPositive()
-  readonly rating: number;
+  // @IsNumber()
+  // @IsPositive()
+  @IsEnum(RatingRate)
+  readonly rating: RatingRate;
 
   @ApiProperty({
     type: String,
@@ -33,14 +38,14 @@ export class ReviewArtistRequestDto {
   @IsString()
   readonly displayName: string;
 
-  @ApiProperty({
-    type: Number,
-    description: 'User ID that made the review',
-    required: true,
-    example: 1,
-  })
-  @IsNumber()
-  readonly createdBy: number;
+  // @ApiProperty({
+  //   type: Number,
+  //   description: 'User ID that made the review',
+  //   required: true,
+  //   example: 1,
+  // })
+  // @IsNumber()
+  // readonly createdBy: number;
 
   @ApiProperty({
     type: String,

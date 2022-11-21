@@ -16,11 +16,11 @@ export class ReviewHandler extends BaseHandler {
   }
 
   async reviewArtist(
-    eventId: number,
     artistId: number,
+    eventId: number,
     userId: number,
     body: ReviewArtistRequestDto,
   ) {
-    return this.ratingArtistUseCase.execute(eventId, artistId, userId, body);
+    return this.ratingArtistUseCase.execute(artistId, eventId, userId, body);
   }
 }
