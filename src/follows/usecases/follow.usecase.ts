@@ -10,7 +10,7 @@ import {
   DomainInternalServerError,
 } from '../../global/domain/exceptions/domain.exception';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
-import { DefaultResponseHelper } from '../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersService } from '../../users/domain/services/users.service';
 import { FollowedsService } from '../domain/services/followeds.service';
@@ -104,6 +104,6 @@ export class FollowUseCase extends BaseComponent {
       throw exception;
     }
 
-    return DefaultResponseHelper.ok;
+    return DefaultResponse.ok;
   }
 }

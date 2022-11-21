@@ -19,15 +19,17 @@ export interface RatingDetail {
   count: number;
 }
 
-export const defaultRatingDetail: RatingDetail[] = [
-  { rate: RatingRate.ONE, count: 0 },
-  { rate: RatingRate.ONE_HALF, count: 0 },
-  { rate: RatingRate.TWO, count: 0 },
-  { rate: RatingRate.TWO_HALF, count: 0 },
-  { rate: RatingRate.THREE, count: 0 },
-  { rate: RatingRate.THREE_HALF, count: 0 },
-  { rate: RatingRate.FOUR, count: 0 },
-];
+export const defaultRatingMap: Record<RatingRate, number> = {
+  [RatingRate.ONE]: 0,
+  [RatingRate.ONE_HALF]: 0,
+  [RatingRate.TWO]: 0,
+  [RatingRate.TWO_HALF]: 0,
+  [RatingRate.THREE]: 0,
+  [RatingRate.THREE_HALF]: 0,
+  [RatingRate.FOUR]: 0,
+  [RatingRate.FOUR_HALF]: 0,
+  [RatingRate.FIVE]: 0,
+};
 
 @Entity()
 export class ReviewAvg extends BaseEntity {
@@ -46,9 +48,9 @@ export class ReviewAvg extends BaseEntity {
     type: 'jsonb',
     nullable: false,
     name: 'detail',
-    default: defaultRatingDetail,
+    default: defaultRatingMap,
   })
-  detail: RatingDetail[];
+  detail: Record<RatingRate, number>;
 
   @Column({ type: 'int', nullable: false, name: 'count', default: 0 })
   count: number;

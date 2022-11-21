@@ -3,6 +3,7 @@ import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum DefaultResponseStatus {
   OK = 'ok',
+  CREATED = 'created',
   FAILURE = 'failure',
   UNKNOWN = 'unknown',
 }

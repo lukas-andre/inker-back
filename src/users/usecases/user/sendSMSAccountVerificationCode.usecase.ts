@@ -8,7 +8,7 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
-import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import {
   MAX_SMS_ATTEMPTS_REACHED,
   USER_ALREADY_VERIFIED,
@@ -92,7 +92,7 @@ export class SendSMSAccountVerificationCodeUseCase
     this.logger.log({ smsMessage });
     this.logger.log({ snsResult });
 
-    return DefaultResponseHelper.ok;
+    return DefaultResponse.ok;
   }
 
   private async generateNewValidationHash(

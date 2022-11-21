@@ -12,7 +12,7 @@ import {
 import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DbServiceConflict } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import {
   NotificationType,
@@ -93,7 +93,7 @@ export class SendSMSForgotPasswordCodeUseCase
     this.logger.log({ smsMessage });
     this.logger.log({ snsResult });
 
-    return DefaultResponseHelper.ok;
+    return DefaultResponse.ok;
   }
 
   private async generateNewValidationHash(

@@ -11,7 +11,7 @@ import {
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
-import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import {
   HASH_NOT_FOUND_FOR_USER_ID,
   INVALID_VERIFICATION_CODE,
@@ -82,6 +82,6 @@ export class ValidateSMSAccountVerificationCodeUseCase
       await this.verificationHashService.delete(userHash.id);
     }
 
-    return DefaultResponseHelper.ok;
+    return DefaultResponse.ok;
   }
 }

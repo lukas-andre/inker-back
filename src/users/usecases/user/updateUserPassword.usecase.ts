@@ -9,7 +9,7 @@ import {
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
-import { DefaultResponseHelper } from '../../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import { UsersService } from '../../domain/services/users.service';
 import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import {
@@ -67,6 +67,6 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
       password: await this.usersService.hashPassword(newPassword),
     });
 
-    return { ...DefaultResponseHelper.ok, data: 'Password updated!' };
+    return { ...DefaultResponse.ok, data: 'Password updated!' };
   }
 }
