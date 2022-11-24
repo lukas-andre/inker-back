@@ -1,8 +1,11 @@
+import fs from 'fs';
+
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { HttpAdapterHost } from '@nestjs/core';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import stringify from 'fast-safe-stringify';
 
 import { oasConfig } from './config/oas.config';
 import { corsOptions, validationPipeOptions } from './constants';
@@ -12,7 +15,7 @@ const configureOAS = async (app: NestFastifyApplication) => {
   const oasConf: ConfigType<typeof oasConfig> = app.get(oasConfig.KEY);
   if (oasConf.enabled) {
     const config = new DocumentBuilder()
-      .setTitle('Inker Backend Service')
+      .setTitle('Inker Backend API')
       .setDescription('Backend manager for Inker')
       .setVersion('0.1')
       .addBearerAuth(
@@ -21,6 +24,7 @@ const configureOAS = async (app: NestFastifyApplication) => {
       )
       .build();
     const document = SwaggerModule.createDocument(app, config);
+    fs.writeFileSync('./postman/schemas/oas.json', stringify(document));
     SwaggerModule.setup(oasConf.path, app, document);
 
     Logger.log(

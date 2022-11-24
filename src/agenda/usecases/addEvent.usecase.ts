@@ -8,22 +8,22 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { AgendaService } from '../domain/agenda.service';
-import { AgendaEventService } from '../domain/agendaEvent.service';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
+import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
+import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
 
 @Injectable()
 export class AddEventUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly agendaService: AgendaService,
-    private readonly agendaEventService: AgendaEventService,
+    private readonly agendaProvider: AgendaProvider,
+    private readonly agendaEventProvider: AgendaEventProvider,
   ) {
     super(AddEventUseCase.name);
   }
 
   async execute(addEventDto: AddEventReqDto): Promise<AgendaEvent> {
-    const existsAgenda = await this.agendaService.findById(
+    const existsAgenda = await this.agendaProvider.findById(
       addEventDto.agendaId,
     );
 
@@ -32,7 +32,7 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
     }
 
     const dateRangeIsInUse =
-      await this.agendaEventService.existEventBetweenStartDateAndEndDate(
+      await this.agendaEventProvider.existEventBetweenStartDateAndEndDate(
         existsAgenda.id,
         addEventDto.start,
         addEventDto.end,
@@ -42,7 +42,7 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule('Already exists event in current date range');
     }
 
-    return await this.agendaEventService.saveWithAddEventDto(
+    return await this.agendaEventProvider.saveWithAddEventDto(
       addEventDto,
       existsAgenda,
     );

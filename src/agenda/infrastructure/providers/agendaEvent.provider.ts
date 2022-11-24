@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Expose } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
 import {
   DeepPartial,
   DeleteResult,
@@ -9,22 +11,54 @@ import {
   Repository,
 } from 'typeorm';
 
-import { BaseComponent } from '../../global/domain/components/base.component';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { TypeTransform } from '../../../global/domain/utils/typeTransform';
 import {
   DBServiceCreateException,
   DbServiceNotFound,
   DBServiceSaveException,
-} from '../../global/infrastructure/exceptions/dbService.exception';
-import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
-import { Agenda } from '../infrastructure/entities/agenda.entity';
-import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
+  DBServiceUpdateException,
+} from '../../../global/infrastructure/exceptions/dbService.exception';
+import { AddEventReqDto } from '../dtos/addEventReq.dto';
+import { Agenda } from '../entities/agenda.entity';
+import { AgendaEvent } from '../entities/agendaEvent.entity';
+class FindAgendaEventForMarkAsDoneQueryResult {
+  @Expose()
+  @IsNumber()
+  @IsNotEmpty()
+  agendaId: number;
+
+  @Expose()
+  @IsNumber()
+  @IsNotEmpty()
+  agendaEventId: string;
+
+  @Expose()
+  @IsBoolean()
+  @IsNotEmpty()
+  done: boolean;
+}
 @Injectable()
-export class AgendaEventService extends BaseComponent {
+export class AgendaEventProvider extends BaseComponent {
   constructor(
     @InjectRepository(AgendaEvent, 'agenda-db')
     private readonly agendaEventRepository: Repository<AgendaEvent>,
   ) {
-    super(AgendaEventService.name);
+    super(AgendaEventProvider.name);
+  }
+
+  repo(): Repository<AgendaEvent> {
+    return this.agendaEventRepository;
+  }
+
+  async exists(id: number): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.agendaEventRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM agenda_event a WHERE a.id = $1)`,
+      [id],
+    );
+
+    return result.pop().exists;
   }
 
   async findById(id: number) {
@@ -152,6 +186,42 @@ export class AgendaEventService extends BaseComponent {
       });
     } catch (error) {
       throw new DBServiceCreateException(this, 'Trouble saving event', error);
+    }
+  }
+
+  async findAgendaEventForMarkAsDone(
+    agendaId: number,
+    eventId: number,
+  ): Promise<FindAgendaEventForMarkAsDoneQueryResult> {
+    const [result]: unknown[] = await this.agendaEventRepository.query(
+      `SELECT id as "agendaEventId", agenda_id as "agendaId", done 
+        FROM agenda_event WHERE agenda_id = $1 AND id = $2`,
+      [agendaId, eventId],
+    );
+
+    const event = await TypeTransform.queryResultTo(
+      FindAgendaEventForMarkAsDoneQueryResult,
+      result,
+    );
+
+    return event;
+  }
+
+  async markAsDone(agendaId: number, eventId: number): Promise<void> {
+    try {
+      await this.agendaEventRepository
+        .createQueryBuilder()
+        .update()
+        .set({ done: true })
+        .where('id = :id', { id: eventId })
+        .andWhere('agenda_id = :agendaId', { agendaId })
+        .execute();
+    } catch (error) {
+      throw new DBServiceUpdateException(
+        this,
+        'Trouble marking event as done',
+        error,
+      );
     }
   }
 }

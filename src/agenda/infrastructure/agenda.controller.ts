@@ -12,17 +12,34 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiNotAcceptableResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 
+import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
+import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
+import {
+  AGENDA_EVENT_ID_PIPE_FAILED,
+  AGENDA_EVENT_INVALID_ID_TYPE,
+  AGENDA_EVENT_IS_ALREADY_DONE,
+  AGENDA_EVENT_NOT_EXISTS,
+  AGENDA_ID_PIPE_FAILED,
+  AGENDA_INVALID_ID_TYPE,
+  AGENDA_NOT_EXISTS,
+} from '../domain/errors/codes';
+
 import { AgendaHandler } from './agenda.handler';
 import { AddEventReqDto } from './dtos/addEventReq.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
+import { AgendaEventIdPipe } from './pipes/agendaEventId.pipe';
+import { AgendaIdPipe } from './pipes/agendaId.pipe';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -96,6 +113,40 @@ export class AgendaController {
     @Param('eventId', ParseIntPipe) eventId: number,
   ): Promise<any> {
     return this.agendaHandler.handleGetEventByEventId(agendaId, eventId);
+  }
+
+  @ApiOperation({ summary: 'Mark event as done' })
+  @HttpCode(200)
+  @ApiOkResponse({
+    description: 'Event marked as done successful.',
+    type: DefaultResponseDto,
+  })
+  @ApiConflictResponse({ description: 'Trouble marking event as done.' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
+  @ApiBadRequestResponse({
+    description: errorCodesToOASDescription([
+      AGENDA_ID_PIPE_FAILED,
+      AGENDA_INVALID_ID_TYPE,
+      AGENDA_EVENT_ID_PIPE_FAILED,
+      AGENDA_EVENT_INVALID_ID_TYPE,
+    ]),
+  })
+  @ApiNotFoundResponse({
+    description: errorCodesToOASDescription([
+      AGENDA_EVENT_NOT_EXISTS,
+      AGENDA_NOT_EXISTS,
+    ]),
+  })
+  @ApiNotAcceptableResponse({
+    description: AGENDA_EVENT_IS_ALREADY_DONE,
+  })
+  @Put(':agendaId/event/:eventId/done')
+  async markEventAsDone(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('eventId', AgendaEventIdPipe) eventId: number,
+  ): Promise<any> {
+    return this.agendaHandler.handleMarkEventAsDone(agendaId, eventId);
   }
 
   // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,

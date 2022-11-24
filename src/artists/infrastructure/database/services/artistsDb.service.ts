@@ -33,6 +33,10 @@ export class ArtistsDbService extends BaseComponent {
     super(ArtistsDbService.name);
   }
 
+  repo() {
+    return this.artistsRepository;
+  }
+
   async create(dto: CreateArtistParams): Promise<Artist> {
     const exists = await this.existArtistByUserId(dto.userId);
 
@@ -66,7 +70,7 @@ export class ArtistsDbService extends BaseComponent {
     }
   }
 
-  async existArtist(artistId: number): Promise<boolean | undefined> {
+  async exists(artistId: number): Promise<boolean | undefined> {
     const result: ExistsQueryResult[] = await this.artistsRepository.query(
       `SELECT EXISTS(SELECT 1 FROM artist a WHERE a.id = $1)`,
       [artistId],
