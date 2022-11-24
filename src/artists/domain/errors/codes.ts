@@ -2,6 +2,7 @@
 export const NOT_VALID_FILE_TO_UPLOAD = 'Not valid file to upload';
 export const ARTIST_NOT_FOUND = 'Artist not found';
 export const ERROR_UPLOADING_FILE = 'Error uploading file';
+export const NOT_VALID_FILE_TYPE_TO_UPLOAD = 'Not valid file type to upload';
 // Db adapter errors
 export const PROBLEMS_UPDATING_STUDIO_PHOTO = 'Problems updating studio photo';
 // Pipe errors
