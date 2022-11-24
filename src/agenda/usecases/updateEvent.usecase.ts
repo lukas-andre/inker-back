@@ -5,16 +5,16 @@ import {
   DomainNotFound,
 } from '../../global/domain/exceptions/domain.exception';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
-import { AgendaService } from '../domain/agenda.service';
-import { AgendaEventService } from '../domain/agendaEvent.service';
 import { UpdateEventReqDto } from '../infrastructure/dtos/updateEventReq.dto';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
+import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
+import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
 
 @Injectable()
 export class UpdateEventUseCase extends BaseUseCase {
   constructor(
-    private readonly agendaService: AgendaService,
-    private readonly agendaEventService: AgendaEventService,
+    private readonly agendaProvider: AgendaProvider,
+    private readonly agendaEventProvider: AgendaEventProvider,
   ) {
     super(UpdateEventUseCase.name);
   }
@@ -23,7 +23,7 @@ export class UpdateEventUseCase extends BaseUseCase {
     updateEventReqDto: UpdateEventReqDto,
     eventId: number,
   ): Promise<AgendaEvent> {
-    const existsAgenda = await this.agendaService.findById(
+    const existsAgenda = await this.agendaProvider.findById(
       updateEventReqDto.agendaId,
     );
 
@@ -31,14 +31,14 @@ export class UpdateEventUseCase extends BaseUseCase {
       throw new DomainNotFound('Agenda not found');
     }
 
-    const event = await this.agendaEventService.findById(eventId);
+    const event = await this.agendaEventProvider.findById(eventId);
 
     if (!event) {
       throw new DomainNotFound('Event not found');
     }
 
     const dateRangeIsInUse =
-      await this.agendaEventService.existEventBetweenStartDateAndEndDate(
+      await this.agendaEventProvider.existEventBetweenStartDateAndEndDate(
         existsAgenda.id,
         updateEventReqDto.start,
         updateEventReqDto.end,
@@ -67,6 +67,6 @@ export class UpdateEventUseCase extends BaseUseCase {
         ? updateEventReqDto.notification
         : event.notification;
 
-    return this.agendaEventService.save(event);
+    return this.agendaEventProvider.save(event);
   }
 }

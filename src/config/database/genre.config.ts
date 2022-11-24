@@ -1,6 +1,7 @@
 import { registerAs } from '@nestjs/config';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 
-import { createDatabaseConnection, TypeOrmConfig } from './config';
+import { createDatabaseConnection } from './config';
 
 export const LOCATION_DB_CONNECTION_NAME = 'genre-db';
 export const GENRE_DB_CONFIG_NAME = 'genreDb';
@@ -8,7 +9,7 @@ export const GENRE_DB_CONFIG_NAME = 'genreDb';
 const LOCATION_DB_NAME = 'inker-genre';
 const LOCATION_ENTITIES = [__dirname + '/../../genres/**/*.entity{.ts,.js}'];
 
-export type GenreDbConfig = TypeOrmConfig;
+export type GenreDbConfig = TypeOrmModuleOptions;
 
 export const genreDatabaseConf = registerAs<GenreDbConfig>(
   GENRE_DB_CONFIG_NAME,

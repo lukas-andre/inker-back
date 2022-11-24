@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 
 import {
   DomainBadRequest,
@@ -10,7 +10,7 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { DefaultResponseHelper } from '../../global/infrastructure/helpers/defaultResponse.helper';
+import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import {
   MultimediasService,
@@ -47,7 +47,7 @@ export class UpdateArtistStudioPhotoUseCase
 
     this.logger.log(`id:  ${id}`);
     console.time('existArtist');
-    const artist = await this.artistsDbService.existArtist(id);
+    const artist = await this.artistsDbService.exists(id);
     console.timeEnd('existArtist');
 
     if (!artist) {
@@ -79,7 +79,7 @@ export class UpdateArtistStudioPhotoUseCase
     console.timeEnd('updateStudioPhoto');
 
     return {
-      ...DefaultResponseHelper.ok,
+      ...DefaultResponse.ok,
       data: { cloudFrontUrl, id },
     } as UpdateStudioPhotoResponseDto;
   }

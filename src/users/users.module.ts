@@ -1,9 +1,8 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AgendaModule } from '../agenda/agenda.module';
-import { ArtistsModule } from '../artists/artists.module';
-import { ArtistsDbModule as ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
+import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
 import { CustomersModule } from '../customers/customers.module';
 import { LocationDbModule } from '../locations/infrastructure/database/locationDb.module';
 import { LocationsModule } from '../locations/locations.module';
@@ -47,8 +46,7 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
       'user-db',
     ),
     CustomersModule,
-    forwardRef(() => ArtistsModule),
-    AgendaModule,
+    AgendaProviderModule,
     LocationsModule,
   ],
   providers: [

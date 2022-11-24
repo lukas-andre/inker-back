@@ -9,19 +9,33 @@ import {
   Repository,
 } from 'typeorm';
 
-import { CreateArtistParams } from '../../artists/usecases/interfaces/createArtist.params';
-import { BaseComponent } from '../../global/domain/components/base.component';
-import { DBServiceSaveException } from '../../global/infrastructure/exceptions/dbService.exception';
-import { PROBLEMS_SAVING_AGENDA_FOR_USER } from '../../users/domain/errors/codes';
-import { Agenda } from '../infrastructure/entities/agenda.entity';
+import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { DBServiceSaveException } from '../../../global/infrastructure/exceptions/dbService.exception';
+import { PROBLEMS_SAVING_AGENDA_FOR_USER } from '../../../users/domain/errors/codes';
+import { Agenda } from '../entities/agenda.entity';
 
 @Injectable()
-export class AgendaService extends BaseComponent {
+export class AgendaProvider extends BaseComponent {
   constructor(
     @InjectRepository(Agenda, 'agenda-db')
     private readonly agendaRepository: Repository<Agenda>,
   ) {
-    super(AgendaService.name);
+    super(AgendaProvider.name);
+  }
+
+  async exists(id: number): Promise<boolean | undefined> {
+    const result: ExistsQueryResult[] = await this.agendaRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM agenda a WHERE a.id = $1)`,
+      [id],
+    );
+
+    return result.pop().exists;
+  }
+
+  repo(): Repository<Agenda> {
+    return this.agendaRepository;
   }
 
   async findById(id: number) {

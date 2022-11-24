@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { AgendaService } from '../../agenda/domain/agenda.service';
 import { Agenda } from '../../agenda/infrastructure/entities/agenda.entity';
+import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
 import {
   BaseUseCase,
   UseCase,
@@ -15,7 +15,7 @@ import { CreateArtistParams } from './interfaces/createArtist.params';
 export class CreateArtistUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly artistsDbService: ArtistsDbService,
-    private readonly agendaService: AgendaService,
+    private readonly agendaProvider: AgendaProvider,
   ) {
     super(CreateArtistUseCase.name);
   }
@@ -30,7 +30,7 @@ export class CreateArtistUseCase extends BaseUseCase implements UseCase {
       workingDays: createArtistDto.agendaWorkingDays,
     };
 
-    await this.agendaService.save(agenda);
+    await this.agendaProvider.save(agenda);
 
     return created;
   }

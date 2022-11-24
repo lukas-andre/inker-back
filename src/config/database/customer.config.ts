@@ -1,6 +1,7 @@
 import { registerAs } from '@nestjs/config';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 
-import { createDatabaseConnection, TypeOrmConfig } from './config';
+import { createDatabaseConnection } from './config';
 
 export const CUSTOMER_DB_CONNECTION_NAME = 'customer-db';
 export const CUSTOMER_DB_CONFIG_NAME = 'customerDb';
@@ -8,7 +9,7 @@ export const CUSTOMER_DB_CONFIG_NAME = 'customerDb';
 const CUSTOMER_DB_NAME = 'inker-customer';
 const CUSTOMER_ENTITIES = [__dirname + '/../../customers/**/*.entity{.ts,.js}'];
 
-export type CustomerDbConfig = TypeOrmConfig;
+export type CustomerDbConfig = TypeOrmModuleOptions;
 
 export const customerDatabaseConf = registerAs<CustomerDbConfig>(
   CUSTOMER_DB_CONFIG_NAME,
