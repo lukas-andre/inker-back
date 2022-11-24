@@ -1,3 +1,19 @@
+# [1.2.0](https://gitlab.com/inker-studio/inker-back/compare/v1.1.7...v1.2.0) (2022-11-24)
+
+
+### Bug Fixes
+
+* **create-review:** add initial logic to create review to an artist ([83b8b9e](https://gitlab.com/inker-studio/inker-back/commit/83b8b9e7a2a9db8ca30744788b405651d05e1727))
+* **oas:** fix oas path ([36a9070](https://gitlab.com/inker-studio/inker-back/commit/36a9070d2ee21b94a2ebe2279c2ec914e57e0d45))
+
+
+### Features
+
+* **reviews:** add detail mapping of ratings and improve current transactions ([301681c](https://gitlab.com/inker-studio/inker-back/commit/301681c2ecf996dc1a571539062cf8af936ffd74))
+* **reviews:** add mark as done and review artist controller ([1ee4d1b](https://gitlab.com/inker-studio/inker-back/commit/1ee4d1b4d059d602eab80c0751da1b00b9833a96))
+* **reviews:** add review controller and components ([65822cd](https://gitlab.com/inker-studio/inker-back/commit/65822cda9448aaf98124d11792562112637c0d4d))
+* **reviews:** ratingArtistUseCase added and tested, it's ok ([f07f6eb](https://gitlab.com/inker-studio/inker-back/commit/f07f6eb7535c55466c9c29dfdda55ba39d144ee9))
+
 ## [1.1.7](https://gitlab.com/inker-studio/inker-back/compare/v1.1.6...v1.1.7) (2022-11-07)
 
 
