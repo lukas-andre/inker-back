@@ -292,7 +292,7 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
       where: {
         createBy: userId,
         artistId: artistId,
-        // eventId: eventId,
+        eventId: eventId,
       },
     });
 
