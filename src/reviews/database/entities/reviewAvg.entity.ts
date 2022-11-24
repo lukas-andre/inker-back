@@ -41,7 +41,7 @@ export class ReviewAvg extends BaseEntity {
   @Index()
   eventId: number;
 
-  @Column({ type: 'double precision', nullable: false })
+  @Column({ type: 'real', nullable: false })
   value: number;
 
   @Column({
