@@ -17,7 +17,7 @@ export class Review extends BaseEntity {
   @Index()
   eventId: number;
 
-  @Column({ type: 'int', nullable: true, name: 'value' })
+  @Column({ type: 'real', nullable: true, name: 'value' })
   value: number;
 
   @Column({
