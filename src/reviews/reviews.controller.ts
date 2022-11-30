@@ -18,8 +18,8 @@ import { ReviewHandler } from './reviews.handler';
 
 @ApiTags('reviews')
 @Controller('reviews')
-export class RatingsController {
-  private readonly logger = new Logger(RatingsController.name);
+export class ReviewsController {
+  private readonly logger = new Logger(ReviewsController.name);
   constructor(private readonly handler: ReviewHandler) {}
 
   @ApiOperation({ summary: 'Find all reviews for an artist' })
@@ -44,4 +44,17 @@ export class RatingsController {
     this.logger.log({ body });
     return this.handler.reviewArtist(artistId, eventId, reviewer, body);
   }
+
+  // @ApiOperation({ summary: 'React to review' })
+  // @ApiParam({ name: 'reviewId', type: Number, example: 1 })
+  // @ApiParam({ name: 'reviewerId', type: Number, example: 1 })
+  // @Post('/reviews/:reviewId/reviewers/:reviewerId')
+  // async reactToReview(
+  //   @Param('reviewId', ReviewIdPipe) reviewId: number,
+  //   @Param('reviewerId', UserIdPipe) reviewer: number,
+  //   @Query('reaction') reaction: ReviewReactionType,
+  // ) {
+  //   this.logger.log(`reviewId: ${reviewId}`, reviewer);
+  //   return this.handler.reactToReview(reviewId, reviewer, reac);
+  // }
 }

@@ -21,9 +21,9 @@ import { ReviewProvider } from '../database/providers/review.provider';
 import { ReviewArtistRequestDto } from '../dtos/reviewArtistRequest.dto';
 
 @Injectable()
-export class RatingArtistUsecase extends BaseUseCase implements UseCase {
+export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
   constructor(private readonly reviewProvider: ReviewProvider) {
-    super(RatingArtistUsecase.name);
+    super(ReactToReviewUsecase.name);
   }
 
   async execute(

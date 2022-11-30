@@ -26,12 +26,12 @@ export class AgendaProvider extends BaseComponent {
   }
 
   async exists(id: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.agendaRepository.query(
+    const [result]: ExistsQueryResult[] = await this.agendaRepository.query(
       `SELECT EXISTS(SELECT 1 FROM agenda a WHERE a.id = $1)`,
       [id],
     );
 
-    return result.pop().exists;
+    return result.exists;
   }
 
   repo(): Repository<Agenda> {

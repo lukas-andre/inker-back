@@ -7,13 +7,13 @@ import {
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../../config/database/review.config';
-import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { Review } from '../entities/review.entity';
+import { ReviewReaction } from '../entities/reviewReaction.entity';
 
 @Injectable()
-export class ReviewProvider {
+export class ReviewReactionProvider {
   constructor(
-    @InjectRepository(Review, REVIEW_DB_CONNECTION_NAME)
+    @InjectRepository(ReviewReaction, REVIEW_DB_CONNECTION_NAME)
     private readonly repository: Repository<Review>,
     @InjectDataSource(REVIEW_DB_CONNECTION_NAME)
     private readonly dataSource: DataSource,
@@ -31,18 +31,5 @@ export class ReviewProvider {
 
   get repo(): Repository<Review> {
     return this.repository;
-  }
-
-  async findAll(params: number) {
-    return params;
-  }
-
-  async exists(id: number): Promise<boolean | undefined> {
-    const [result]: ExistsQueryResult[] = await this.repository.query(
-      `SELECT EXISTS(SELECT 1 FROM review a WHERE a.id = $1)`,
-      [id],
-    );
-
-    return result.exists;
   }
 }

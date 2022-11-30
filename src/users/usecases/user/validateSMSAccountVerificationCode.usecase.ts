@@ -43,7 +43,7 @@ export class ValidateSMSAccountVerificationCodeUseCase
     code: string,
   ): Promise<DomainException | DefaultResponseDto> {
     this.logger.log(`userId ${userId}`);
-    const userIsAlreadyVerified = await this.usersService.existsAndIsValid(
+    const userIsAlreadyVerified = await this.usersService.existsAndIsActive(
       userId,
     );
 

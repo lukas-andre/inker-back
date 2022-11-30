@@ -7,6 +7,11 @@ export interface ReviewReactionsDetail {
   dislikes: number;
 }
 
+export enum ReviewReactionType {
+  LIKE = 'like',
+  DISLIKE = 'dislike',
+}
+
 @Entity()
 export class Review extends BaseEntity {
   @Column({ type: 'int', nullable: false, name: 'artist_id' })

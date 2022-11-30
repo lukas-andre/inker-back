@@ -73,35 +73,35 @@ export class UsersService extends BaseComponent {
     email: string,
     username: string,
   ): Promise<boolean> {
-    const result: ExistsQueryResult[] = await this.usersRepository.query(
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       'SELECT EXISTS(SELECT 1 FROM public.user WHERE email = $1 AND username = $2)',
       [email, username],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
   async exists(userId: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.usersRepository.query(
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1)`,
       [userId],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
-  async existsAndIsValid(userId: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.usersRepository.query(
+  async existsAndIsActive(userId: number): Promise<boolean | undefined> {
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u.active = $2)`,
       [userId, true],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
   async existsArtist(userId: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.usersRepository.query(
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u."userType" = $2)`,
       [userId, UserType.ARTIST],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
   async activate(userId: number) {

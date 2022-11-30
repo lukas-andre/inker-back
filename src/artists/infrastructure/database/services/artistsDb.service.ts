@@ -71,21 +71,21 @@ export class ArtistsDbService extends BaseComponent {
   }
 
   async exists(artistId: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.artistsRepository.query(
+    const [result]: ExistsQueryResult[] = await this.artistsRepository.query(
       `SELECT EXISTS(SELECT 1 FROM artist a WHERE a.id = $1)`,
       [artistId],
     );
 
-    return result.pop().exists;
+    return result.exists;
   }
 
   async existArtistByUserId(userId: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.artistsRepository.query(
+    const [result]: ExistsQueryResult[] = await this.artistsRepository.query(
       `SELECT EXISTS(SELECT 1 FROM artist a WHERE a.user_id = $1)`,
       [userId],
     );
 
-    return result.pop().exists;
+    return result.exists;
   }
 
   async findById(id: number): Promise<Artist> {
