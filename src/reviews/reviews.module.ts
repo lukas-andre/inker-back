@@ -5,7 +5,7 @@ import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.mod
 import { UsersModule } from '../users/users.module';
 
 import { ReviewProviderModule } from './database/reviewProvider.module';
-import { RatingsController } from './reviews.controller';
+import { ReviewsController } from './reviews.controller';
 import { ReviewHandler } from './reviews.handler';
 import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
 
@@ -17,7 +17,7 @@ import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
     // TODO: remove this dependency
     UsersModule,
   ],
-  controllers: [RatingsController],
+  controllers: [ReviewsController],
   providers: [ReviewHandler, RatingArtistUsecase],
 })
 export class ReviewsModule {}

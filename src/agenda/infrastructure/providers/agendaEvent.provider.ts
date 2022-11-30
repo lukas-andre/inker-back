@@ -53,12 +53,13 @@ export class AgendaEventProvider extends BaseComponent {
   }
 
   async exists(id: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.agendaEventRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM agenda_event a WHERE a.id = $1)`,
-      [id],
-    );
+    const [result]: ExistsQueryResult[] =
+      await this.agendaEventRepository.query(
+        `SELECT EXISTS(SELECT 1 FROM agenda_event a WHERE a.id = $1)`,
+        [id],
+      );
 
-    return result.pop().exists;
+    return result.exists;
   }
 
   async findById(id: number) {

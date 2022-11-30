@@ -32,11 +32,11 @@ export class RolesService {
   }
 
   async exists(roleName: string): Promise<boolean> {
-    const result: ExistsQueryResult[] = await this.rolesRepository.query(
+    const [result]: ExistsQueryResult[] = await this.rolesRepository.query(
       'SELECT EXISTS(SELECT 1 FROM role WHERE name=$1)',
       [roleName],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
   async findAll(query: any): Promise<Role[]> {

@@ -49,7 +49,7 @@ export class SendSMSAccountVerificationCodeUseCase
     userId: number,
     phoneNumber: string,
   ): Promise<DefaultResponseDto> {
-    const userIsAlreadyVerified = await this.usersService.existsAndIsValid(
+    const userIsAlreadyVerified = await this.usersService.existsAndIsActive(
       userId,
     );
 
