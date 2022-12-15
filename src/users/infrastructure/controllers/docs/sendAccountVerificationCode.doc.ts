@@ -15,7 +15,7 @@ import {
   MAX_SMS_ATTEMPTS_REACHED,
   PROBLEMS_CREATING_VERIFICATION_HASH,
   USER_ALREADY_VERIFIED,
-  USER_ID_PIPE_FAILED,
+  USER_ID_IS_NOT_VALID,
   USER_NOT_ACCEPTED,
 } from '../../../domain/errors/codes';
 import { NotificationType } from '../../entities/verificationHash.entity';
@@ -53,7 +53,7 @@ export function SendAccountVerificationCodeDoc() {
     }),
     ApiBadRequestResponse({
       description: errorCodesToOASDescription([
-        USER_ID_PIPE_FAILED,
+        USER_ID_IS_NOT_VALID,
         USER_ALREADY_VERIFIED,
         MAX_SMS_ATTEMPTS_REACHED,
       ]),

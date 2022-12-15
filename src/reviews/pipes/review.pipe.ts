@@ -24,7 +24,7 @@ export class ReviewIdPipe
   constructor(private readonly reviewProvider: ReviewProvider) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
-    if (!metatype || this.InvalidIdType(metatype)) {
+    if (!metatype || this.invalidIdType(metatype)) {
       return value;
     }
 
@@ -36,7 +36,7 @@ export class ReviewIdPipe
       throw new BadRequestException(REVIEW_ID_PIPE_FAILED);
     }
 
-    const id = parseInt(value);
+    const id = this.parseInt(value);
     if (!(await this.reviewProvider.exists(id))) {
       throw new NotFoundException(REVIEW_NOT_EXISTS);
     }
@@ -52,8 +52,8 @@ export class ReviewIdPipe
     return value;
   }
 
-  private InvalidIdType(metatype: Function): boolean {
+  private invalidIdType(metatype: Function): boolean {
     const types: Function[] = [Number];
-    return !types.includes(metatype);
+    return !types.includes(metatype) || Number.isNaN(metatype);
   }
 }

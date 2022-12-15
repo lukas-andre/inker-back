@@ -1,7 +1,3 @@
-// describe('ReviewsController', () => {
-//   let controller: ReviewsController;
-//   let handler: ReviewHandler;
-
 import { Test } from '@nestjs/testing/test';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
@@ -13,15 +9,6 @@ import { UsersService } from '../users/domain/services/users.service';
 
 import { ReviewsController } from './reviews.controller';
 import { ReviewHandler } from './reviews.handler';
-
-// export const userRepositoryMockFactory: () => MockType<Repository<any>> =
-//   jest.fn(() => ({
-//     findOne: jest.fn(entity => entity),
-//   }));
-
-// export type MockType<T> = {
-//   [P in keyof T]?: jest.Mock<{}>;
-// };
 
 const moduleMocker = new ModuleMocker(global);
 describe('ReviewsController', () => {
