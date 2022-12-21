@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { REVIEW_DB_CONNECTION_NAME } from '../../../config/database/review.config';
+import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/database.module';
 import { ReviewAvg } from '../entities/reviewAvg.entity';
 
 @Injectable()

@@ -54,6 +54,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     const existsRole = await this.rolesService.exists(
       createUserParams.userType.toLocaleLowerCase(),
     );
+
     if (!existsRole) {
       throw new DomainConflict('Role not exists');
     }
@@ -61,6 +62,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     const role = await this.rolesService.findOne({
       where: { name: createUserParams.userType.toLocaleLowerCase() },
     });
+
     const created = await this.usersService.create(createUserParams, role);
 
     try {
@@ -69,13 +71,12 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
         createUserParams,
       );
 
-      console.log(response);
       if (response instanceof Artist) {
         const resp = await TypeTransform.to(CreateArtistUserResDto, response);
-
-        this.logger.log(`🟢 Artist dtoResponse: ${stringify(resp)}`);
+        this.logger.log(`🟢 Artist created: ${stringify(resp)}`);
         return resp;
       }
+
       const resp = await TypeTransform.to(CreateCustomerUserResDto, response);
       this.logger.log(`🟢 Customer created: ${stringify(resp)}`);
       return resp;
@@ -114,6 +115,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     try {
       agenda = await this.agendaProvider.createWithArtistInfo(
         createArtistParams,
+        artist.id,
       );
     } catch (error) {
       await this.artistsDbService.delete(artist.id);
@@ -138,9 +140,9 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       throw error;
     }
 
-    this.logger.log(`🟢 ArtistLocation created: ${artistLocation.id}`);
-
+    this.logger.log(`🟢 ArtistLocation created: ${stringify(artistLocation)}`);
     this.logger.log(`🟢 Artist created: ${stringify(artist)}`);
+
     return artist;
   }
 
