@@ -10,6 +10,10 @@ export class Agenda extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: number;
 
+  // @Index()
+  // @Column({ name: 'artist_id' })
+  // artistId: number;
+
   @Column({
     name: 'working_days',
     type: 'jsonb',

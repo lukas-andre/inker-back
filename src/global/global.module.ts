@@ -7,7 +7,7 @@ import * as Joi from 'joi';
 import { appConfigSchema } from '../config/app.config';
 import { authConfigSchema } from '../config/auth.config';
 import { AWSConfigSchema } from '../config/aws.config';
-import { Config } from '../config/config';
+import { config } from '../config/config';
 import { databaseConfigSchema } from '../config/database/config';
 import { oasConfigSchema } from '../config/oas.config';
 import { verificationHashConfigSchema } from '../config/verificationHash';
@@ -22,7 +22,7 @@ import { SMSClient } from './infrastructure/clients/sms.client';
     HttpModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: Config,
+      load: config,
       validationSchema: Joi.object()
         .concat(appConfigSchema)
         .concat(authConfigSchema)

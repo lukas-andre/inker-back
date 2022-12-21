@@ -1,13 +1,15 @@
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 
+import {
+  POST_DB_CONFIG_NAME,
+  POST_DB_CONNECTION_NAME,
+} from '../../databases/database.module';
+
 import { createDatabaseConnection } from './config';
 
-export const POST_DB_CONNECTION_NAME = 'post-db';
-export const POST_DB_CONFIG_NAME = 'postDb';
-
-const POST_DB_NAME = 'inker-post';
-const POST_ENTITIES = [__dirname + '/../../posts/**/*.entity{.ts,.js}'];
+const DB_NAME = 'inker-post';
+const ENTITIES = [__dirname + '/../../posts/**/*.entity{.ts,.js}'];
 
 export type PostDbConfig = TypeOrmModuleOptions;
 
@@ -16,8 +18,8 @@ export const postDatabaseConf = registerAs<PostDbConfig>(
   () =>
     createDatabaseConnection({
       name: POST_DB_CONNECTION_NAME,
-      database: POST_DB_NAME,
-      entities: POST_ENTITIES,
+      database: DB_NAME,
+      entities: ENTITIES,
       logging: ['error'],
       keepConnectionAlive: true,
     }),

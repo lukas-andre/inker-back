@@ -1,13 +1,15 @@
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 
+import {
+  REVIEW_DB_CONFIG_NAME,
+  REVIEW_DB_CONNECTION_NAME,
+} from '../../databases/database.module';
+
 import { createDatabaseConnection } from './config';
 
-export const REVIEW_DB_CONNECTION_NAME = 'review-db';
-export const REVIEW_DB_CONFIG_NAME = 'reviewDb';
-
-const REVIEW_DB_NAME = 'inker-review';
-const REVIEW_ENTITIES = [__dirname + '/../../reviews/**/*.entity{.ts,.js}'];
+const DB_NAME = 'inker-review';
+const ENTITIES = [__dirname + '/../../reviews/**/*.entity{.ts,.js}'];
 
 export type ReactionDbConfig = TypeOrmModuleOptions;
 
@@ -16,8 +18,8 @@ export const ratingDatabaseConf = registerAs<ReactionDbConfig>(
   () =>
     createDatabaseConnection({
       name: REVIEW_DB_CONNECTION_NAME,
-      database: REVIEW_DB_NAME,
-      entities: REVIEW_ENTITIES,
+      database: DB_NAME,
+      entities: ENTITIES,
       logging: ['error', 'warn', 'info', 'log', 'migration', 'query', 'schema'],
       keepConnectionAlive: true,
     }),

@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/database.module';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { DBServiceSaveException } from '../../../global/infrastructure/exceptions/dbService.exception';
@@ -19,10 +20,21 @@ import { Agenda } from '../entities/agenda.entity';
 @Injectable()
 export class AgendaProvider extends BaseComponent {
   constructor(
-    @InjectRepository(Agenda, 'agenda-db')
-    private readonly agendaRepository: Repository<Agenda>,
+    @InjectRepository(Agenda, AGENDA_DB_CONNECTION_NAME)
+    private readonly agendaRepository: Repository<Agenda>, // @InjectDataSource(AGENDA_DB_CONNECTION_NAME) // private readonly dataSource: DataSource, // @InjectEntityManager(AGENDA_DB_CONNECTION_NAME) // private readonly entityManager: EntityManager,
   ) {
     super(AgendaProvider.name);
+  }
+  // get source(): DataSource {
+  //   return this.dataSource;
+  // }
+
+  // get manager(): EntityManager {
+  //   return this.entityManager;
+  // }
+
+  get repo(): Repository<Agenda> {
+    return this.agendaRepository;
   }
 
   async exists(id: number): Promise<boolean | undefined> {
@@ -32,10 +44,6 @@ export class AgendaProvider extends BaseComponent {
     );
 
     return result.exists;
-  }
-
-  repo(): Repository<Agenda> {
-    return this.agendaRepository;
   }
 
   async findById(id: number) {
@@ -56,12 +64,13 @@ export class AgendaProvider extends BaseComponent {
   }
 
   // * this function could be more generic
-  async createWithArtistInfo(dto: CreateArtistParams) {
+  async createWithArtistInfo(dto: CreateArtistParams, artistId: number) {
     const agenda: Partial<Agenda> = {
       open: dto.agendaIsOpen,
       public: dto.agendaIsPublic,
       userId: dto.userId,
       workingDays: dto.agendaWorkingDays,
+      // artistId: artistId,
     };
 
     try {

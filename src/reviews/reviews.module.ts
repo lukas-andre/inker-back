@@ -11,9 +11,9 @@ import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
 
 @Module({
   imports: [
+    AgendaProviderModule,
     ReviewProviderModule,
     ArtistsDbModule,
-    AgendaProviderModule,
     // TODO: remove this dependency
     UsersModule,
   ],

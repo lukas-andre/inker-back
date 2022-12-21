@@ -11,6 +11,7 @@ import {
   Repository,
 } from 'typeorm';
 
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/database.module';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { TypeTransform } from '../../../global/domain/utils/typeTransform';
@@ -42,13 +43,13 @@ class FindAgendaEventForMarkAsDoneQueryResult {
 @Injectable()
 export class AgendaEventProvider extends BaseComponent {
   constructor(
-    @InjectRepository(AgendaEvent, 'agenda-db')
+    @InjectRepository(AgendaEvent, AGENDA_DB_CONNECTION_NAME)
     private readonly agendaEventRepository: Repository<AgendaEvent>,
   ) {
     super(AgendaEventProvider.name);
   }
 
-  repo(): Repository<AgendaEvent> {
+  get repo(): Repository<AgendaEvent> {
     return this.agendaEventRepository;
   }
 

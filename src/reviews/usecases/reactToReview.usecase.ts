@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
 
+import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
 import { DomainUnProcessableEntity } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
@@ -22,7 +23,10 @@ import { ReviewArtistRequestDto } from '../dtos/reviewArtistRequest.dto';
 
 @Injectable()
 export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
-  constructor(private readonly reviewProvider: ReviewProvider) {
+  constructor(
+    private readonly reviewProvider: ReviewProvider,
+    private readonly agendaProvider: AgendaProvider,
+  ) {
     super(ReactToReviewUsecase.name);
   }
 
@@ -37,6 +41,11 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
     }
 
     // TODO: Review if event is related to user
+    const isEventRelatedToUser = await this.agendaProvider.repo.findOne({
+      where: {
+        userId: userId,
+      },
+    });
 
     const review = await this.reviewProvider.repo.findOne({
       where: {
