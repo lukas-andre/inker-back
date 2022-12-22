@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/database.module';
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { Agenda } from '../entities/agenda.entity';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
 

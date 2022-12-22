@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
-import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/database.module';
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { DBServiceSaveException } from '../../../global/infrastructure/exceptions/dbService.exception';
