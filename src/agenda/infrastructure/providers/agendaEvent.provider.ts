@@ -11,7 +11,7 @@ import {
   Repository,
 } from 'typeorm';
 
-import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/database.module';
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { TypeTransform } from '../../../global/domain/utils/typeTransform';

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { REVIEW_DB_CONNECTION_NAME } from '../../databases/database.module';
+import { REVIEW_DB_CONNECTION_NAME } from '../../databases/constants';
 
 import { Review } from './entities/review.entity';
 import { ReviewAvg } from './entities/reviewAvg.entity';

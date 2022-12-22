@@ -6,7 +6,7 @@ import {
 } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
-import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/database.module';
+import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { Review } from '../entities/review.entity';
 import { ReviewReaction } from '../entities/reviewReaction.entity';
 

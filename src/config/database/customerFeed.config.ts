@@ -4,7 +4,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-op
 import {
   CUSTOMER_FEED_DB_CONFIG_NAME,
   CUSTOMER_FEED_DB_CONNECTION_NAME,
-} from '../../databases/database.module';
+} from '../../databases/constants';
 
 import { createDatabaseConnection } from './config';
 
