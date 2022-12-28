@@ -7,11 +7,11 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
-import { UsersService } from '../../domain/services/users.service';
+import { UsersProvider } from '../../infrastructure/providers/users.provider';
 
 @Injectable()
 export class UpdateUserUsernameUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly usersService: UsersService) {
+  constructor(private readonly usersProvider: UsersProvider) {
     super(UpdateUserUsernameUseCase.name);
   }
 
@@ -20,7 +20,7 @@ export class UpdateUserUsernameUseCase extends BaseUseCase implements UseCase {
     newUsername: string,
   ): Promise<DefaultResponseDto> {
     // TODO: Replace with efficient query
-    const usernameExists = await this.usersService.findOne({
+    const usernameExists = await this.usersProvider.findOne({
       where: { username: newUsername },
     });
 
@@ -28,7 +28,7 @@ export class UpdateUserUsernameUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule('Username already used');
     }
 
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersProvider.findById(userId);
 
     if (user.username === newUsername) {
       throw new DomainBadRule('The username must be different');
@@ -36,7 +36,7 @@ export class UpdateUserUsernameUseCase extends BaseUseCase implements UseCase {
 
     user.username = newUsername;
 
-    await this.usersService.save(user);
+    await this.usersProvider.save(user);
 
     return DefaultResponse.ok;
   }

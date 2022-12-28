@@ -25,22 +25,22 @@ import { DbServiceException } from '../../../global/infrastructure/exceptions/db
 import { ArtistLocationsDbService } from '../../../locations/infrastructure/database/services/artistLocationsDb.service';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
-import { RolesService } from '../../domain/services/roles.service';
-import { UsersService } from '../../domain/services/users.service';
 import {
   CreateArtistUserResDto,
   CreateCustomerUserResDto,
 } from '../../infrastructure/dtos/createUserRes.dto';
+import { RolesProvider } from '../../infrastructure/providers/roles.service';
+import { UsersProvider } from '../../infrastructure/providers/users.provider';
 
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()
 export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly usersProvider: UsersProvider,
     private readonly artistsDbService: ArtistsDbService,
     private readonly customerService: CustomersService,
-    private readonly rolesService: RolesService,
+    private readonly rolesService: RolesProvider,
     private readonly agendaProvider: AgendaProvider,
     private readonly artistLocationsDbService: ArtistLocationsDbService,
     private readonly configService: ConfigService,
@@ -63,7 +63,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       where: { name: createUserParams.userType.toLocaleLowerCase() },
     });
 
-    const created = await this.usersService.create(createUserParams, role);
+    const created = await this.usersProvider.create(createUserParams, role);
 
     try {
       const response = await this.handleCreateByUserType(
@@ -153,7 +153,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   }
 
   private async rollbackCreate(userId: number): Promise<void> {
-    await this.usersService.delete(userId);
+    await this.usersProvider.delete(userId);
   }
 
   private async handleCreateError(

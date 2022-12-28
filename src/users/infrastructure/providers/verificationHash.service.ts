@@ -13,15 +13,15 @@ import {
 import { verificationHashConf } from '../../../config/verificationHash';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { DBServiceCreateException } from '../../../global/infrastructure/exceptions/dbService.exception';
+import { PROBLEMS_CREATING_VERIFICATION_HASH } from '../../domain/errors/codes';
 import {
   NotificationType,
   VerificationHash,
   VerificationType,
-} from '../../infrastructure/entities/verificationHash.entity';
-import { PROBLEMS_CREATING_VERIFICATION_HASH } from '../errors/codes';
+} from '../entities/verificationHash.entity';
 
 @Injectable()
-export class VerificationHashService
+export class VerificationHashProvider
   extends BaseComponent
   implements OnModuleInit
 {
@@ -32,7 +32,7 @@ export class VerificationHashService
     private readonly verificationHashRepository: Repository<VerificationHash>,
     private readonly configService: ConfigService,
   ) {
-    super(VerificationHashService.name);
+    super(VerificationHashProvider.name);
   }
 
   onModuleInit() {

@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
+
 import { AgendaController } from './infrastructure/agenda.controller';
 import { AgendaHandler } from './infrastructure/agenda.handler';
 import { AgendaProviderModule } from './infrastructure/providers/agendaProvider.module';
@@ -11,7 +13,7 @@ import { MarkEventAsDoneUseCase } from './usecases/markEventAsDone.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 
 @Module({
-  imports: [AgendaProviderModule],
+  imports: [AgendaProviderModule, UserProviderModule],
   providers: [
     AgendaHandler,
     AddEventUseCase,

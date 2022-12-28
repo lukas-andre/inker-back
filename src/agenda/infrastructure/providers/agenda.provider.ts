@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
+  InjectDataSource,
+  InjectEntityManager,
+  InjectRepository,
+} from '@nestjs/typeorm';
+import {
+  DataSource,
   DeepPartial,
   DeleteResult,
+  EntityManager,
   FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
@@ -21,17 +27,21 @@ import { Agenda } from '../entities/agenda.entity';
 export class AgendaProvider extends BaseComponent {
   constructor(
     @InjectRepository(Agenda, AGENDA_DB_CONNECTION_NAME)
-    private readonly agendaRepository: Repository<Agenda>, // @InjectDataSource(AGENDA_DB_CONNECTION_NAME) // private readonly dataSource: DataSource, // @InjectEntityManager(AGENDA_DB_CONNECTION_NAME) // private readonly entityManager: EntityManager,
+    private readonly agendaRepository: Repository<Agenda>,
+    @InjectDataSource(AGENDA_DB_CONNECTION_NAME)
+    private readonly dataSource: DataSource,
+    @InjectEntityManager(AGENDA_DB_CONNECTION_NAME)
+    private readonly entityManager: EntityManager,
   ) {
     super(AgendaProvider.name);
   }
-  // get source(): DataSource {
-  //   return this.dataSource;
-  // }
+  get source(): DataSource {
+    return this.dataSource;
+  }
 
-  // get manager(): EntityManager {
-  //   return this.entityManager;
-  // }
+  get manager(): EntityManager {
+    return this.entityManager;
+  }
 
   get repo(): Repository<Agenda> {
     return this.agendaRepository;
@@ -65,13 +75,13 @@ export class AgendaProvider extends BaseComponent {
 
   // * this function could be more generic
   async createWithArtistInfo(dto: CreateArtistParams, artistId: number) {
-    const agenda: Partial<Agenda> = {
+    const agenda = {
       open: dto.agendaIsOpen,
       public: dto.agendaIsPublic,
       userId: dto.userId,
       workingDays: dto.agendaWorkingDays,
-      // artistId: artistId,
-    };
+      artistId: artistId,
+    } satisfies Partial<Agenda>;
 
     try {
       return await this.save(agenda);

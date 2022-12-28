@@ -8,6 +8,7 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
+import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
@@ -18,6 +19,7 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly agendaProvider: AgendaProvider,
     private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly usersProvider: UsersProvider,
   ) {
     super(AddEventUseCase.name);
   }
@@ -29,6 +31,14 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
 
     if (!existsAgenda) {
       throw new DomainNotFound('Agenda not found');
+    }
+
+    const existsCustomer = await this.usersProvider.findById(
+      addEventDto.customerId,
+    );
+
+    if (!existsCustomer) {
+      throw new DomainNotFound('Customer not found');
     }
 
     const dateRangeIsInUse =

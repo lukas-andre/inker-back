@@ -185,6 +185,7 @@ export class AgendaEventProvider extends BaseComponent {
         end: dto.end as any,
         start: dto.start as any,
         notification: dto.notification,
+        customerId: dto.customerId,
       });
     } catch (error) {
       throw new DBServiceCreateException(this, 'Trouble saving event', error);

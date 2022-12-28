@@ -7,20 +7,20 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
-import { UsersService } from '../../users/domain/services/users.service';
+import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { FollowedType } from '../domain/types/followedType';
 @Injectable()
 export class FindFollowersUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly usersProvider: UsersProvider,
     private readonly followedsService: FollowedsService,
   ) {
     super(FindFollowersUseCase.name);
   }
 
   async execute(userId: number): Promise<FollowedType[]> {
-    if (!(await this.usersService.exists(userId))) {
+    if (!(await this.usersProvider.exists(userId))) {
       throw new DomainNotFound('User not found');
     }
 

@@ -11,26 +11,31 @@ import {
 } from 'typeorm';
 
 import { LoginType } from '../../../auth/domain/enums/loginType.enum';
+import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
   DbServiceBadRule,
   DBServiceUpdateException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { Role } from '../../infrastructure/entities/role.entity';
-import { User } from '../../infrastructure/entities/user.entity';
+import { UserType } from '../../domain/enums/userType.enum';
+import {
+  ERROR_ACTIVATING_USER,
+  USER_ALREADY_EXISTS,
+} from '../../domain/errors/codes';
+import { UserInterface } from '../../domain/models/user.model';
 import { CreateUserByTypeParams } from '../../usecases/user/interfaces/createUserByType.params';
-import { UserType } from '../enums/userType.enum';
-import { ERROR_ACTIVATING_USER, USER_ALREADY_EXISTS } from '../errors/codes';
-import { UserInterface } from '../models/user.model';
+import { Role } from '../entities/role.entity';
+import { User } from '../entities/user.entity';
+
 @Injectable()
-export class UsersService extends BaseComponent {
+export class UsersProvider extends BaseComponent {
   constructor(
-    @InjectRepository(User, 'user-db')
+    @InjectRepository(User, USER_DB_CONNECTION_NAME)
     private readonly usersRepository: Repository<User>,
     private readonly configService: ConfigService,
   ) {
-    super(UsersService.name);
+    super(UsersProvider.name);
   }
 
   async create(
