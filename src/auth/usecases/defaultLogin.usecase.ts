@@ -14,8 +14,8 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
-import { UsersService } from '../../users/domain/services/users.service';
 import { User } from '../../users/infrastructure/entities/user.entity';
+import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
 import { AuthService } from '../domain/auth.service';
 
 import { LoginParams } from './interfaces/defaultLogin.params';
@@ -24,7 +24,7 @@ import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   constructor(
     private authService: AuthService,
-    private usersService: UsersService,
+    private usersProvider: UsersProvider,
     private artistsDbService: ArtistsDbService,
     private customersService: CustomersService,
   ) {
@@ -33,7 +33,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
 
   async execute(loginParams: LoginParams): Promise<DefaultLoginResult> {
     this.logger.log({ loginParams });
-    const user = await this.usersService.findByType(
+    const user = await this.usersProvider.findByType(
       loginParams.loginType,
       loginParams.identifier,
     );
@@ -51,7 +51,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
     user: User,
     loginParams: LoginParams,
   ): Promise<DefaultLoginResult> {
-    const result = await this.usersService.validatePassword(
+    const result = await this.usersProvider.validatePassword(
       loginParams.password,
       user.password,
     );

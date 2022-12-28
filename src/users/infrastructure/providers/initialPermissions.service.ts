@@ -3,18 +3,19 @@ import { ModulesContainer } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { DbServiceInternalServerError } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { Permission } from '../../infrastructure/entities/permission.entity';
+import { Permission } from '../entities/permission.entity';
 
 @Injectable()
-export class InitialPermissionsService extends BaseComponent {
+export class InitialPermissionsProvider extends BaseComponent {
   constructor(
     private modulesContainer: ModulesContainer,
-    @InjectRepository(Permission, 'user-db')
+    @InjectRepository(Permission, USER_DB_CONNECTION_NAME)
     private readonly permissionsRepository: Repository<Permission>,
   ) {
-    super(InitialPermissionsService.name);
+    super(InitialPermissionsProvider.name);
   }
 
   async initPermissions(): Promise<Permission[]> {

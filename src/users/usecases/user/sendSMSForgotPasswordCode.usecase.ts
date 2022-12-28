@@ -13,12 +13,12 @@ import { SMSClient } from '../../../global/infrastructure/clients/sms.client';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DbServiceConflict } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
-import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import {
   NotificationType,
   VerificationHash,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
+import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
 
 @Injectable()
 export class SendSMSForgotPasswordCodeUseCase
@@ -29,7 +29,7 @@ export class SendSMSForgotPasswordCodeUseCase
   protected maxTries: number;
 
   constructor(
-    private readonly verificationHashService: VerificationHashService,
+    private readonly verificationHashProvider: VerificationHashProvider,
     private readonly smsClient: SMSClient,
     private readonly configService: ConfigService,
   ) {
@@ -48,11 +48,11 @@ export class SendSMSForgotPasswordCodeUseCase
     phoneNumber: string,
   ): Promise<DefaultResponseDto> {
     const verificationCode =
-      this.verificationHashService.generateVerificationCode();
+      this.verificationHashProvider.generateVerificationCode();
 
     this.logger.log({ verificationCode });
 
-    const isSmsAlreadySent = await this.verificationHashService.findOne({
+    const isSmsAlreadySent = await this.verificationHashProvider.findOne({
       where: {
         userId: userId,
         notificationType: NotificationType.SMS,
@@ -72,7 +72,7 @@ export class SendSMSForgotPasswordCodeUseCase
       );
     } else {
       try {
-        verificationHash = await this.verificationHashService.create(
+        verificationHash = await this.verificationHashProvider.create(
           userId,
           verificationCode,
           NotificationType.SMS,
@@ -100,10 +100,10 @@ export class SendSMSForgotPasswordCodeUseCase
     previousHash: VerificationHash,
     verificationCode: string,
   ): Promise<VerificationHash> {
-    return this.verificationHashService.edit(previousHash.id, {
+    return this.verificationHashProvider.edit(previousHash.id, {
       ...previousHash,
       tries: ++previousHash.tries,
-      hash: await this.verificationHashService.hashVerificationCode(
+      hash: await this.verificationHashProvider.hashVerificationCode(
         verificationCode,
       ),
     });

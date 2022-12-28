@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
 
+import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
 import { DomainUnProcessableEntity } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
@@ -22,7 +23,10 @@ import { ReviewArtistRequestDto } from '../dtos/reviewArtistRequest.dto';
 
 @Injectable()
 export class RatingArtistUsecase extends BaseUseCase implements UseCase {
-  constructor(private readonly reviewProvider: ReviewProvider) {
+  constructor(
+    private readonly reviewProvider: ReviewProvider,
+    private readonly agendaProvider: AgendaProvider,
+  ) {
     super(RatingArtistUsecase.name);
   }
 
@@ -32,11 +36,20 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
     userId: number,
     body: ReviewArtistRequestDto,
   ): Promise<DefaultResponseDto> {
+    // TODO: Test this!
+    this.agendaProvider.repo.findOne({
+      where: {
+        artistId: artistId,
+        agendaEvent: {
+          id: eventId,
+          customerId: userId,
+        },
+      },
+    });
+
     if (this.isUserNotReviewIt(body)) {
       return this.emptyReviewFlow(artistId, eventId, userId, body);
     }
-
-    // TODO: Review if event is related to user
 
     const review = await this.reviewProvider.repo.findOne({
       where: {

@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 
-import { Permission } from '../../infrastructure/entities/permission.entity';
+import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
+import { Permission } from '../entities/permission.entity';
 
 @Injectable()
-export class PermissionsService {
+export class PermissionsProvider {
   constructor(
-    @InjectRepository(Permission, 'user-db')
+    @InjectRepository(Permission, USER_DB_CONNECTION_NAME)
     private readonly permissionsRepository: Repository<Permission>,
   ) {}
 
