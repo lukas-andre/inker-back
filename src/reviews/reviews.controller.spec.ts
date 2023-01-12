@@ -5,7 +5,7 @@ import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
 import { AgendaEventProvider } from '../agenda/infrastructure/providers/agendaEvent.provider';
 import { ArtistsDbService } from '../artists/infrastructure/database/services/artistsDb.service';
 import { DefaultResponse } from '../global/infrastructure/helpers/defaultResponse.helper';
-import { UsersService } from '../users/domain/services/users.service';
+import { UsersProvider } from '../users/infrastructure/providers/users.provider';
 
 import { ReviewsController } from './reviews.controller';
 import { ReviewHandler } from './reviews.handler';
@@ -26,7 +26,7 @@ describe('ReviewsController', () => {
           };
         }
 
-        if (token === UsersService) {
+        if (token === UsersProvider) {
           return jest.fn();
         }
 

@@ -24,3 +24,6 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-tag');
 
 SELECT 'CREATE DATABASE inker-artist'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-artist');
+
+SELECT 'CREATE DATABASE inker-review'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-review');

@@ -23,7 +23,7 @@ export class Review extends BaseEntity {
   eventId: number;
 
   @Column({ type: 'real', nullable: true, name: 'value' })
-  value: number;
+  value?: number;
 
   @Column({
     type: 'varchar',
@@ -31,7 +31,7 @@ export class Review extends BaseEntity {
     nullable: true,
     name: 'header',
   })
-  header: string;
+  header?: string;
 
   @Column({ nullable: true })
   content?: string;

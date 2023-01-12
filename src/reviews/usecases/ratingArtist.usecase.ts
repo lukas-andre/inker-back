@@ -12,6 +12,11 @@ import {
   DefaultResponseStatus,
 } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
+import {
+  EVENT_NEEDS_TO_BE_DONE_TO_RATE,
+  USER_IS_NOT_RELATED_TO_EVENT,
+} from '../../users/domain/errors/codes';
+import { USER_ALREADY_REVIEW_THE_EVENT } from '../codes';
 import { Review } from '../database/entities/review.entity';
 import {
   defaultRatingMap,
@@ -36,31 +41,36 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
     userId: number,
     body: ReviewArtistRequestDto,
   ): Promise<DefaultResponseDto> {
-    // TODO: Test this!
-    this.agendaProvider.repo.findOne({
-      where: {
-        artistId: artistId,
-        agendaEvent: {
-          id: eventId,
-          customerId: userId,
-        },
-      },
-    });
+    const artistAgendaAndEventRelatedToCustomer =
+      await this.agendaProvider.artistAgendaAndEventRelatedToCustomer(
+        artistId,
+        eventId,
+        userId,
+      );
+
+    if (!artistAgendaAndEventRelatedToCustomer) {
+      throw new DomainUnProcessableEntity(USER_IS_NOT_RELATED_TO_EVENT);
+    }
+
+    const isEventDone = artistAgendaAndEventRelatedToCustomer.agendaEvent.done;
+
+    if (!isEventDone) {
+      throw new DomainUnProcessableEntity(EVENT_NEEDS_TO_BE_DONE_TO_RATE);
+    }
 
     if (this.isUserNotReviewIt(body)) {
       return this.emptyReviewFlow(artistId, eventId, userId, body);
     }
 
-    const review = await this.reviewProvider.repo.findOne({
-      where: {
-        createBy: userId,
-        artistId: artistId,
-        eventId: eventId,
-      },
-    });
+    const review =
+      await this.reviewProvider.findIfCustomerAlreadyReviewTheEvent(
+        userId,
+        eventId,
+        artistId,
+      );
 
     if (review && review.isRated) {
-      throw new DomainUnProcessableEntity('User already rated this artist');
+      throw new DomainUnProcessableEntity(USER_ALREADY_REVIEW_THE_EVENT);
     }
 
     let transactionIsOk = false;
@@ -301,37 +311,22 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
     userId: number,
     body: ReviewArtistRequestDto,
   ): Promise<DefaultResponseDto> {
-    // Enhance: This is a temporary solution, we need to find a better way to handle this
-    // hint: improve the query to just check if the user has a review
-    const userRateThisEventBefore = await this.reviewProvider.repo.findOne({
-      where: {
-        createBy: userId,
-        artistId: artistId,
-        eventId: eventId,
-      },
-    });
+    const customerReview =
+      await this.reviewProvider.findIfCustomerAlreadyReviewTheEvent(
+        userId,
+        eventId,
+        artistId,
+      );
 
-    if (userRateThisEventBefore) {
+    if (customerReview && customerReview.isRated) {
       return DefaultResponse.ok;
     }
 
-    try {
-      await this.reviewProvider.repo
-        .createQueryBuilder()
-        .insert()
-        .into(Review)
-        .values({
-          artistId: artistId,
-          eventId: eventId,
-          createBy: userId,
-          displayName: body.displayName,
-          isRated: false,
-        })
-        .execute();
-      return { status: DefaultResponseStatus.CREATED, data: 'Review created' };
-    } catch (error) {
-      this.logger.error(error);
-      throw new DomainUnProcessableEntity('Error saving review');
-    }
+    return this.reviewProvider.insertEmptyReview(
+      artistId,
+      eventId,
+      userId,
+      body.displayName,
+    );
   }
 }
