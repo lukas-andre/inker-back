@@ -12,6 +12,7 @@ import {
   DefaultResponseStatus,
 } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
+import { USER_ALREADY_REVIEW_THE_EVENT } from '../codes';
 import { Review } from '../database/entities/review.entity';
 import {
   defaultRatingMap,
@@ -56,7 +57,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
     });
 
     if (review && review.isRated) {
-      throw new DomainUnProcessableEntity('User already rated this artist');
+      throw new DomainUnProcessableEntity(USER_ALREADY_REVIEW_THE_EVENT);
     }
 
     let transactionIsOk = false;

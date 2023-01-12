@@ -20,7 +20,10 @@ import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { DBServiceSaveException } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { PROBLEMS_SAVING_AGENDA_FOR_USER } from '../../../users/domain/errors/codes';
+import {
+  PROBLEMS_FINDING_IF_USER_IS_RELATED_TO_EVENT,
+  PROBLEMS_SAVING_AGENDA_FOR_USER,
+} from '../../../users/domain/errors/codes';
 import { Agenda } from '../entities/agenda.entity';
 
 @Injectable()
@@ -45,6 +48,32 @@ export class AgendaProvider extends BaseComponent {
 
   get repo(): Repository<Agenda> {
     return this.agendaRepository;
+  }
+
+  async artistAgendaAndEventRelatedToCustomer(
+    artistId: number,
+    eventId: number,
+    customerId: number,
+  ): Promise<Agenda> {
+    try {
+      const agenda = await this.repo.findOne({
+        where: {
+          artistId: artistId,
+          agendaEvent: {
+            id: eventId,
+            customerId: customerId,
+          },
+        },
+      });
+
+      return agenda;
+    } catch (error) {
+      throw new DBServiceSaveException(
+        this,
+        PROBLEMS_FINDING_IF_USER_IS_RELATED_TO_EVENT,
+        error,
+      );
+    }
   }
 
   async exists(id: number): Promise<boolean | undefined> {

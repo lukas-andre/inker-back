@@ -13,7 +13,7 @@ import {
   REVIEW_ID_PIPE_FAILED,
   REVIEW_INVALID_ID_TYPE,
   REVIEW_NOT_EXISTS,
-} from '../codes/codes';
+} from '../codes';
 import { ReviewProvider } from '../database/providers/review.provider';
 
 @Injectable()
