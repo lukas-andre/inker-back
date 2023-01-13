@@ -7,7 +7,7 @@ import { DomainUnProcessableEntity } from '../../global/domain/exceptions/domain
 import { DefaultResponseStatus } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { USER_IS_NOT_RELATED_TO_EVENT } from '../../users/domain/errors/codes';
-import { USER_ALREADY_REVIEW_THE_EVENT } from '../codes';
+import { ERROR_CREATING_REVIEW } from '../codes';
 import { Review } from '../database/entities/review.entity';
 import { ReviewProvider } from '../database/providers/review.provider';
 
@@ -257,7 +257,58 @@ describe('RatingArtistUsecase', () => {
     });
   });
 
-  it('RatingArtistUsecase[Rate & User Did Rate Before] should throw DomainUnProcessableEntity(USER_ALREADY_REVIEW_THE_EVENT)', async () => {
+  it('RatingArtistUsecase[Rate & User Did Not Rate Before] should create a new review', async () => {
+    const doneAgendaEvent: Agenda = {
+      id: 1,
+      artistId: 1,
+      userId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      open: true,
+      public: true,
+      workingDays: [],
+      agendaEvent: {
+        id: 1,
+        done: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+        end: new Date(),
+        start: new Date(),
+        color: 'test',
+        title: 'test',
+        customerId: 1,
+        agenda: null,
+        notification: true,
+        info: 'test',
+      },
+    };
+
+    jest
+      .spyOn(agendaProvider, 'artistAgendaAndEventRelatedToCustomer')
+      .mockImplementation(() => Promise.resolve(doneAgendaEvent));
+
+    jest
+      .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
+      .mockImplementation(() => Promise.resolve(undefined));
+
+    jest
+      .spyOn(reviewProvider, 'createReviewTransaction')
+      .mockImplementation(() => Promise.resolve(true));
+
+    const result = await usecase.execute(1, 1, 1, {
+      displayName: 'test',
+      comment: 'test',
+    });
+
+    expect(result).toEqual({
+      status: DefaultResponseStatus.CREATED,
+      data: 'Artist rated successfully',
+    });
+  });
+
+  it('RatingArtistUsecase[Rate & User Did Rate And Want To Update] should update review', async () => {
     const doneAgendaEvent: Agenda = {
       id: 1,
       artistId: 1,
@@ -299,24 +350,26 @@ describe('RatingArtistUsecase', () => {
       isRated: true,
       displayName: 'test',
     };
-
     jest
       .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
       .mockImplementation(() => Promise.resolve(customerReview));
 
-    try {
-      await usecase.execute(1, 1, 1, {
-        displayName: 'test',
-        comment: 'test',
-      });
-    } catch (error) {
-      expect(error).toEqual(
-        new DomainUnProcessableEntity(USER_ALREADY_REVIEW_THE_EVENT),
-      );
-    }
+    jest
+      .spyOn(reviewProvider, 'updateReviewTransaction')
+      .mockImplementation(() => Promise.resolve(true));
+
+    const result = await usecase.execute(1, 1, 1, {
+      displayName: 'test',
+      comment: 'new comment',
+    });
+
+    expect(result).toEqual({
+      status: DefaultResponseStatus.CREATED,
+      data: 'Artist rated successfully',
+    });
   });
 
-  it('RatingArtistUsecase[Rate & User Did Rate Before] should create a new review', async () => {
+  it('RatingArtistUsecase[Rate & User Did Not Rate Before] should throw new DomainUnProcessableEntity(ERROR_CREATING_REVIEW)', async () => {
     const doneAgendaEvent: Agenda = {
       id: 1,
       artistId: 1,
@@ -353,7 +406,7 @@ describe('RatingArtistUsecase', () => {
       .mockImplementation(() => Promise.resolve(undefined));
 
     jest
-      .spyOn(reviewProvider, 'hasReviews')
+      .spyOn(reviewProvider, 'createReviewTransaction')
       .mockImplementation(() => Promise.resolve(false));
 
     try {
@@ -363,7 +416,69 @@ describe('RatingArtistUsecase', () => {
       });
     } catch (error) {
       expect(error).toEqual(
-        new DomainUnProcessableEntity(USER_ALREADY_REVIEW_THE_EVENT),
+        new DomainUnProcessableEntity(ERROR_CREATING_REVIEW),
+      );
+    }
+  });
+
+  it('RatingArtistUsecase[Rate & User Did Rate And Want To Update] should throw throw new DomainUnProcessableEntity(ERROR_CREATING_REVIEW)', async () => {
+    const doneAgendaEvent: Agenda = {
+      id: 1,
+      artistId: 1,
+      userId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      open: true,
+      public: true,
+      workingDays: [],
+      agendaEvent: {
+        id: 1,
+        done: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+        end: new Date(),
+        start: new Date(),
+        color: 'test',
+        title: 'test',
+        customerId: 1,
+        agenda: null,
+        notification: true,
+        info: 'test',
+      },
+    };
+
+    jest
+      .spyOn(agendaProvider, 'artistAgendaAndEventRelatedToCustomer')
+      .mockImplementation(() => Promise.resolve(doneAgendaEvent));
+
+    const customerReview: Review = {
+      id: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      eventId: 1,
+      artistId: 1,
+      createBy: 1,
+      isRated: true,
+      displayName: 'test',
+    };
+    jest
+      .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
+      .mockImplementation(() => Promise.resolve(customerReview));
+
+    jest
+      .spyOn(reviewProvider, 'updateReviewTransaction')
+      .mockImplementation(() => Promise.resolve(false));
+
+    try {
+      await usecase.execute(1, 1, 1, {
+        displayName: 'test',
+        comment: 'test',
+      });
+    } catch (error) {
+      expect(error).toEqual(
+        new DomainUnProcessableEntity(ERROR_CREATING_REVIEW),
       );
     }
   });
