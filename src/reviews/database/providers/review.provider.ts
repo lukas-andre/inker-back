@@ -8,10 +8,12 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
-import { DomainUnProcessableEntity } from '../../../global/domain/exceptions/domain.exception';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-import { DefaultResponseStatus } from '../../../global/infrastructure/dtos/defaultResponse.dto';
-import { DBServiceFindOneException } from '../../../global/infrastructure/exceptions/dbService.exception';
+import {
+  DBServiceFindException,
+  DBServiceFindOneException,
+  DBServiceSaveException,
+} from '../../../global/infrastructure/exceptions/dbService.exception';
 import { PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT } from '../../codes';
 import { Review } from '../entities/review.entity';
 
@@ -98,10 +100,58 @@ export class ReviewProvider extends BaseComponent {
           isRated: false,
         })
         .execute();
-      return { status: DefaultResponseStatus.CREATED, data: 'Review created' };
     } catch (error) {
-      this.logger.error(error);
-      throw new DomainUnProcessableEntity('Error saving review');
+      throw new DBServiceSaveException(this, 'Error saving review', error);
     }
   }
+
+  async hasReviews(eventId: number): Promise<boolean> {
+    try {
+      const review = await this.repository.findOne({ where: { eventId } });
+      return review ? true : false;
+    } catch (error) {
+      throw new DBServiceFindException(this, 'Error finding review', error);
+    }
+  }
+
+  // async createReviewTransaction(
+  //   artistId: number,
+  //   eventId: number,
+  //   userId: number,
+  //   reviewData: ReviewArtistRequestDto,
+  // ) {
+  //   const queryRunner = this.source.createQueryRunner();
+
+  //   await queryRunner.startTransaction();
+  //   try {
+  //     await queryRunner.connect();
+
+  //     await queryRunner.manager
+  //       .createQueryBuilder()
+  //       .insert()
+  //       .into(Review)
+  //       .values({
+  //         value: reviewData.rating,
+  //         artistId: artistId,
+  //         eventId: eventId,
+  //         createBy: userId,
+  //         displayName: reviewData.displayName,
+  //         header: reviewData.header,
+  //         content: reviewData.comment,
+  //         isRated: true,
+  //       })
+  //       .execute();
+
+  //     await this.handleReviewAvg(queryRunner, artistId, reviewData, eventId);
+
+  //     await queryRunner.commitTransaction();
+
+  //     transactionIsOk = true;
+  //   } catch (error) {
+  //     this.logger.error(error);
+  //     await queryRunner.rollbackTransaction();
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  // }
 }
