@@ -75,8 +75,9 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
 
     let transactionIsOk = false;
 
+    // const reviewWasRatedBefore = await this.reviewProvider.hasReviews(eventId);
+
     if (!review) {
-      // Create new review when we have body.comment and body.rating and the user is not rated yet
       transactionIsOk = await this.createReviewTransact(
         body,
         artistId,
@@ -84,7 +85,6 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
         userId,
       );
     } else {
-      // This if for uncomment reviews
       transactionIsOk = await this.updateReviewTransact(
         body,
         artistId,
@@ -110,6 +110,7 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
     userId: number,
   ): Promise<boolean> {
     let transactionIsOk = false;
+
     const queryRunner = this.reviewProvider.source.createQueryRunner();
 
     await queryRunner.startTransaction();
@@ -322,11 +323,13 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
       return DefaultResponse.ok;
     }
 
-    return this.reviewProvider.insertEmptyReview(
+    await this.reviewProvider.insertEmptyReview(
       artistId,
       eventId,
       userId,
       body.displayName,
     );
+
+    return { status: DefaultResponseStatus.CREATED, data: 'Review created' };
   }
 }

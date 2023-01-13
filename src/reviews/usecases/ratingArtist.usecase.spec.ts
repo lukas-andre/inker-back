@@ -186,12 +186,9 @@ describe('RatingArtistUsecase', () => {
       .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
       .mockImplementation(() => Promise.resolve(undefined));
 
-    jest.spyOn(reviewProvider, 'insertEmptyReview').mockImplementation(() =>
-      Promise.resolve({
-        status: DefaultResponseStatus.CREATED,
-        data: 'Review created',
-      }),
-    );
+    jest
+      .spyOn(reviewProvider, 'insertEmptyReview')
+      .mockImplementation(() => Promise.resolve(void 0));
 
     const result = await usecase.execute(1, 1, 1, { displayName: 'test' });
 
@@ -248,12 +245,9 @@ describe('RatingArtistUsecase', () => {
       .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
       .mockImplementation(() => Promise.resolve(customerReview));
 
-    jest.spyOn(reviewProvider, 'insertEmptyReview').mockImplementation(() =>
-      Promise.resolve({
-        status: DefaultResponseStatus.CREATED,
-        data: 'Review created',
-      }),
-    );
+    jest
+      .spyOn(reviewProvider, 'insertEmptyReview')
+      .mockImplementation(() => void 0);
 
     const result = await usecase.execute(1, 1, 1, { displayName: 'test' });
 
@@ -309,6 +303,58 @@ describe('RatingArtistUsecase', () => {
     jest
       .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
       .mockImplementation(() => Promise.resolve(customerReview));
+
+    try {
+      await usecase.execute(1, 1, 1, {
+        displayName: 'test',
+        comment: 'test',
+      });
+    } catch (error) {
+      expect(error).toEqual(
+        new DomainUnProcessableEntity(USER_ALREADY_REVIEW_THE_EVENT),
+      );
+    }
+  });
+
+  it('RatingArtistUsecase[Rate & User Did Rate Before] should create a new review', async () => {
+    const doneAgendaEvent: Agenda = {
+      id: 1,
+      artistId: 1,
+      userId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      open: true,
+      public: true,
+      workingDays: [],
+      agendaEvent: {
+        id: 1,
+        done: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+        end: new Date(),
+        start: new Date(),
+        color: 'test',
+        title: 'test',
+        customerId: 1,
+        agenda: null,
+        notification: true,
+        info: 'test',
+      },
+    };
+
+    jest
+      .spyOn(agendaProvider, 'artistAgendaAndEventRelatedToCustomer')
+      .mockImplementation(() => Promise.resolve(doneAgendaEvent));
+
+    jest
+      .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
+      .mockImplementation(() => Promise.resolve(undefined));
+
+    jest
+      .spyOn(reviewProvider, 'hasReviews')
+      .mockImplementation(() => Promise.resolve(false));
 
     try {
       await usecase.execute(1, 1, 1, {
