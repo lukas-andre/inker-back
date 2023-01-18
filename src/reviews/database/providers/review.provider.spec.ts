@@ -72,19 +72,6 @@ describe('ReviewProvider', () => {
     await moduleFixture.close();
   });
 
-  beforeEach(async () => {
-    // await reviewProvider.repo.query(
-    //   'TRUNCATE TABLE review RESTART IDENTITY CASCADE',
-    // );
-    // await reviewAvgProvider.repo.query(
-    //   'TRUNCATE TABLE review_avg RESTART IDENTITY CASCADE',
-    // );
-    // await reviewProvider.repo.query('TRUNCATE TABLE review');
-    // await reviewAvgProvider.repo.query('TRUNCATE TABLE review_avg');
-    // await reviewProvider.repo.query('DELETE FROM review');
-    // await reviewAvgProvider.repo.query('DELETE FROM review_avg');
-  });
-
   it('reviewProvider should be defined', async () => {
     expect(reviewProvider).toBeDefined();
   });
@@ -498,5 +485,5 @@ describe('ReviewProvider', () => {
     expect(review2).toBe(false);
 
     jest.restoreAllMocks();
-  }, 100000);
+  });
 });
