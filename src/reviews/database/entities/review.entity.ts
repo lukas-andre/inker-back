@@ -45,11 +45,11 @@ export class Review extends BaseEntity {
   reviewReactions?: ReviewReactionsDetail[];
 
   @Column({ type: 'int', nullable: false, name: 'created_by' })
-  createBy: number;
+  createdBy: number;
 
   @Column({ nullable: false, name: 'display_name' })
   displayName: string;
 
-  @Column({ default: false })
+  @Column({ default: false, name: 'is_rated' })
   isRated: boolean;
 }

@@ -12,7 +12,7 @@ export class ReviewAvgProvider {
     private readonly repository: Repository<ReviewAvg>,
   ) {}
 
-  repo(): Repository<ReviewAvg> {
+  get repo(): Repository<ReviewAvg> {
     return this.repository;
   }
 

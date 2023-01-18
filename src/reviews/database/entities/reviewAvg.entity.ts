@@ -37,9 +37,9 @@ export class ReviewAvg extends BaseEntity {
   @Index()
   artistId: number;
 
-  @Column({ type: 'int', nullable: false, name: 'event_id' })
-  @Index()
-  eventId: number;
+  // @Column({ type: 'int', nullable: false, name: 'event_id' })
+  // @Index()
+  // eventId: number;
 
   @Column({ type: 'real', nullable: false })
   value: number;
