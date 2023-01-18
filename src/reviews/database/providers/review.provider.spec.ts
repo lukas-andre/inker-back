@@ -1,6 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import sinon from 'sinon';
+import { mock } from 'ts-mockito';
+import {
+  DataSource,
+  EntityManager,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 
 import { always } from '../../../global/domain/utils/always';
 import {
@@ -15,9 +22,12 @@ import { Review } from '../entities/review.entity';
 import { RatingRate, ReviewAvg } from '../entities/reviewAvg.entity';
 import { ReviewReaction } from '../entities/reviewReaction.entity';
 
-import { ReviewProvider } from './review.provider';
+import {
+  QueryRunnerFactory,
+  QueryRunnerInterface,
+  ReviewProvider,
+} from './review.provider';
 import { ReviewAvgProvider } from './reviewAvg.provider';
-
 describe('ReviewProvider', () => {
   const reviewToken = getRepositoryToken(Review);
   const reviewAvgToken = getRepositoryToken(ReviewAvg);
@@ -450,6 +460,7 @@ describe('ReviewProvider', () => {
 
   it('reviewProvider.updateReviewAvg should throw an error if the review avg is not found', async () => {
     const [artistId, eventId, customerId] = always(12);
+    const rating = RatingRate.FOUR_HALF;
 
     const review = await reviewProvider.createReviewTransaction(
       artistId,
@@ -459,15 +470,57 @@ describe('ReviewProvider', () => {
         displayName: 'test display name 12',
         header: 'test header 12',
         comment: 'test comment 12',
-        rating: RatingRate.FOUR_HALF,
+        rating,
       },
     );
     expect(review).toBeDefined();
     expect(review).toBe(true);
 
+    const oldReviewValue = { value: rating };
+
+    interface QueryBuilderStubInterface {
+      select(): QueryBuilderStubInterface;
+      from(): QueryBuilderStubInterface;
+      where(): QueryBuilderStubInterface;
+      andWhere(): QueryBuilderStubInterface;
+      getRawOne(): Promise<{ value: number }>;
+      update(): QueryBuilderStubInterface;
+      set(): QueryBuilderStubInterface;
+      execute(): Promise<void>;
+    }
+
+    const queryBuilderStub =
+      sinon.stub() as unknown as Partial<QueryBuilderStubInterface>;
+
+    queryBuilderStub.select = sinon.stub().returns(queryBuilderStub);
+    queryBuilderStub.from = sinon.stub().returns(queryBuilderStub);
+    queryBuilderStub.where = sinon.stub().returns(queryBuilderStub);
+    queryBuilderStub.andWhere = sinon.stub().returns(queryBuilderStub);
+    queryBuilderStub.getRawOne = sinon
+      .stub()
+      .returns(Promise.resolve(oldReviewValue));
+    queryBuilderStub.update = sinon.stub().returns(queryBuilderStub);
+    queryBuilderStub.set = sinon.stub().returns(queryBuilderStub);
+    queryBuilderStub.execute = sinon.stub().returns(Promise.resolve());
+
+    const mockQueryRunner: QueryRunnerInterface = {
+      startTransaction: jest.fn(() => Promise.resolve()),
+      commitTransaction: jest.fn(() => Promise.resolve()),
+      rollbackTransaction: jest.fn(() => Promise.resolve()),
+      connect: jest.fn(() => Promise.resolve()),
+      manager: mock<EntityManager>(),
+      release: jest.fn(() => Promise.resolve()),
+      query: jest.fn((query: string, parameters?: unknown[]): Promise<any> => {
+        return Promise.resolve([undefined]);
+      }),
+    };
+
+    jest.spyOn(QueryRunnerFactory, 'create').mockReturnValue(mockQueryRunner);
     jest
-      .spyOn(reviewProvider, 'findReviewAvgTransaction')
-      .mockResolvedValue(undefined);
+      .spyOn(mockQueryRunner.manager, 'createQueryBuilder')
+      .mockImplementation(
+        () => queryBuilderStub as unknown as SelectQueryBuilder<Review>,
+      );
 
     const review2 = await reviewProvider.updateReviewTransaction(
       artistId,

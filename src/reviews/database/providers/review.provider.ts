@@ -32,6 +32,22 @@ export type FindIfCustomerAlreadyReviewTheEventResult = Pick<
   'id' | 'isRated'
 >;
 
+export interface QueryRunnerInterface {
+  startTransaction(): Promise<void>;
+  commitTransaction(): Promise<void>;
+  rollbackTransaction(): Promise<void>;
+  connect(): Promise<void>;
+  manager: EntityManager;
+  release(): Promise<void>;
+  query: QueryRunner['query'];
+}
+
+export class QueryRunnerFactory {
+  public static create(dataSource: DataSource): QueryRunnerInterface {
+    return dataSource.createQueryRunner();
+  }
+}
+
 @Injectable()
 export class ReviewProvider extends BaseComponent {
   constructor(
@@ -125,7 +141,7 @@ export class ReviewProvider extends BaseComponent {
   ) {
     let transactionIsOk = false;
 
-    const queryRunner = this.source.createQueryRunner();
+    const queryRunner = QueryRunnerFactory.create(this.dataSource);
 
     await queryRunner.startTransaction();
     try {
@@ -170,7 +186,7 @@ export class ReviewProvider extends BaseComponent {
   ): Promise<boolean> {
     let transactionIsOk = false;
 
-    const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = QueryRunnerFactory.create(this.dataSource);
 
     await queryRunner.startTransaction();
 
@@ -224,14 +240,14 @@ export class ReviewProvider extends BaseComponent {
   }
 
   private async updateReviewAvgTransaction(
-    queryRunner: QueryRunner,
+    queryRunner: QueryRunnerInterface,
     artistId: number,
     body: ReviewArtistRequestDto,
     oldReviewValue: number,
   ): Promise<void> {
-    const reviewAvg = await this.findReviewAvgTransaction(
-      queryRunner,
-      artistId,
+    const [reviewAvg]: Pick<ReviewAvg, 'detail'>[] = await queryRunner.query(
+      `SELECT detail FROM review_avg WHERE artist_id = $1 LIMIT 1`,
+      [artistId],
     );
 
     if (!reviewAvg) {
@@ -259,14 +275,6 @@ export class ReviewProvider extends BaseComponent {
       .execute();
   }
 
-  async findReviewAvgTransaction(queryRunner: QueryRunner, artistId: number) {
-    return await queryRunner.manager.findOne(ReviewAvg, {
-      where: {
-        artistId: artistId,
-      },
-    });
-  }
-
   private getDetailToUpdate(
     detail: Record<RatingRate, number>,
     newRating: RatingRate,
@@ -292,7 +300,7 @@ export class ReviewProvider extends BaseComponent {
   }
 
   private async handleReviewAvg(
-    queryRunner: QueryRunner,
+    queryRunner: QueryRunnerInterface,
     artistId: number,
     body: ReviewArtistRequestDto,
   ): Promise<void> {
@@ -315,7 +323,7 @@ export class ReviewProvider extends BaseComponent {
   }
 
   private async newReviewAvgTransact(
-    queryRunner: QueryRunner,
+    queryRunner: QueryRunnerInterface,
     body: ReviewArtistRequestDto,
     artistId: number,
   ): Promise<void> {
@@ -343,7 +351,7 @@ export class ReviewProvider extends BaseComponent {
   }
 
   private async updateReviewAvgTransact(
-    queryRunner: QueryRunner,
+    queryRunner: QueryRunnerInterface,
     body: ReviewArtistRequestDto,
     reviewAvg: ReviewAvg,
     artistId: number,
