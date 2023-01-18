@@ -50,7 +50,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
 
     const review = await this.reviewProvider.repo.findOne({
       where: {
-        createBy: userId,
+        createdBy: userId,
         artistId: artistId,
         eventId: eventId,
       },
@@ -112,7 +112,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
           value: body.rating,
           artistId: artistId,
           eventId: eventId,
-          createBy: userId,
+          createdBy: userId,
           displayName: body.displayName,
           header: body.header,
           content: body.comment,
@@ -155,7 +155,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
           value: body.rating,
           isRated: true,
         })
-        .where('createBy = :createBy', { createBy: userId })
+        .where('createdBy = :createdBy', { createdBy: userId })
         .andWhere('artistId = :artistId', { artistId: artistId })
         .andWhere('eventId = :eventId', { eventId: eventId })
         .execute();
@@ -184,7 +184,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
     const reviewAvg = await queryRunner.manager.findOne(ReviewAvg, {
       where: {
         artistId: artistId,
-        eventId: eventId,
+        // eventId: eventId,
       },
     });
 
@@ -242,7 +242,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
         artistId: artistId,
         value: body.rating,
         count: 1,
-        eventId: eventId,
+        // eventId: eventId,
         detail: newRatingDetail,
       })
       .execute();
@@ -302,7 +302,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
     // hint: improve the query to just check if the user has a review
     const userRateThisEventBefore = await this.reviewProvider.repo.findOne({
       where: {
-        createBy: userId,
+        createdBy: userId,
         artistId: artistId,
         eventId: eventId,
       },
@@ -320,7 +320,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
         .values({
           artistId: artistId,
           eventId: eventId,
-          createBy: userId,
+          createdBy: userId,
           displayName: body.displayName,
           isRated: false,
         })

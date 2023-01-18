@@ -13,7 +13,12 @@ import {
   DBServiceFindOneException,
   DBServiceSaveException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT } from '../../codes';
+import {
+  ERROR_INSERTING_EMPTY_REVIEW,
+  PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT,
+  REVIEW_AVG_MUST_EXISTS_TO_UPDATE,
+  REVIEW_MUST_EXISTS_TO_UPDATE,
+} from '../../codes';
 import { ReviewArtistRequestDto } from '../../dtos/reviewArtistRequest.dto';
 import { Review } from '../entities/review.entity';
 import {
@@ -21,6 +26,11 @@ import {
   RatingRate,
   ReviewAvg,
 } from '../entities/reviewAvg.entity';
+
+export type FindIfCustomerAlreadyReviewTheEventResult = Pick<
+  Review,
+  'id' | 'isRated'
+>;
 
 @Injectable()
 export class ReviewProvider extends BaseComponent {
@@ -47,10 +57,6 @@ export class ReviewProvider extends BaseComponent {
     return this.repository;
   }
 
-  async findAll(params: number) {
-    return params;
-  }
-
   async exists(id: number): Promise<boolean | undefined> {
     const [result]: ExistsQueryResult[] = await this.repository.query(
       `SELECT EXISTS(SELECT 1 FROM review a WHERE a.id = $1)`,
@@ -64,19 +70,16 @@ export class ReviewProvider extends BaseComponent {
     customerId: number,
     eventId: number,
     artistId: number,
-  ): Promise<Review | undefined> {
+  ): Promise<FindIfCustomerAlreadyReviewTheEventResult> {
     try {
-      // await this.repository
-      //   .createQueryBuilder('review')
-      //   .select('review.id')
-      //   .where('review.createBy = :customerId', { customerId })
-      //   .andWhere('review.eventId = :eventId', { eventId })
-      //   .andWhere('review.artistId = :artistId', { artistId })
-      //   .getOne();
-
-      return await this.repository.findOne({
-        where: { createBy: customerId, eventId, artistId },
-      });
+      return await this.repository
+        .createQueryBuilder('review')
+        .select('review.id', 'id')
+        .addSelect('review.isRated', 'isRated')
+        .where('review.createdBy = :customerId', { customerId })
+        .andWhere('review.eventId = :eventId', { eventId })
+        .andWhere('review.artistId = :artistId', { artistId })
+        .getRawOne<FindIfCustomerAlreadyReviewTheEventResult>();
     } catch (error) {
       throw new DBServiceFindOneException(
         this,
@@ -100,13 +103,17 @@ export class ReviewProvider extends BaseComponent {
         .values({
           artistId: artistId,
           eventId: eventId,
-          createBy: createdBy,
+          createdBy: createdBy,
           displayName: displayName,
           isRated: false,
         })
         .execute();
     } catch (error) {
-      throw new DBServiceSaveException(this, 'Error saving review', error);
+      throw new DBServiceSaveException(
+        this,
+        ERROR_INSERTING_EMPTY_REVIEW,
+        error,
+      );
     }
   }
 
@@ -132,7 +139,7 @@ export class ReviewProvider extends BaseComponent {
           value: reviewData.rating,
           artistId: artistId,
           eventId: eventId,
-          createBy: userId,
+          createdBy: userId,
           displayName: reviewData.displayName,
           header: reviewData.header,
           content: reviewData.comment,
@@ -140,7 +147,7 @@ export class ReviewProvider extends BaseComponent {
         })
         .execute();
 
-      await this.handleReviewAvg(queryRunner, artistId, reviewData, eventId);
+      await this.handleReviewAvg(queryRunner, artistId, reviewData);
 
       await queryRunner.commitTransaction();
 
@@ -170,6 +177,19 @@ export class ReviewProvider extends BaseComponent {
     try {
       await queryRunner.connect();
 
+      const oldReviewValue = await queryRunner.manager
+        .createQueryBuilder()
+        .select('value')
+        .from(Review, 'review')
+        .where('created_by = :createdBy', { createdBy: userId })
+        .andWhere('artist_id = :artistId', { artistId: artistId })
+        .andWhere('event_id = :eventId', { eventId: eventId })
+        .getRawOne<{ value: number }>();
+
+      if (!oldReviewValue) {
+        throw new DBServiceFindOneException(this, REVIEW_MUST_EXISTS_TO_UPDATE);
+      }
+
       await queryRunner.manager
         .createQueryBuilder()
         .update(Review)
@@ -178,12 +198,17 @@ export class ReviewProvider extends BaseComponent {
           value: updateData.rating,
           isRated: true,
         })
-        .where('createBy = :createBy', { createBy: userId })
+        .where('createdBy = :createdBy', { createdBy: userId })
         .andWhere('artistId = :artistId', { artistId: artistId })
         .andWhere('eventId = :eventId', { eventId: eventId })
         .execute();
 
-      await this.handleReviewAvg(queryRunner, artistId, updateData, eventId);
+      await this.updateReviewAvgTransaction(
+        queryRunner,
+        artistId,
+        updateData,
+        oldReviewValue.value,
+      );
 
       await queryRunner.commitTransaction();
 
@@ -198,28 +223,93 @@ export class ReviewProvider extends BaseComponent {
     return transactionIsOk;
   }
 
+  private async updateReviewAvgTransaction(
+    queryRunner: QueryRunner,
+    artistId: number,
+    body: ReviewArtistRequestDto,
+    oldReviewValue: number,
+  ): Promise<void> {
+    const reviewAvg = await this.findReviewAvgTransaction(
+      queryRunner,
+      artistId,
+    );
+
+    if (!reviewAvg) {
+      throw new DBServiceFindOneException(
+        this,
+        REVIEW_AVG_MUST_EXISTS_TO_UPDATE,
+      );
+    }
+
+    const detailToUpdate = this.getDetailToUpdate(
+      reviewAvg.detail,
+      body.rating,
+      oldReviewValue,
+    );
+    const avgToUpdate = this.getAvgToUpdate(detailToUpdate);
+
+    await queryRunner.manager
+      .createQueryBuilder()
+      .update(ReviewAvg)
+      .set({
+        value: avgToUpdate,
+        detail: detailToUpdate,
+      })
+      .where('artistId = :artistId', { artistId: artistId })
+      .execute();
+  }
+
+  async findReviewAvgTransaction(queryRunner: QueryRunner, artistId: number) {
+    return await queryRunner.manager.findOne(ReviewAvg, {
+      where: {
+        artistId: artistId,
+      },
+    });
+  }
+
+  private getDetailToUpdate(
+    detail: Record<RatingRate, number>,
+    newRating: RatingRate,
+    oldReviewValue: number,
+  ): Record<RatingRate, number> {
+    const newDetail = { ...detail };
+
+    newDetail[oldReviewValue] = newDetail[oldReviewValue] - 1;
+    newDetail[newRating] = newDetail[newRating] + 1;
+
+    return newDetail;
+  }
+
+  private getAvgToUpdate(newDetail: Record<RatingRate, number>): number {
+    let sum = 0;
+    let count = 0;
+    for (const key in newDetail) {
+      const value = newDetail[key];
+      sum += Number(key) * value;
+      count += value;
+    }
+    return sum / count;
+  }
+
   private async handleReviewAvg(
     queryRunner: QueryRunner,
     artistId: number,
     body: ReviewArtistRequestDto,
-    eventId: number,
   ): Promise<void> {
     const reviewAvg = await queryRunner.manager.findOne(ReviewAvg, {
       where: {
         artistId: artistId,
-        eventId: eventId,
       },
     });
 
     if (!reviewAvg) {
-      await this.newReviewAvgTransact(queryRunner, body, artistId, eventId);
+      await this.newReviewAvgTransact(queryRunner, body, artistId);
     } else {
       await this.updateReviewAvgTransact(
         queryRunner,
         body,
         reviewAvg,
         artistId,
-        eventId,
       );
     }
   }
@@ -228,7 +318,6 @@ export class ReviewProvider extends BaseComponent {
     queryRunner: QueryRunner,
     body: ReviewArtistRequestDto,
     artistId: number,
-    eventId: number,
   ): Promise<void> {
     const newRatingDetail = this.getNewRatingDetail(body);
 
@@ -240,7 +329,6 @@ export class ReviewProvider extends BaseComponent {
         artistId: artistId,
         value: body.rating,
         count: 1,
-        eventId: eventId,
         detail: newRatingDetail,
       })
       .execute();
@@ -249,7 +337,7 @@ export class ReviewProvider extends BaseComponent {
   private getNewRatingDetail(
     body: ReviewArtistRequestDto,
   ): Record<RatingRate, number> {
-    const newRatingDetail = defaultRatingMap;
+    const newRatingDetail = { ...defaultRatingMap };
     newRatingDetail[body.rating] = newRatingDetail[body.rating] + 1;
     return newRatingDetail;
   }
@@ -259,7 +347,6 @@ export class ReviewProvider extends BaseComponent {
     body: ReviewArtistRequestDto,
     reviewAvg: ReviewAvg,
     artistId: number,
-    eventId: number,
   ): Promise<void> {
     const { newAvg, newCount, newDetail } = await this.getUpdateReviewAvgValues(
       reviewAvg,
@@ -275,7 +362,6 @@ export class ReviewProvider extends BaseComponent {
         detail: newDetail,
       })
       .where('artistId = :artistId', { artistId: artistId })
-      .andWhere('eventId = :eventId', { eventId: eventId })
       .execute();
   }
 

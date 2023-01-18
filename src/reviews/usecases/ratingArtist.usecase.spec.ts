@@ -8,8 +8,10 @@ import { DefaultResponseStatus } from '../../global/infrastructure/dtos/defaultR
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { USER_IS_NOT_RELATED_TO_EVENT } from '../../users/domain/errors/codes';
 import { ERROR_CREATING_REVIEW } from '../codes';
-import { Review } from '../database/entities/review.entity';
-import { ReviewProvider } from '../database/providers/review.provider';
+import {
+  FindIfCustomerAlreadyReviewTheEventResult,
+  ReviewProvider,
+} from '../database/providers/review.provider';
 
 import { RatingArtistUsecase } from './ratingArtist.usecase';
 
@@ -127,18 +129,9 @@ describe('RatingArtistUsecase', () => {
       .spyOn(agendaProvider, 'artistAgendaAndEventRelatedToCustomer')
       .mockImplementation(() => Promise.resolve(doneAgendaEvent));
 
-    const customerReview: Review = {
+    const customerReview: FindIfCustomerAlreadyReviewTheEventResult = {
       id: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      eventId: 1,
-      artistId: 1,
-      value: 0,
-      createBy: 1,
-      header: 'test',
-      content: 'test',
       isRated: true,
-      displayName: 'test',
     };
 
     jest
@@ -230,15 +223,9 @@ describe('RatingArtistUsecase', () => {
       .spyOn(agendaProvider, 'artistAgendaAndEventRelatedToCustomer')
       .mockImplementation(() => Promise.resolve(doneAgendaEvent));
 
-    const customerReview: Review = {
+    const customerReview: FindIfCustomerAlreadyReviewTheEventResult = {
       id: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      eventId: 1,
-      artistId: 1,
-      createBy: 1,
       isRated: false,
-      displayName: 'test',
     };
 
     jest
@@ -340,16 +327,11 @@ describe('RatingArtistUsecase', () => {
       .spyOn(agendaProvider, 'artistAgendaAndEventRelatedToCustomer')
       .mockImplementation(() => Promise.resolve(doneAgendaEvent));
 
-    const customerReview: Review = {
+    const customerReview: FindIfCustomerAlreadyReviewTheEventResult = {
       id: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      eventId: 1,
-      artistId: 1,
-      createBy: 1,
       isRated: true,
-      displayName: 'test',
     };
+
     jest
       .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
       .mockImplementation(() => Promise.resolve(customerReview));
@@ -453,16 +435,11 @@ describe('RatingArtistUsecase', () => {
       .spyOn(agendaProvider, 'artistAgendaAndEventRelatedToCustomer')
       .mockImplementation(() => Promise.resolve(doneAgendaEvent));
 
-    const customerReview: Review = {
+    const customerReview: FindIfCustomerAlreadyReviewTheEventResult = {
       id: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      eventId: 1,
-      artistId: 1,
-      createBy: 1,
       isRated: true,
-      displayName: 'test',
     };
+
     jest
       .spyOn(reviewProvider, 'findIfCustomerAlreadyReviewTheEvent')
       .mockImplementation(() => Promise.resolve(customerReview));
