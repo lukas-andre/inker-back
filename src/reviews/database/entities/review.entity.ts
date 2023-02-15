@@ -2,15 +2,11 @@ import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
-export interface ReviewReactionsDetail {
-  likes: number;
-  dislikes: number;
-}
+export type ReviewReactionDetailType = 'likes' | 'dislikes' | 'off';
 
-export enum ReviewReactionType {
-  LIKE = 'like',
-  DISLIKE = 'dislike',
-}
+export type ReviewReactionsDetail = {
+  [key in ReviewReactionDetailType]: number;
+};
 
 @Entity()
 export class Review extends BaseEntity {
@@ -39,10 +35,13 @@ export class Review extends BaseEntity {
   @Column({
     type: 'jsonb',
     nullable: false,
-    default: {},
+    default: {
+      dislikes: 0,
+      likes: 0,
+    } as ReviewReactionsDetail,
     name: 'review_reactions',
   })
-  reviewReactions?: ReviewReactionsDetail[];
+  reviewReactions?: ReviewReactionsDetail;
 
   @Column({ type: 'int', nullable: false, name: 'created_by' })
   createdBy: number;

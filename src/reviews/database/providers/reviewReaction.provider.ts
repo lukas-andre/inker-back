@@ -1,35 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import {
-  InjectDataSource,
-  InjectEntityManager,
-  InjectRepository,
-} from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/constants';
-import { Review } from '../entities/review.entity';
+import { ReviewReactionEnum } from '../../../reactions/domain/enums/reviewReaction.enum';
 import { ReviewReaction } from '../entities/reviewReaction.entity';
 
 @Injectable()
 export class ReviewReactionProvider {
   constructor(
     @InjectRepository(ReviewReaction, REVIEW_DB_CONNECTION_NAME)
-    private readonly repository: Repository<Review>,
-    @InjectDataSource(REVIEW_DB_CONNECTION_NAME)
-    private readonly dataSource: DataSource,
-    @InjectEntityManager(REVIEW_DB_CONNECTION_NAME)
-    private readonly entityManager: EntityManager,
+    private readonly repository: Repository<ReviewReaction>,
   ) {}
 
-  get source(): DataSource {
-    return this.dataSource;
-  }
-
-  get manager(): EntityManager {
-    return this.entityManager;
-  }
-
-  get repo(): Repository<Review> {
+  get repo(): Repository<ReviewReaction> {
     return this.repository;
+  }
+
+  async getReviewReactionIfExists(
+    reviewId: number,
+  ): Promise<ReviewReactionEnum | undefined> {
+    const [result]: { reactionType: ReviewReactionEnum }[] =
+      await this.repo.query(
+        `SELECT  reaction_type AS "reactionType" FROM review_reaction WHERE review_id = $1`,
+        [reviewId],
+      );
+    return result ? result.reactionType : undefined;
   }
 }

@@ -1,59 +1,61 @@
-import {
-  ArgumentMetadata,
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-  PipeTransform,
-} from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { validate } from 'class-validator';
+// import {
+//   ArgumentMetadata,
+//   BadRequestException,
+//   Injectable,
+//   Logger,
+//   NotFoundException,
+//   PipeTransform,
+// } from '@nestjs/common';
+// import { plainToClass } from 'class-transformer';
+// import { validate } from 'class-validator';
 
-import {
-  REVIEW_ID_PIPE_FAILED,
-  REVIEW_INVALID_ID_TYPE,
-  REVIEW_NOT_EXISTS,
-} from '../codes';
-import { ReviewProvider } from '../database/providers/review.provider';
+// import {
+//   REVIEW_ID_PIPE_FAILED,
+//   REVIEW_INVALID_ID_TYPE,
+//   REVIEW_NOT_EXISTS,
+// } from '../codes';
+// import { ReviewReactionProvider } from '../database/providers/reviewReaction.provider';
 
-@Injectable()
-export class ReviewIdPipe
-  implements PipeTransform<string, Promise<string | number>>
-{
-  private readonly logger = new Logger(ReviewIdPipe.name);
-  constructor(private readonly reviewProvider: ReviewProvider) {}
+// @Injectable()
+// export class ReviewReactionIdPipe
+//   implements PipeTransform<string, Promise<string | number>>
+// {
+//   private readonly logger = new Logger(ReviewReactionIdPipe.name);
+//   constructor(
+//     private readonly reviewReactionProvider: ReviewReactionProvider,
+//   ) {}
 
-  async transform(value: string, { metatype }: ArgumentMetadata) {
-    if (!metatype || this.invalidIdType(metatype)) {
-      return value;
-    }
+//   async transform(value: string, { metatype }: ArgumentMetadata) {
+//     if (!metatype || this.invalidIdType(metatype)) {
+//       return value;
+//     }
 
-    const object = plainToClass(metatype, value);
+//     const object = plainToClass(metatype, value);
 
-    const errors = await validate(object);
-    if (errors.length > 0) {
-      this.logger.log({ errors });
-      throw new BadRequestException(REVIEW_ID_PIPE_FAILED);
-    }
+//     const errors = await validate(object);
+//     if (errors.length > 0) {
+//       this.logger.log({ errors });
+//       throw new BadRequestException(REVIEW_ID_PIPE_FAILED);
+//     }
 
-    const id = this.parseInt(value);
-    if (!(await this.reviewProvider.exists(id))) {
-      throw new NotFoundException(REVIEW_NOT_EXISTS);
-    }
+//     const id = this.parseInt(value);
+//     if (!(await this.reviewReactionProvider.exists(id))) {
+//       throw new NotFoundException(REVIEW_NOT_EXISTS);
+//     }
 
-    return id;
-  }
+//     return id;
+//   }
 
-  parseInt(val: string) {
-    const value = parseInt(val, 10);
-    if (isNaN(value)) {
-      throw new BadRequestException(REVIEW_INVALID_ID_TYPE);
-    }
-    return value;
-  }
+//   parseInt(val: string) {
+//     const value = parseInt(val, 10);
+//     if (isNaN(value)) {
+//       throw new BadRequestException(REVIEW_INVALID_ID_TYPE);
+//     }
+//     return value;
+//   }
 
-  private invalidIdType(metatype: Function): boolean {
-    const types: Function[] = [Number];
-    return !types.includes(metatype) || Number.isNaN(metatype);
-  }
-}
+//   private invalidIdType(metatype: Function): boolean {
+//     const types: Function[] = [Number];
+//     return !types.includes(metatype) || Number.isNaN(metatype);
+//   }
+// }

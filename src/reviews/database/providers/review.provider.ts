@@ -13,14 +13,16 @@ import {
   DBServiceFindOneException,
   DBServiceSaveException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
+import { ReviewReactionEnum } from '../../../reactions/domain/enums/reviewReaction.enum';
 import {
   ERROR_INSERTING_EMPTY_REVIEW,
+  FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY,
   PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT,
   REVIEW_AVG_MUST_EXISTS_TO_UPDATE,
   REVIEW_MUST_EXISTS_TO_UPDATE,
 } from '../../codes';
 import { ReviewArtistRequestDto } from '../../dtos/reviewArtistRequest.dto';
-import { Review } from '../entities/review.entity';
+import { Review, ReviewReactionsDetail } from '../entities/review.entity';
 import {
   defaultRatingMap,
   RatingRate,
@@ -71,6 +73,158 @@ export class ReviewProvider extends BaseComponent {
 
   get repo(): Repository<Review> {
     return this.repository;
+  }
+
+  async updateReviewReactionTransaction(
+    currentReaction: ReviewReactionEnum,
+    reviewId: number,
+    userId: number,
+    reaction: ReviewReactionEnum,
+  ): Promise<boolean> {
+    let transactionIsOK = false;
+
+    const queryRunner = QueryRunnerFactory.create(this.dataSource);
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.query(
+        `UPDATE review_reaction SET reaction_type = $1 WHERE review_id = $2 AND user_id = $3`,
+        [reaction, reviewId, userId],
+      );
+
+      const [{ detail }]: { detail: ReviewReactionsDetail }[] =
+        await queryRunner.manager.query(
+          `SELECT review_reactions AS detail FROM review WHERE id = $1`,
+          [reviewId],
+        );
+
+      if (reaction !== ReviewReactionEnum.off) {
+        detail[reaction + 's'] += 1;
+        detail[currentReaction + 's'] -= 1;
+      }
+
+      await queryRunner.manager.query(
+        `UPDATE review SET review_reactions = $1 WHERE id = $2`,
+        [detail, reviewId],
+      );
+
+      await queryRunner.commitTransaction();
+
+      transactionIsOK = true;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+
+    return transactionIsOK;
+  }
+
+  async offReviewReactionTransaction(
+    currentReaction: ReviewReactionEnum,
+    reviewId: number,
+    userId: number,
+  ): Promise<boolean> {
+    let transactionIsOK = false;
+
+    const queryRunner = QueryRunnerFactory.create(this.dataSource);
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.query(
+        `UPDATE review_reaction SET reaction_type = $1 WHERE review_id = $2 AND user_id = $3`,
+        [ReviewReactionEnum.off, reviewId, userId],
+      );
+
+      const [{ detail }]: { detail: ReviewReactionsDetail }[] =
+        await queryRunner.manager.query(
+          `SELECT review_reactions AS detail FROM review WHERE id = $1`,
+          [reviewId],
+        );
+
+      detail[currentReaction + 's'] -= 1;
+
+      await queryRunner.manager.query(
+        `UPDATE review SET review_reactions = $1 WHERE id = $2`,
+        [detail, reviewId],
+      );
+
+      await queryRunner.commitTransaction();
+
+      transactionIsOK = true;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+
+    return transactionIsOK;
+  }
+
+  async insertReviewReactionTransaction(
+    reviewId: number,
+    customerId: number,
+    reviewReaction: ReviewReactionEnum,
+  ): Promise<boolean> {
+    let transactionIsOK = false;
+
+    const queryRunner = QueryRunnerFactory.create(this.dataSource);
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.query(
+        `INSERT INTO review_reaction (review_id, user_id, reaction_type) VALUES ($1, $2, $3)`,
+        [reviewId, customerId, reviewReaction],
+      );
+
+      const [{ detail }]: { detail: ReviewReactionsDetail }[] =
+        await queryRunner.manager.query(
+          `SELECT review_reactions AS detail FROM review WHERE id = $1`,
+          [reviewId],
+        );
+
+      if (reviewReaction !== ReviewReactionEnum.off) {
+        detail[reviewReaction + 's'] += 1;
+      }
+
+      await queryRunner.manager.query(
+        `UPDATE review SET review_reactions = $1 WHERE id = $2`,
+        [detail, reviewId],
+      );
+
+      await queryRunner.commitTransaction();
+
+      transactionIsOK = true;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+
+    return transactionIsOK;
+  }
+
+  async isReviewRated(reviewId: number): Promise<boolean | undefined> {
+    try {
+      const review = await this.repository
+        .createQueryBuilder('review')
+        .select('review.isRated', 'isRated')
+        .where('review.id = :reviewId', { reviewId })
+        .getRawOne<FindIfCustomerAlreadyReviewTheEventResult>();
+      return review ? review.isRated : undefined;
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY,
+        error,
+      );
+    }
   }
 
   async exists(id: number): Promise<boolean | undefined> {
@@ -139,7 +293,7 @@ export class ReviewProvider extends BaseComponent {
     userId: number,
     reviewData: ReviewArtistRequestDto,
   ) {
-    let transactionIsOk = false;
+    let transactionIsOK = false;
 
     const queryRunner = QueryRunnerFactory.create(this.dataSource);
 
@@ -167,7 +321,7 @@ export class ReviewProvider extends BaseComponent {
 
       await queryRunner.commitTransaction();
 
-      transactionIsOk = true;
+      transactionIsOK = true;
     } catch (error) {
       this.logger.error(error);
       await queryRunner.rollbackTransaction();
@@ -175,7 +329,7 @@ export class ReviewProvider extends BaseComponent {
       await queryRunner.release();
     }
 
-    return transactionIsOk;
+    return transactionIsOK;
   }
 
   async updateReviewTransaction(
@@ -184,7 +338,7 @@ export class ReviewProvider extends BaseComponent {
     userId: number,
     updateData: ReviewArtistRequestDto,
   ): Promise<boolean> {
-    let transactionIsOk = false;
+    let transactionIsOK = false;
 
     const queryRunner = QueryRunnerFactory.create(this.dataSource);
 
@@ -228,7 +382,7 @@ export class ReviewProvider extends BaseComponent {
 
       await queryRunner.commitTransaction();
 
-      transactionIsOk = true;
+      transactionIsOK = true;
     } catch (error) {
       this.logger.error(error);
       await queryRunner.rollbackTransaction();
@@ -236,7 +390,7 @@ export class ReviewProvider extends BaseComponent {
       await queryRunner.release();
     }
 
-    return transactionIsOk;
+    return transactionIsOK;
   }
 
   private async updateReviewAvgTransaction(

@@ -14,11 +14,13 @@ import {
   DBServiceFindOneException,
   DBServiceSaveException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
+import { ReviewReactionEnum } from '../../../reactions/domain/enums/reviewReaction.enum';
 import {
   ERROR_INSERTING_EMPTY_REVIEW,
+  FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY,
   PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT,
 } from '../../codes';
-import { Review } from '../entities/review.entity';
+import { Review, ReviewReactionsDetail } from '../entities/review.entity';
 import { RatingRate, ReviewAvg } from '../entities/reviewAvg.entity';
 import { ReviewReaction } from '../entities/reviewReaction.entity';
 
@@ -28,12 +30,16 @@ import {
   ReviewProvider,
 } from './review.provider';
 import { ReviewAvgProvider } from './reviewAvg.provider';
+import { ReviewReactionProvider } from './reviewReaction.provider';
+
 describe('ReviewProvider', () => {
   const reviewToken = getRepositoryToken(Review);
   const reviewAvgToken = getRepositoryToken(ReviewAvg);
+  const reviewReactionToken = getRepositoryToken(ReviewReaction);
 
   let reviewProvider: ReviewProvider;
   let reviewAvgProvider: ReviewAvgProvider;
+  let reviewReactionProvider: ReviewReactionProvider;
   let moduleFixture: TestingModule;
 
   beforeAll(async () => {
@@ -67,18 +73,27 @@ describe('ReviewProvider', () => {
           provide: reviewAvgToken,
           useClass: Repository,
         },
+        {
+          provide: reviewReactionToken,
+          useClass: Repository,
+        },
         ReviewProvider,
         ReviewAvgProvider,
+        ReviewReactionProvider,
       ],
     }).compile();
 
     reviewProvider = moduleFixture.get<ReviewProvider>(ReviewProvider);
     reviewAvgProvider = moduleFixture.get<ReviewAvgProvider>(ReviewAvgProvider);
+    reviewReactionProvider = moduleFixture.get<ReviewReactionProvider>(
+      ReviewReactionProvider,
+    );
   });
 
   afterAll(async () => {
     await reviewProvider.repo.query('TRUNCATE TABLE review');
     await reviewAvgProvider.repo.query('TRUNCATE TABLE review_avg');
+    await reviewReactionProvider.repo.query('TRUNCATE TABLE review_reaction');
     await moduleFixture.close();
   });
 
@@ -215,7 +230,10 @@ describe('ReviewProvider', () => {
     expect(review.isRated).toBe(false);
     expect(review.artistId).toBe(artistId);
     expect(review.value).toBeNull();
-    expect(review.reviewReactions).toStrictEqual({});
+    expect(review.reviewReactions).toStrictEqual({
+      likes: 0,
+      dislikes: 0,
+    });
   });
 
   it('reviewProvider.insertEmptyReview should throw an DBServiceInsertException(ERROR_INSERTING_EMPTY_REVIEW)', async () => {
@@ -303,7 +321,10 @@ describe('ReviewProvider', () => {
     expect(updatedReview.isRated).toBe(true);
     expect(updatedReview.artistId).toBe(artistId);
     expect(updatedReview.value).toBe(4);
-    expect(updatedReview.reviewReactions).toStrictEqual({});
+    expect(updatedReview.reviewReactions).toStrictEqual({
+      likes: 0,
+      dislikes: 0,
+    });
 
     const reviewAvg = await reviewAvgProvider.repo.findOne({
       where: { artistId },
@@ -538,5 +559,400 @@ describe('ReviewProvider', () => {
     expect(review2).toBe(false);
 
     jest.restoreAllMocks();
+  });
+
+  it('reviewProvider.isReviewRated should return false if the review is not rated', async () => {
+    const [artistId, eventId, customerId] = always(13);
+
+    await reviewProvider.insertEmptyReview(
+      artistId,
+      eventId,
+      customerId,
+      'test display name 13',
+    );
+
+    const review = await reviewProvider.repo.findOne({
+      where: {
+        artistId,
+        eventId,
+        createdBy: customerId,
+      },
+    });
+
+    const isRated = await reviewProvider.isReviewRated(review.id);
+
+    expect(isRated).toBeDefined();
+    expect(isRated).toBe(false);
+  });
+
+  it('reviewProvider.isReviewRated should return true if the review is rated', async () => {
+    const [artistId, eventId, customerId] = always(14);
+
+    const reviewTransactionResult =
+      await reviewProvider.createReviewTransaction(
+        artistId,
+        eventId,
+        customerId,
+        {
+          displayName: 'test display name 14',
+          header: 'test header 14',
+          comment: 'test comment 14',
+          rating: 5,
+        },
+      );
+
+    expect(reviewTransactionResult).toBeDefined();
+    expect(reviewTransactionResult).toBe(true);
+
+    const review = await reviewProvider.repo.findOne({
+      where: {
+        artistId,
+        eventId,
+        createdBy: customerId,
+      },
+    });
+
+    const isRated = await reviewProvider.isReviewRated(review.id);
+
+    expect(isRated).toBeDefined();
+    expect(isRated).toBe(true);
+  });
+
+  it('reviewProvider.isReviewRated should return undefined if review do not exists', async () => {
+    const [reviewId] = always(15);
+
+    const isRated = await reviewProvider.isReviewRated(reviewId);
+
+    expect(isRated).not.toBeDefined();
+    expect(isRated).toBe(undefined);
+  });
+
+  it('reviewProvider.isReviewRated should throw an error if something goes wrong', async () => {
+    const [reviewId] = always(16);
+
+    jest
+      .spyOn(reviewProvider.repo, 'createQueryBuilder')
+      .mockImplementation(() => {
+        throw new Error('test error 5');
+      });
+
+    try {
+      await reviewProvider.isReviewRated(reviewId);
+    } catch (error) {
+      expect(error).toBeDefined();
+      expect(error).toBeInstanceOf(DBServiceFindOneException);
+      expect(error.message).toBe(FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY);
+    }
+  });
+
+  it('reviewProvider.insertReviewReactionTransaction should return true if the review reaction is inserted', async () => {
+    const [artistId, eventId, customerId] = always(17);
+
+    const reviewTransactionResult =
+      await reviewProvider.createReviewTransaction(
+        artistId,
+        eventId,
+        customerId,
+        {
+          displayName: 'test display name 17',
+          header: 'test header 17',
+          comment: 'test comment 17',
+          rating: 5,
+        },
+      );
+
+    expect(reviewTransactionResult).toBeDefined();
+    expect(reviewTransactionResult).toBe(true);
+
+    const review = await reviewProvider.repo.findOne({
+      where: {
+        artistId,
+        eventId,
+        createdBy: customerId,
+      },
+    });
+
+    // jest
+    //   .spyOn(reviewProvider.source, 'query')
+    //   .mockImplementationOnce(() => Promise.resolve(['cosa']))
+    //   .mockImplementationOnce(() => Promise.resolve(['cosa2']));
+
+    const reactionTransactionResult =
+      await reviewProvider.insertReviewReactionTransaction(
+        review.id,
+        customerId,
+        ReviewReactionEnum.like,
+      );
+
+    expect(reactionTransactionResult).toBeDefined();
+    expect(reactionTransactionResult).toBe(true);
+
+    const { reviewReactions }: Pick<Review, 'reviewReactions'> =
+      await reviewProvider.repo.findOne({
+        select: ['reviewReactions'],
+        where: {
+          id: review.id,
+        },
+      });
+
+    console.log({ reviewReactions });
+
+    expect(reviewReactions).toBeDefined();
+    expect(reviewReactions).toStrictEqual({
+      likes: 1,
+      dislikes: 0,
+    } as ReviewReactionsDetail);
+
+    const reviewReaction = await reviewReactionProvider.repo.findOne({
+      where: {
+        reviewId: review.id,
+      },
+    });
+
+    console.log({ reviewReaction });
+
+    expect(reviewReaction).toBeDefined();
+    expect(reviewReaction.userId).toBe(customerId);
+    expect(reviewReaction.reviewId).toBe(review.id);
+    expect(reviewReaction.reactionType).toBe(ReviewReactionEnum.like);
+  });
+
+  it('reviewProvider.insertReviewReactionTransaction should return false if the review reaction is not inserted', async () => {
+    const [customerId, reviewId] = always(18);
+
+    const reactionTransactionResult =
+      await reviewProvider.insertReviewReactionTransaction(
+        reviewId,
+        customerId,
+        ReviewReactionEnum.like,
+      );
+
+    expect(reactionTransactionResult).toBeDefined();
+    expect(reactionTransactionResult).toBe(false);
+  });
+
+  it('reviewProvider.updateReviewReactionTransaction should return true if the review reaction is updated', async () => {
+    const [artistId, eventId, customerId] = always(19);
+
+    const reviewTransactionResult =
+      await reviewProvider.createReviewTransaction(
+        artistId,
+        eventId,
+        customerId,
+        {
+          displayName: 'test display name 19',
+          header: 'test header 19',
+          comment: 'test comment 19',
+          rating: 5,
+        },
+      );
+
+    expect(reviewTransactionResult).toBeDefined();
+    expect(reviewTransactionResult).toBe(true);
+
+    const review = await reviewProvider.repo.findOne({
+      where: {
+        artistId,
+        eventId,
+        createdBy: customerId,
+      },
+    });
+
+    const reactionTransactionResult =
+      await reviewProvider.insertReviewReactionTransaction(
+        review.id,
+        customerId,
+        ReviewReactionEnum.like,
+      );
+
+    expect(reactionTransactionResult).toBeDefined();
+    expect(reactionTransactionResult).toBe(true);
+
+    const { reviewReactions }: Pick<Review, 'reviewReactions'> =
+      await reviewProvider.repo.findOne({
+        select: ['reviewReactions'],
+        where: {
+          id: review.id,
+        },
+      });
+
+    expect(reviewReactions).toBeDefined();
+    expect(reviewReactions).toStrictEqual({
+      likes: 1,
+      dislikes: 0,
+    } as ReviewReactionsDetail);
+
+    const reviewReaction = await reviewReactionProvider.repo.findOne({
+      where: {
+        reviewId: review.id,
+      },
+    });
+
+    expect(reviewReaction).toBeDefined();
+    expect(reviewReaction.userId).toBe(customerId);
+    expect(reviewReaction.reviewId).toBe(review.id);
+    expect(reviewReaction.reactionType).toBe(ReviewReactionEnum.like);
+
+    const updateReactionTransactionResult =
+      await reviewProvider.updateReviewReactionTransaction(
+        reviewReaction.reactionType,
+        review.id,
+        customerId,
+        ReviewReactionEnum.dislike,
+      );
+
+    expect(updateReactionTransactionResult).toBeDefined();
+    expect(updateReactionTransactionResult).toBe(true);
+
+    const { reviewReactions: updatedReviewReactions } =
+      await reviewProvider.repo.findOne({
+        select: ['reviewReactions'],
+        where: {
+          id: review.id,
+        },
+      });
+
+    expect(updatedReviewReactions).toBeDefined();
+    expect(updatedReviewReactions).toStrictEqual({
+      likes: 0,
+      dislikes: 1,
+    } as ReviewReactionsDetail);
+
+    const updatedReviewReaction = await reviewReactionProvider.repo.findOne({
+      where: {
+        reviewId: review.id,
+      },
+    });
+
+    expect(updatedReviewReaction).toBeDefined();
+    expect(updatedReviewReaction.userId).toBe(customerId);
+    expect(updatedReviewReaction.reactionType).toBe(ReviewReactionEnum.dislike);
+  });
+
+  it('reviewProvider.updateReviewReactionTransaction should return false if the review reaction is not updated', async () => {
+    const [customerId, reviewId] = always(20);
+
+    const updateReactionTransactionResult =
+      await reviewProvider.updateReviewReactionTransaction(
+        ReviewReactionEnum.like,
+        reviewId,
+        customerId,
+        ReviewReactionEnum.dislike,
+      );
+
+    expect(updateReactionTransactionResult).toBeDefined();
+    expect(updateReactionTransactionResult).toBe(false);
+  });
+
+  it('reviewProvider.offReviewReactionTransaction should return true if the review reaction is putted off', async () => {
+    const [artistId, eventId, customerId] = always(21);
+
+    const reviewTransactionResult =
+      await reviewProvider.createReviewTransaction(
+        artistId,
+        eventId,
+        customerId,
+        {
+          displayName: 'test display name 21',
+          header: 'test header 21',
+          comment: 'test comment 21',
+          rating: 5,
+        },
+      );
+
+    expect(reviewTransactionResult).toBeDefined();
+    expect(reviewTransactionResult).toBe(true);
+
+    const review = await reviewProvider.repo.findOne({
+      where: {
+        artistId,
+        eventId,
+        createdBy: customerId,
+      },
+    });
+
+    const reactionTransactionResult =
+      await reviewProvider.insertReviewReactionTransaction(
+        review.id,
+        customerId,
+        ReviewReactionEnum.like,
+      );
+
+    expect(reactionTransactionResult).toBeDefined();
+    expect(reactionTransactionResult).toBe(true);
+
+    const { reviewReactions }: Pick<Review, 'reviewReactions'> =
+      await reviewProvider.repo.findOne({
+        select: ['reviewReactions'],
+        where: {
+          id: review.id,
+        },
+      });
+
+    expect(reviewReactions).toBeDefined();
+    expect(reviewReactions).toStrictEqual({
+      likes: 1,
+      dislikes: 0,
+    } as ReviewReactionsDetail);
+
+    const reviewReaction = await reviewReactionProvider.repo.findOne({
+      where: {
+        reviewId: review.id,
+      },
+    });
+
+    expect(reviewReaction).toBeDefined();
+    expect(reviewReaction.userId).toBe(customerId);
+    expect(reviewReaction.reviewId).toBe(review.id);
+    expect(reviewReaction.reactionType).toBe(ReviewReactionEnum.like);
+
+    const offReactionTransactionResult =
+      await reviewProvider.offReviewReactionTransaction(
+        reviewReaction.reactionType,
+        review.id,
+        customerId,
+      );
+
+    expect(offReactionTransactionResult).toBeDefined();
+    expect(offReactionTransactionResult).toBe(true);
+
+    const { reviewReactions: updatedReviewReactions } =
+      await reviewProvider.repo.findOne({
+        select: ['reviewReactions'],
+        where: {
+          id: review.id,
+        },
+      });
+
+    expect(updatedReviewReactions).toBeDefined();
+    expect(updatedReviewReactions).toStrictEqual({
+      likes: 0,
+      dislikes: 0,
+    } as ReviewReactionsDetail);
+
+    const updatedReviewReaction = await reviewReactionProvider.repo.findOne({
+      where: {
+        reviewId: review.id,
+      },
+    });
+
+    expect(updatedReviewReaction).toBeDefined();
+    expect(updatedReviewReaction.userId).toBe(customerId);
+    expect(updatedReviewReaction.reactionType).toBe(ReviewReactionEnum.off);
+    expect(updatedReviewReaction.reviewId).toBe(review.id);
+  });
+
+  it('reviewProvider.offReviewReactionTransaction should return false if the review reaction is not putted off', async () => {
+    const [customerId, reviewId] = always(22);
+
+    const offReactionTransactionResult =
+      await reviewProvider.offReviewReactionTransaction(
+        ReviewReactionEnum.like,
+        reviewId,
+        customerId,
+      );
+
+    expect(offReactionTransactionResult).toBeDefined();
+    expect(offReactionTransactionResult).toBe(false);
   });
 });
