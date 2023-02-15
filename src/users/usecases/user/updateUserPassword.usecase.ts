@@ -10,18 +10,18 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
-import { UsersService } from '../../domain/services/users.service';
-import { VerificationHashService } from '../../domain/services/verificationHash.service';
 import {
   NotificationType,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
+import { UsersProvider } from '../../infrastructure/providers/users.provider';
+import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
 
 @Injectable()
 export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly usersService: UsersService,
-    private readonly verificationHashService: VerificationHashService,
+    private readonly usersProvider: UsersProvider,
+    private readonly verificationHashProvider: VerificationHashProvider,
   ) {
     super(UpdateUserPasswordUseCase.name);
   }
@@ -37,7 +37,7 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule('Password must match');
     }
 
-    const userHash = await this.verificationHashService.findOne({
+    const userHash = await this.verificationHashProvider.findOne({
       where: {
         userId: userId,
         notificationType: notificationType,
@@ -52,7 +52,7 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
     }
 
     const isValidCode =
-      await this.verificationHashService.validateVerificationCode(
+      await this.verificationHashProvider.validateVerificationCode(
         code,
         userHash.hash,
       );
@@ -63,8 +63,8 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
       throw new DomainConflict('Invalid code');
     }
 
-    await this.usersService.edit(userId, {
-      password: await this.usersService.hashPassword(newPassword),
+    await this.usersProvider.edit(userId, {
+      password: await this.usersProvider.hashPassword(newPassword),
     });
 
     return { ...DefaultResponse.ok, data: 'Password updated!' };

@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 
-import { PermissionsService } from '../../domain/services/permissions.service';
-import { RolesService } from '../../domain/services/roles.service';
+import { PermissionsProvider } from '../../infrastructure/providers/permissions.service';
+import { RolesProvider } from '../../infrastructure/providers/roles.service';
 
 @Injectable()
 export class InitRolesUseCase {
   constructor(
-    private readonly rolesService: RolesService,
-    private readonly permissionsService: PermissionsService,
+    private readonly rolesProvider: RolesProvider,
+    private readonly permissionsProvider: PermissionsProvider,
   ) {}
 
   async execute() {
-    const permissions = await this.permissionsService.findAll({});
-    return this.rolesService.initRoles(permissions);
+    const permissions = await this.permissionsProvider.findAll({});
+    return this.rolesProvider.initRoles(permissions);
   }
 }

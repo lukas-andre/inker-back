@@ -1,5 +1,7 @@
 {
   "compile-hero.disable-compile-files-on-did-save-code": true,
+  "terminal.integrated.fontFamily": "Hack Nerd Font",
+  "terminal.integrated.defaultProfile.osx": "zsh",
   "editor.formatOnSave": false,
   "eslint.validate": ["typescript"],
   "editor.codeActionsOnSave": {

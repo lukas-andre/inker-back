@@ -1,12 +1,7 @@
 import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-
-export enum ReactionType {
-  LIKE = 'like',
-  DISLIKE = 'dislike',
-  OFF = 'off',
-}
+import { ReviewReactionEnum } from '../../../reactions/domain/enums/reviewReaction.enum';
 
 @Entity()
 export class ReviewReaction extends BaseEntity {
@@ -18,11 +13,11 @@ export class ReviewReaction extends BaseEntity {
     type: 'enum',
     name: 'reaction_type',
     enumName: 'reaction_type_enum',
-    enum: ReactionType,
+    enum: ReviewReactionEnum,
   })
-  reactionType: ReactionType;
+  reactionType: ReviewReactionEnum;
 
-  @Column({ name: 'rating_id' })
+  @Column({ name: 'review_id' })
   @Index()
-  ratingId: number;
+  reviewId: number;
 }

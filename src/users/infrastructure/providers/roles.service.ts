@@ -2,16 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 
+import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-import { Permission } from '../../infrastructure/entities/permission.entity';
-import { Role } from '../../infrastructure/entities/role.entity';
-import { initRolePermissions } from '../data/initRolePermission.data';
-import { initRoles } from '../data/initRoles.data';
+import { initRolePermissions } from '../../domain/data/initRolePermission.data';
+import { initRoles } from '../../domain/data/initRoles.data';
+import { Permission } from '../entities/permission.entity';
+import { Role } from '../entities/role.entity';
 
 @Injectable()
-export class RolesService {
+export class RolesProvider {
   constructor(
-    @InjectRepository(Role, 'user-db')
+    @InjectRepository(Role, USER_DB_CONNECTION_NAME)
     private readonly rolesRepository: Repository<Role>,
   ) {}
 
@@ -32,11 +33,11 @@ export class RolesService {
   }
 
   async exists(roleName: string): Promise<boolean> {
-    const result: ExistsQueryResult[] = await this.rolesRepository.query(
+    const [result]: ExistsQueryResult[] = await this.rolesRepository.query(
       'SELECT EXISTS(SELECT 1 FROM role WHERE name=$1)',
       [roleName],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
   async findAll(query: any): Promise<Role[]> {

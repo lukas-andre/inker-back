@@ -83,11 +83,11 @@ export class HealthController {
           connection: this.tagDbDataSource,
           timeout: 1500,
         }),
-      () =>
-        this.db.pingCheck('inker-agenda', {
-          connection: this.agendaDbDataSource,
-          timeout: 1500,
-        }),
+      // () =>
+      //   this.db.pingCheck('inker-agenda', {
+      //     connection: this.agendaDbDataSource,
+      //     timeout: 1500,
+      //   }),
       () =>
         this.db.pingCheck('inker-location', {
           connection: this.locationDbDataSource,

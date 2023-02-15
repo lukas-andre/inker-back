@@ -87,6 +87,7 @@ export class ArtistsController {
     description: errorCodesToOASDescription([
       NOT_VALID_FILE_TO_UPLOAD,
       ERROR_UPLOADING_FILE,
+      'Not valid file type to upload',
     ]),
   })
   @ApiNotFoundResponse({ description: ARTIST_NOT_FOUND })

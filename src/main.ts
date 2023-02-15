@@ -24,7 +24,7 @@ async function bootstrap() {
   await app.listen(appConf.port, appConf.host);
 
   Logger.log(
-    `🚀 Application ${SERVICE_NAME} is runninggs on: ${await app.getUrl()}`,
+    `🚀 Application ${SERVICE_NAME} is running on: ${await app.getUrl()}`,
     'Bootstrap',
   );
 }

@@ -16,6 +16,9 @@ export class AgendaEvent extends BaseEntity {
   @JoinColumn({ name: 'agenda_id' })
   agenda: Agenda;
 
+  @Column({ name: 'customer_id', nullable: true })
+  customerId: number;
+
   @Column()
   title: string;
 

@@ -12,17 +12,16 @@ import {
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { UserType } from '../../users/domain/enums/userType.enum';
-import { UsersService } from '../../users/domain/services/users.service';
+import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
 import { FollowedsService } from '../domain/services/followeds.service';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
 
 import { FollowArtistParams } from './interfaces/followArtist.param';
-// TODO: EXTEND BASE USECASE
 @Injectable()
 export class FollowUseCase extends BaseComponent {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly usersProvider: UsersProvider,
     private readonly artistsDbService: ArtistsDbService,
     private readonly followedsService: FollowedsService, // @InjectDataSource('follow-db') // private followDbDataSource: DataSource,
   ) {
@@ -44,7 +43,7 @@ export class FollowUseCase extends BaseComponent {
     await queryRunner.connect();
 
     // ! THIS IS LIMITING THAT ONLY ARTISTS ARE FOLLOWED
-    if (!(await this.usersService.existsArtist(followedUserId))) {
+    if (!(await this.usersProvider.existsArtist(followedUserId))) {
       throw new DomainBadRequest('Artist not exists');
     }
 

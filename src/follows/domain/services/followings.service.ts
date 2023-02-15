@@ -64,12 +64,12 @@ export class FollowingsService {
     userFollowingId: number,
     followedUserId: number,
   ): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.followsRepository.query(
+    const [result]: ExistsQueryResult[] = await this.followsRepository.query(
       `SELECT EXISTS(SELECT 1 FROM following f WHERE f.user_following_id = $1 AND f.user_id = $2)`,
       [userFollowingId, followedUserId],
     );
 
-    return result.pop().exists;
+    return result.exists;
   }
 
   async countFollows(userFollowingId: number): Promise<number> {

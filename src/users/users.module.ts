@@ -1,27 +1,17 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
 import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
 import { CustomersModule } from '../customers/customers.module';
 import { LocationDbModule } from '../locations/infrastructure/database/locationDb.module';
-import { LocationsModule } from '../locations/locations.module';
 
-import { InitialPermissionsService } from './domain/services/initialPermissions.service';
-import { PermissionsService } from './domain/services/permissions.service';
-import { RolesService } from './domain/services/roles.service';
-import { UsersService } from './domain/services/users.service';
-import { VerificationHashService } from './domain/services/verificationHash.service';
 import { PermissionsController } from './infrastructure/controllers/permissions.controller';
 import { RolesController } from './infrastructure/controllers/roles.controller';
 import { UsersController } from './infrastructure/controllers/users.controller';
-import { Permission } from './infrastructure/entities/permission.entity';
-import { Role } from './infrastructure/entities/role.entity';
-import { User } from './infrastructure/entities/user.entity';
-import { VerificationHash } from './infrastructure/entities/verificationHash.entity';
 import { PermissionsHandler } from './infrastructure/handlers/permissions.handler';
 import { RolesHandler } from './infrastructure/handlers/roles.handler';
 import { UsersHandler } from './infrastructure/handlers/users.handler';
+import { UserProviderModule } from './infrastructure/providers/userProvider.module';
 import { FindAllPermissionsUseCase } from './usecases/permission/findAllPermissions.usecase';
 import { FindAllRoutesUseCase } from './usecases/permission/findAllRoutes.usecase';
 import { FindOnePermissionUseCase } from './usecases/permission/findOnePermission.usecase';
@@ -39,25 +29,16 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
 
 @Module({
   imports: [
-    ArtistsDbModule,
-    LocationDbModule,
-    TypeOrmModule.forFeature(
-      [User, Role, Permission, VerificationHash],
-      'user-db',
-    ),
-    CustomersModule,
     AgendaProviderModule,
-    LocationsModule,
+    ArtistsDbModule,
+    CustomersModule,
+    LocationDbModule,
+    UserProviderModule,
   ],
   providers: [
-    UsersService,
     UsersHandler,
-    RolesService,
     RolesHandler,
-    PermissionsService,
-    VerificationHashService,
     PermissionsHandler,
-    InitialPermissionsService,
     InitRolesUseCase,
     InitPermissionsUseCase,
     CreateUserByTypeUseCase,
@@ -74,6 +55,5 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
     ValidateSMSAccountVerificationCodeUseCase,
   ],
   controllers: [UsersController, PermissionsController, RolesController],
-  exports: [UsersService, RolesService],
 })
 export class UsersModule {}
