@@ -11,5 +11,6 @@ export const ERROR_CREATING_REVIEW = 'Error creating review';
 export const ERROR_INSERTING_EMPTY_REVIEW = 'Error inserting empty review';
 export const REVIEW_AVG_MUST_EXISTS_TO_UPDATE =
   'Review avg must exists to update';
-
 export const REVIEW_MUST_EXISTS_TO_UPDATE = 'Review  must exists to update';
+export const FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY =
+  'Failed to execute isReviewRated query';
