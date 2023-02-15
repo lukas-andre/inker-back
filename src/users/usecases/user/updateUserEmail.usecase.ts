@@ -7,11 +7,11 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
-import { UsersService } from '../../domain/services/users.service';
+import { UsersProvider } from '../../infrastructure/providers/users.provider';
 
 @Injectable()
 export class UpdateUserEmailUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly usersService: UsersService) {
+  constructor(private readonly usersProvider: UsersProvider) {
     super(UpdateUserEmailUseCase.name);
   }
 
@@ -19,7 +19,7 @@ export class UpdateUserEmailUseCase extends BaseUseCase implements UseCase {
     userId: number,
     newEmail: string,
   ): Promise<DefaultResponseDto> {
-    const emailExists = await this.usersService.findOne({
+    const emailExists = await this.usersProvider.findOne({
       where: { email: newEmail },
     });
 
@@ -27,7 +27,7 @@ export class UpdateUserEmailUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule('Email already used');
     }
 
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersProvider.findById(userId);
 
     if (user.email === newEmail) {
       throw new DomainBadRule('The emails must be different');
@@ -35,7 +35,7 @@ export class UpdateUserEmailUseCase extends BaseUseCase implements UseCase {
 
     user.email = newEmail;
 
-    await this.usersService.save(user);
+    await this.usersProvider.save(user);
 
     // TODO: send email to verify his new email
 

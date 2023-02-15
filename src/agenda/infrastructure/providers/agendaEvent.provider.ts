@@ -11,6 +11,7 @@ import {
   Repository,
 } from 'typeorm';
 
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { TypeTransform } from '../../../global/domain/utils/typeTransform';
@@ -42,23 +43,24 @@ class FindAgendaEventForMarkAsDoneQueryResult {
 @Injectable()
 export class AgendaEventProvider extends BaseComponent {
   constructor(
-    @InjectRepository(AgendaEvent, 'agenda-db')
+    @InjectRepository(AgendaEvent, AGENDA_DB_CONNECTION_NAME)
     private readonly agendaEventRepository: Repository<AgendaEvent>,
   ) {
     super(AgendaEventProvider.name);
   }
 
-  repo(): Repository<AgendaEvent> {
+  get repo(): Repository<AgendaEvent> {
     return this.agendaEventRepository;
   }
 
   async exists(id: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.agendaEventRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM agenda_event a WHERE a.id = $1)`,
-      [id],
-    );
+    const [result]: ExistsQueryResult[] =
+      await this.agendaEventRepository.query(
+        `SELECT EXISTS(SELECT 1 FROM agenda_event a WHERE a.id = $1)`,
+        [id],
+      );
 
-    return result.pop().exists;
+    return result.exists;
   }
 
   async findById(id: number) {
@@ -183,6 +185,7 @@ export class AgendaEventProvider extends BaseComponent {
         end: dto.end as any,
         start: dto.start as any,
         notification: dto.notification,
+        customerId: dto.customerId,
       });
     } catch (error) {
       throw new DBServiceCreateException(this, 'Trouble saving event', error);

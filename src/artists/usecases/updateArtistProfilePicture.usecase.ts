@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import stringify from 'fast-safe-stringify';
+import mime from 'mime-types';
 import sharp from 'sharp';
 
 import {
@@ -16,6 +17,7 @@ import {
   MultimediasService,
   UploadToS3Result,
 } from '../../multimedias/services/multimedias.service';
+import { NOT_VALID_FILE_TYPE_TO_UPLOAD } from '../domain/errors/codes';
 import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
 import { Artist } from '../infrastructure/entities/artist.entity';
 
@@ -43,9 +45,12 @@ export class UpdateArtistProfilePictureUseCase
     if (!artist) {
       throw new DomainNotFound('Artists not found');
     }
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const mime = require('mime-types');
+
     const fileExtension = mime.extension(file.mimetype);
+
+    if (!fileExtension) {
+      throw new DomainBadRequest(NOT_VALID_FILE_TYPE_TO_UPLOAD);
+    }
 
     const source = `artist/${id}`;
     console.time('uploadFile');

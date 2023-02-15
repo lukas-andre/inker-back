@@ -5,20 +5,20 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { UsersService } from '../../users/domain/services/users.service';
+import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
 import { FollowingsService } from '../domain/services/followings.service';
 import { FollowingType } from '../domain/types/followingType';
 @Injectable()
 export class FindFollowsUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly usersProvider: UsersProvider,
     private readonly followingService: FollowingsService,
   ) {
     super(FindFollowsUseCase.name);
   }
 
   async execute(userId: number): Promise<FollowingType[]> {
-    if (!(await this.usersService.exists(userId))) {
+    if (!(await this.usersProvider.exists(userId))) {
       throw new DomainNotFound('User not found');
     }
 

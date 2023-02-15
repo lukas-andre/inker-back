@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
-import { InitialPermissionsService } from '../../domain/services/initialPermissions.service';
+import { InitialPermissionsProvider } from '../../infrastructure/providers/initialPermissions.service';
 
 @Injectable()
 export class FindAllRoutesUseCase {
-  constructor(private readonly permissionsService: InitialPermissionsService) {}
+  constructor(
+    private readonly permissionsProvider: InitialPermissionsProvider,
+  ) {}
 
   async execute() {
-    return this.permissionsService.getAllRoutes();
+    return this.permissionsProvider.getAllRoutes();
   }
 }

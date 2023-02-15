@@ -5,7 +5,7 @@ import { databaseConfigs } from './database/config';
 import { oasConfig } from './oas.config';
 import { verificationHashConf } from './verificationHash';
 
-export const Config = [
+export const config = [
   appConfig,
   authConfig,
   AWSConfig,

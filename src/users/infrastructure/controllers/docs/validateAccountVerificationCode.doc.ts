@@ -18,7 +18,7 @@ import {
   HASH_NOT_FOUND_FOR_USER_ID,
   INVALID_VERIFICATION_CODE,
   USER_ALREADY_VERIFIED,
-  USER_ID_PIPE_FAILED,
+  USER_ID_IS_NOT_VALID,
   USER_NOT_ACCEPTED,
 } from '../../../domain/errors/codes';
 import { NotificationType } from '../../entities/verificationHash.entity';
@@ -57,7 +57,7 @@ export function ValidateAccountVerificationCodeDoc() {
     }),
     ApiBadRequestResponse({
       description: errorCodesToOASDescription([
-        USER_ID_PIPE_FAILED,
+        USER_ID_IS_NOT_VALID,
         USER_ALREADY_VERIFIED,
       ]),
     }),

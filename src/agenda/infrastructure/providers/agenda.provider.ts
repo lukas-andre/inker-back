@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
+  InjectDataSource,
+  InjectEntityManager,
+  InjectRepository,
+} from '@nestjs/typeorm';
+import {
+  DataSource,
   DeepPartial,
   DeleteResult,
+  EntityManager,
   FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
@@ -10,32 +16,73 @@ import {
 } from 'typeorm';
 
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { DBServiceSaveException } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { PROBLEMS_SAVING_AGENDA_FOR_USER } from '../../../users/domain/errors/codes';
+import {
+  PROBLEMS_FINDING_IF_USER_IS_RELATED_TO_EVENT,
+  PROBLEMS_SAVING_AGENDA_FOR_USER,
+} from '../../../users/domain/errors/codes';
 import { Agenda } from '../entities/agenda.entity';
 
 @Injectable()
 export class AgendaProvider extends BaseComponent {
   constructor(
-    @InjectRepository(Agenda, 'agenda-db')
+    @InjectRepository(Agenda, AGENDA_DB_CONNECTION_NAME)
     private readonly agendaRepository: Repository<Agenda>,
+    @InjectDataSource(AGENDA_DB_CONNECTION_NAME)
+    private readonly dataSource: DataSource,
+    @InjectEntityManager(AGENDA_DB_CONNECTION_NAME)
+    private readonly entityManager: EntityManager,
   ) {
     super(AgendaProvider.name);
   }
+  get source(): DataSource {
+    return this.dataSource;
+  }
+
+  get manager(): EntityManager {
+    return this.entityManager;
+  }
+
+  get repo(): Repository<Agenda> {
+    return this.agendaRepository;
+  }
+
+  async artistAgendaAndEventRelatedToCustomer(
+    artistId: number,
+    eventId: number,
+    customerId: number,
+  ): Promise<Agenda> {
+    try {
+      const agenda = await this.repo.findOne({
+        where: {
+          artistId: artistId,
+          agendaEvent: {
+            id: eventId,
+            customerId: customerId,
+          },
+        },
+      });
+
+      return agenda;
+    } catch (error) {
+      throw new DBServiceSaveException(
+        this,
+        PROBLEMS_FINDING_IF_USER_IS_RELATED_TO_EVENT,
+        error,
+      );
+    }
+  }
 
   async exists(id: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.agendaRepository.query(
+    const [result]: ExistsQueryResult[] = await this.agendaRepository.query(
       `SELECT EXISTS(SELECT 1 FROM agenda a WHERE a.id = $1)`,
       [id],
     );
 
-    return result.pop().exists;
-  }
-
-  repo(): Repository<Agenda> {
-    return this.agendaRepository;
+    return result.exists;
   }
 
   async findById(id: number) {
@@ -56,13 +103,14 @@ export class AgendaProvider extends BaseComponent {
   }
 
   // * this function could be more generic
-  async createWithArtistInfo(dto: CreateArtistParams) {
-    const agenda: Partial<Agenda> = {
+  async createWithArtistInfo(dto: CreateArtistParams, artistId: number) {
+    const agenda = {
       open: dto.agendaIsOpen,
       public: dto.agendaIsPublic,
       userId: dto.userId,
       workingDays: dto.agendaWorkingDays,
-    };
+      artistId: artistId,
+    } satisfies Partial<Agenda>;
 
     try {
       return await this.save(agenda);

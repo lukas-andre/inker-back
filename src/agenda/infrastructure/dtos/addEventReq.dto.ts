@@ -62,4 +62,11 @@ export class AddEventReqDto {
   @Transform(value => Boolean(value.value === 'true' || value.value === true))
   @IsBoolean()
   readonly notification: boolean;
+
+  @ApiProperty({
+    example: 1,
+    description: 'Customer Id',
+  })
+  @IsNumber()
+  readonly customerId: number;
 }

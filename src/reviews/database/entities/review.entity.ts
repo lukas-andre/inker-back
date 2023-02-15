@@ -2,10 +2,11 @@ import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
-export interface ReviewReactionsDetail {
-  likes: number;
-  dislikes: number;
-}
+export type ReviewReactionDetailType = 'likes' | 'dislikes' | 'off';
+
+export type ReviewReactionsDetail = {
+  [key in ReviewReactionDetailType]: number;
+};
 
 @Entity()
 export class Review extends BaseEntity {
@@ -18,7 +19,7 @@ export class Review extends BaseEntity {
   eventId: number;
 
   @Column({ type: 'real', nullable: true, name: 'value' })
-  value: number;
+  value?: number;
 
   @Column({
     type: 'varchar',
@@ -26,7 +27,7 @@ export class Review extends BaseEntity {
     nullable: true,
     name: 'header',
   })
-  header: string;
+  header?: string;
 
   @Column({ nullable: true })
   content?: string;
@@ -34,17 +35,20 @@ export class Review extends BaseEntity {
   @Column({
     type: 'jsonb',
     nullable: false,
-    default: {},
+    default: {
+      dislikes: 0,
+      likes: 0,
+    } as ReviewReactionsDetail,
     name: 'review_reactions',
   })
-  reviewReactions?: ReviewReactionsDetail[];
+  reviewReactions?: ReviewReactionsDetail;
 
   @Column({ type: 'int', nullable: false, name: 'created_by' })
-  createBy: number;
+  createdBy: number;
 
   @Column({ nullable: false, name: 'display_name' })
   displayName: string;
 
-  @Column({ default: false })
+  @Column({ default: false, name: 'is_rated' })
   isRated: boolean;
 }

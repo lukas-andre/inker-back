@@ -2,102 +2,117 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import {
+  AGENDA_DB_CONFIG_NAME,
+  AGENDA_DB_CONNECTION_NAME,
+  ARTIST_DB_CONFIG_NAME,
+  ARTIST_DB_CONNECTION_NAME,
+  CUSTOMER_DB_CONFIG_NAME,
+  CUSTOMER_DB_CONNECTION_NAME,
+  CUSTOMER_FEED_DB_CONFIG_NAME,
+  CUSTOMER_FEED_DB_CONNECTION_NAME,
+  FOLLOW_DB_CONFIG_NAME,
+  FOLLOW_DB_CONNECTION_NAME,
+  GENRE_DB_CONFIG_NAME,
+  GENRE_DB_CONNECTION_NAME,
+  LOCATION_DB_CONFIG_NAME,
+  LOCATION_DB_CONNECTION_NAME,
+  POST_DB_CONFIG_NAME,
+  POST_DB_CONNECTION_NAME,
+  REACTION_DB_CONFIG_NAME,
+  REACTION_DB_CONNECTION_NAME,
+  REVIEW_DB_CONFIG_NAME,
+  REVIEW_DB_CONNECTION_NAME,
+  TAG_DB_CONFIG_NAME,
+  TAG_DB_CONNECTION_NAME,
+  USER_DB_CONFIG_NAME,
+  USER_DB_CONNECTION_NAME,
+} from './constants';
+
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'user-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('userDb');
-      },
+      name: USER_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(USER_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'customer-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('customerDb');
-      },
+      name: CUSTOMER_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(CUSTOMER_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'artist-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('artistDb');
-      },
+      name: ARTIST_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(ARTIST_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'follow-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('followDb');
-      },
+      name: FOLLOW_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(FOLLOW_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'reaction-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('reactionDb');
-      },
+      name: REACTION_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(REACTION_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'post-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('postDb');
-      },
+      name: POST_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(POST_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'genre-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('genreDb');
-      },
+      name: GENRE_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(GENRE_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'tag-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('tagDb');
-      },
+      name: TAG_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(TAG_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'agenda-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('agendaDb');
-      },
+      name: AGENDA_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(AGENDA_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'location-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('locationDb');
-      },
+      name: LOCATION_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(LOCATION_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'customer-feed-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('customerFeedDb');
-      },
+      name: CUSTOMER_FEED_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(CUSTOMER_FEED_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      name: 'review-db',
-      useFactory: (configService: ConfigService) => {
-        return configService.get('reviewDb');
-      },
+      name: REVIEW_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(REVIEW_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
   ],

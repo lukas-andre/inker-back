@@ -11,26 +11,31 @@ import {
 } from 'typeorm';
 
 import { LoginType } from '../../../auth/domain/enums/loginType.enum';
+import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
   DbServiceBadRule,
   DBServiceUpdateException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { Role } from '../../infrastructure/entities/role.entity';
-import { User } from '../../infrastructure/entities/user.entity';
+import { UserType } from '../../domain/enums/userType.enum';
+import {
+  ERROR_ACTIVATING_USER,
+  USER_ALREADY_EXISTS,
+} from '../../domain/errors/codes';
+import { UserInterface } from '../../domain/models/user.model';
 import { CreateUserByTypeParams } from '../../usecases/user/interfaces/createUserByType.params';
-import { UserType } from '../enums/userType.enum';
-import { ERROR_ACTIVATING_USER, USER_ALREADY_EXISTS } from '../errors/codes';
-import { UserInterface } from '../models/user.model';
+import { Role } from '../entities/role.entity';
+import { User } from '../entities/user.entity';
+
 @Injectable()
-export class UsersService extends BaseComponent {
+export class UsersProvider extends BaseComponent {
   constructor(
-    @InjectRepository(User, 'user-db')
+    @InjectRepository(User, USER_DB_CONNECTION_NAME)
     private readonly usersRepository: Repository<User>,
     private readonly configService: ConfigService,
   ) {
-    super(UsersService.name);
+    super(UsersProvider.name);
   }
 
   async create(
@@ -73,35 +78,35 @@ export class UsersService extends BaseComponent {
     email: string,
     username: string,
   ): Promise<boolean> {
-    const result: ExistsQueryResult[] = await this.usersRepository.query(
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       'SELECT EXISTS(SELECT 1 FROM public.user WHERE email = $1 AND username = $2)',
       [email, username],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
   async exists(userId: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.usersRepository.query(
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1)`,
       [userId],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
-  async existsAndIsValid(userId: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.usersRepository.query(
+  async existsAndIsActive(userId: number): Promise<boolean | undefined> {
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u.active = $2)`,
       [userId, true],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
   async existsArtist(userId: number): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.usersRepository.query(
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u."userType" = $2)`,
       [userId, UserType.ARTIST],
     );
-    return result.pop().exists;
+    return result.exists;
   }
 
   async activate(userId: number) {

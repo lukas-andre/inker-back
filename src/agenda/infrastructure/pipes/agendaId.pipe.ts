@@ -24,7 +24,7 @@ export class AgendaIdPipe
   constructor(private readonly agendaProvider: AgendaProvider) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
-    if (!metatype || !this.toValidate(metatype)) {
+    if (!metatype || this.invalidIdType(metatype)) {
       return value;
     }
 
@@ -36,7 +36,7 @@ export class AgendaIdPipe
       throw new BadRequestException(AGENDA_ID_PIPE_FAILED);
     }
 
-    const id = parseInt(value);
+    const id = this.parseInt(value);
     if (!(await this.agendaProvider.exists(id))) {
       throw new NotAcceptableException(AGENDA_NOT_EXISTS);
     }
@@ -52,8 +52,8 @@ export class AgendaIdPipe
     return value;
   }
 
-  private toValidate(metatype: Function): boolean {
-    const types: Function[] = [String, Boolean, Array, Object];
-    return !types.includes(metatype);
+  private invalidIdType(metatype: Function): boolean {
+    const types: Function[] = [Number];
+    return !types.includes(metatype) || Number.isNaN(metatype);
   }
 }

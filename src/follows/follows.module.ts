@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ArtistsModule } from '../artists/artists.module';
 import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
-import { UsersModule } from '../users/users.module';
+import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
 
 import { FollowedsService } from './domain/services/followeds.service';
 import { FollowingsService } from './domain/services/followings.service';
@@ -20,7 +20,7 @@ import { UnfollowUseCase } from './usecases/unfollow.usecase';
   imports: [
     ArtistsDbModule,
     TypeOrmModule.forFeature([Followed, Following], 'follow-db'),
-    forwardRef(() => UsersModule),
+    UserProviderModule,
     forwardRef(() => ArtistsModule),
   ],
   controllers: [FollowsController],

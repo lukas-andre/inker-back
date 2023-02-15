@@ -70,12 +70,12 @@ export class FollowedsService extends BaseComponent {
     artistUserId: number,
     followerUserId: number,
   ): Promise<boolean | undefined> {
-    const result: ExistsQueryResult[] = await this.followersRepository.query(
+    const [result]: ExistsQueryResult[] = await this.followersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM followed f WHERE f.user_followed_id = $1 AND f.user_id = $2)`,
       [artistUserId, followerUserId],
     );
 
-    return result.pop().exists;
+    return result.exists;
   }
 
   async countFollowers(userFollowedId: number): Promise<number> {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { REVIEW_DB_CONNECTION_NAME } from '../../../config/database/review.config';
+import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { ReviewAvg } from '../entities/reviewAvg.entity';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class ReviewAvgProvider {
     private readonly repository: Repository<ReviewAvg>,
   ) {}
 
-  repo(): Repository<ReviewAvg> {
+  get repo(): Repository<ReviewAvg> {
     return this.repository;
   }
 
