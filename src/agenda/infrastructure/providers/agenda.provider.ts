@@ -19,7 +19,11 @@ import { CreateArtistParams } from '../../../artists/usecases/interfaces/createA
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
-import { DBServiceSaveException } from '../../../global/infrastructure/exceptions/dbService.exception';
+import {
+  DBServiceFindException,
+  DBServiceSaveException,
+} from '../../../global/infrastructure/exceptions/dbService.exception';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import {
   PROBLEMS_FINDING_IF_USER_IS_RELATED_TO_EVENT,
   PROBLEMS_SAVING_AGENDA_FOR_USER,
@@ -30,6 +34,16 @@ export interface ArtistAgendaAndEventRelatedToCustomerResult {
   id: number;
   eventIsDone: boolean;
 }
+
+export interface FindRecentWorksByArtistIdsResult {
+  title: string;
+  customerId: number;
+  workEvidence: MultimediasMetadataInterface;
+  agendaId: number;
+  eventId: number;
+  artistId: number;
+}
+
 @Injectable()
 export class AgendaProvider extends BaseComponent {
   constructor(
@@ -142,5 +156,34 @@ export class AgendaProvider extends BaseComponent {
 
   async delete(id: number): Promise<DeleteResult> {
     return this.agendaRepository.delete(id);
+  }
+
+  async findRecentWorksByArtistIds(
+    artistIds: number[],
+  ): Promise<FindRecentWorksByArtistIdsResult[]> {
+    try {
+      return await this.agendaRepository.query(
+        `SELECT
+          ae.title,
+          ae.customer_id as "customerId",
+          ae.work_evidence as "workEvidence",
+          a.id as "agendaId",
+          ae.id as "eventId",
+          a.artist_id as "artistId"
+        FROM agenda a
+        INNER JOIN agenda_event ae ON ae.agenda_id = a.id
+        WHERE a.artist_id in (${artistIds.join(',')})
+        AND ae.done = true
+        AND ae.work_evidence is not null
+        ORDER BY ae.updated_at desc
+        LIMIT 3`,
+      );
+    } catch (error) {
+      throw new DBServiceFindException(
+        this,
+        this.findRecentWorksByArtistIds.name,
+        error,
+      );
+    }
   }
 }

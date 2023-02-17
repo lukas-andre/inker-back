@@ -22,7 +22,7 @@ import { FollowArtistParams } from './interfaces/followArtist.param';
 export class FollowUseCase extends BaseComponent {
   constructor(
     private readonly usersProvider: UsersProvider,
-    private readonly artistsDbService: ArtistProvider,
+    private readonly artistProvider: ArtistProvider,
     private readonly followedsService: FollowedsService, // @InjectDataSource('follow-db') // private followDbDataSource: DataSource,
   ) {
     super(FollowUseCase.name);
@@ -57,7 +57,7 @@ export class FollowUseCase extends BaseComponent {
     }
 
     // TODO: This could be came from in the front request
-    const artistData = await this.artistsDbService.findOne({
+    const artistData = await this.artistProvider.findOne({
       select: [
         'id',
         'userId',

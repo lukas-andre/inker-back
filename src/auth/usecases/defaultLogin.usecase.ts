@@ -25,7 +25,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   constructor(
     private authService: AuthService,
     private usersProvider: UsersProvider,
-    private artistsDbService: ArtistProvider,
+    private artistProvider: ArtistProvider,
     private customerProvider: CustomerProvider,
   ) {
     super(DefaultLoginUseCase.name);
@@ -85,7 +85,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
         });
         break;
       case UserType.ARTIST:
-        userFounded = await this.artistsDbService.findOne({
+        userFounded = await this.artistProvider.findOne({
           where: { userId },
         });
         break;

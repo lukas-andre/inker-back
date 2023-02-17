@@ -17,7 +17,7 @@ export class MultimediasService {
     private readonly configService: ConfigService,
   ) {}
 
-  public async upload(
+  async upload(
     file: FileInterface,
     source?: string,
     fileName?: string,
@@ -33,7 +33,7 @@ export class MultimediasService {
     };
   }
 
-  public async handlePostMultimedias(
+  async handlePostMultimedias(
     files: FileInterface[],
     artistId: number,
     postId: number,
@@ -50,6 +50,39 @@ export class MultimediasService {
 
       console.time('uploadFile');
       // TODO: this upload can be in parallel !!!
+      const { cloudFrontUrl } = await this.upload(file, source, fileName);
+      console.timeEnd('uploadFile');
+
+      multimediasMetadata.metadata.push({
+        url: cloudFrontUrl,
+        type: file.mimetype,
+        encoding: file.encoding,
+        fieldname: file.fieldname,
+        originalname: file.originalname,
+        size: file.size,
+        position: index,
+      });
+      multimediasMetadata.count++;
+    }
+    return multimediasMetadata;
+  }
+
+  async handleWorkEvidenceMultimedias(
+    files: FileInterface[],
+    eventId: number,
+    agendaId: number,
+  ): Promise<MultimediasMetadataInterface> {
+    const multimediasMetadata: MultimediasMetadataInterface = {
+      count: 0,
+      metadata: [],
+    };
+    for (const [index, file] of files.entries()) {
+      console.log('uploading file: ', file);
+
+      const source = `agenda/${agendaId}/event/${eventId}/work-evidence`;
+      const fileName = `file_${index}`;
+
+      console.time('uploadFile');
       const { cloudFrontUrl } = await this.upload(file, source, fileName);
       console.timeEnd('uploadFile');
 

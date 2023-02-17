@@ -13,7 +13,7 @@ import { FindArtistByIdResult } from './interfaces/findArtistById.result';
 @Injectable()
 export class FindArtistsUseCases extends BaseUseCase {
   constructor(
-    private readonly artistsDbService: ArtistProvider,
+    private readonly artistProvider: ArtistProvider,
     private readonly followedsService: FollowedsService,
     private readonly followingService: FollowingsService,
   ) {
@@ -22,7 +22,7 @@ export class FindArtistsUseCases extends BaseUseCase {
 
   async findById(id: number): Promise<FindArtistByIdResult> {
     const artist: Partial<FindArtistByIdResult> =
-      await this.artistsDbService.findById(id);
+      await this.artistProvider.findById(id);
 
     if (!artist) {
       throw new DomainNotFound('Artist not found');
@@ -38,10 +38,10 @@ export class FindArtistsUseCases extends BaseUseCase {
   }
 
   async findOne(options: FindManyOptions<Artist>) {
-    return this.artistsDbService.findOne(options);
+    return this.artistProvider.findOne(options);
   }
 
   async findAll(options: FindManyOptions<Artist>): Promise<Artist[]> {
-    return this.artistsDbService.find(options);
+    return this.artistProvider.find(options);
   }
 }

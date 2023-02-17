@@ -22,7 +22,7 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { TypeTransform } from '../../../global/domain/utils/typeTransform';
 import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { ArtistLocationsDbService } from '../../../locations/infrastructure/database/services/artistLocationsDb.service';
+import { ArtistLocationProvider } from '../../../locations/infrastructure/database/artistLocation.provider';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import {
@@ -38,11 +38,11 @@ import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersProvider: UsersProvider,
-    private readonly artistsDbService: ArtistProvider,
+    private readonly artistProvider: ArtistProvider,
     private readonly customerProvider: CustomerProvider,
     private readonly rolesService: RolesProvider,
     private readonly agendaProvider: AgendaProvider,
-    private readonly artistLocationsDbService: ArtistLocationsDbService,
+    private readonly artistLocationProvider: ArtistLocationProvider,
     private readonly configService: ConfigService,
   ) {
     super(CreateUserByTypeUseCase.name);
@@ -107,7 +107,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   }
 
   private async createArtist(createArtistParams: CreateArtistParams) {
-    const artist = await this.artistsDbService.create(createArtistParams);
+    const artist = await this.artistProvider.create(createArtistParams);
 
     this.logger.log(`🟢 Artist created: ${artist.id}`);
 
@@ -118,7 +118,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
         artist.id,
       );
     } catch (error) {
-      await this.artistsDbService.delete(artist.id);
+      await this.artistProvider.delete(artist.id);
       throw new DomainUnProcessableEntity(error.publicMessage);
     }
 
@@ -126,13 +126,13 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
 
     let artistLocation: ArtistLocation;
     try {
-      artistLocation = await this.artistLocationsDbService.save(
+      artistLocation = await this.artistLocationProvider.save(
         this.mapCreateArtistInfoToArtistLocation(artist, createArtistParams),
       );
     } catch (error) {
       if (error instanceof DbServiceException) {
         await Promise.all([
-          await this.artistsDbService.delete(artist.id),
+          await this.artistProvider.delete(artist.id),
           await this.agendaProvider.delete(agenda.id),
         ]);
         throw new DomainUnProcessableEntity(error.publicError);

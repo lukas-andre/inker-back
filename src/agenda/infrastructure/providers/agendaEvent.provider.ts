@@ -21,6 +21,7 @@ import {
   DBServiceSaveException,
   DBServiceUpdateException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { AddEventReqDto } from '../dtos/addEventReq.dto';
 import { Agenda } from '../entities/agenda.entity';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
@@ -210,12 +211,16 @@ export class AgendaEventProvider extends BaseComponent {
     return event;
   }
 
-  async markAsDone(agendaId: number, eventId: number): Promise<void> {
+  async markAsDone(
+    agendaId: number,
+    eventId: number,
+    workEvidence: MultimediasMetadataInterface,
+  ): Promise<void> {
     try {
       await this.agendaEventRepository
         .createQueryBuilder()
         .update()
-        .set({ done: true })
+        .set({ done: true, workEvidence })
         .where('id = :id', { id: eventId })
         .andWhere('agenda_id = :agendaId', { agendaId })
         .execute();

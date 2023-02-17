@@ -27,7 +27,7 @@ export class UpdateArtistProfilePictureUseCase
   implements UseCase
 {
   constructor(
-    private readonly artistsDbService: ArtistProvider,
+    private readonly artistProvider: ArtistProvider,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
   ) {
@@ -40,7 +40,7 @@ export class UpdateArtistProfilePictureUseCase
     }
 
     this.logger.log(`id:  ${id}`);
-    let artist = await this.artistsDbService.findById(id);
+    let artist = await this.artistProvider.findById(id);
 
     if (!artist) {
       throw new DomainNotFound('Artists not found');
@@ -67,7 +67,7 @@ export class UpdateArtistProfilePictureUseCase
 
     artist.profileThumbnail = uploadResult[0].cloudFrontUrl;
 
-    artist = await this.artistsDbService.save(artist);
+    artist = await this.artistProvider.save(artist);
 
     this.logger.log(`artist: ' ${stringify(artist)}`);
 

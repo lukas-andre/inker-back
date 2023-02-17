@@ -10,23 +10,23 @@ import {
   Repository,
 } from 'typeorm';
 
-import { BaseComponent } from '../../../../global/domain/components/base.component';
+import { BaseComponent } from '../../../global/domain/components/base.component';
 import {
   DBServiceFindException,
   DBServiceSaveException,
-} from '../../../../global/infrastructure/exceptions/dbService.exception';
-import { TROUBLE_SAVING_LOCATION } from '../../../../users/domain/errors/codes';
-import { TROUBLE_FINDING_LOCATIONS } from '../../../domain/codes/codes';
-import { FindArtistByRangeResponseDTO } from '../../dtos/findArtistByRangeResponse.dto';
-import { ArtistLocation } from '../../entities/artistLocation.entity';
+} from '../../../global/infrastructure/exceptions/dbService.exception';
+import { TROUBLE_SAVING_LOCATION } from '../../../users/domain/errors/codes';
+import { TROUBLE_FINDING_LOCATIONS } from '../../domain/codes/codes';
+import { FindArtistByRangeResponseDTO } from '../dtos/findArtistByRangeResponse.dto';
+import { ArtistLocation } from '../entities/artistLocation.entity';
 
 @Injectable()
-export class ArtistLocationsDbService extends BaseComponent {
+export class ArtistLocationProvider extends BaseComponent {
   constructor(
     @InjectRepository(ArtistLocation, 'location-db')
     private readonly artistLocationsRepository: Repository<ArtistLocation>,
   ) {
-    super(ArtistLocationsDbService.name);
+    super(ArtistLocationProvider.name);
   }
 
   async findById(id: number) {

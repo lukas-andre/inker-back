@@ -10,6 +10,8 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
+import { FileInterface } from '../../multimedias/interfaces/file.interface';
+import { MultimediasService } from '../../multimedias/services/multimedias.service';
 import {
   AGENDA_EVENT_IS_ALREADY_DONE,
   AGENDA_EVENT_NOT_EXISTS,
@@ -18,13 +20,17 @@ import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.pro
 
 @Injectable()
 export class MarkEventAsDoneUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly agendaEventProvider: AgendaEventProvider) {
+  constructor(
+    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly multimediasService: MultimediasService,
+  ) {
     super(MarkEventAsDoneUseCase.name);
   }
 
   async execute(
     agendaId: number,
     eventId: number,
+    workEvidenceFiles: FileInterface[],
   ): Promise<DefaultResponseDto> {
     const event = await this.agendaEventProvider.findAgendaEventForMarkAsDone(
       agendaId,
@@ -39,7 +45,14 @@ export class MarkEventAsDoneUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotAcceptable(AGENDA_EVENT_IS_ALREADY_DONE);
     }
 
-    await this.agendaEventProvider.markAsDone(agendaId, eventId);
+    const workEvidence =
+      await this.multimediasService.handleWorkEvidenceMultimedias(
+        workEvidenceFiles,
+        eventId,
+        agendaId,
+      );
+
+    await this.agendaEventProvider.markAsDone(agendaId, eventId, workEvidence);
 
     return DefaultResponse.ok;
   }

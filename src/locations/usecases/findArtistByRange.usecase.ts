@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Point } from 'geojson';
 
+import {
+  AgendaProvider,
+  FindRecentWorksByArtistIdsResult,
+} from '../../agenda/infrastructure/providers/agenda.provider';
 import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import {
@@ -16,7 +20,7 @@ import {
   ReviewAvgProvider,
 } from '../../reviews/database/providers/reviewAvg.provider';
 import { NO_ARTISTS_FOUND } from '../domain/codes/codes';
-import { ArtistLocationsDbService } from '../infrastructure/database/services/artistLocationsDb.service';
+import { ArtistLocationProvider } from '../infrastructure/database/artistLocation.provider';
 import { FindArtistByArtistDTORequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
 import {
   FindArtistByRangeResponseDTO,
@@ -26,10 +30,11 @@ import {
 @Injectable()
 export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly artistsLocationDbService: ArtistLocationsDbService,
-    private readonly artistsDbService: ArtistProvider,
+    private readonly artistsLocationProvider: ArtistLocationProvider,
+    private readonly artistProvider: ArtistProvider,
     private readonly reviewProvider: ReviewProvider,
     private readonly reviewAvgProvider: ReviewAvgProvider,
+    private readonly agendaProvider: AgendaProvider,
   ) {
     super(FindArtistByRangeUseCase.name);
   }
@@ -42,7 +47,7 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
       coordinates: [findArtistByArtistDTO.lng, findArtistByArtistDTO.lat],
     };
 
-    const locations = await this.artistsLocationDbService.findByRange(
+    const locations = await this.artistsLocationProvider.findByRange(
       origin,
       findArtistByArtistDTO.range,
     );
@@ -56,15 +61,22 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
       artistIds.push(locations[i].artistId);
     }
 
-    const artists = await this.artistsDbService.rawFindByArtistIds(artistIds);
+    const artists = await this.artistProvider.rawFindByArtistIds(artistIds);
     const reviews = await this.reviewProvider.findByArtistIds(artistIds);
     const reviewsAvg = await this.reviewAvgProvider.findAvgByArtistIds(
+      artistIds,
+    );
+    const recentWorks = await this.agendaProvider.findRecentWorksByArtistIds(
       artistIds,
     );
 
     const artistByArtistId = new Map<number, RawFindByArtistIdsResponseDTO>();
     const reviewsByArtistId = new Map<number, FindByArtistIdsResult[]>();
     const reviewsAvgByArtistId = new Map<number, ReviewAvgByArtistIdsResult>();
+    const recentWorksByArtistId = new Map<
+      number,
+      FindRecentWorksByArtistIdsResult[]
+    >();
 
     for (let i = 0; i < artists.length; i++) {
       if (!artistByArtistId.get(artists[i].id)) {
@@ -88,10 +100,25 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
       }
     }
 
+    for (let i = 0; i < recentWorks.length; i++) {
+      if (!recentWorksByArtistId.get(recentWorks[i].artistId)) {
+        recentWorksByArtistId.set(recentWorks[i].artistId, [recentWorks[i]]);
+      } else {
+        const recentWorksById = recentWorksByArtistId.get(
+          recentWorks[i].artistId,
+        );
+        recentWorksById.push(recentWorks[i]);
+        recentWorksByArtistId.set(recentWorks[i].artistId, recentWorksById);
+      }
+    }
+
     locations.forEach(location => {
       location.artist = artistByArtistId.get(location.artistId);
       location.artist.reviews = reviewsByArtistId.get(location.artistId);
       location.artist.review = reviewsAvgByArtistId.get(location.artistId);
+      location.artist.recentWorks = recentWorksByArtistId.get(
+        location.artistId,
+      );
     });
     return locations;
   }
