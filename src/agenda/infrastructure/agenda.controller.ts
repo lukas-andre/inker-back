@@ -10,6 +10,8 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -21,9 +23,11 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
 
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
+import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import {
   AGENDA_EVENT_ID_PIPE_FAILED,
   AGENDA_EVENT_INVALID_ID_TYPE,
@@ -115,6 +119,7 @@ export class AgendaController {
     return this.agendaHandler.handleGetEventByEventId(agendaId, eventId);
   }
 
+  // TODO: VALIDATE IF THE ARTIST IS THE OWNER OF THE AGENDA, DO THIS WITH A GUARD OR VALIDATE THE TOKEN
   @ApiOperation({ summary: 'Mark event as done' })
   @HttpCode(200)
   @ApiOkResponse({
@@ -142,11 +147,18 @@ export class AgendaController {
     description: AGENDA_EVENT_IS_ALREADY_DONE,
   })
   @Put(':agendaId/event/:eventId/done')
+  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
   async markEventAsDone(
     @Param('agendaId', AgendaIdPipe) agendaId: number,
     @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @UploadedFiles() workEvidenceFiles: FileInterface[],
   ): Promise<any> {
-    return this.agendaHandler.handleMarkEventAsDone(agendaId, eventId);
+    console.log({ workEvidenceFiles });
+    return this.agendaHandler.handleMarkEventAsDone(
+      agendaId,
+      eventId,
+      workEvidenceFiles,
+    );
   }
 
   // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../../global/infrastructure/base.handler';
+import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
 import { FindEventByAgendaIdAndEventIdUseCase } from '../usecases/findEventByAgendaIdAndEventId.usecase';
@@ -53,7 +54,15 @@ export class AgendaHandler extends BaseHandler {
     return this.findEventByAgendaIdAndEventIdUseCase.execute(agendaId, eventId);
   }
 
-  async handleMarkEventAsDone(eventId: number, agendaId: number): Promise<any> {
-    return this.markEventAsDoneUseCase.execute(eventId, agendaId);
+  async handleMarkEventAsDone(
+    eventId: number,
+    agendaId: number,
+    workEvidenceFiles: FileInterface[],
+  ): Promise<any> {
+    return this.markEventAsDoneUseCase.execute(
+      eventId,
+      agendaId,
+      workEvidenceFiles,
+    );
   }
 }

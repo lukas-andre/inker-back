@@ -14,14 +14,14 @@ import { CreateArtistParams } from './interfaces/createArtist.params';
 @Injectable()
 export class CreateArtistUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly artistsDbService: ArtistProvider,
+    private readonly artistProvider: ArtistProvider,
     private readonly agendaProvider: AgendaProvider,
   ) {
     super(CreateArtistUseCase.name);
   }
 
   async execute(createArtistDto: CreateArtistParams): Promise<Artist> {
-    const created = await this.artistsDbService.create(createArtistDto);
+    const created = await this.artistProvider.create(createArtistDto);
 
     const agenda: Partial<Agenda> = {
       open: createArtistDto.agendaIsOpen,

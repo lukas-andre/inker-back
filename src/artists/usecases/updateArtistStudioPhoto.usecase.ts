@@ -32,7 +32,7 @@ export class UpdateArtistStudioPhotoUseCase
   implements UseCase
 {
   constructor(
-    private readonly artistsDbService: ArtistProvider,
+    private readonly artistProvider: ArtistProvider,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
   ) {
@@ -49,7 +49,7 @@ export class UpdateArtistStudioPhotoUseCase
 
     this.logger.log(`id:  ${id}`);
     console.time('existArtist');
-    const artist = await this.artistsDbService.exists(id);
+    const artist = await this.artistProvider.exists(id);
     console.timeEnd('existArtist');
 
     if (!artist) {
@@ -80,7 +80,7 @@ export class UpdateArtistStudioPhotoUseCase
     const cloudFrontUrl = uploadResult[0].cloudFrontUrl;
 
     console.time('updateStudioPhoto');
-    await this.artistsDbService.updateStudioPhoto(id, cloudFrontUrl);
+    await this.artistProvider.updateStudioPhoto(id, cloudFrontUrl);
     console.timeEnd('updateStudioPhoto');
 
     return {

@@ -25,7 +25,7 @@ import { Post } from '../infrastructure/entities/post.entity';
 export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly postService: PostsService,
-    private readonly artistsDbService: ArtistProvider,
+    private readonly artistProvider: ArtistProvider,
     private readonly genresService: GenresService,
     private readonly tagsService: TagsService,
     private readonly multimediasService: MultimediasService,
@@ -42,7 +42,7 @@ export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRequest('Not valid files to upload');
     }
 
-    const artist = await this.artistsDbService.findById(jwtPayload.userTypeId);
+    const artist = await this.artistProvider.findById(jwtPayload.userTypeId);
 
     if (!artist) {
       throw new DomainNotFound('Artist not found');

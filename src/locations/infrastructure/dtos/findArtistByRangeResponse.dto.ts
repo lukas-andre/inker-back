@@ -121,4 +121,7 @@ export class RawFindByArtistIdsResponseDTO {
   @IsInstance(RawFindByArtistIdsReviewsDTO)
   @Type(() => RawFindByArtistIdsReviewsDTO)
   review: RawFindByArtistIdsReviewDTO;
+
+  // TODO: ADD DTO PROPERLY
+  recentWorks: any[];
 }

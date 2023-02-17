@@ -8,11 +8,11 @@ import {
   Repository,
 } from 'typeorm';
 
-import { EventLocation } from '../../entities/eventLocation.entity';
+import { EventLocation } from '../entities/eventLocation.entity';
 
 @Injectable()
-export class EventLocationsDbService {
-  private readonly serviceName: string = EventLocationsDbService.name;
+export class EventLocationProvider {
+  private readonly serviceName: string = EventLocationProvider.name;
 
   constructor(
     @InjectRepository(EventLocation, 'location-db')
