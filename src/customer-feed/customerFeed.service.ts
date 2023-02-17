@@ -11,8 +11,8 @@ import {
 import { CustomerFeed } from './customerFeed.entity';
 
 @Injectable()
-export class CustomerService {
-  private readonly serviceName: string = CustomerService.name;
+export class CustomerFeedService {
+  private readonly serviceName: string = CustomerFeedService.name;
 
   constructor(
     @InjectRepository(CustomerFeed, 'feed-db')

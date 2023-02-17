@@ -4,7 +4,14 @@ import {
   InjectEntityManager,
   InjectRepository,
 } from '@nestjs/typeorm';
-import { DataSource, EntityManager, QueryRunner, Repository } from 'typeorm';
+import { O } from 'ts-toolbelt';
+import {
+  DataSource,
+  EntityManager,
+  In,
+  QueryRunner,
+  Repository,
+} from 'typeorm';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
@@ -22,16 +29,21 @@ import {
   REVIEW_MUST_EXISTS_TO_UPDATE,
 } from '../../codes';
 import { ReviewArtistRequestDto } from '../../dtos/reviewArtistRequest.dto';
-import { Review, ReviewReactionsDetail } from '../entities/review.entity';
+import { ReviewReactionsDetail } from '../../interfaces/review.interface';
 import {
   defaultRatingMap,
   RatingRate,
-  ReviewAvg,
-} from '../entities/reviewAvg.entity';
-
+} from '../../interfaces/reviewAvg.interface';
+import { Review } from '../entities/review.entity';
+import { ReviewAvg } from '../entities/reviewAvg.entity';
 export type FindIfCustomerAlreadyReviewTheEventResult = Pick<
   Review,
   'id' | 'isRated'
+>;
+
+export type FindByArtistIdsResult = O.Omit<
+  Review,
+  'id' | 'createdAt' | 'updatedAt'
 >;
 
 export interface QueryRunnerInterface {
@@ -73,6 +85,33 @@ export class ReviewProvider extends BaseComponent {
 
   get repo(): Repository<Review> {
     return this.repository;
+  }
+
+  async findByArtistIds(artistId: number[]): Promise<FindByArtistIdsResult[]> {
+    try {
+      return await this.repository.find({
+        select: [
+          'artistId',
+          'content',
+          'createdBy',
+          'header',
+          'displayName',
+          'isRated',
+          'reviewReactions',
+          'value',
+          'eventId',
+        ],
+        where: {
+          artistId: In(artistId),
+        },
+      });
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        this.findByArtistIds.name,
+        error,
+      );
+    }
   }
 
   async updateReviewReactionTransaction(
@@ -548,6 +587,7 @@ export class ReviewProvider extends BaseComponent {
       newDetail: detail,
     };
   }
+
   private computeNewAvg(
     oldRatingAvg: number,
     newCount: number,

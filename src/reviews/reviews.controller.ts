@@ -32,6 +32,7 @@ export class ReviewsController {
   async reviewArtist(
     @Param('artistId', ArtistIdPipe) artistId: number,
     @Param('eventId', AgendaEventIdPipe) eventId: number,
+    // TODO: This should be the customerId, not the userId
     @Param('reviewerId', UserIdPipe) reviewer: number,
     @Body() body: ReviewArtistRequestDto,
   ) {
@@ -46,6 +47,7 @@ export class ReviewsController {
   @Post('/reviews/:reviewId/reviewers/:reviewerId')
   async reactToReview(
     @Param('reviewId', ReviewIdPipe) reviewId: number,
+    // TODO: This should be the customerId, not the userId
     @Param('reviewerId', UserIdPipe) reviewer: number,
     @Query('reaction', ReviewReactionPipe) reaction: ReviewReactionEnum,
   ) {

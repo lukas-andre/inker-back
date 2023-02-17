@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
 import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
-import { CustomersModule } from '../customers/customers.module';
+import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
 import { LocationDbModule } from '../locations/infrastructure/database/locationDb.module';
 
 import { PermissionsController } from './infrastructure/controllers/permissions.controller';
@@ -31,7 +31,7 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
   imports: [
     AgendaProviderModule,
     ArtistsDbModule,
-    CustomersModule,
+    CustomerProviderModule,
     LocationDbModule,
     UserProviderModule,
   ],

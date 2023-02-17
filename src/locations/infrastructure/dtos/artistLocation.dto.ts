@@ -4,7 +4,7 @@ import { IsNumber } from 'class-validator';
 
 import { LocationDto } from './location.dto';
 
-export class ArtistLocationDto extends LocationDto {
+export class ArtistLocationDTO extends LocationDto {
   @ApiProperty({ description: 'Artist id', example: 1 })
   @IsNumber()
   artistId: number;

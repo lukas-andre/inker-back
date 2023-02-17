@@ -17,7 +17,7 @@ import {
 } from '../../../../global/infrastructure/exceptions/dbService.exception';
 import { TROUBLE_SAVING_LOCATION } from '../../../../users/domain/errors/codes';
 import { TROUBLE_FINDING_LOCATIONS } from '../../../domain/codes/codes';
-import { FindArtistByRangeResponseDto } from '../../dtos/findArtistByRangeResponse.dto';
+import { FindArtistByRangeResponseDTO } from '../../dtos/findArtistByRangeResponse.dto';
 import { ArtistLocation } from '../../entities/artistLocation.entity';
 
 @Injectable()
@@ -40,7 +40,7 @@ export class ArtistLocationsDbService extends BaseComponent {
   async findByRange(
     originPoint: Point,
     range = 1000,
-  ): Promise<FindArtistByRangeResponseDto[]> {
+  ): Promise<FindArtistByRangeResponseDTO[]> {
     try {
       return await this.artistLocationsRepository
         .createQueryBuilder('location')
@@ -69,7 +69,7 @@ export class ArtistLocationsDbService extends BaseComponent {
           origin: stringify(originPoint),
           range: range * 1000, // KM Conversion
         })
-        .getRawMany<FindArtistByRangeResponseDto>();
+        .getRawMany<FindArtistByRangeResponseDTO>();
     } catch (error) {
       throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
     }

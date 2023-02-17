@@ -18,7 +18,7 @@ import {
   DBServiceSaveException,
 } from '../../../../global/infrastructure/exceptions/dbService.exception';
 import { PROBLEMS_FILTERING_ARTISTS } from '../../../../locations/domain/codes/codes';
-import { RawFindByArtistIdsResponseDto } from '../../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
+import { RawFindByArtistIdsResponseDTO } from '../../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
 import { PROBLEMS_UPDATING_STUDIO_PHOTO } from '../../../domain/errors/codes';
 import { CreateArtistParams } from '../../../usecases/interfaces/createArtist.params';
 import { Artist } from '../../entities/artist.entity';
@@ -118,7 +118,7 @@ export class ArtistsDbService extends BaseComponent {
 
   async rawFindByArtistIds(
     artistIds: number[],
-  ): Promise<RawFindByArtistIdsResponseDto[]> {
+  ): Promise<RawFindByArtistIdsResponseDTO[]> {
     const vars = artistIds.map((_, index) => `$${++index}`).join(',');
 
     try {
