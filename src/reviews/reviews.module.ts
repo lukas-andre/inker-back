@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
-import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
 import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
 
 import { ReviewProviderModule } from './database/reviewProvider.module';
@@ -14,7 +14,7 @@ import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
   imports: [
     AgendaProviderModule,
     ReviewProviderModule,
-    ArtistsDbModule,
+    ArtistsProviderModule,
     UserProviderModule,
   ],
   controllers: [ReviewsController],

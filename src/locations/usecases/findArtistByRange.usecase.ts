@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Point } from 'geojson';
 
-import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
@@ -17,7 +17,7 @@ import {
 } from '../../reviews/database/providers/reviewAvg.provider';
 import { NO_ARTISTS_FOUND } from '../domain/codes/codes';
 import { ArtistLocationsDbService } from '../infrastructure/database/services/artistLocationsDb.service';
-import { FindArtistByArtistDtoRequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
+import { FindArtistByArtistDTORequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
 import {
   FindArtistByRangeResponseDTO,
   RawFindByArtistIdsResponseDTO,
@@ -27,7 +27,7 @@ import {
 export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly artistsLocationDbService: ArtistLocationsDbService,
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistsDbService: ArtistProvider,
     private readonly reviewProvider: ReviewProvider,
     private readonly reviewAvgProvider: ReviewAvgProvider,
   ) {
@@ -35,16 +35,16 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   }
 
   async execute(
-    findArtistByArtistDto: FindArtistByArtistDtoRequest,
+    findArtistByArtistDTO: FindArtistByArtistDTORequest,
   ): Promise<FindArtistByRangeResponseDTO[]> {
     const origin: Point = {
       type: 'Point',
-      coordinates: [findArtistByArtistDto.lng, findArtistByArtistDto.lat],
+      coordinates: [findArtistByArtistDTO.lng, findArtistByArtistDTO.lat],
     };
 
     const locations = await this.artistsLocationDbService.findByRange(
       origin,
-      findArtistByArtistDto.range,
+      findArtistByArtistDTO.range,
     );
 
     if (!locations.length) {

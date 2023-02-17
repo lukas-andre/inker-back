@@ -6,7 +6,7 @@ import { AddLocationByApiUseCase } from '../usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from '../usecases/findArtistByRange.usecase';
 
 import { AddLocationDto } from './dtos/addLocation.dto';
-import { FindArtistByArtistDtoRequest } from './dtos/findArtistByRangeRequest.dto';
+import { FindArtistByArtistDTORequest } from './dtos/findArtistByRangeRequest.dto';
 import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class LocationsHandler extends BaseHandler {
   }
 
   public async handleFindArtistByRange(
-    dto: FindArtistByArtistDtoRequest,
+    dto: FindArtistByArtistDTORequest,
   ): Promise<FindArtistByRangeResponseDTO[]> {
     return this.findArtistByRangeUseCase.execute(dto);
   }

@@ -2,13 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsInstance, IsNumber, IsOptional, IsString } from 'class-validator';
 
-import { BaseDto } from '../../../global/domain/dtos/base.dto';
+import { BaseDTO } from '../../../global/domain/dtos/base.dto';
 import { MetaTagsDto } from '../../../global/domain/dtos/metaTags.dto';
 import { ArtistType } from '../artistType';
 
 import { ContactDto } from './contact.dto';
 
-export class ArtistDto extends BaseDto implements ArtistType {
+export class ArtistDto extends BaseDTO implements ArtistType {
   @ApiProperty({
     description: 'User id',
     required: true,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import stringify from 'fast-safe-stringify';
 
-import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { GenreInterface } from '../../genres/genre.interface';
 import { GenresService } from '../../genres/genres.service';
 import {
@@ -25,7 +25,7 @@ import { Post } from '../infrastructure/entities/post.entity';
 export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly postService: PostsService,
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistsDbService: ArtistProvider,
     private readonly genresService: GenresService,
     private readonly tagsService: TagsService,
     private readonly multimediasService: MultimediasService,

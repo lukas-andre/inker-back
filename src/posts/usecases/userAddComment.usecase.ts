@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import {
@@ -17,7 +17,7 @@ import { ParentCommentEnum } from '../infrastructure/enum/parentComment.enum';
 export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly commentsService: CommentsService,
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistsDbService: ArtistProvider,
     private readonly postsService: PostsService,
   ) {
     super(UserAddCommentUseCase.name);

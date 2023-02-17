@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsDate, IsNumber } from 'class-validator';
 
-export class BaseDto {
+export class BaseDTO {
   @ApiProperty({
     description: 'Resource id',
     required: true,

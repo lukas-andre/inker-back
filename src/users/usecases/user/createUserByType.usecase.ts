@@ -4,7 +4,7 @@ import stringify from 'fast-safe-stringify';
 
 import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
 import { AgendaProvider } from '../../../agenda/infrastructure/providers/agenda.provider';
-import { ArtistsDbService } from '../../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
@@ -38,7 +38,7 @@ import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersProvider: UsersProvider,
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistsDbService: ArtistProvider,
     private readonly customerProvider: CustomerProvider,
     private readonly rolesService: RolesProvider,
     private readonly agendaProvider: AgendaProvider,

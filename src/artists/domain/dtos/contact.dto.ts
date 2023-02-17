@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsEmail, IsString } from 'class-validator';
 
-import { BaseDto } from '../../../global/domain/dtos/base.dto';
+import { BaseDTO } from '../../../global/domain/dtos/base.dto';
 import { ContactInterface } from '../interfaces/contact.interface';
 
-export class ContactDto extends BaseDto implements ContactInterface {
+export class ContactDto extends BaseDTO implements ContactInterface {
   @ApiProperty({
     description: 'Email address of the artist',
     required: true,

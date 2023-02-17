@@ -10,27 +10,27 @@ import {
   UpdateResult,
 } from 'typeorm';
 
-import { BaseComponent } from '../../../../global/domain/components/base.component';
-import { ExistsQueryResult } from '../../../../global/domain/interfaces/existsQueryResult.interface';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
   DbServiceBadRule,
   DBServiceFindOneException,
   DBServiceSaveException,
-} from '../../../../global/infrastructure/exceptions/dbService.exception';
-import { PROBLEMS_FILTERING_ARTISTS } from '../../../../locations/domain/codes/codes';
-import { RawFindByArtistIdsResponseDTO } from '../../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
-import { PROBLEMS_UPDATING_STUDIO_PHOTO } from '../../../domain/errors/codes';
-import { CreateArtistParams } from '../../../usecases/interfaces/createArtist.params';
-import { Artist } from '../../entities/artist.entity';
-import { Contact } from '../../entities/contact.entity';
+} from '../../../global/infrastructure/exceptions/dbService.exception';
+import { PROBLEMS_FILTERING_ARTISTS } from '../../../locations/domain/codes/codes';
+import { RawFindByArtistIdsResponseDTO } from '../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
+import { PROBLEMS_UPDATING_STUDIO_PHOTO } from '../../domain/errors/codes';
+import { CreateArtistParams } from '../../usecases/interfaces/createArtist.params';
+import { Artist } from '../entities/artist.entity';
+import { Contact } from '../entities/contact.entity';
 
 @Injectable()
-export class ArtistsDbService extends BaseComponent {
+export class ArtistProvider extends BaseComponent {
   constructor(
     @InjectRepository(Artist, 'artist-db')
     private readonly artistsRepository: Repository<Artist>,
   ) {
-    super(ArtistsDbService.name);
+    super(ArtistProvider.name);
   }
 
   repo() {

@@ -5,7 +5,7 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from '../infrastructure/dtos/updateArtist.dto';
 
@@ -14,7 +14,7 @@ export class UpdateArtistBasicInfoUseCase
   extends BaseUseCase
   implements UseCase
 {
-  constructor(private readonly artistsDbService: ArtistsDbService) {
+  constructor(private readonly artistsDbService: ArtistProvider) {
     super(UpdateArtistBasicInfoUseCase.name);
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
 import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
@@ -25,7 +25,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   constructor(
     private authService: AuthService,
     private usersProvider: UsersProvider,
-    private artistsDbService: ArtistsDbService,
+    private artistsDbService: ArtistProvider,
     private customerProvider: CustomerProvider,
   ) {
     super(DefaultLoginUseCase.name);

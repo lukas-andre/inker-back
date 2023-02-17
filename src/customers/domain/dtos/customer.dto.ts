@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
-import { BaseDto } from '../../../global/domain/dtos/base.dto';
+import { BaseDTO } from '../../../global/domain/dtos/base.dto';
 import { CustomerInterface } from '../interfaces/customer.interface';
 import { CustomerFollows } from '../interfaces/customerFollows.interface';
 
-export class CustomerDto extends BaseDto implements CustomerInterface {
+export class CustomerDto extends BaseDTO implements CustomerInterface {
   @ApiProperty({
     description: 'User id',
     type: Number,

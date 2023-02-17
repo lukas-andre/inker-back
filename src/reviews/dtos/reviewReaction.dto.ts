@@ -1,18 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsNumber } from 'class-validator';
+import { IsEnum, IsNumber } from 'class-validator';
 
+import { BaseDTO } from '../../global/domain/dtos/base.dto';
 import { ReviewReactionEnum } from '../../reactions/domain/enums/reviewReaction.enum';
 import { ReviewReactionInterface } from '../interfaces/reviewReaction.interface';
 
-export class ReviewReactionDTO implements ReviewReactionInterface {
-  @ApiProperty({
-    type: Number,
-    description: 'The id of the reaction',
-    example: 1,
-  })
-  @IsNumber()
-  id: number;
-
+export class ReviewReactionDTO
+  extends BaseDTO
+  implements ReviewReactionInterface
+{
   @ApiProperty({
     type: Number,
     description: 'The id of the user',
@@ -35,20 +31,4 @@ export class ReviewReactionDTO implements ReviewReactionInterface {
   })
   @IsNumber()
   reviewId: number;
-
-  @ApiProperty({
-    type: Date,
-    description: 'The date when the review was created',
-    example: new Date(),
-  })
-  @IsDate()
-  createdAt: Date;
-
-  @ApiProperty({
-    type: Date,
-    description: 'The date when the review was updated',
-    example: new Date(),
-  })
-  @IsDate()
-  updatedAt: Date;
 }
