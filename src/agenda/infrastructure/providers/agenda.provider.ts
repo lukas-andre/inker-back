@@ -26,6 +26,10 @@ import {
 } from '../../../users/domain/errors/codes';
 import { Agenda } from '../entities/agenda.entity';
 
+export interface ArtistAgendaAndEventRelatedToCustomerResult {
+  id: number;
+  eventIsDone: boolean;
+}
 @Injectable()
 export class AgendaProvider extends BaseComponent {
   constructor(
@@ -54,18 +58,15 @@ export class AgendaProvider extends BaseComponent {
     artistId: number,
     eventId: number,
     customerId: number,
-  ): Promise<Agenda> {
+  ): Promise<ArtistAgendaAndEventRelatedToCustomerResult> {
     try {
-      const agenda = await this.repo.findOne({
-        where: {
-          artistId: artistId,
-          agendaEvent: {
-            id: eventId,
-            customerId: customerId,
-          },
-        },
-      });
-
+      const [agenda]: ArtistAgendaAndEventRelatedToCustomerResult[] =
+        await this.agendaRepository.query(
+          `SELECT a.id, e.done "eventIsDone" FROM agenda a 
+         INNER JOIN agenda_event e ON e.agenda_id = a.id 
+         WHERE a.artist_id = $1 AND e.id = $2 AND e.customer_id = $3`,
+          [artistId, eventId, customerId],
+        );
       return agenda;
     } catch (error) {
       throw new DBServiceSaveException(

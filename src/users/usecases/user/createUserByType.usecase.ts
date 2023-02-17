@@ -8,8 +8,8 @@ import { ArtistsDbService } from '../../../artists/infrastructure/database/servi
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
-import { CustomersService } from '../../../customers/domain/customers.service';
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
+import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
 import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
 import {
   DomainConflict,
@@ -39,7 +39,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersProvider: UsersProvider,
     private readonly artistsDbService: ArtistsDbService,
-    private readonly customerService: CustomersService,
+    private readonly customerProvider: CustomerProvider,
     private readonly rolesService: RolesProvider,
     private readonly agendaProvider: AgendaProvider,
     private readonly artistLocationsDbService: ArtistLocationsDbService,
@@ -149,7 +149,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   private async createCustomer(
     createCustomerDto: CreateCustomerParams,
   ): Promise<Customer> {
-    return this.customerService.create(createCustomerDto);
+    return this.customerProvider.create(createCustomerDto);
   }
 
   private async rollbackCreate(userId: number): Promise<void> {

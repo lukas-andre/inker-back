@@ -23,8 +23,14 @@ async function bootstrap() {
   const appConf: ConfigType<typeof appConfig> = app.get(appConfig.KEY);
   await app.listen(appConf.port, appConf.host);
 
+  const appUrl = await app.getUrl();
+
   Logger.log(
-    `🚀 Application ${SERVICE_NAME} is running on: ${await app.getUrl()}`,
+    `🚀 Application ${SERVICE_NAME} is running on: ${appUrl}`,
+    'Bootstrap',
+  );
+  Logger.log(
+    `🚀 Application ${SERVICE_NAME} OAS is running on: ${appUrl}/oas`,
     'Bootstrap',
   );
 }

@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CustomersService } from './domain/customers.service';
 import { CustomersController } from './infrastructure/customers.controller';
 import { CustomerHandler } from './infrastructure/customers.handler';
-import { Customer } from './infrastructure/entities/customer.entity';
+import { CustomerProviderModule } from './infrastructure/providers/customerProvider.module';
 import { CRCustomerUseCase } from './usecases/CRCustomer.usecase';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Customer], 'customer-db')],
-  providers: [CustomersService, CustomerHandler, CRCustomerUseCase],
+  imports: [CustomerProviderModule],
   controllers: [CustomersController],
-  exports: [CustomersService],
+  providers: [CustomerHandler, CRCustomerUseCase],
 })
 export class CustomersModule {}

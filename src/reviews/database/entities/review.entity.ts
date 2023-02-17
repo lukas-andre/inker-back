@@ -1,15 +1,13 @@
 import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-
-export type ReviewReactionDetailType = 'likes' | 'dislikes' | 'off';
-
-export type ReviewReactionsDetail = {
-  [key in ReviewReactionDetailType]: number;
-};
+import {
+  ReviewInterface,
+  ReviewReactionsDetail,
+} from '../../interfaces/review.interface';
 
 @Entity()
-export class Review extends BaseEntity {
+export class Review extends BaseEntity implements ReviewInterface {
   @Column({ type: 'int', nullable: false, name: 'artist_id' })
   @Index()
   artistId: number;

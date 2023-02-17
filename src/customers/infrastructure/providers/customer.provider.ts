@@ -8,23 +8,22 @@ import {
   Repository,
 } from 'typeorm';
 
-import { BaseComponent } from '../../global/domain/components/base.component';
+import { BaseComponent } from '../../../global/domain/components/base.component';
 import {
   DbServiceBadRule,
   DBServiceCreateException,
-} from '../../global/infrastructure/exceptions/dbService.exception';
-import { Customer } from '../infrastructure/entities/customer.entity';
-import { CreateCustomerParams } from '../usecases/interfaces/createCustomer.params';
-
-import { FollowTopic } from './interfaces/customerFollows.interface';
+} from '../../../global/infrastructure/exceptions/dbService.exception';
+import { FollowTopic } from '../../domain/interfaces/customerFollows.interface';
+import { CreateCustomerParams } from '../../usecases/interfaces/createCustomer.params';
+import { Customer } from '../entities/customer.entity';
 
 @Injectable()
-export class CustomersService extends BaseComponent {
+export class CustomerProvider extends BaseComponent {
   constructor(
     @InjectRepository(Customer, 'customer-db')
     private readonly customersRepository: Repository<Customer>,
   ) {
-    super(CustomersService.name);
+    super(CustomerProvider.name);
   }
 
   async create(params: CreateCustomerParams): Promise<Customer> {

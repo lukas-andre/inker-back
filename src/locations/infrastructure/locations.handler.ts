@@ -7,7 +7,7 @@ import { FindArtistByRangeUseCase } from '../usecases/findArtistByRange.usecase'
 
 import { AddLocationDto } from './dtos/addLocation.dto';
 import { FindArtistByArtistDtoRequest } from './dtos/findArtistByRangeRequest.dto';
-import { FindArtistByRangeResponseDto } from './dtos/findArtistByRangeResponse.dto';
+import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
 
 @Injectable()
 export class LocationsHandler extends BaseHandler {
@@ -25,7 +25,7 @@ export class LocationsHandler extends BaseHandler {
 
   public async handleFindArtistByRange(
     dto: FindArtistByArtistDtoRequest,
-  ): Promise<FindArtistByRangeResponseDto[]> {
+  ): Promise<FindArtistByRangeResponseDTO[]> {
     return this.findArtistByRangeUseCase.execute(dto);
   }
 }

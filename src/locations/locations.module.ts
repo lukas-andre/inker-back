@@ -2,6 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 
 import { ArtistsModule } from '../artists/artists.module';
 import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
 
 import { LocationDbModule } from './infrastructure/database/locationDb.module';
 import { LocationsController } from './infrastructure/locations.controller';
@@ -10,7 +11,12 @@ import { AddLocationByApiUseCase } from './usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
 
 @Module({
-  imports: [ArtistsDbModule, LocationDbModule, forwardRef(() => ArtistsModule)],
+  imports: [
+    ArtistsDbModule,
+    LocationDbModule,
+    forwardRef(() => ArtistsModule),
+    ReviewProviderModule,
+  ],
   controllers: [LocationsController],
   providers: [
     LocationsHandler,

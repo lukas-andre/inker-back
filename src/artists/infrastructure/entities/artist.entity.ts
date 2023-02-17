@@ -43,6 +43,7 @@ export class Artist extends BaseEntity implements ArtistType {
   @Column('jsonb', { nullable: true })
   genres?: GenreInterface[];
 
+  // TODO: This should be removed
   @Column({ type: 'float', default: 0.0 })
   rating: number;
 

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
-import { CustomersService } from '../../customers/domain/customers.service';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
+import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
 import {
   DomainBadRule,
   DomainConflict,
@@ -26,7 +26,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
     private authService: AuthService,
     private usersProvider: UsersProvider,
     private artistsDbService: ArtistsDbService,
-    private customersService: CustomersService,
+    private customerProvider: CustomerProvider,
   ) {
     super(DefaultLoginUseCase.name);
   }
@@ -80,7 +80,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
     let userFounded = null;
     switch (userType) {
       case UserType.CUSTOMER:
-        userFounded = await this.customersService.findOne({
+        userFounded = await this.customerProvider.findOne({
           where: { userId },
         });
         break;
