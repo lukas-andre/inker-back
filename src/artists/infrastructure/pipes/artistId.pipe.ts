@@ -14,14 +14,14 @@ import {
   ARTIST_INVALID_ID_TYPE,
   ARTIST_NOT_ACCEPTED,
 } from '../../domain/errors/codes';
-import { ArtistsDbService } from '../database/services/artistsDb.service';
+import { ArtistProvider } from '../database/artist.provider';
 
 @Injectable()
 export class ArtistIdPipe
   implements PipeTransform<string, Promise<string | number>>
 {
   private readonly logger = new Logger(ArtistIdPipe.name);
-  constructor(private readonly artistsDbService: ArtistsDbService) {}
+  constructor(private readonly artistsDbService: ArtistProvider) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || this.invalidIdType(metatype)) {

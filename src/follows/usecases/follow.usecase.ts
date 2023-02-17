@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { getConnection } from 'typeorm';
 
-import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { BaseComponent } from '../../global/domain/components/base.component';
 import {
   DomainBadRequest,
@@ -22,7 +22,7 @@ import { FollowArtistParams } from './interfaces/followArtist.param';
 export class FollowUseCase extends BaseComponent {
   constructor(
     private readonly usersProvider: UsersProvider,
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistsDbService: ArtistProvider,
     private readonly followedsService: FollowedsService, // @InjectDataSource('follow-db') // private followDbDataSource: DataSource,
   ) {
     super(FollowUseCase.name);

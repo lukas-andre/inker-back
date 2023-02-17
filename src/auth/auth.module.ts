@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { ArtistsModule } from '../artists/artists.module';
-import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
 import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
 import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
 
@@ -12,7 +12,7 @@ import { DefaultLoginUseCase } from './usecases/defaultLogin.usecase';
 
 @Module({
   imports: [
-    ArtistsDbModule,
+    ArtistsProviderModule,
     UserProviderModule,
     ArtistsModule,
     CustomerProviderModule,

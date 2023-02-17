@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
-import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
 import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
 import { LocationDbModule } from '../locations/infrastructure/database/locationDb.module';
 
@@ -30,7 +30,7 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
 @Module({
   imports: [
     AgendaProviderModule,
-    ArtistsDbModule,
+    ArtistsProviderModule,
     CustomerProviderModule,
     LocationDbModule,
     UserProviderModule,

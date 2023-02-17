@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 
 import { ArtistsModule } from '../artists/artists.module';
-import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
 import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
 
 import { LocationDbModule } from './infrastructure/database/locationDb.module';
@@ -12,7 +12,7 @@ import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
 
 @Module({
   imports: [
-    ArtistsDbModule,
+    ArtistsProviderModule,
     LocationDbModule,
     forwardRef(() => ArtistsModule),
     ReviewProviderModule,

@@ -18,7 +18,7 @@ import {
   UploadToS3Result,
 } from '../../multimedias/services/multimedias.service';
 import { NOT_VALID_FILE_TYPE_TO_UPLOAD } from '../domain/errors/codes';
-import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { Artist } from '../infrastructure/entities/artist.entity';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class UpdateArtistProfilePictureUseCase
   implements UseCase
 {
   constructor(
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistsDbService: ArtistProvider,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
   ) {

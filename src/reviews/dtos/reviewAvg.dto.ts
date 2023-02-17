@@ -1,21 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNumber } from 'class-validator';
+import { IsNumber } from 'class-validator';
 
+import { BaseDTO } from '../../global/domain/dtos/base.dto';
 import {
   RatingRate,
   ReviewAvgInterface,
 } from '../interfaces/reviewAvg.interface';
 
-export class ReviewAvgDTO implements ReviewAvgInterface {
-  @ApiProperty({
-    type: Number,
-    description: 'The id of the review',
-    example: 1,
-    required: true,
-  })
-  @IsNumber()
-  id: number;
-
+export class ReviewAvgDTO extends BaseDTO implements ReviewAvgInterface {
   @ApiProperty({
     type: Number,
     description: 'The id of the artist',
@@ -57,20 +49,4 @@ export class ReviewAvgDTO implements ReviewAvgInterface {
   })
   @IsNumber()
   count: number;
-
-  @ApiProperty({
-    type: Date,
-    description: 'The date when the review was created',
-    example: new Date(),
-  })
-  @IsDate()
-  createdAt: Date;
-
-  @ApiProperty({
-    type: Date,
-    description: 'The date when the review was updated',
-    example: new Date(),
-  })
-  @IsDate()
-  updatedAt: Date;
 }

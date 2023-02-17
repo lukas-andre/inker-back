@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
+import { BaseDTO } from '../../global/domain/dtos/base.dto';
 import {
   ReviewInterface,
   ReviewReactionsDetail,
 } from '../interfaces/review.interface';
 
-export class ReviewDto implements ReviewInterface {
+export class ReviewDto extends BaseDTO implements ReviewInterface {
   @ApiProperty({ type: Number, description: 'The id of the event', example: 1 })
   @IsNumber()
   eventId: number;
@@ -59,15 +60,6 @@ export class ReviewDto implements ReviewInterface {
 
   @ApiProperty({
     type: Number,
-    description: 'The id of the review',
-    example: 1,
-    required: true,
-  })
-  @IsNumber()
-  id: number;
-
-  @ApiProperty({
-    type: Number,
     description: 'The id of the artist',
     example: 1,
     required: true,
@@ -91,21 +83,4 @@ export class ReviewDto implements ReviewInterface {
   })
   @IsString()
   header?: string;
-
-  @ApiProperty({
-    type: Date,
-    description: 'The date when the review was created',
-    example: new Date(),
-    required: true,
-  })
-  @IsDate()
-  createdAt: Date;
-
-  @ApiProperty({
-    type: Date,
-    description: 'The date when the review was updated',
-    example: new Date(),
-    required: true,
-  })
-  updatedAt: Date;
 }

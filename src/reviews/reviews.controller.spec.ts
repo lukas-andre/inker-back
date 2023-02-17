@@ -4,7 +4,7 @@ import { TestingModule } from '@nestjs/testing/testing-module';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
 
 import { AgendaEventProvider } from '../agenda/infrastructure/providers/agendaEvent.provider';
-import { ArtistsDbService } from '../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../artists/infrastructure/database/artist.provider';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 import { UsersProvider } from '../users/infrastructure/providers/users.provider';
 
@@ -43,7 +43,7 @@ describe('ReviewsController', () => {
           return jest.fn();
         }
 
-        if (token === ArtistsDbService) {
+        if (token === ArtistProvider) {
           return jest.fn();
         }
 

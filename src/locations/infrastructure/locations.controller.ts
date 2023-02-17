@@ -22,7 +22,7 @@ import {
 } from '../domain/codes/codes';
 
 import { AddLocationDto } from './dtos/addLocation.dto';
-import { FindArtistByArtistDtoRequest } from './dtos/findArtistByRangeRequest.dto';
+import { FindArtistByArtistDTORequest } from './dtos/findArtistByRangeRequest.dto';
 import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
 import { LocationsHandler } from './locations.handler';
 
@@ -58,7 +58,7 @@ export class LocationsController {
   @Post('artist')
   @HttpCode(HttpStatus.OK)
   async findArtistByRange(
-    @Body() body: FindArtistByArtistDtoRequest,
+    @Body() body: FindArtistByArtistDTORequest,
   ): Promise<FindArtistByRangeResponseDTO[]> {
     return this.locationsHandler.handleFindArtistByRange(body);
   }

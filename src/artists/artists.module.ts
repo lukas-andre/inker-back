@@ -6,7 +6,7 @@ import { MultimediasModule } from '../multimedias/multimedias.module';
 
 import { ArtistsController } from './infrastructure/artists.controller';
 import { ArtistsHandler } from './infrastructure/artists.handler';
-import { ArtistsDbModule } from './infrastructure/database/artistDb.module';
+import { ArtistsProviderModule } from './infrastructure/database/artistProvider.module';
 import { CreateArtistUseCase } from './usecases/createArtist.usecase';
 import { FindArtistsUseCases } from './usecases/findArtist.usecases';
 import { UpdateArtistBasicInfoUseCase } from './usecases/updateArtistBasicInfo.usecase';
@@ -15,7 +15,7 @@ import { UpdateArtistStudioPhotoUseCase } from './usecases/updateArtistStudioPho
 
 @Module({
   imports: [
-    ArtistsDbModule,
+    ArtistsProviderModule,
     AgendaProviderModule,
     MultimediasModule,
     FollowsModule,

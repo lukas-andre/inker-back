@@ -2,9 +2,9 @@ import { IsString } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 
-import { LocationDto } from './location.dto';
+import { LocationDTO } from './location.dto';
 
-export class ArtistLocationDTO extends LocationDto {
+export class ArtistLocationDTO extends LocationDTO {
   @ApiProperty({ description: 'Artist id', example: 1 })
   @IsNumber()
   artistId: number;
