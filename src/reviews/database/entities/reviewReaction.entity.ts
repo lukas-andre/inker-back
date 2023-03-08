@@ -9,9 +9,9 @@ export class ReviewReaction
   extends BaseEntity
   implements ReviewReactionInterface
 {
-  @Column({ name: 'user_id' })
+  @Column({ name: 'customer_id' })
   @Index()
-  userId: number;
+  customerId: number;
 
   @Column({
     type: 'enum',

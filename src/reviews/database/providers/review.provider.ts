@@ -36,15 +36,16 @@ import {
 } from '../../interfaces/reviewAvg.interface';
 import { Review } from '../entities/review.entity';
 import { ReviewAvg } from '../entities/reviewAvg.entity';
+
+import { CustomerReviewReactionDetailsResult } from './reviewReaction.provider';
 export type FindIfCustomerAlreadyReviewTheEventResult = Pick<
   Review,
   'id' | 'isRated'
 >;
 
-export type FindByArtistIdsResult = O.Omit<
-  Review,
-  'id' | 'createdAt' | 'updatedAt'
->;
+export type FindByArtistIdsResult = O.Omit<Review, 'updatedAt'> & {
+  customerReactionDetail?: CustomerReviewReactionDetailsResult;
+};
 
 export interface QueryRunnerInterface {
   startTransaction(): Promise<void>;
@@ -91,6 +92,7 @@ export class ReviewProvider extends BaseComponent {
     try {
       return await this.repository.find({
         select: [
+          'id',
           'artistId',
           'content',
           'createdBy',
@@ -100,9 +102,13 @@ export class ReviewProvider extends BaseComponent {
           'reviewReactions',
           'value',
           'eventId',
+          'createdAt',
         ],
         where: {
           artistId: In(artistId),
+        },
+        order: {
+          createdAt: 'DESC',
         },
       });
     } catch (error) {
@@ -129,7 +135,7 @@ export class ReviewProvider extends BaseComponent {
 
     try {
       await queryRunner.manager.query(
-        `UPDATE review_reaction SET reaction_type = $1 WHERE review_id = $2 AND user_id = $3`,
+        `UPDATE review_reaction SET reaction_type = $1 WHERE review_id = $2 AND customer_id = $3`,
         [reaction, reviewId, userId],
       );
 
@@ -175,7 +181,7 @@ export class ReviewProvider extends BaseComponent {
 
     try {
       await queryRunner.manager.query(
-        `UPDATE review_reaction SET reaction_type = $1 WHERE review_id = $2 AND user_id = $3`,
+        `UPDATE review_reaction SET reaction_type = $1 WHERE review_id = $2 AND customer_id = $3`,
         [ReviewReactionEnum.off, reviewId, userId],
       );
 
@@ -218,7 +224,7 @@ export class ReviewProvider extends BaseComponent {
 
     try {
       await queryRunner.manager.query(
-        `INSERT INTO review_reaction (review_id, user_id, reaction_type) VALUES ($1, $2, $3)`,
+        `INSERT INTO review_reaction (review_id, customer_id, reaction_type) VALUES ($1, $2, $3)`,
         [reviewId, customerId, reviewReaction],
       );
 

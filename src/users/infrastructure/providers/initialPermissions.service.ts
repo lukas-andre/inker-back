@@ -38,7 +38,11 @@ export class InitialPermissionsProvider extends BaseComponent {
       try {
         await this.permissionsRepository.save(permission);
       } catch (error) {
-        throw new DbServiceInternalServerError(this, error.detail, error);
+        throw new DbServiceInternalServerError(
+          this,
+          (error as Error).message,
+          error,
+        );
       }
     }
 

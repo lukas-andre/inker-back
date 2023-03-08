@@ -36,22 +36,19 @@ export class ReviewsController {
     @Param('reviewerId', UserIdPipe) reviewer: number,
     @Body() body: ReviewArtistRequestDto,
   ) {
-    this.logger.log(`artistId: ${artistId} eventId: ${eventId}`, reviewer);
-    this.logger.log({ body });
     return this.handler.reviewArtist(artistId, eventId, reviewer, body);
   }
 
   @ApiOperation({ summary: 'React to review' })
   @ApiParam({ name: 'reviewId', type: Number, example: 1 })
   @ApiParam({ name: 'reviewerId', type: Number, example: 1 })
-  @Post('/reviews/:reviewId/reviewers/:reviewerId')
+  @Post('/:reviewId/reviewers/:reviewerId')
   async reactToReview(
     @Param('reviewId', ReviewIdPipe) reviewId: number,
     // TODO: This should be the customerId, not the userId
-    @Param('reviewerId', UserIdPipe) reviewer: number,
+    @Param('reviewerId', UserIdPipe) reviewerId: number,
     @Query('reaction', ReviewReactionPipe) reaction: ReviewReactionEnum,
   ) {
-    this.logger.log(`reviewId: ${reviewId}`, reviewer);
-    return this.handler.reactToReview(reviewId, reviewer, reaction);
+    return this.handler.reactToReview(reviewId, reviewerId, reaction);
   }
 }

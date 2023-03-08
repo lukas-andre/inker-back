@@ -29,9 +29,9 @@ export class ReviewHandler extends BaseHandler {
 
   async reactToReview(
     reviewId: number,
-    userId: number,
+    customerId: number,
     reaction: ReviewReactionEnum,
   ) {
-    return this.reactToReviewUseCase.execute(reviewId, userId, reaction);
+    return this.reactToReviewUseCase.execute(reviewId, customerId, reaction);
   }
 }

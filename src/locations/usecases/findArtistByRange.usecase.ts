@@ -19,9 +19,10 @@ import {
   ReviewAvgByArtistIdsResult,
   ReviewAvgProvider,
 } from '../../reviews/database/providers/reviewAvg.provider';
+import { ReviewReactionProvider } from '../../reviews/database/providers/reviewReaction.provider';
 import { NO_ARTISTS_FOUND } from '../domain/codes/codes';
 import { ArtistLocationProvider } from '../infrastructure/database/artistLocation.provider';
-import { FindArtistByArtistDTORequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
+import { FindArtistByRangeDTORequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
 import {
   FindArtistByRangeResponseDTO,
   RawFindByArtistIdsResponseDTO,
@@ -33,6 +34,7 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
     private readonly artistsLocationProvider: ArtistLocationProvider,
     private readonly artistProvider: ArtistProvider,
     private readonly reviewProvider: ReviewProvider,
+    private readonly reviewReactionProvider: ReviewReactionProvider,
     private readonly reviewAvgProvider: ReviewAvgProvider,
     private readonly agendaProvider: AgendaProvider,
   ) {
@@ -40,8 +42,10 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   }
 
   async execute(
-    findArtistByArtistDTO: FindArtistByArtistDTORequest,
+    findArtistByArtistDTO: FindArtistByRangeDTORequest,
+    customerId: number,
   ): Promise<FindArtistByRangeResponseDTO[]> {
+    console.log({ customerId });
     const origin: Point = {
       type: 'Point',
       coordinates: [findArtistByArtistDTO.lng, findArtistByArtistDTO.lat],
@@ -61,14 +65,12 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
       artistIds.push(locations[i].artistId);
     }
 
-    const artists = await this.artistProvider.rawFindByArtistIds(artistIds);
-    const reviews = await this.reviewProvider.findByArtistIds(artistIds);
-    const reviewsAvg = await this.reviewAvgProvider.findAvgByArtistIds(
-      artistIds,
-    );
-    const recentWorks = await this.agendaProvider.findRecentWorksByArtistIds(
-      artistIds,
-    );
+    const [artists, reviews, reviewsAvg, recentWorks] = await Promise.all([
+      this.artistProvider.rawFindByArtistIds(artistIds),
+      this.reviewProvider.findByArtistIds(artistIds),
+      this.reviewAvgProvider.findAvgByArtistIds(artistIds),
+      this.agendaProvider.findRecentWorksByArtistIds(artistIds),
+    ]);
 
     const artistByArtistId = new Map<number, RawFindByArtistIdsResponseDTO>();
     const reviewsByArtistId = new Map<number, FindByArtistIdsResult[]>();
@@ -90,15 +92,16 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
       }
     }
 
+    const reviewsIds = [];
     for (let i = 0; i < reviews.length; i++) {
-      if (!reviewsByArtistId.get(reviews[i].artistId)) {
-        reviewsByArtistId.set(reviews[i].artistId, [reviews[i]]);
-      } else {
-        const reviewsById = reviewsByArtistId.get(reviews[i].artistId);
-        reviewsById.push(reviews[i]);
-        reviewsByArtistId.set(reviews[i].artistId, reviewsById);
-      }
+      reviewsIds.push(reviews[i].id);
     }
+
+    const customerReviewsDetails =
+      await this.reviewReactionProvider.findCustomerReviewsDetails(
+        customerId,
+        reviewsIds,
+      );
 
     for (let i = 0; i < recentWorks.length; i++) {
       if (!recentWorksByArtistId.get(recentWorks[i].artistId)) {
@@ -109,6 +112,24 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
         );
         recentWorksById.push(recentWorks[i]);
         recentWorksByArtistId.set(recentWorks[i].artistId, recentWorksById);
+      }
+    }
+
+    for (let i = 0; i < reviews.length; i++) {
+      if (!reviewsByArtistId.get(reviews[i].artistId)) {
+        const review = reviews[i];
+
+        review.customerReactionDetail = customerReviewsDetails.get(review.id);
+
+        reviewsByArtistId.set(reviews[i].artistId, [review]);
+      } else {
+        const reviewsById = reviewsByArtistId.get(reviews[i].artistId);
+        const review = reviews[i];
+
+        review.customerReactionDetail = customerReviewsDetails.get(review.id);
+
+        reviewsById.push(review);
+        reviewsByArtistId.set(reviews[i].artistId, reviewsById);
       }
     }
 
