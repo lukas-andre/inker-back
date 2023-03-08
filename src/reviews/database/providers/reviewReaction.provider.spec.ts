@@ -9,7 +9,10 @@ import { Review } from '../entities/review.entity';
 import { ReviewAvg } from '../entities/reviewAvg.entity';
 import { ReviewReaction } from '../entities/reviewReaction.entity';
 
-import { ReviewReactionProvider } from './reviewReaction.provider';
+import {
+  CustomerReviewReactionDetailsResult,
+  ReviewReactionProvider,
+} from './reviewReaction.provider';
 
 describe('ReviewReactionProvider', () => {
   const reviewReactionToken = getRepositoryToken(ReviewReaction);
@@ -89,5 +92,54 @@ describe('ReviewReactionProvider', () => {
       await reviewReactionProvider.getReviewReactionIfExists(reviewReactionId);
 
     expect(reviewReaction).toBeUndefined();
+  });
+
+  it('reviewProvider.findCustomerReviewsDetails should return reviewReaction if review exists', async () => {
+    const [reviewId, customerId] = always(2);
+
+    const reactionType = ReviewReactionEnum.like;
+
+    await reviewReactionProvider.repo.save({
+      reviewId,
+      customerId: customerId,
+      reactionType,
+      id: 1,
+    });
+
+    const [reviewId2] = always(3);
+
+    const reactionType2 = ReviewReactionEnum.dislike;
+
+    await reviewReactionProvider.repo.save({
+      reviewId: reviewId2,
+      customerId: customerId,
+      reactionType: reactionType2,
+      id: 2,
+    });
+
+    const customerReviewsId = [reviewId, reviewId2];
+
+    const reviewReaction =
+      await reviewReactionProvider.findCustomerReviewsDetails(
+        customerId,
+        customerReviewsId,
+      );
+
+    console.log({ reviewReaction });
+
+    const expectedMap = new Map<number, CustomerReviewReactionDetailsResult>();
+    expectedMap.set(reviewId, {
+      reviewReactionId: 1,
+      liked: true,
+      disliked: false,
+    });
+
+    expectedMap.set(reviewId2, {
+      reviewReactionId: 2,
+      liked: false,
+      disliked: true,
+    });
+
+    expect(reviewReaction).toEqual(expectedMap);
   });
 });

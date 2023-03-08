@@ -58,7 +58,9 @@ export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
     } catch (error) {
       // TODO: Not Handled Error
       this.logger.log(
-        `Not Handled Error: ${stringify(error)} Message: ${error.message}`,
+        `Not Handled Error: ${stringify(error)} Message: ${
+          (error as Error).message
+        }`,
       );
     }
 

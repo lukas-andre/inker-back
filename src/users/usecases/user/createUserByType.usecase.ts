@@ -81,7 +81,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       this.logger.log(`🟢 Customer created: ${stringify(resp)}`);
       return resp;
     } catch (error) {
-      await this.handleCreateError(created.id, error);
+      await this.handleCreateError(created.id, error as DomainException);
       throw error;
     }
   }
@@ -119,7 +119,9 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       );
     } catch (error) {
       await this.artistProvider.delete(artist.id);
-      throw new DomainUnProcessableEntity(error.publicMessage);
+      throw new DomainUnProcessableEntity(
+        (error as DbServiceException).publicError,
+      );
     }
 
     this.logger.log(`🟢 Agenda created: ${agenda.id}`);

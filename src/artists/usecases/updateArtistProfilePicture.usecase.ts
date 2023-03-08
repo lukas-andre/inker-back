@@ -62,7 +62,7 @@ export class UpdateArtistProfilePictureUseCase
         this.uploadTiny(file, source, fileExtension),
       ]);
     } catch (error) {
-      throw new DomainBadRequest(error.message);
+      throw new DomainBadRequest((error as Error).message);
     }
 
     artist.profileThumbnail = uploadResult[0].cloudFrontUrl;

@@ -7,10 +7,12 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+import { CustomerReviewReactionDetailsResult } from '../../../reviews/database/providers/reviewReaction.provider';
 import { ReviewDto } from '../../../reviews/dtos/review.dto';
 import { ReviewAvgDTO } from '../../../reviews/dtos/reviewAvg.dto';
 
 import { ArtistLocationDTO } from './artistLocation.dto';
+import { RecentWorkDTO } from './recentWork.dto';
 
 class Location {
   @ApiProperty({
@@ -55,18 +57,18 @@ export class RawContactResponseDTO {
   readonly country: string;
 }
 
-class RawFindByArtistIdsReviewsDTO extends OmitType(ReviewDto, [
-  'id',
-  'createdAt',
-  'updatedAt',
-]) {}
+class RawFindByArtistIdsReviewsDTO extends OmitType(ReviewDto, ['updatedAt']) {
+  customerReactionDetail?: CustomerReviewReactionDetailsResult;
+}
 
 class RawFindByArtistIdsReviewDTO extends PickType(ReviewAvgDTO, [
   'artistId',
   'count',
   'detail',
   'value',
-]) {}
+]) {
+  // other: any;
+}
 
 export class RawFindByArtistIdsResponseDTO {
   @ApiProperty({
@@ -122,6 +124,11 @@ export class RawFindByArtistIdsResponseDTO {
   @Type(() => RawFindByArtistIdsReviewsDTO)
   review: RawFindByArtistIdsReviewDTO;
 
-  // TODO: ADD DTO PROPERLY
-  recentWorks: any[];
+  @ApiProperty({
+    description: 'recent works',
+  })
+  @ValidateNested()
+  @IsInstance(RecentWorkDTO)
+  @Type(() => RecentWorkDTO)
+  recentWorks: RecentWorkDTO[];
 }

@@ -14,7 +14,7 @@ export class ReviewReactionDTO
     description: 'The id of the user',
     example: 1,
   })
-  userId: number;
+  customerId: number;
 
   @ApiProperty({
     type: String,
