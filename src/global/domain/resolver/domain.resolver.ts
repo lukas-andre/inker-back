@@ -1,21 +1,21 @@
 import {
+  DBServiceCreateException,
+  DBServiceDeleteException,
+  DBServiceFindException,
+  DBServiceFindOneException,
+  DBServiceSaveException,
+  DBServiceUpdateException,
   DbServiceBadRequest,
   DbServiceBadRule,
   DbServiceConflict,
-  DBServiceCreateException,
-  DBServiceDeleteException,
   DbServiceException,
-  DBServiceFindException,
-  DBServiceFindOneException,
   DbServiceForbidden,
   DbServiceGatewayTimeout,
   DbServiceInternalServerError,
   DbServiceNotFound,
   DbServiceNotImplemented,
-  DBServiceSaveException,
   DbServiceServiceUnavailable,
   DbServiceUnauthorized,
-  DBServiceUpdateException,
 } from '../../infrastructure/exceptions/dbService.exception';
 import {
   DomainBadRequest,
@@ -27,8 +27,8 @@ import {
   DomainInternalServerError,
   DomainNotFound,
   DomainNotImplemented,
-  DomainUnauthorized,
   DomainUnProcessableEntity,
+  DomainUnauthorized,
 } from '../exceptions/domain.exception';
 
 export class DomainResolver {

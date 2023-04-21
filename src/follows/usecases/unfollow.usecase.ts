@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { getConnection } from 'typeorm';
 
 import {
   DomainBadRequest,
@@ -12,12 +11,12 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
-import { FollowedsService } from '../domain/services/followeds.service';
+import { FollowedsProvider } from '../infrastructure/database/followeds.provider';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
 @Injectable()
 export class UnfollowUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly followedsService: FollowedsService) {
+  constructor(private readonly followedsProvider: FollowedsProvider) {
     super(UnfollowUseCase.name);
   }
 
@@ -26,11 +25,11 @@ export class UnfollowUseCase extends BaseUseCase implements UseCase {
     userId: number,
   ): Promise<DefaultResponseDto> {
     let exception: DomainException;
-    const connection = getConnection('follow-db');
-    const queryRunner = connection.createQueryRunner();
+    const dataSource = this.followedsProvider.source;
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
 
-    const existsFollower = await this.followedsService.existsFollowerInArtist(
+    const existsFollower = await this.followedsProvider.existsFollowerInArtist(
       artistUserId,
       userId,
     );

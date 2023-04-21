@@ -20,7 +20,7 @@ export class RequestInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest();
     const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
-    this.requestService.setToken(jwt);
+    this.requestService.token = jwt;
 
     return next.handle();
   }

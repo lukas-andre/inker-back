@@ -1,26 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
+  InjectDataSource,
+  InjectEntityManager,
+  InjectRepository,
+} from '@nestjs/typeorm';
+import {
+  DataSource,
   DeepPartial,
   DeleteResult,
+  EntityManager,
   FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
 
+import { FOLLOW_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { DbServiceNotFound } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { Followed } from '../../infrastructure/entities/followed.entity';
+import { Followed } from '../entities/followed.entity';
 
 @Injectable()
-export class FollowedsService extends BaseComponent {
+export class FollowedsProvider extends BaseComponent {
   constructor(
-    @InjectRepository(Followed, 'follow-db')
+    @InjectRepository(Followed, FOLLOW_DB_CONNECTION_NAME)
     private readonly followersRepository: Repository<Followed>,
+    @InjectDataSource(FOLLOW_DB_CONNECTION_NAME)
+    private readonly dataSource: DataSource,
+    @InjectEntityManager(FOLLOW_DB_CONNECTION_NAME)
+    private readonly entityManager: EntityManager,
   ) {
-    super(FollowedsService.name);
+    super(FollowedsProvider.name);
+  }
+
+  get source(): DataSource {
+    return this.dataSource;
+  }
+
+  get manager(): EntityManager {
+    return this.entityManager;
   }
 
   async findById(id: number) {

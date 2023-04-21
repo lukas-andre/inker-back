@@ -7,6 +7,7 @@ import { UserProviderModule } from '../users/infrastructure/providers/userProvid
 import { ReviewProviderModule } from './database/reviewProvider.module';
 import { ReviewsController } from './reviews.controller';
 import { ReviewHandler } from './reviews.handler';
+import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
 import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
 import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
 
@@ -18,6 +19,11 @@ import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
     UserProviderModule,
   ],
   controllers: [ReviewsController],
-  providers: [ReviewHandler, RatingArtistUsecase, ReactToReviewUsecase],
+  providers: [
+    ReviewHandler,
+    RatingArtistUsecase,
+    ReactToReviewUsecase,
+    GetReviewsFromArtistUsecase,
+  ],
 })
 export class ReviewsModule {}

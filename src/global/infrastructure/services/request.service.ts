@@ -9,32 +9,32 @@ export class RequestService {
 
   private readonly logger = new Logger(RequestService.name);
 
-  private token: string;
-  private jwtPayload: JwtPayload;
+  private _token: string;
+  private _jwtPayload: JwtPayload;
 
-  setToken(token: string) {
-    this.token = token;
+  set token(token: string) {
+    this._token = token;
 
     try {
-      this.jwtPayload = this.jwtService.verify(token);
+      this._jwtPayload = this.jwtService.verify(token);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.log(error);
     }
   }
 
-  getToken() {
-    return this.token;
+  get token(): string | null {
+    return this._token ?? null;
   }
 
-  getUserTypeId() {
-    return this.jwtPayload.userTypeId;
+  get userTypeId(): number | null {
+    return this._jwtPayload ? this._jwtPayload.userTypeId ?? null : null;
   }
 
-  getUserId() {
-    return this.jwtPayload.id;
+  get userId(): number | null {
+    return this._jwtPayload ? this._jwtPayload.id ?? null : null;
   }
 
-  getJwtPayload() {
-    return this.jwtPayload;
+  get jwtPayload(): JwtPayload | null {
+    return this._jwtPayload ?? null;
   }
 }

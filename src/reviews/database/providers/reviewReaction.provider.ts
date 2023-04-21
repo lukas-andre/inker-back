@@ -25,16 +25,17 @@ export class ReviewReactionProvider {
 
   async getReviewReactionIfExists(
     reviewId: number,
+    customerId: number,
   ): Promise<ReviewReactionEnum | undefined> {
     const [result]: { reactionType: ReviewReactionEnum }[] =
       await this.repo.query(
-        `SELECT  reaction_type AS "reactionType" FROM review_reaction WHERE review_id = $1`,
-        [reviewId],
+        `SELECT  reaction_type AS "reactionType" FROM review_reaction WHERE review_id = $1 AND customer_id = $2`,
+        [reviewId, customerId],
       );
     return result ? result.reactionType : undefined;
   }
 
-  async findCustomerReviewsDetails(
+  async findCustomerReviewsReactionDetail(
     customerId: number,
     customerReviewsId: number[],
   ): Promise<Map<number, CustomerReviewReactionDetailsResult>> {
@@ -44,6 +45,7 @@ export class ReviewReactionProvider {
       reactionType: z.enum([
         ReviewReactionEnum.like,
         ReviewReactionEnum.dislike,
+        ReviewReactionEnum.off,
       ]),
     });
 
@@ -58,6 +60,10 @@ export class ReviewReactionProvider {
     const resultMap = new Map<number, CustomerReviewReactionDetailsResult>();
 
     for (const { reviewId, reactionType, reviewReactionId } of parsedResult) {
+      if (reactionType === ReviewReactionEnum.off) {
+        continue;
+      }
+
       const currentResult = resultMap.get(reviewId) ?? {
         reviewReactionId,
         liked: false,
@@ -66,7 +72,9 @@ export class ReviewReactionProvider {
 
       if (reactionType === ReviewReactionEnum.like) {
         currentResult.liked = true;
-      } else {
+      }
+
+      if (reactionType === ReviewReactionEnum.dislike) {
         currentResult.disliked = true;
       }
 

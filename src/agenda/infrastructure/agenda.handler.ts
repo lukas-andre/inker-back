@@ -2,15 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../../global/infrastructure/base.handler';
+import { RequestService } from '../../global/infrastructure/services/request.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
 import { FindEventByAgendaIdAndEventIdUseCase } from '../usecases/findEventByAgendaIdAndEventId.usecase';
+import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
 import { AddEventReqDto } from './dtos/addEventReq.dto';
+import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 
@@ -23,6 +26,8 @@ export class AgendaHandler extends BaseHandler {
     private readonly listEventByViewTypeUseCase: ListEventByViewTypeUseCase,
     private readonly findEventByAgendaIdAndEventIdUseCase: FindEventByAgendaIdAndEventIdUseCase,
     private readonly markEventAsDoneUseCase: MarkEventAsDoneUseCase,
+    private readonly getWorkEvidenceByArtistIdUseCase: GetWorkEvidenceByArtistIdUseCase,
+    private readonly requestService: RequestService,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);
@@ -63,6 +68,19 @@ export class AgendaHandler extends BaseHandler {
       eventId,
       agendaId,
       workEvidenceFiles,
+    );
+  }
+
+  async handleGetWorkEvidenceByArtistId(
+    artistId: number,
+    page: number,
+    limit: number,
+  ): Promise<GetWorkEvidenceByArtistIdResponseDto> {
+    return this.getWorkEvidenceByArtistIdUseCase.execute(
+      artistId,
+      page,
+      limit,
+      this.requestService.userTypeId,
     );
   }
 }

@@ -8,13 +8,13 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
-import { FollowedsService } from '../domain/services/followeds.service';
 import { FollowedType } from '../domain/types/followedType';
+import { FollowedsProvider } from '../infrastructure/database/followeds.provider';
 @Injectable()
 export class FindFollowersUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersProvider: UsersProvider,
-    private readonly followedsService: FollowedsService,
+    private readonly followedsProvider: FollowedsProvider,
   ) {
     super(FindFollowersUseCase.name);
   }
@@ -24,7 +24,7 @@ export class FindFollowersUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotFound('User not found');
     }
 
-    const result = await this.followedsService.findByKey({
+    const result = await this.followedsProvider.findByKey({
       userType: UserType.ARTIST,
       userFollowedId: userId,
     });

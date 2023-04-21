@@ -162,22 +162,31 @@ export class AgendaProvider extends BaseComponent {
     artistIds: number[],
   ): Promise<FindRecentWorksByArtistIdsResult[]> {
     try {
-      return await this.agendaRepository.query(
-        `SELECT
-          ae.title,
-          ae.customer_id as "customerId",
-          ae.work_evidence as "workEvidence",
-          a.id as "agendaId",
-          ae.id as "eventId",
-          a.artist_id as "artistId"
-        FROM agenda a
-        INNER JOIN agenda_event ae ON ae.agenda_id = a.id
-        WHERE a.artist_id in (${artistIds.join(',')})
-        AND ae.done = true
-        AND ae.work_evidence is not null
-        ORDER BY ae.updated_at desc
-        LIMIT 3`,
-      );
+      const result: FindRecentWorksByArtistIdsResult[] = [];
+
+      for (let i = 0; i < artistIds.length; i++) {
+        const queryResult = await this.agendaRepository.query(
+          `SELECT
+            ae.title,
+            ae.customer_id as "customerId",
+            ae.work_evidence as "workEvidence",
+            a.id as "agendaId",
+            ae.id as "eventId",
+            a.artist_id as "artistId"
+          FROM agenda a
+          INNER JOIN agenda_event ae ON ae.agenda_id = a.id
+          WHERE a.artist_id = $1
+          AND ae.done = true
+          AND ae.work_evidence is not null
+          ORDER BY ae.updated_at desc
+          LIMIT 3`,
+          [artistIds[i]],
+        );
+
+        result.push(...queryResult);
+      }
+
+      return result;
     } catch (error) {
       throw new DBServiceFindException(
         this,

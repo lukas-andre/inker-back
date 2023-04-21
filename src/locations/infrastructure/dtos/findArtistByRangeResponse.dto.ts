@@ -7,11 +7,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { CustomerReviewReactionDetailsResult } from '../../../reviews/database/providers/reviewReaction.provider';
 import { ReviewDto } from '../../../reviews/dtos/review.dto';
 import { ReviewAvgDTO } from '../../../reviews/dtos/reviewAvg.dto';
 
 import { ArtistLocationDTO } from './artistLocation.dto';
+import { CustomerReviewReactionDetailsDTO } from './customerReviewReactionDetail.dto';
 import { RecentWorkDTO } from './recentWork.dto';
 
 class Location {
@@ -58,7 +58,13 @@ export class RawContactResponseDTO {
 }
 
 class RawFindByArtistIdsReviewsDTO extends OmitType(ReviewDto, ['updatedAt']) {
-  customerReactionDetail?: CustomerReviewReactionDetailsResult;
+  @ApiProperty({
+    description: 'Customer reaction details',
+  })
+  @ValidateNested()
+  @IsInstance(CustomerReviewReactionDetailsDTO)
+  @Type(() => CustomerReviewReactionDetailsDTO)
+  customerReactionDetail?: CustomerReviewReactionDetailsDTO;
 }
 
 class RawFindByArtistIdsReviewDTO extends PickType(ReviewAvgDTO, [
@@ -66,9 +72,7 @@ class RawFindByArtistIdsReviewDTO extends PickType(ReviewAvgDTO, [
   'count',
   'detail',
   'value',
-]) {
-  // other: any;
-}
+]) {}
 
 export class RawFindByArtistIdsResponseDTO {
   @ApiProperty({
@@ -131,4 +135,18 @@ export class RawFindByArtistIdsResponseDTO {
   @IsInstance(RecentWorkDTO)
   @Type(() => RecentWorkDTO)
   recentWorks: RecentWorkDTO[];
+
+  @ApiProperty({
+    description: 'followers',
+    example: 1,
+  })
+  @IsNumber()
+  followers: number;
+
+  @ApiProperty({
+    description: 'is followed by user',
+    example: true,
+  })
+  @IsNumber()
+  isFollowedByUser: boolean;
 }

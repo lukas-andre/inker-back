@@ -1,11 +1,28 @@
-import { Body, Controller, Logger, Param, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Logger,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { AgendaEventIdPipe } from '../agenda/infrastructure/pipes/agendaEventId.pipe';
 import { ArtistIdPipe } from '../artists/infrastructure/pipes/artistId.pipe';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 import { UserIdPipe } from '../users/infrastructure/pipes/userId.pipe';
 
+import { GetReviewsFromArtistResponseDto } from './dtos/getReviewsFromArtistResponse.dto';
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { ReviewIdPipe } from './pipes/review.pipe';
 import { ReviewReactionPipe } from './pipes/reviewReactionEnum.pipe';
@@ -50,5 +67,22 @@ export class ReviewsController {
     @Query('reaction', ReviewReactionPipe) reaction: ReviewReactionEnum,
   ) {
     return this.handler.reactToReview(reviewId, reviewerId, reaction);
+  }
+
+  @ApiOperation({ summary: 'Get reviews from artist' })
+  @ApiParam({ name: 'artistId', type: Number, example: 1 })
+  @ApiQuery({ name: 'page', type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', type: Number, example: 3 })
+  @ApiOkResponse({
+    description: 'Get reviews from artist',
+    type: GetReviewsFromArtistResponseDto,
+  })
+  @Get('artists/:artistId')
+  async getReviewsFromArtist(
+    @Param('artistId', ArtistIdPipe) artistId: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(3), ParseIntPipe) limit = 3,
+  ) {
+    return this.handler.getReviewFromArtist(artistId, page, limit);
   }
 }
