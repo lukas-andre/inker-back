@@ -30,7 +30,8 @@ export class LocationsHandler extends BaseHandler {
   ): Promise<FindArtistByRangeResponseDTO[]> {
     return this.findArtistByRangeUseCase.execute(
       dto,
-      this.requestService.getUserTypeId(),
+      this.requestService.userTypeId,
+      this.requestService.userId,
     );
   }
 }

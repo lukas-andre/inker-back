@@ -202,7 +202,9 @@ describe('ReviewProvider', () => {
     } catch (error) {
       expect(error).toBeDefined();
       expect(error).toBeInstanceOf(DBServiceFindOneException);
-      expect(error.message).toBe(PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT);
+      expect((error as Error).message).toBe(
+        PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT,
+      );
     }
 
     jest.restoreAllMocks();
@@ -256,7 +258,7 @@ describe('ReviewProvider', () => {
     } catch (error) {
       expect(error).toBeDefined();
       expect(error).toBeInstanceOf(DBServiceSaveException);
-      expect(error.message).toBe(ERROR_INSERTING_EMPTY_REVIEW);
+      expect((error as Error).message).toBe(ERROR_INSERTING_EMPTY_REVIEW);
     }
 
     jest.restoreAllMocks();
@@ -643,7 +645,9 @@ describe('ReviewProvider', () => {
     } catch (error) {
       expect(error).toBeDefined();
       expect(error).toBeInstanceOf(DBServiceFindOneException);
-      expect(error.message).toBe(FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY);
+      expect((error as Error).message).toBe(
+        FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY,
+      );
     }
   });
 

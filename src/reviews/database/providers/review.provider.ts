@@ -4,6 +4,11 @@ import {
   InjectEntityManager,
   InjectRepository,
 } from '@nestjs/typeorm';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 import { O } from 'ts-toolbelt';
 import {
   DataSource,
@@ -11,12 +16,14 @@ import {
   In,
   QueryRunner,
   Repository,
+  SelectQueryBuilder,
 } from 'typeorm';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
+  DBServiceFindException,
   DBServiceFindOneException,
   DBServiceSaveException,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
@@ -31,8 +38,8 @@ import {
 import { ReviewArtistRequestDto } from '../../dtos/reviewArtistRequest.dto';
 import { ReviewReactionsDetail } from '../../interfaces/review.interface';
 import {
-  defaultRatingMap,
   RatingRate,
+  defaultRatingMap,
 } from '../../interfaces/reviewAvg.interface';
 import { Review } from '../entities/review.entity';
 import { ReviewAvg } from '../entities/reviewAvg.entity';
@@ -63,6 +70,48 @@ export class QueryRunnerFactory {
   }
 }
 
+export type ReviewPaginateOrderFilter = 'default' | 'mostRated' | 'mostRecent';
+export type ReviewPaginateRateFilter = 'default' | '1' | '2' | '3' | '4' | '5';
+
+function createBaseReviewQueryBuilder(
+  repository: Repository<Review>,
+  artistId: number | number[],
+) {
+  const queryBuilder = repository
+    .createQueryBuilder('review')
+    .select([
+      'review.id',
+      'review.artistId',
+      'review.content',
+      'review.createdBy',
+      'review.header',
+      'review.displayName',
+      'review.isRated',
+      'review.reviewReactions',
+      'review.value',
+      'review.eventId',
+      'review.createdAt',
+    ]);
+
+  if (Array.isArray(artistId)) {
+    queryBuilder.where('review.artistId IN (:...artistIds)', {
+      artistIds: artistId,
+    });
+  } else {
+    queryBuilder.where('review.artistId = :artistId', { artistId });
+  }
+
+  return queryBuilder;
+}
+
+function applyDefaultOrder(queryBuilder: SelectQueryBuilder<Review>): void {
+  queryBuilder.orderBy({
+    'review.isRated': 'DESC',
+    'review.value': 'DESC',
+    'review.createdAt': 'DESC',
+  });
+}
+
 @Injectable()
 export class ReviewProvider extends BaseComponent {
   constructor(
@@ -88,29 +137,73 @@ export class ReviewProvider extends BaseComponent {
     return this.repository;
   }
 
-  async findByArtistIds(artistId: number[]): Promise<FindByArtistIdsResult[]> {
+  async findByEventIds(eventsIds: number[]) {
     try {
       return await this.repository.find({
-        select: [
-          'id',
-          'artistId',
-          'content',
-          'createdBy',
-          'header',
-          'displayName',
-          'isRated',
-          'reviewReactions',
-          'value',
-          'eventId',
-          'createdAt',
-        ],
         where: {
-          artistId: In(artistId),
-        },
-        order: {
-          createdAt: 'DESC',
+          eventId: In(eventsIds),
         },
       });
+    } catch (error) {
+      throw new DBServiceFindException(this, this.findByEventIds.name, error);
+    }
+  }
+
+  async paginate(
+    artistId: number,
+    options: IPaginationOptions,
+    orderFilter: ReviewPaginateOrderFilter = 'default',
+    rateFilter: ReviewPaginateRateFilter = 'default',
+  ): Promise<Pagination<Review>> {
+    try {
+      const queryBuilder = createBaseReviewQueryBuilder(
+        this.repository,
+        artistId,
+      );
+
+      switch (orderFilter) {
+        case 'mostRated':
+          queryBuilder.orderBy('review.isRated', 'DESC');
+          break;
+        case 'mostRecent':
+          queryBuilder.orderBy('review.createdAt', 'DESC');
+          break;
+        default:
+          applyDefaultOrder(queryBuilder);
+          break;
+      }
+
+      if (rateFilter !== 'default') {
+        queryBuilder.andWhere('review.value = :value', { value: rateFilter });
+      }
+
+      return await paginate<Review>(queryBuilder, options);
+    } catch (error) {
+      throw new DBServiceFindException(this, this.paginate.name, error);
+    }
+  }
+
+  async findByArtistIds(artistId: number[]): Promise<FindByArtistIdsResult[]> {
+    const result: FindByArtistIdsResult[] = [];
+
+    try {
+      for (const id of artistId) {
+        if (!id) {
+          throw new Error(ERROR_INSERTING_EMPTY_REVIEW);
+        }
+
+        const queryBuilder = createBaseReviewQueryBuilder(this.repository, id);
+
+        applyDefaultOrder(queryBuilder);
+
+        const queryResult = (await queryBuilder
+          .take(3)
+          .getMany()) as FindByArtistIdsResult[];
+
+        result.push(...queryResult);
+      }
+
+      return result;
     } catch (error) {
       throw new DBServiceFindOneException(
         this,
@@ -147,7 +240,10 @@ export class ReviewProvider extends BaseComponent {
 
       if (reaction !== ReviewReactionEnum.off) {
         detail[reaction + 's'] += 1;
-        detail[currentReaction + 's'] -= 1;
+
+        if (currentReaction !== ReviewReactionEnum.off) {
+          detail[currentReaction + 's'] -= 1;
+        }
       }
 
       await queryRunner.manager.query(

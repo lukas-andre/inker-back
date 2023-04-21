@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
 import {
   DomainBadRule,
   DomainNotFound,
@@ -28,7 +27,6 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
   constructor(
     private readonly reviewProvider: ReviewProvider,
     private readonly reviewReactionProvider: ReviewReactionProvider,
-    private readonly agendaProvider: AgendaProvider,
   ) {
     super(ReactToReviewUsecase.name);
   }
@@ -49,7 +47,17 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
     }
 
     const currentReviewReaction =
-      await this.reviewReactionProvider.getReviewReactionIfExists(reviewId);
+      await this.reviewReactionProvider.getReviewReactionIfExists(
+        reviewId,
+        customerId,
+      );
+
+    if (
+      currentReviewReaction === ReviewReactionEnum.off &&
+      reaction === ReviewReactionEnum.off
+    ) {
+      return DefaultResponse.created;
+    }
 
     if (
       !this.reactionIsOff(reaction) &&

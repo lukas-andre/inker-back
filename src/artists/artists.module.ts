@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
-import { FollowsModule } from '../follows/follows.module';
+import { FollowProviderModule } from '../follows/infrastructure/database/followProvider.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
 
 import { ArtistsController } from './infrastructure/artists.controller';
@@ -18,7 +18,7 @@ import { UpdateArtistStudioPhotoUseCase } from './usecases/updateArtistStudioPho
     ArtistsProviderModule,
     AgendaProviderModule,
     MultimediasModule,
-    FollowsModule,
+    FollowProviderModule,
   ],
   providers: [
     ArtistsHandler,

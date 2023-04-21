@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
 import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
+import { FollowProviderModule } from '../follows/infrastructure/database/followProvider.module';
 import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
 
 import { LocationProviderModule } from './infrastructure/database/locationProvider.module';
@@ -15,7 +15,7 @@ import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
     ArtistsProviderModule,
     LocationProviderModule,
     ReviewProviderModule,
-    AgendaProviderModule,
+    FollowProviderModule,
   ],
   controllers: [LocationsController],
   providers: [

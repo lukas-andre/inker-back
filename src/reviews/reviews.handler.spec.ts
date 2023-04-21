@@ -103,4 +103,17 @@ describe('ReviewHandler', () => {
 
     expect(reactToReviewUseCase.execute).toBeCalledTimes(1);
   });
+
+  // it('ReviewHandler.getReviewByArtistId should call getReviewsFromArtist.execute', async () => {
+  //   const reviewId = 1;
+  //   const artistId = 1;
+  //   const page = 1;
+  //   const limit = 10;
+
+  //   await handler.getReviewFromArtist(reviewId, artistId, page, limit);
+
+  //   expect(ratingArtistUseCase.getReviewsFromArtist).toBeCalledWith(artistId);
+
+  //   expect(ratingArtistUseCase.getReviewsFromArtist).toBeCalledTimes(1);
+  // });
 });

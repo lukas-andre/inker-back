@@ -6,13 +6,13 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
-import { FollowingsService } from '../domain/services/followings.service';
 import { FollowingType } from '../domain/types/followingType';
+import { FollowingsProvider } from '../infrastructure/database/followings.provider';
 @Injectable()
 export class FindFollowsUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersProvider: UsersProvider,
-    private readonly followingService: FollowingsService,
+    private readonly followingProvider: FollowingsProvider,
   ) {
     super(FindFollowsUseCase.name);
   }
@@ -22,7 +22,7 @@ export class FindFollowsUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotFound('User not found');
     }
 
-    const result = await this.followingService.findByKey({
+    const result = await this.followingProvider.findByKey({
       userFollowingId: userId,
     });
     this.logger.log(

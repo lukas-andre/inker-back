@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -21,10 +22,12 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
 
+import { ArtistIdPipe } from '../../artists/infrastructure/pipes/artistId.pipe';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
@@ -40,6 +43,7 @@ import {
 
 import { AgendaHandler } from './agenda.handler';
 import { AddEventReqDto } from './dtos/addEventReq.dto';
+import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 import { AgendaEventIdPipe } from './pipes/agendaEventId.pipe';
@@ -158,6 +162,28 @@ export class AgendaController {
       agendaId,
       eventId,
       workEvidenceFiles,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get work evidence by artistId' })
+  @ApiOkResponse({
+    description: 'Work evidence list successful.',
+    type: GetWorkEvidenceByArtistIdResponseDto,
+  })
+  @ApiNotFoundResponse({ description: 'Works not found.' })
+  @ApiParam({ name: 'artistId', required: true, type: Number, example: 1 })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 6 })
+  @Get('artists/:artistId/work-evidence')
+  async getWorkEvidenceByArtistId(
+    @Param('artistId', ArtistIdPipe) artistId: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(6), ParseIntPipe) limit = 6,
+  ): Promise<GetWorkEvidenceByArtistIdResponseDto> {
+    return this.agendaHandler.handleGetWorkEvidenceByArtistId(
+      artistId,
+      page,
+      limit,
     );
   }
 

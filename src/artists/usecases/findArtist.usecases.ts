@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { FindManyOptions } from 'typeorm';
 
-import { FollowedsService } from '../../follows/domain/services/followeds.service';
-import { FollowingsService } from '../../follows/domain/services/followings.service';
+import { FollowedsProvider } from '../../follows/infrastructure/database/followeds.provider';
+import { FollowingsProvider } from '../../follows/infrastructure/database/followings.provider';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { ArtistProvider } from '../infrastructure/database/artist.provider';
@@ -14,8 +14,8 @@ import { FindArtistByIdResult } from './interfaces/findArtistById.result';
 export class FindArtistsUseCases extends BaseUseCase {
   constructor(
     private readonly artistProvider: ArtistProvider,
-    private readonly followedsService: FollowedsService,
-    private readonly followingService: FollowingsService,
+    private readonly followedsProvider: FollowedsProvider,
+    private readonly followingProvider: FollowingsProvider,
   ) {
     super(FindArtistsUseCases.name);
   }
@@ -29,10 +29,10 @@ export class FindArtistsUseCases extends BaseUseCase {
     }
 
     // TODO: ESTO PUEDE SER EN PARALELO
-    artist.followers = await this.followedsService.countFollowers(
+    artist.followers = await this.followedsProvider.countFollowers(
       artist.userId,
     );
-    artist.follows = await this.followingService.countFollows(artist.userId);
+    artist.follows = await this.followingProvider.countFollows(artist.userId);
 
     return artist as FindArtistByIdResult;
   }
