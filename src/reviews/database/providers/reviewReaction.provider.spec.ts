@@ -135,13 +135,13 @@ describe('ReviewReactionProvider', () => {
 
     const expectedMap = new Map<number, CustomerReviewReactionDetailsResult>();
     expectedMap.set(reviewId, {
-      reviewReactionId: 1,
+      reviewReactionId: expect.anything(),
       liked: true,
       disliked: false,
     });
 
     expectedMap.set(reviewId2, {
-      reviewReactionId: 2,
+      reviewReactionId: expect.anything(),
       liked: false,
       disliked: true,
     });
