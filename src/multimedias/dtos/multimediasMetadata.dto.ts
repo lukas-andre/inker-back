@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, ValidateNested } from 'class-validator';
 
-import { MultimediaMetadataDto } from './multimediaMetadata.dto';
+import { MultimediaMetadataDTO } from './multimediaMetadata.dto';
 
-export class MultimediasMetadataDto {
+export class MultimediasMetadataDTO {
   @ApiProperty({
     description: 'Post multimedia count',
   })
@@ -13,10 +13,10 @@ export class MultimediasMetadataDto {
 
   @ApiProperty({
     description: 'Post multimedia metadata',
-    type: MultimediaMetadataDto,
+    type: MultimediaMetadataDTO,
     isArray: true,
   })
   @ValidateNested({ each: true })
-  @Type(() => MultimediaMetadataDto)
-  metadata: MultimediaMetadataDto[];
+  @Type(() => MultimediaMetadataDTO)
+  metadata: MultimediaMetadataDTO[];
 }

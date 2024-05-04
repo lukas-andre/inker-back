@@ -2,32 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { FindOneOptions } from 'typeorm';
 
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
-import { CustomersService } from '../domain/customers.service';
 import { Customer } from '../infrastructure/entities/customer.entity';
+import { CustomerProvider } from '../infrastructure/providers/customer.provider';
 
 import { CreateCustomerParams } from './interfaces/createCustomer.params';
 
 @Injectable()
 export class CRCustomerUseCase extends BaseUseCase {
-  constructor(private readonly customersService: CustomersService) {
+  constructor(private readonly customerProvider: CustomerProvider) {
     super(CRCustomerUseCase.name);
   }
 
   async create(params: CreateCustomerParams): Promise<Customer> {
-    const created = await this.customersService.create(params);
+    const created = await this.customerProvider.create(params);
 
     return created;
   }
 
   async findOne(options: FindOneOptions<Customer>): Promise<Customer> {
-    return this.customersService.findOne(options);
+    return this.customerProvider.findOne(options);
   }
 
   async findAll(options: FindOneOptions<Customer>): Promise<Customer[]> {
-    return this.customersService.find(options);
+    return this.customerProvider.find(options);
   }
 
   async findById(id: number): Promise<Customer> {
-    return this.customersService.findById(id);
+    return this.customerProvider.findById(id);
   }
 }

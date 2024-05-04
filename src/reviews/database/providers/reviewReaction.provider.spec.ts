@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/constants';
@@ -9,7 +9,10 @@ import { Review } from '../entities/review.entity';
 import { ReviewAvg } from '../entities/reviewAvg.entity';
 import { ReviewReaction } from '../entities/reviewReaction.entity';
 
-import { ReviewReactionProvider } from './reviewReaction.provider';
+import {
+  CustomerReviewReactionDetailsResult,
+  ReviewReactionProvider,
+} from './reviewReaction.provider';
 
 describe('ReviewReactionProvider', () => {
   const reviewReactionToken = getRepositoryToken(ReviewReaction);
@@ -17,7 +20,7 @@ describe('ReviewReactionProvider', () => {
   let reviewReactionProvider: ReviewReactionProvider;
   let moduleFixture: TestingModule;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -30,9 +33,9 @@ describe('ReviewReactionProvider', () => {
           name: 'review-db',
           entities: entities,
           synchronize: true,
-          dropSchema: true,
+          // dropSchema: true,
           logging: true,
-          keepConnectionAlive: true,
+          // keepConnectionAlive: true,
         }),
         TypeOrmModule.forFeature(entities, REVIEW_DB_CONNECTION_NAME),
       ],
@@ -65,29 +68,84 @@ describe('ReviewReactionProvider', () => {
   });
 
   it('reviewProvider.getReviewReactionIfExists should return reviewReaction if review exists', async () => {
-    const [reviewId, userId, reviewReactionId] = always(1);
+    const [reviewId, customerId, reviewReactionId] = always(1);
 
     const reactionType = ReviewReactionEnum.like;
 
     await reviewReactionProvider.repo.save({
       reviewId,
-      userId,
+      customerId,
       reactionType,
       id: reviewReactionId,
     });
 
     const reviewReaction =
-      await reviewReactionProvider.getReviewReactionIfExists(reviewReactionId);
+      await reviewReactionProvider.getReviewReactionIfExists(
+        reviewReactionId,
+        customerId,
+      );
 
     expect(reviewReaction).toBe(reactionType);
   });
 
   it('reviewProvider.getReviewReactionIfExists should return undefined if review does not exists', async () => {
-    const reviewReactionId = 2;
+    const [customerId, reviewReactionId] = always(2);
 
     const reviewReaction =
-      await reviewReactionProvider.getReviewReactionIfExists(reviewReactionId);
+      await reviewReactionProvider.getReviewReactionIfExists(
+        reviewReactionId,
+        customerId,
+      );
 
     expect(reviewReaction).toBeUndefined();
+  });
+
+  it('reviewProvider.findCustomerReviewsDetails should return reviewReaction if review exists', async () => {
+    const [reviewId, customerId] = always(3);
+
+    const reactionType = ReviewReactionEnum.like;
+
+    await reviewReactionProvider.repo.save({
+      reviewId,
+      customerId: customerId,
+      reactionType,
+      id: 1,
+    });
+
+    const [reviewId2] = always(4);
+
+    const reactionType2 = ReviewReactionEnum.dislike;
+
+    await reviewReactionProvider.repo.save({
+      reviewId: reviewId2,
+      customerId: customerId,
+      reactionType: reactionType2,
+      id: 2,
+    });
+
+    const customerReviewsId = [reviewId, reviewId2];
+
+    const reviewReaction =
+      await reviewReactionProvider.findCustomerReviewsReactionDetail(
+        customerId,
+        customerReviewsId,
+      );
+
+    console.log({ reviewReaction });
+
+    const expectedMap = new Map<number, CustomerReviewReactionDetailsResult>();
+    expectedMap.set(reviewId, {
+      reviewReactionId: expect.anything(),
+      liked: true,
+      disliked: false,
+    });
+
+    expectedMap.set(reviewId2, {
+      reviewReactionId: expect.anything(),
+      liked: false,
+      disliked: true,
+    });
+
+    expect(reviewReaction).toEqual(expectedMap);
   });
 });

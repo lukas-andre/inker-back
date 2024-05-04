@@ -2,12 +2,16 @@ import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { ReviewReactionEnum } from '../../../reactions/domain/enums/reviewReaction.enum';
+import { ReviewReactionInterface } from '../../interfaces/reviewReaction.interface';
 
 @Entity()
-export class ReviewReaction extends BaseEntity {
-  @Column({ name: 'user_id' })
+export class ReviewReaction
+  extends BaseEntity
+  implements ReviewReactionInterface
+{
+  @Column({ name: 'customer_id' })
   @Index()
-  userId: number;
+  customerId: number;
 
   @Column({
     type: 'enum',

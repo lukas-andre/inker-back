@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import stringify from 'fast-safe-stringify';
 
-import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { GenreInterface } from '../../genres/genre.interface';
 import { GenresService } from '../../genres/genres.service';
 import {
@@ -25,7 +25,7 @@ import { Post } from '../infrastructure/entities/post.entity';
 export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly postService: PostsService,
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistProvider: ArtistProvider,
     private readonly genresService: GenresService,
     private readonly tagsService: TagsService,
     private readonly multimediasService: MultimediasService,
@@ -42,7 +42,7 @@ export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRequest('Not valid files to upload');
     }
 
-    const artist = await this.artistsDbService.findById(jwtPayload.userTypeId);
+    const artist = await this.artistProvider.findById(jwtPayload.userTypeId);
 
     if (!artist) {
       throw new DomainNotFound('Artist not found');
@@ -58,7 +58,9 @@ export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
     } catch (error) {
       // TODO: Not Handled Error
       this.logger.log(
-        `Not Handled Error: ${stringify(error)} Message: ${error.message}`,
+        `Not Handled Error: ${stringify(error)} Message: ${
+          (error as Error).message
+        }`,
       );
     }
 

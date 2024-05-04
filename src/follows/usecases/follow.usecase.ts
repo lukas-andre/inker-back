@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { getConnection } from 'typeorm';
 
-import { ArtistsDbService } from '../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { BaseComponent } from '../../global/domain/components/base.component';
 import {
   DomainBadRequest,
@@ -13,7 +12,7 @@ import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResp
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
-import { FollowedsService } from '../domain/services/followeds.service';
+import { FollowedsProvider } from '../infrastructure/database/followeds.provider';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
 
@@ -22,42 +21,39 @@ import { FollowArtistParams } from './interfaces/followArtist.param';
 export class FollowUseCase extends BaseComponent {
   constructor(
     private readonly usersProvider: UsersProvider,
-    private readonly artistsDbService: ArtistsDbService,
-    private readonly followedsService: FollowedsService, // @InjectDataSource('follow-db') // private followDbDataSource: DataSource,
+    private readonly artistProvider: ArtistProvider,
+    private readonly followedsProvider: FollowedsProvider, // @InjectDataSource('follow-db') // private followDbDataSource: DataSource,
   ) {
     super(FollowUseCase.name);
   }
 
   async execute(
-    followedUserId: number,
-    follower: FollowArtistParams,
+    toFollowUserId: number,
+    newFollower: FollowArtistParams,
   ): Promise<DefaultResponseDto> {
     let exception: DomainException;
 
-    // TODO: TEST THIS FOR ERROR DEPRECATED METHOD
-    // const queryRunner2 = this.followDbDataSource.createQueryRunner();
-
-    const connection = getConnection('follow-db');
-    const queryRunner = connection.createQueryRunner();
+    const dataSource = this.followedsProvider.source;
+    const queryRunner = dataSource.createQueryRunner();
 
     await queryRunner.connect();
 
     // ! THIS IS LIMITING THAT ONLY ARTISTS ARE FOLLOWED
-    if (!(await this.usersProvider.existsArtist(followedUserId))) {
+    if (!(await this.usersProvider.existsArtist(toFollowUserId))) {
       throw new DomainBadRequest('Artist not exists');
     }
 
     if (
-      await this.followedsService.existsFollowerInArtist(
-        followedUserId,
-        follower.userId,
+      await this.followedsProvider.existsFollowerInArtist(
+        toFollowUserId,
+        newFollower.userId,
       )
     ) {
       throw new DomainConflict('Follower already exists');
     }
 
     // TODO: This could be came from in the front request
-    const artistData = await this.artistsDbService.findOne({
+    const artistData = await this.artistProvider.findOne({
       select: [
         'id',
         'userId',
@@ -66,7 +62,7 @@ export class FollowUseCase extends BaseComponent {
         'lastName',
         'profileThumbnail',
       ],
-      where: { userId: followedUserId },
+      where: { userId: toFollowUserId },
     });
 
     console.log('artistData: ', artistData);
@@ -76,12 +72,12 @@ export class FollowUseCase extends BaseComponent {
     try {
       await queryRunner.manager.save(Followed, {
         userFollowedId: artistData.userId,
-        ...Object.assign(new Followed(), follower),
+        ...Object.assign(new Followed(), newFollower),
       });
 
       await queryRunner.manager.save(Following, {
         ...Object.assign(new Following(), {
-          userFollowingId: follower.userId,
+          userFollowingId: newFollower.userId,
           userType: UserType.ARTIST,
           userId: artistData.userId,
           fullname: [artistData.firstName, artistData.lastName].join(' '),

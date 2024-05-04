@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { FindManyOptions } from 'typeorm';
 
-import { FollowedsService } from '../../follows/domain/services/followeds.service';
-import { FollowingsService } from '../../follows/domain/services/followings.service';
+import { FollowedsProvider } from '../../follows/infrastructure/database/followeds.provider';
+import { FollowingsProvider } from '../../follows/infrastructure/database/followings.provider';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
-import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { Artist } from '../infrastructure/entities/artist.entity';
 
 import { FindArtistByIdResult } from './interfaces/findArtistById.result';
@@ -13,35 +13,35 @@ import { FindArtistByIdResult } from './interfaces/findArtistById.result';
 @Injectable()
 export class FindArtistsUseCases extends BaseUseCase {
   constructor(
-    private readonly artistsDbService: ArtistsDbService,
-    private readonly followedsService: FollowedsService,
-    private readonly followingService: FollowingsService,
+    private readonly artistProvider: ArtistProvider,
+    private readonly followedsProvider: FollowedsProvider,
+    private readonly followingProvider: FollowingsProvider,
   ) {
     super(FindArtistsUseCases.name);
   }
 
   async findById(id: number): Promise<FindArtistByIdResult> {
     const artist: Partial<FindArtistByIdResult> =
-      await this.artistsDbService.findById(id);
+      await this.artistProvider.findById(id);
 
     if (!artist) {
       throw new DomainNotFound('Artist not found');
     }
 
     // TODO: ESTO PUEDE SER EN PARALELO
-    artist.followers = await this.followedsService.countFollowers(
+    artist.followers = await this.followedsProvider.countFollowers(
       artist.userId,
     );
-    artist.follows = await this.followingService.countFollows(artist.userId);
+    artist.follows = await this.followingProvider.countFollows(artist.userId);
 
     return artist as FindArtistByIdResult;
   }
 
   async findOne(options: FindManyOptions<Artist>) {
-    return this.artistsDbService.findOne(options);
+    return this.artistProvider.findOne(options);
   }
 
   async findAll(options: FindManyOptions<Artist>): Promise<Artist[]> {
-    return this.artistsDbService.find(options);
+    return this.artistProvider.find(options);
   }
 }

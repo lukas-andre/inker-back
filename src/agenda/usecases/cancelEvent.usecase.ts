@@ -43,7 +43,7 @@ export class CancelEventUseCase extends BaseUseCase implements UseCase {
       }
       throw new DomainInternalServerError('Fail when event is canceled');
     } catch (error) {
-      this.logger.error(`Adding event error ${error.message}`);
+      this.logger.error(`Adding event error ${(error as Error).message}`);
       throw new DomainInternalServerError('Fail when event is canceled');
     }
   }

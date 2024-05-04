@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsInstance,
@@ -7,7 +7,12 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { ArtistLocationDto } from './artistLocation.dto';
+import { ReviewDto } from '../../../reviews/dtos/review.dto';
+import { ReviewAvgDTO } from '../../../reviews/dtos/reviewAvg.dto';
+
+import { ArtistLocationDTO } from './artistLocation.dto';
+import { CustomerReviewReactionDetailsDTO } from './customerReviewReactionDetail.dto';
+import { RecentWorkDTO } from './recentWork.dto';
 
 class Location {
   @ApiProperty({
@@ -21,7 +26,7 @@ class Location {
   @IsString()
   readonly coordinates: number[];
 }
-export class FindArtistByRangeResponseDto extends OmitType(ArtistLocationDto, [
+export class FindArtistByRangeResponseDTO extends OmitType(ArtistLocationDTO, [
   'createdAt',
   'viewport',
   'updatedAt',
@@ -35,10 +40,10 @@ export class FindArtistByRangeResponseDto extends OmitType(ArtistLocationDto, [
   @IsNumber()
   readonly distance: number;
 
-  artist: RawFindByArtistIdsResponseDto;
+  artist: RawFindByArtistIdsResponseDTO;
 }
 
-export class RawContactResponseDto {
+export class RawContactResponseDTO {
   @ApiProperty({ description: 'Phone number', example: '+56912345678' })
   @IsString()
   readonly phone: string;
@@ -52,14 +57,31 @@ export class RawContactResponseDto {
   readonly country: string;
 }
 
-export class RawFindByArtistIdsResponseDto {
+class RawFindByArtistIdsReviewsDTO extends OmitType(ReviewDto, ['updatedAt']) {
+  @ApiProperty({
+    description: 'Customer reaction details',
+  })
+  @ValidateNested()
+  @IsInstance(CustomerReviewReactionDetailsDTO)
+  @Type(() => CustomerReviewReactionDetailsDTO)
+  customerReactionDetail?: CustomerReviewReactionDetailsDTO;
+}
+
+class RawFindByArtistIdsReviewDTO extends PickType(ReviewAvgDTO, [
+  'artistId',
+  'count',
+  'detail',
+  'value',
+]) {}
+
+export class RawFindByArtistIdsResponseDTO {
   @ApiProperty({
     description: 'contact',
   })
   @ValidateNested()
-  @IsInstance(RawContactResponseDto)
-  @Type(() => RawContactResponseDto)
-  readonly contact: RawContactResponseDto;
+  @IsInstance(RawContactResponseDTO)
+  @Type(() => RawContactResponseDTO)
+  readonly contact: RawContactResponseDTO;
 
   @ApiProperty({ description: 'Artist id', example: 1 })
   @IsNumber()
@@ -90,7 +112,41 @@ export class RawFindByArtistIdsResponseDto {
   })
   readonly profileThumbnail?: string;
 
-  @ApiProperty({ description: 'rating', example: 4.5 })
+  @ApiProperty({
+    description: 'reviews',
+  })
+  @ValidateNested()
+  @IsInstance(RawFindByArtistIdsReviewsDTO)
+  @Type(() => RawFindByArtistIdsReviewsDTO)
+  reviews: RawFindByArtistIdsReviewsDTO[];
+
+  @ApiProperty({
+    description: 'review',
+  })
+  @ValidateNested()
+  @IsInstance(RawFindByArtistIdsReviewsDTO)
+  @Type(() => RawFindByArtistIdsReviewsDTO)
+  review: RawFindByArtistIdsReviewDTO;
+
+  @ApiProperty({
+    description: 'recent works',
+  })
+  @ValidateNested()
+  @IsInstance(RecentWorkDTO)
+  @Type(() => RecentWorkDTO)
+  recentWorks: RecentWorkDTO[];
+
+  @ApiProperty({
+    description: 'followers',
+    example: 1,
+  })
   @IsNumber()
-  readonly rating: number;
+  followers: number;
+
+  @ApiProperty({
+    description: 'is followed by user',
+    example: true,
+  })
+  @IsNumber()
+  isFollowedByUser: boolean;
 }

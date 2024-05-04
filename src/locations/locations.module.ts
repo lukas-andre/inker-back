@@ -1,16 +1,22 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import { ArtistsModule } from '../artists/artists.module';
-import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
+import { FollowProviderModule } from '../follows/infrastructure/database/followProvider.module';
+import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
 
-import { LocationDbModule } from './infrastructure/database/locationDb.module';
+import { LocationProviderModule } from './infrastructure/database/locationProvider.module';
 import { LocationsController } from './infrastructure/locations.controller';
 import { LocationsHandler } from './infrastructure/locations.handler';
 import { AddLocationByApiUseCase } from './usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
 
 @Module({
-  imports: [ArtistsDbModule, LocationDbModule, forwardRef(() => ArtistsModule)],
+  imports: [
+    ArtistsProviderModule,
+    LocationProviderModule,
+    ReviewProviderModule,
+    FollowProviderModule,
+  ],
   controllers: [LocationsController],
   providers: [
     LocationsHandler,

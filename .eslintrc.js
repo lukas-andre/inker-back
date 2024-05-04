@@ -22,7 +22,7 @@ module.exports = {
     'sort-imports': [
       'error',
       {
-        ignoreCase: true,
+        ignoreCase: false,
         ignoreDeclarationSort: true, // don"t want to sort import lines, use eslint-plugin-import instead
         ignoreMemberSort: false,
         allowSeparatedGroups: true,
@@ -55,7 +55,7 @@ module.exports = {
         'newlines-between': 'always',
         alphabetize: {
           order: 'asc',
-          caseInsensitive: true,
+          caseInsensitive: false,
         },
       },
     ],

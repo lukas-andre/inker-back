@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
 import {
   DomainBadRule,
   DomainNotFound,
@@ -8,7 +9,6 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
@@ -19,7 +19,7 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly agendaProvider: AgendaProvider,
     private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly usersProvider: UsersProvider,
+    private readonly customerProvider: CustomerProvider,
   ) {
     super(AddEventUseCase.name);
   }
@@ -33,7 +33,7 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotFound('Agenda not found');
     }
 
-    const existsCustomer = await this.usersProvider.findById(
+    const existsCustomer = await this.customerProvider.findById(
       addEventDto.customerId,
     );
 

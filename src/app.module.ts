@@ -1,5 +1,6 @@
 import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 import { AgendaModule } from './agenda/agenda.module';
 import { AlertGateway } from './alert/alert.gateway';
@@ -19,9 +20,12 @@ import { ReactionsModule } from './reactions/reactions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { TagsModule } from './tags/tags.module';
 import { UsersModule } from './users/users.module';
-
 @Module({
   imports: [
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV !== 'production',
+      port: 8000,
+    }),
     AgendaModule,
     ArtistsModule,
     AuthModule,
