@@ -2,16 +2,20 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
+  OneToOne,
 } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 import { Agenda } from './agenda.entity';
+import { AgendaInvitation } from './agendaInvitation.entity';
 
 @Entity()
+@Index(['start', 'end'])
 export class AgendaEvent extends BaseEntity {
   @ManyToOne(() => Agenda, agenda => agenda.agendaEvent)
   @JoinColumn({ name: 'agenda_id' })
@@ -43,6 +47,9 @@ export class AgendaEvent extends BaseEntity {
 
   @Column('jsonb', { nullable: true, name: 'work_evidence' })
   workEvidence: MultimediasMetadataInterface;
+
+  @OneToOne(() => AgendaInvitation, agendaInvitation => agendaInvitation.event)
+  agendaInvitation: AgendaInvitation;
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
