@@ -45,7 +45,7 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
       throw new DomainUnProcessableEntity(USER_IS_NOT_RELATED_TO_EVENT);
     }
 
-    const isEventDone = artistAgendaAndEventRelatedToCustomer.agendaEvent.done;
+    const isEventDone = artistAgendaAndEventRelatedToCustomer.eventIsDone;
 
     if (!isEventDone) {
       throw new DomainUnProcessableEntity(EVENT_NEEDS_TO_BE_DONE_TO_RATE);

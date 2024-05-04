@@ -4,12 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Artist } from '../entities/artist.entity';
 import { Contact } from '../entities/contact.entity';
 
-import { ArtistsDbService } from './services/artistsDb.service';
-import { ContactDbService } from './services/contactDb.service';
+import { ArtistProvider } from './artist.provider';
+import { ContactProvider } from './contact.provider';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Artist, Contact], 'artist-db')],
-  providers: [ArtistsDbService, ContactDbService],
-  exports: [ArtistsDbService, ContactDbService],
+  providers: [ArtistProvider, ContactProvider],
+  exports: [ArtistProvider, ContactProvider],
 })
-export class ArtistsDbModule {}
+export class ArtistsProviderModule {}

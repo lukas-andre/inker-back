@@ -3,7 +3,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 import { MetaTagDto } from '../../../global/infrastructure/dtos/metaTag.dto';
-import { MultimediasMetadataDto } from '../../../multimedias/dtos/multimediasMetadata.dto';
+import { MultimediasMetadataDTO } from '../../../multimedias/dtos/multimediasMetadata.dto';
 
 export class ArtistPostResponseDto {
   @ApiProperty({
@@ -58,10 +58,10 @@ export class ArtistPostResponseDto {
 
   @ApiProperty({
     description: 'Post user profileThumbnail',
-    type: MultimediasMetadataDto,
+    type: MultimediasMetadataDTO,
   })
-  @Type(() => MultimediasMetadataDto)
-  readonly multimedia: MultimediasMetadataDto;
+  @Type(() => MultimediasMetadataDTO)
+  readonly multimedia: MultimediasMetadataDTO;
 
   @ApiProperty({
     description: 'Post tags',

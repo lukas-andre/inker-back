@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Expose } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
+import { paginate } from 'nestjs-typeorm-paginate';
 import {
   DeepPartial,
   DeleteResult,
@@ -17,10 +18,11 @@ import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQuery
 import { TypeTransform } from '../../../global/domain/utils/typeTransform';
 import {
   DBServiceCreateException,
-  DbServiceNotFound,
   DBServiceSaveException,
   DBServiceUpdateException,
+  DbServiceNotFound,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { AddEventReqDto } from '../dtos/addEventReq.dto';
 import { Agenda } from '../entities/agenda.entity';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
@@ -51,6 +53,16 @@ export class AgendaEventProvider extends BaseComponent {
 
   get repo(): Repository<AgendaEvent> {
     return this.agendaEventRepository;
+  }
+
+  async paginate(artistId: number, page: number, limit: number) {
+    const queryBuilder = this.agendaEventRepository
+      .createQueryBuilder('agendaEvent')
+      .leftJoin('agendaEvent.agenda', 'agenda')
+      .where('agenda.artistId = :artistId', { artistId })
+      .orderBy('agendaEvent.createdAt', 'DESC');
+
+    return await paginate<AgendaEvent>(queryBuilder, { page, limit });
   }
 
   async exists(id: number): Promise<boolean | undefined> {
@@ -210,12 +222,16 @@ export class AgendaEventProvider extends BaseComponent {
     return event;
   }
 
-  async markAsDone(agendaId: number, eventId: number): Promise<void> {
+  async markAsDone(
+    agendaId: number,
+    eventId: number,
+    workEvidence: MultimediasMetadataInterface,
+  ): Promise<void> {
     try {
       await this.agendaEventRepository
         .createQueryBuilder()
         .update()
-        .set({ done: true })
+        .set({ done: true, workEvidence })
         .where('id = :id', { id: eventId })
         .andWhere('agenda_id = :agendaId', { agendaId })
         .execute();

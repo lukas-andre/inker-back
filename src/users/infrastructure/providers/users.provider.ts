@@ -15,8 +15,8 @@ import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
-  DbServiceBadRule,
   DBServiceUpdateException,
+  DbServiceBadRule,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { UserType } from '../../domain/enums/userType.enum';
 import {
@@ -103,7 +103,7 @@ export class UsersProvider extends BaseComponent {
 
   async existsArtist(userId: number): Promise<boolean | undefined> {
     const [result]: ExistsQueryResult[] = await this.usersRepository.query(
-      `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u."userType" = $2)`,
+      `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u."user_type" = $2)`,
       [userId, UserType.ARTIST],
     );
     return result.exists;

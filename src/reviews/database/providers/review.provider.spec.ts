@@ -20,8 +20,10 @@ import {
   FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY,
   PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT,
 } from '../../codes';
-import { Review, ReviewReactionsDetail } from '../entities/review.entity';
-import { RatingRate, ReviewAvg } from '../entities/reviewAvg.entity';
+import { ReviewReactionsDetail } from '../../interfaces/review.interface';
+import { RatingRate } from '../../interfaces/reviewAvg.interface';
+import { Review } from '../entities/review.entity';
+import { ReviewAvg } from '../entities/reviewAvg.entity';
 import { ReviewReaction } from '../entities/reviewReaction.entity';
 
 import {
@@ -200,7 +202,9 @@ describe('ReviewProvider', () => {
     } catch (error) {
       expect(error).toBeDefined();
       expect(error).toBeInstanceOf(DBServiceFindOneException);
-      expect(error.message).toBe(PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT);
+      expect((error as Error).message).toBe(
+        PROBLEMS_FINDING_IF_USER_REVIEW_THE_EVENT,
+      );
     }
 
     jest.restoreAllMocks();
@@ -254,7 +258,7 @@ describe('ReviewProvider', () => {
     } catch (error) {
       expect(error).toBeDefined();
       expect(error).toBeInstanceOf(DBServiceSaveException);
-      expect(error.message).toBe(ERROR_INSERTING_EMPTY_REVIEW);
+      expect((error as Error).message).toBe(ERROR_INSERTING_EMPTY_REVIEW);
     }
 
     jest.restoreAllMocks();
@@ -641,7 +645,9 @@ describe('ReviewProvider', () => {
     } catch (error) {
       expect(error).toBeDefined();
       expect(error).toBeInstanceOf(DBServiceFindOneException);
-      expect(error.message).toBe(FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY);
+      expect((error as Error).message).toBe(
+        FAILED_TO_EXECUTE_IS_REVIEW_RATED_QUERY,
+      );
     }
   });
 
@@ -712,7 +718,7 @@ describe('ReviewProvider', () => {
     console.log({ reviewReaction });
 
     expect(reviewReaction).toBeDefined();
-    expect(reviewReaction.userId).toBe(customerId);
+    expect(reviewReaction.customerId).toBe(customerId);
     expect(reviewReaction.reviewId).toBe(review.id);
     expect(reviewReaction.reactionType).toBe(ReviewReactionEnum.like);
   });
@@ -789,7 +795,7 @@ describe('ReviewProvider', () => {
     });
 
     expect(reviewReaction).toBeDefined();
-    expect(reviewReaction.userId).toBe(customerId);
+    expect(reviewReaction.customerId).toBe(customerId);
     expect(reviewReaction.reviewId).toBe(review.id);
     expect(reviewReaction.reactionType).toBe(ReviewReactionEnum.like);
 
@@ -825,7 +831,7 @@ describe('ReviewProvider', () => {
     });
 
     expect(updatedReviewReaction).toBeDefined();
-    expect(updatedReviewReaction.userId).toBe(customerId);
+    expect(updatedReviewReaction.customerId).toBe(customerId);
     expect(updatedReviewReaction.reactionType).toBe(ReviewReactionEnum.dislike);
   });
 
@@ -902,7 +908,7 @@ describe('ReviewProvider', () => {
     });
 
     expect(reviewReaction).toBeDefined();
-    expect(reviewReaction.userId).toBe(customerId);
+    expect(reviewReaction.customerId).toBe(customerId);
     expect(reviewReaction.reviewId).toBe(review.id);
     expect(reviewReaction.reactionType).toBe(ReviewReactionEnum.like);
 
@@ -937,7 +943,7 @@ describe('ReviewProvider', () => {
     });
 
     expect(updatedReviewReaction).toBeDefined();
-    expect(updatedReviewReaction.userId).toBe(customerId);
+    expect(updatedReviewReaction.customerId).toBe(customerId);
     expect(updatedReviewReaction.reactionType).toBe(ReviewReactionEnum.off);
     expect(updatedReviewReaction.reviewId).toBe(review.id);
   });

@@ -22,8 +22,8 @@ import {
 } from '../domain/codes/codes';
 
 import { AddLocationDto } from './dtos/addLocation.dto';
-import { FindArtistByArtistDtoRequest } from './dtos/findArtistByRangeRequest.dto';
-import { FindArtistByRangeResponseDto } from './dtos/findArtistByRangeResponse.dto';
+import { FindArtistByRangeDTORequest } from './dtos/findArtistByRangeRequest.dto';
+import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
 import { LocationsHandler } from './locations.handler';
 
 @ApiTags('locations')
@@ -45,7 +45,7 @@ export class LocationsController {
   @ApiOperation({ summary: 'Find artist by range in Kilometers' })
   @ApiOkResponse({
     description: 'Artists successfully found',
-    type: FindArtistByRangeResponseDto,
+    type: FindArtistByRangeResponseDTO,
     isArray: true,
   })
   @ApiUnprocessableEntityResponse({
@@ -58,8 +58,8 @@ export class LocationsController {
   @Post('artist')
   @HttpCode(HttpStatus.OK)
   async findArtistByRange(
-    @Body() body: FindArtistByArtistDtoRequest,
-  ): Promise<FindArtistByRangeResponseDto[]> {
+    @Body() body: FindArtistByRangeDTORequest,
+  ): Promise<FindArtistByRangeResponseDTO[]> {
     return this.locationsHandler.handleFindArtistByRange(body);
   }
 }

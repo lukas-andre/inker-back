@@ -6,7 +6,7 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { Artist } from '../infrastructure/entities/artist.entity';
 
 import { CreateArtistParams } from './interfaces/createArtist.params';
@@ -14,14 +14,14 @@ import { CreateArtistParams } from './interfaces/createArtist.params';
 @Injectable()
 export class CreateArtistUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistProvider: ArtistProvider,
     private readonly agendaProvider: AgendaProvider,
   ) {
     super(CreateArtistUseCase.name);
   }
 
   async execute(createArtistDto: CreateArtistParams): Promise<Artist> {
-    const created = await this.artistsDbService.create(createArtistDto);
+    const created = await this.artistProvider.create(createArtistDto);
 
     const agenda: Partial<Agenda> = {
       open: createArtistDto.agendaIsOpen,

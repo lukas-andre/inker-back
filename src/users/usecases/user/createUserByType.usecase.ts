@@ -4,12 +4,12 @@ import stringify from 'fast-safe-stringify';
 
 import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
 import { AgendaProvider } from '../../../agenda/infrastructure/providers/agenda.provider';
-import { ArtistsDbService } from '../../../artists/infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
-import { CustomersService } from '../../../customers/domain/customers.service';
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
+import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
 import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
 import {
   DomainConflict,
@@ -22,7 +22,7 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { TypeTransform } from '../../../global/domain/utils/typeTransform';
 import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { ArtistLocationsDbService } from '../../../locations/infrastructure/database/services/artistLocationsDb.service';
+import { ArtistLocationProvider } from '../../../locations/infrastructure/database/artistLocation.provider';
 import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import {
@@ -38,11 +38,11 @@ import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly usersProvider: UsersProvider,
-    private readonly artistsDbService: ArtistsDbService,
-    private readonly customerService: CustomersService,
+    private readonly artistProvider: ArtistProvider,
+    private readonly customerProvider: CustomerProvider,
     private readonly rolesService: RolesProvider,
     private readonly agendaProvider: AgendaProvider,
-    private readonly artistLocationsDbService: ArtistLocationsDbService,
+    private readonly artistLocationProvider: ArtistLocationProvider,
     private readonly configService: ConfigService,
   ) {
     super(CreateUserByTypeUseCase.name);
@@ -81,7 +81,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       this.logger.log(`🟢 Customer created: ${stringify(resp)}`);
       return resp;
     } catch (error) {
-      await this.handleCreateError(created.id, error);
+      await this.handleCreateError(created.id, error as DomainException);
       throw error;
     }
   }
@@ -107,7 +107,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   }
 
   private async createArtist(createArtistParams: CreateArtistParams) {
-    const artist = await this.artistsDbService.create(createArtistParams);
+    const artist = await this.artistProvider.create(createArtistParams);
 
     this.logger.log(`🟢 Artist created: ${artist.id}`);
 
@@ -118,21 +118,23 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
         artist.id,
       );
     } catch (error) {
-      await this.artistsDbService.delete(artist.id);
-      throw new DomainUnProcessableEntity(error.publicMessage);
+      await this.artistProvider.delete(artist.id);
+      throw new DomainUnProcessableEntity(
+        (error as DbServiceException).publicError,
+      );
     }
 
     this.logger.log(`🟢 Agenda created: ${agenda.id}`);
 
     let artistLocation: ArtistLocation;
     try {
-      artistLocation = await this.artistLocationsDbService.save(
+      artistLocation = await this.artistLocationProvider.save(
         this.mapCreateArtistInfoToArtistLocation(artist, createArtistParams),
       );
     } catch (error) {
       if (error instanceof DbServiceException) {
         await Promise.all([
-          await this.artistsDbService.delete(artist.id),
+          await this.artistProvider.delete(artist.id),
           await this.agendaProvider.delete(agenda.id),
         ]);
         throw new DomainUnProcessableEntity(error.publicError);
@@ -149,7 +151,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   private async createCustomer(
     createCustomerDto: CreateCustomerParams,
   ): Promise<Customer> {
-    return this.customerService.create(createCustomerDto);
+    return this.customerProvider.create(createCustomerDto);
   }
 
   private async rollbackCreate(userId: number): Promise<void> {

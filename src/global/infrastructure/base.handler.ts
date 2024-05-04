@@ -17,7 +17,7 @@ export class BaseHandler {
         ExtractJwt.fromAuthHeaderAsBearerToken()(request),
       ) as JwtPayload;
     } catch (e) {
-      logCatchedError(e.message, this.logger);
+      logCatchedError((e as Error).message, this.logger);
       throw new ForbiddenException('Invalid JWT');
     }
   }

@@ -23,7 +23,7 @@ import {
   NOT_VALID_FILE_TO_UPLOAD,
   NOT_VALID_FILE_TYPE_TO_UPLOAD,
 } from '../domain/errors/codes';
-import { ArtistsDbService } from '../infrastructure/database/services/artistsDb.service';
+import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { UpdateStudioPhotoResponseDto } from '../infrastructure/dtos/updateStudioPhotoResponse.dto';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class UpdateArtistStudioPhotoUseCase
   implements UseCase
 {
   constructor(
-    private readonly artistsDbService: ArtistsDbService,
+    private readonly artistProvider: ArtistProvider,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
   ) {
@@ -49,7 +49,7 @@ export class UpdateArtistStudioPhotoUseCase
 
     this.logger.log(`id:  ${id}`);
     console.time('existArtist');
-    const artist = await this.artistsDbService.exists(id);
+    const artist = await this.artistProvider.exists(id);
     console.timeEnd('existArtist');
 
     if (!artist) {
@@ -80,7 +80,7 @@ export class UpdateArtistStudioPhotoUseCase
     const cloudFrontUrl = uploadResult[0].cloudFrontUrl;
 
     console.time('updateStudioPhoto');
-    await this.artistsDbService.updateStudioPhoto(id, cloudFrontUrl);
+    await this.artistProvider.updateStudioPhoto(id, cloudFrontUrl);
     console.timeEnd('updateStudioPhoto');
 
     return {

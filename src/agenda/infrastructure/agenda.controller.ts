@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -10,6 +11,8 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -19,11 +22,15 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
 
+import { ArtistIdPipe } from '../../artists/infrastructure/pipes/artistId.pipe';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
+import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import {
   AGENDA_EVENT_ID_PIPE_FAILED,
   AGENDA_EVENT_INVALID_ID_TYPE,
@@ -36,6 +43,7 @@ import {
 
 import { AgendaHandler } from './agenda.handler';
 import { AddEventReqDto } from './dtos/addEventReq.dto';
+import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 import { AgendaEventIdPipe } from './pipes/agendaEventId.pipe';
@@ -115,6 +123,7 @@ export class AgendaController {
     return this.agendaHandler.handleGetEventByEventId(agendaId, eventId);
   }
 
+  // TODO: VALIDATE IF THE ARTIST IS THE OWNER OF THE AGENDA, DO THIS WITH A GUARD OR VALIDATE THE TOKEN
   @ApiOperation({ summary: 'Mark event as done' })
   @HttpCode(200)
   @ApiOkResponse({
@@ -142,11 +151,40 @@ export class AgendaController {
     description: AGENDA_EVENT_IS_ALREADY_DONE,
   })
   @Put(':agendaId/event/:eventId/done')
+  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
   async markEventAsDone(
     @Param('agendaId', AgendaIdPipe) agendaId: number,
     @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @UploadedFiles() workEvidenceFiles: FileInterface[],
   ): Promise<any> {
-    return this.agendaHandler.handleMarkEventAsDone(agendaId, eventId);
+    console.log({ workEvidenceFiles });
+    return this.agendaHandler.handleMarkEventAsDone(
+      agendaId,
+      eventId,
+      workEvidenceFiles,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get work evidence by artistId' })
+  @ApiOkResponse({
+    description: 'Work evidence list successful.',
+    type: GetWorkEvidenceByArtistIdResponseDto,
+  })
+  @ApiNotFoundResponse({ description: 'Works not found.' })
+  @ApiParam({ name: 'artistId', required: true, type: Number, example: 1 })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 6 })
+  @Get('artists/:artistId/work-evidence')
+  async getWorkEvidenceByArtistId(
+    @Param('artistId', ArtistIdPipe) artistId: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(6), ParseIntPipe) limit = 6,
+  ): Promise<GetWorkEvidenceByArtistIdResponseDto> {
+    return this.agendaHandler.handleGetWorkEvidenceByArtistId(
+      artistId,
+      page,
+      limit,
+    );
   }
 
   // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,

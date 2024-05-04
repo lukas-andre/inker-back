@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 import { Agenda } from './agenda.entity';
 
@@ -39,6 +40,9 @@ export class AgendaEvent extends BaseEntity {
 
   @Column({ default: false })
   done: boolean;
+
+  @Column('jsonb', { nullable: true, name: 'work_evidence' })
+  workEvidence: MultimediasMetadataInterface;
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;

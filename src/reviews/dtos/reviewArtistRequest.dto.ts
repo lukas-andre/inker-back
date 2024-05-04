@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, ValidateIf } from 'class-validator';
 
-import { RatingRate } from '../database/entities/reviewAvg.entity';
+import { RatingRate } from '../interfaces/reviewAvg.interface';
 
 export class ReviewArtistRequestDto {
   @ApiProperty({

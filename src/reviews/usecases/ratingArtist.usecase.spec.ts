@@ -1,12 +1,17 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { Test } from '@nestjs/testing';
 
-import { Agenda } from '../../agenda/infrastructure/entities/agenda.entity';
-import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
+import {
+  AgendaProvider,
+  ArtistAgendaAndEventRelatedToCustomerResult,
+} from '../../agenda/infrastructure/providers/agenda.provider';
 import { DomainUnProcessableEntity } from '../../global/domain/exceptions/domain.exception';
 import { DefaultResponseStatus } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
-import { USER_IS_NOT_RELATED_TO_EVENT } from '../../users/domain/errors/codes';
+import {
+  EVENT_NEEDS_TO_BE_DONE_TO_RATE,
+  USER_IS_NOT_RELATED_TO_EVENT,
+} from '../../users/domain/errors/codes';
 import { ERROR_CREATING_REVIEW } from '../codes';
 import {
   FindIfCustomerAlreadyReviewTheEventResult,
@@ -21,7 +26,7 @@ describe('RatingArtistUsecase', () => {
   let agendaProvider: DeepMocked<AgendaProvider>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [
         RatingArtistUsecase,
         {
@@ -58,31 +63,9 @@ describe('RatingArtistUsecase', () => {
   });
 
   it('RatingArtistUsecase[Event Is Not Done] should throw DomainUnProcessableEntity(EVENT_NEEDS_TO_BE_DONE_TO_RATE)', async () => {
-    const notDoneAgendaEvent: Agenda = {
+    const notDoneAgendaEvent: ArtistAgendaAndEventRelatedToCustomerResult = {
       id: 1,
-      artistId: 1,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      open: true,
-      public: true,
-      workingDays: [],
-      agendaEvent: {
-        id: 1,
-        done: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        end: new Date(),
-        start: new Date(),
-        color: 'test',
-        title: 'test',
-        customerId: 1,
-        agenda: null,
-        notification: true,
-        info: 'test',
-      },
+      eventIsDone: false,
     };
 
     jest
@@ -92,37 +75,15 @@ describe('RatingArtistUsecase', () => {
       await usecase.execute(1, 1, 1, { displayName: 'test' });
     } catch (error) {
       expect(error).toEqual(
-        new DomainUnProcessableEntity(USER_IS_NOT_RELATED_TO_EVENT),
+        new DomainUnProcessableEntity(EVENT_NEEDS_TO_BE_DONE_TO_RATE),
       );
     }
   });
 
   it('RatingArtistUsecase[Empty Rate & User Rated Before] should response OK', async () => {
-    const doneAgendaEvent: Agenda = {
+    const doneAgendaEvent: ArtistAgendaAndEventRelatedToCustomerResult = {
       id: 1,
-      artistId: 1,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      open: true,
-      public: true,
-      workingDays: [],
-      agendaEvent: {
-        id: 1,
-        done: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        end: new Date(),
-        start: new Date(),
-        color: 'test',
-        title: 'test',
-        customerId: 1,
-        agenda: null,
-        notification: true,
-        info: 'test',
-      },
+      eventIsDone: true,
     };
 
     jest
@@ -144,31 +105,9 @@ describe('RatingArtistUsecase', () => {
   });
 
   it('RatingArtistUsecase[Empty Rate & User Did Not Rate Before] should response Review created', async () => {
-    const doneAgendaEvent: Agenda = {
+    const doneAgendaEvent: ArtistAgendaAndEventRelatedToCustomerResult = {
       id: 1,
-      artistId: 1,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      open: true,
-      public: true,
-      workingDays: [],
-      agendaEvent: {
-        id: 1,
-        done: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        end: new Date(),
-        start: new Date(),
-        color: 'test',
-        title: 'test',
-        customerId: 1,
-        agenda: null,
-        notification: true,
-        info: 'test',
-      },
+      eventIsDone: true,
     };
 
     jest
@@ -192,31 +131,9 @@ describe('RatingArtistUsecase', () => {
   });
 
   it('RatingArtistUsecase[Empty Rate & User Rate Before But Empty] should response Review created', async () => {
-    const doneAgendaEvent: Agenda = {
+    const doneAgendaEvent: ArtistAgendaAndEventRelatedToCustomerResult = {
       id: 1,
-      artistId: 1,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      open: true,
-      public: true,
-      workingDays: [],
-      agendaEvent: {
-        id: 1,
-        done: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        end: new Date(),
-        start: new Date(),
-        color: 'test',
-        title: 'test',
-        customerId: 1,
-        agenda: null,
-        notification: true,
-        info: 'test',
-      },
+      eventIsDone: true,
     };
 
     jest
@@ -245,31 +162,9 @@ describe('RatingArtistUsecase', () => {
   });
 
   it('RatingArtistUsecase[Rate & User Did Not Rate Before] should create a new review', async () => {
-    const doneAgendaEvent: Agenda = {
+    const doneAgendaEvent: ArtistAgendaAndEventRelatedToCustomerResult = {
       id: 1,
-      artistId: 1,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      open: true,
-      public: true,
-      workingDays: [],
-      agendaEvent: {
-        id: 1,
-        done: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        end: new Date(),
-        start: new Date(),
-        color: 'test',
-        title: 'test',
-        customerId: 1,
-        agenda: null,
-        notification: true,
-        info: 'test',
-      },
+      eventIsDone: true,
     };
 
     jest
@@ -296,31 +191,9 @@ describe('RatingArtistUsecase', () => {
   });
 
   it('RatingArtistUsecase[Rate & User Did Rate And Want To Update] should update review', async () => {
-    const doneAgendaEvent: Agenda = {
+    const doneAgendaEvent: ArtistAgendaAndEventRelatedToCustomerResult = {
       id: 1,
-      artistId: 1,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      open: true,
-      public: true,
-      workingDays: [],
-      agendaEvent: {
-        id: 1,
-        done: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        end: new Date(),
-        start: new Date(),
-        color: 'test',
-        title: 'test',
-        customerId: 1,
-        agenda: null,
-        notification: true,
-        info: 'test',
-      },
+      eventIsDone: true,
     };
 
     jest
@@ -352,31 +225,9 @@ describe('RatingArtistUsecase', () => {
   });
 
   it('RatingArtistUsecase[Rate & User Did Not Rate Before] should throw new DomainUnProcessableEntity(ERROR_CREATING_REVIEW)', async () => {
-    const doneAgendaEvent: Agenda = {
+    const doneAgendaEvent: ArtistAgendaAndEventRelatedToCustomerResult = {
       id: 1,
-      artistId: 1,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      open: true,
-      public: true,
-      workingDays: [],
-      agendaEvent: {
-        id: 1,
-        done: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        end: new Date(),
-        start: new Date(),
-        color: 'test',
-        title: 'test',
-        customerId: 1,
-        agenda: null,
-        notification: true,
-        info: 'test',
-      },
+      eventIsDone: true,
     };
 
     jest
@@ -404,31 +255,9 @@ describe('RatingArtistUsecase', () => {
   });
 
   it('RatingArtistUsecase[Rate & User Did Rate And Want To Update] should throw throw new DomainUnProcessableEntity(ERROR_CREATING_REVIEW)', async () => {
-    const doneAgendaEvent: Agenda = {
+    const doneAgendaEvent: ArtistAgendaAndEventRelatedToCustomerResult = {
       id: 1,
-      artistId: 1,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      open: true,
-      public: true,
-      workingDays: [],
-      agendaEvent: {
-        id: 1,
-        done: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        end: new Date(),
-        start: new Date(),
-        color: 'test',
-        title: 'test',
-        customerId: 1,
-        agenda: null,
-        notification: true,
-        info: 'test',
-      },
+      eventIsDone: true,
     };
 
     jest

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ArtistsModule } from '../artists/artists.module';
-import { ArtistsDbModule } from '../artists/infrastructure/database/artistDb.module';
+import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
 import { GenresModule } from '../genres/genres.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
 import { TagsModule } from '../tags/tags.module';
@@ -21,7 +21,7 @@ import { UserAddCommentUseCase } from './usecases/userAddComment.usecase';
 
 @Module({
   imports: [
-    ArtistsDbModule,
+    ArtistsProviderModule,
     TypeOrmModule.forFeature([Post, Comment], 'post-db'),
     ArtistsModule,
     MultimediasModule,

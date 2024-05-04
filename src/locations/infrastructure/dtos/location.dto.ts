@@ -2,12 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Point } from 'geojson';
 
-import { BaseDto } from '../../../global/domain/dtos/base.dto';
+import { BaseDTO } from '../../../global/domain/dtos/base.dto';
 import { AddressType } from '../../../global/domain/interfaces/address.interface';
 import { ViewportInterface } from '../../../global/domain/interfaces/geometry.interface';
 import { LocationModel } from '../../domain/model/location.model';
 
-export class LocationDto extends BaseDto implements LocationModel {
+export class LocationDTO extends BaseDTO implements LocationModel {
   @ApiProperty({ description: 'Short address line 1', example: '123 Main St' })
   @IsString()
   shortAddress1: string;

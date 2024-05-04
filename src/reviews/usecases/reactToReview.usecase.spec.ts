@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
@@ -16,9 +16,9 @@ import {
   ERROR_CREATING_REVIEW_REACTION,
   ERROR_DISABLING_REVIEW_REACTION,
   ERROR_UPDATING_REVIEW_REACTION,
-  ReactToReviewUsecase,
   REVIEW_IS_PENDING_TO_RATE,
   REVIEW_NOT_FOUND,
+  ReactToReviewUsecase,
 } from './reactToReview.usecase';
 
 describe('ReactToReviewUsecase', () => {
@@ -67,7 +67,7 @@ describe('ReactToReviewUsecase', () => {
       await usecase.execute(reviewId, userId, reaction);
     } catch (error) {
       expect(error).toBeInstanceOf(DomainNotFound);
-      expect(error.message).toBe(REVIEW_NOT_FOUND);
+      expect((error as Error).message).toBe(REVIEW_NOT_FOUND);
     }
   });
 
@@ -82,7 +82,7 @@ describe('ReactToReviewUsecase', () => {
       await usecase.execute(reviewId, userId, reaction);
     } catch (error) {
       expect(error).toBeInstanceOf(DomainBadRule);
-      expect(error.message).toBe(REVIEW_IS_PENDING_TO_RATE);
+      expect((error as Error).message).toBe(REVIEW_IS_PENDING_TO_RATE);
     }
   });
 
@@ -123,7 +123,7 @@ describe('ReactToReviewUsecase', () => {
       await usecase.execute(reviewId, userId, reaction);
     } catch (error) {
       expect(error).toBeInstanceOf(DomainUnProcessableEntity);
-      expect(error.message).toBe(ERROR_CREATING_REVIEW_REACTION);
+      expect((error as Error).message).toBe(ERROR_CREATING_REVIEW_REACTION);
     }
 
     expect(reviewProvider.insertReviewReactionTransaction).toBeCalledWith(
@@ -173,7 +173,7 @@ describe('ReactToReviewUsecase', () => {
       await usecase.execute(reviewId, userId, newReaction);
     } catch (error) {
       expect(error).toBeInstanceOf(DomainUnProcessableEntity);
-      expect(error.message).toBe(ERROR_UPDATING_REVIEW_REACTION);
+      expect((error as Error).message).toBe(ERROR_UPDATING_REVIEW_REACTION);
     }
 
     expect(reviewProvider.updateReviewReactionTransaction).toBeCalledWith(
@@ -246,7 +246,7 @@ describe('ReactToReviewUsecase', () => {
       await usecase.execute(reviewId, userId, newReaction);
     } catch (error) {
       expect(error).toBeInstanceOf(DomainUnProcessableEntity);
-      expect(error.message).toBe(ERROR_DISABLING_REVIEW_REACTION);
+      expect((error as Error).message).toBe(ERROR_DISABLING_REVIEW_REACTION);
     }
 
     expect(reviewProvider.offReviewReactionTransaction).toBeCalledWith(

@@ -1,11 +1,28 @@
-import { Body, Controller, Logger, Param, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Logger,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { AgendaEventIdPipe } from '../agenda/infrastructure/pipes/agendaEventId.pipe';
 import { ArtistIdPipe } from '../artists/infrastructure/pipes/artistId.pipe';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 import { UserIdPipe } from '../users/infrastructure/pipes/userId.pipe';
 
+import { GetReviewsFromArtistResponseDto } from './dtos/getReviewsFromArtistResponse.dto';
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { ReviewIdPipe } from './pipes/review.pipe';
 import { ReviewReactionPipe } from './pipes/reviewReactionEnum.pipe';
@@ -32,24 +49,40 @@ export class ReviewsController {
   async reviewArtist(
     @Param('artistId', ArtistIdPipe) artistId: number,
     @Param('eventId', AgendaEventIdPipe) eventId: number,
+    // TODO: This should be the customerId, not the userId
     @Param('reviewerId', UserIdPipe) reviewer: number,
     @Body() body: ReviewArtistRequestDto,
   ) {
-    this.logger.log(`artistId: ${artistId} eventId: ${eventId}`, reviewer);
-    this.logger.log({ body });
     return this.handler.reviewArtist(artistId, eventId, reviewer, body);
   }
 
   @ApiOperation({ summary: 'React to review' })
   @ApiParam({ name: 'reviewId', type: Number, example: 1 })
   @ApiParam({ name: 'reviewerId', type: Number, example: 1 })
-  @Post('/reviews/:reviewId/reviewers/:reviewerId')
+  @Post('/:reviewId/reviewers/:reviewerId')
   async reactToReview(
     @Param('reviewId', ReviewIdPipe) reviewId: number,
-    @Param('reviewerId', UserIdPipe) reviewer: number,
+    // TODO: This should be the customerId, not the userId
+    @Param('reviewerId', UserIdPipe) reviewerId: number,
     @Query('reaction', ReviewReactionPipe) reaction: ReviewReactionEnum,
   ) {
-    this.logger.log(`reviewId: ${reviewId}`, reviewer);
-    return this.handler.reactToReview(reviewId, reviewer, reaction);
+    return this.handler.reactToReview(reviewId, reviewerId, reaction);
+  }
+
+  @ApiOperation({ summary: 'Get reviews from artist' })
+  @ApiParam({ name: 'artistId', type: Number, example: 1 })
+  @ApiQuery({ name: 'page', type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', type: Number, example: 3 })
+  @ApiOkResponse({
+    description: 'Get reviews from artist',
+    type: GetReviewsFromArtistResponseDto,
+  })
+  @Get('artists/:artistId')
+  async getReviewsFromArtist(
+    @Param('artistId', ArtistIdPipe) artistId: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(3), ParseIntPipe) limit = 3,
+  ) {
+    return this.handler.getReviewFromArtist(artistId, page, limit);
   }
 }

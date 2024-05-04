@@ -1,15 +1,17 @@
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Repository } from 'typeorm';
 
-import { BaseComponent } from '../../../../global/domain/components/base.component';
-import { Contact } from '../../entities/contact.entity';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { Contact } from '../entities/contact.entity';
 
-export class ContactDbService extends BaseComponent {
+@Injectable()
+export class ContactProvider extends BaseComponent {
   constructor(
     @InjectRepository(Contact, 'artist-db')
     private readonly contactRepository: Repository<Contact>,
   ) {
-    super(ContactDbService.name);
+    super(ContactProvider.name);
   }
 
   async findById(id: number) {

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class FindArtistByArtistDtoRequest {
+export class FindArtistByRangeDTORequest {
   @ApiProperty({
     example: 0.5,
     description: 'Rango en kilometros',

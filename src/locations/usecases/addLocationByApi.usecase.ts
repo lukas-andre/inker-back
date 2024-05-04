@@ -5,20 +5,18 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistLocationsDbService } from '../infrastructure/database/services/artistLocationsDb.service';
+import { ArtistLocationProvider } from '../infrastructure/database/artistLocation.provider';
 import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
 import { ArtistLocation } from '../infrastructure/entities/artistLocation.entity';
 
 @Injectable()
 export class AddLocationByApiUseCase extends BaseUseCase implements UseCase {
-  constructor(
-    private readonly artistLocationsDbService: ArtistLocationsDbService,
-  ) {
+  constructor(private readonly artistLocationProvider: ArtistLocationProvider) {
     super(AddLocationByApiUseCase.name);
   }
 
   async execute(addLocationDto: AddLocationDto): Promise<ArtistLocation> {
-    return this.artistLocationsDbService.save({
+    return this.artistLocationProvider.save({
       address1: addLocationDto.address1,
       address2: addLocationDto.address2,
       address3: addLocationDto.address3,
