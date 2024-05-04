@@ -1,9 +1,6 @@
-import { NotificationType } from '../services/notification.factory';
-
-import { NotificationEvents } from './events';
+import { NotificationEvents } from './notificationEvents';
 
 export interface CustomerNotification {
-  notificationType: keyof typeof NotificationType;
   template: keyof typeof NotificationEvents;
   customerId: string;
   message: string;
