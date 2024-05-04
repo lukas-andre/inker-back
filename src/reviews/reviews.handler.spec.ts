@@ -1,9 +1,8 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing/test';
 import { TestingModule } from '@nestjs/testing/testing-module';
-import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
+import { ModuleMocker } from 'jest-mock';
 
-import { DefaultResponse } from '../global/infrastructure/helpers/defaultResponse.helper';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 
 import { ReviewProvider } from './database/providers/review.provider';
@@ -11,55 +10,55 @@ import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { ReviewHandler } from './reviews.handler';
 import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
 import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
+import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { RequestService } from '../global/infrastructure/services/request.service';
 
 const moduleMocker = new ModuleMocker(global);
 describe('ReviewHandler', () => {
   let handler: ReviewHandler;
-  let ratingArtistUseCase: RatingArtistUsecase;
-  let reactToReviewUseCase: ReactToReviewUsecase;
+  let ratingArtistUseCase: DeepMocked<RatingArtistUsecase>;
+  let reactToReviewUseCase: DeepMocked<ReactToReviewUsecase>;
+  let getReviewsFromArtistUsecase: DeepMocked<GetReviewsFromArtistUsecase>;
+  let requestService: DeepMocked<RequestService>
+  let jwtService: DeepMocked<JwtService>
+  let reviewProvider: DeepMocked<ReviewProvider>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ReviewHandler],
-    })
-      .useMocker(token => {
-        if (token === RatingArtistUsecase) {
-          return {
-            execute: jest.fn(() => DefaultResponse.ok),
-          };
-        }
-
-        if (token === ReactToReviewUsecase) {
-          return {
-            execute: jest.fn(),
-          };
-        }
-
-        if (token === JwtService) {
-          return jest.fn();
-        }
-
-        if (token === ReviewProvider) {
-          return {
-            repo: jest.fn(),
-          };
-        }
-
-        if (token === 'function') {
-          const mockMetadata = moduleMocker.getMetadata(
-            token,
-          ) as MockFunctionMetadata<any, any>;
-
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
-          return new Mock();
-        }
-      })
-      .compile();
+      providers: [ReviewHandler,
+        {
+          provide: RatingArtistUsecase,
+          useValue: createMock<RatingArtistUsecase>(),
+        },
+        {
+          provide: ReactToReviewUsecase,
+          useValue: createMock<ReactToReviewUsecase>(),
+        },
+        {
+          provide: GetReviewsFromArtistUsecase,
+          useValue: createMock<GetReviewsFromArtistUsecase>(),
+        },
+        {
+          provide: RequestService,
+          useValue: createMock<RequestService>(),
+        },
+        {
+          provide: ReviewProvider,
+          useValue: createMock<ReviewProvider>(),
+        },
+        {
+          provide: JwtService,
+          useValue: createMock<JwtService>(),
+        },
+        
+      ],
+    }).compile();
 
     handler = module.get<ReviewHandler>(ReviewHandler);
-    ratingArtistUseCase = module.get<RatingArtistUsecase>(RatingArtistUsecase);
+    ratingArtistUseCase = module.get(RatingArtistUsecase);
     reactToReviewUseCase =
-      module.get<ReactToReviewUsecase>(ReactToReviewUsecase);
+      module.get(ReactToReviewUsecase);
   });
 
   it('ReviewHandler should be defined', () => {
