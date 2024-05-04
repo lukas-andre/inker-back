@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
+import { NotificationType } from '../domain/notificationType';
 import { INotificationService } from '../domain/notificiation.service';
 
-import { EmailNotificationService } from './email.notification';
-import { PushNotificationService } from './push.notification';
-
-export const NotificationType = {
-  email: 'email',
-  push: 'push',
-} as const;
+import { EmailNotificationService } from './services/email.notification';
+import { PushNotificationService } from './services/push.notification';
 
 @Injectable()
 export class NotififcationFactory {
@@ -25,10 +21,10 @@ export class NotififcationFactory {
     }
 
     switch (type) {
-      case 'email':
+      case NotificationType.email:
         this.instances[type] = new EmailNotificationService();
         break;
-      case 'push':
+      case NotificationType.push:
         this.instances[type] = new PushNotificationService();
         break;
     }

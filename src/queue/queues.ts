@@ -1,4 +1,4 @@
-const queues = {
+export const queues = {
   default: {
     name: 'default',
     hostId: 'default',
@@ -7,6 +7,7 @@ const queues = {
   notification: {
     name: 'notification',
     hostId: 'notification',
+    attempts: 3,
     port: 6379,
   },
   deadLetter: {
