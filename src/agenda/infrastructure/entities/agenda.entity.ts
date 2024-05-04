@@ -1,3 +1,4 @@
+import { A } from 'ts-toolbelt';
 import { Column, DeleteDateColumn, Entity, Index, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';

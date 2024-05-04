@@ -24,7 +24,7 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
     super(AddEventUseCase.name);
   }
 
-  async execute(addEventDto: AddEventReqDto): Promise<AgendaEvent> {
+  async execute(addEventDto: AddEventReqDto): Promise<void> {
     const existsAgenda = await this.agendaProvider.findById(
       addEventDto.agendaId,
     );
@@ -52,9 +52,20 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule('Already exists event in current date range');
     }
 
-    return await this.agendaEventProvider.saveWithAddEventDto(
-      addEventDto,
-      existsAgenda,
-    );
+    const transactionResult =
+      await this.agendaProvider.createEventAndInvitationTransaction({
+        agendaId: existsAgenda.id,
+        customerId: existsCustomer.id,
+        start: addEventDto.start,
+        end: addEventDto.end,
+        color: addEventDto.color,
+        info: addEventDto.info,
+        notification: addEventDto.notification,
+        title: addEventDto.title,
+      });
+
+    if (!transactionResult) {
+      throw new DomainBadRule('Error creating event');
+    }
   }
 }
