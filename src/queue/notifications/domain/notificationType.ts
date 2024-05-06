@@ -1,4 +1,4 @@
 export const NotificationType = {
-  email: 'email',
-  push: 'push',
+  EMAIL: 'EMAIL',
+  PUSH: 'PUSH',
 } as const;
