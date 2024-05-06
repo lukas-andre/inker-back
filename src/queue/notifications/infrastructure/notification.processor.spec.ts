@@ -4,7 +4,9 @@ import { Job, JobId, JobOptions, JobStatus, Queue } from 'bull';
 
 import { DeadLetterQueueModule } from '../../deadletter/deadletter.queue.module';
 import { queues } from '../../queues';
-import { NotififcationFactory } from '../application/notification.factory';
+import { NotificationFactory } from '../application/notification.factory';
+import { NotificationEvents } from '../domain/notificationEvents';
+import { NotificationType } from '../domain/notificationType';
 import { INotificationService } from '../domain/notificiation.service';
 
 import { NotificationProcessor } from './notification.processor';
@@ -117,7 +119,7 @@ export const mockBullQueue: any = {
 };
 describe('NotificationProcessor', () => {
   let notificationProcessor: NotificationProcessor;
-  let notificationFactory: NotififcationFactory;
+  let notificationFactory: NotificationFactory;
   let notificationService: INotificationService;
   let deadLetterQueue: typeof mockBullQueue;
 
@@ -125,7 +127,7 @@ describe('NotificationProcessor', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotificationProcessor,
-        NotififcationFactory,
+        NotificationFactory,
         {
           provide: getQueueToken(queues.deadLetter.name),
           useValue: mockBullQueue,
@@ -137,7 +139,7 @@ describe('NotificationProcessor', () => {
       NotificationProcessor,
     );
     notificationFactory =
-      module.get<NotififcationFactory>(NotififcationFactory);
+      module.get<NotificationFactory>(NotificationFactory);
     notificationService = { sendCustomerNotification: jest.fn() };
     deadLetterQueue = module.get<typeof mockBullQueue>(
       getQueueToken(queues.deadLetter.name),
@@ -148,10 +150,10 @@ describe('NotificationProcessor', () => {
     const job: Job<NotificationQueuePayload> = {
       ...mockJob,
       data: {
-        template: 'EVENT_CREATED',
+        template: NotificationEvents.EVENT_CREATED,
         customerId: 'customerId',
         message: 'message',
-        notificationType: 'push',
+        notificationType: NotificationType.PUSH,
       },
     };
 
@@ -178,10 +180,10 @@ describe('NotificationProcessor', () => {
     const job: Job<NotificationQueuePayload> = {
       ...mockJob,
       data: {
-        template: 'EVENT_CREATED',
+        template: NotificationEvents.EVENT_CREATED,
         customerId: 'customerId',
         message: 'message',
-        notificationType: 'push',
+        notificationType: NotificationType.EMAIL,
       },
       attemptsMade: queues.notification.attempts + 1,
     };

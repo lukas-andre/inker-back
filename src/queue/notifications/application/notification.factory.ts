@@ -7,7 +7,7 @@ import { EmailNotificationService } from './services/email.notification';
 import { PushNotificationService } from './services/push.notification';
 
 @Injectable()
-export class NotififcationFactory {
+export class NotificationFactory {
   private instances = new Map<
     keyof typeof NotificationType,
     INotificationService
@@ -21,10 +21,10 @@ export class NotififcationFactory {
     }
 
     switch (type) {
-      case NotificationType.email:
+      case NotificationType.EMAIL:
         this.instances[type] = new EmailNotificationService();
         break;
-      case NotificationType.push:
+      case NotificationType.PUSH:
         this.instances[type] = new PushNotificationService();
         break;
     }

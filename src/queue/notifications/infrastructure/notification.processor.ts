@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Job, Queue } from 'bull';
 
 import { queues } from '../../queues';
-import { NotififcationFactory } from '../application/notification.factory';
+import { NotificationFactory } from '../application/notification.factory';
 
 import { NotificationQueuePayload } from './queueNotification';
 
@@ -12,10 +12,14 @@ export class NotificationProcessor {
   constructor(
     @InjectQueue(queues.deadLetter.name)
     private readonly deadLetterQueue: Queue,
-    private readonly notificationFactory: NotififcationFactory,
-  ) {}
+    private readonly notificationFactory: NotificationFactory,
+  ) {
+    console.log('NotificationProcessor created');
+  }
   @Process(queues.notification.name)
   async process(job: Job<NotificationQueuePayload>) {
+    console.log('processing notification job');
+
     if (job.attemptsMade > queues.notification.attempts) {
       this.deadLetterQueue.add(queues.deadLetter.name, job.data);
       return;
@@ -31,5 +35,7 @@ export class NotificationProcessor {
       customerId,
       message,
     });
+
+    return { success: true };
   }
 }
