@@ -11,6 +11,7 @@ import { AWSConfigSchema } from '../config/aws.config';
 import { config } from '../config/config';
 import { databaseConfigSchema } from '../config/database/config';
 import { oasConfigSchema } from '../config/oas.config';
+import { sendGridSchema } from '../config/sendgrid.config';
 import { verificationHashConfigSchema } from '../config/verificationHash';
 
 import { RequestInterceptor } from './aspects/request.interceptor';
@@ -32,7 +33,8 @@ import { RequestService } from './infrastructure/services/request.service';
         .concat(oasConfigSchema)
         .concat(verificationHashConfigSchema)
         .concat(AWSConfigSchema)
-        .concat(databaseConfigSchema),
+        .concat(databaseConfigSchema)
+        .concat(sendGridSchema),
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],

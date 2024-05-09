@@ -1,7 +1,9 @@
 import { getQueueToken } from '@nestjs/bull';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, JobId, JobOptions, JobStatus, Queue } from 'bull';
 
+import { sendGridConfig } from '../../../config/sendgrid.config';
 import { DeadLetterQueueModule } from '../../deadletter/deadletter.queue.module';
 import { queues } from '../../queues';
 import { NotificationFactory } from '../application/notification.factory';
@@ -125,6 +127,12 @@ describe('NotificationProcessor', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [sendGridConfig],
+        }),
+      ],
       providers: [
         NotificationProcessor,
         NotificationFactory,
@@ -138,8 +146,7 @@ describe('NotificationProcessor', () => {
     notificationProcessor = module.get<NotificationProcessor>(
       NotificationProcessor,
     );
-    notificationFactory =
-      module.get<NotificationFactory>(NotificationFactory);
+    notificationFactory = module.get<NotificationFactory>(NotificationFactory);
     notificationService = { sendCustomerNotification: jest.fn() };
     deadLetterQueue = module.get<typeof mockBullQueue>(
       getQueueToken(queues.deadLetter.name),
