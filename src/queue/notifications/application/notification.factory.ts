@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 
+import { sendGridConfig } from '../../../config/sendgrid.config';
+import { SendGridClient } from '../../../notifications/clients/sendGrid.client';
 import { NotificationType } from '../domain/notificationType';
 import { INotificationService } from '../domain/notificiation.service';
 
@@ -8,6 +11,11 @@ import { PushNotificationService } from './services/push.notification';
 
 @Injectable()
 export class NotificationFactory {
+  constructor(
+    @Inject(sendGridConfig.KEY)
+    private sendGridConf: ConfigType<typeof sendGridConfig>,
+  ) {}
+
   private instances = new Map<
     keyof typeof NotificationType,
     INotificationService
@@ -22,7 +30,9 @@ export class NotificationFactory {
 
     switch (type) {
       case NotificationType.EMAIL:
-        this.instances[type] = new EmailNotificationService();
+        this.instances[type] = new EmailNotificationService(
+          new SendGridClient(this.sendGridConf),
+        );
         break;
       case NotificationType.PUSH:
         this.instances[type] = new PushNotificationService();

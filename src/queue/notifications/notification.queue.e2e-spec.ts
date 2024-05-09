@@ -1,4 +1,5 @@
 import { BullModule, getQueueToken } from '@nestjs/bull';
+import { ConfigModule } from '@nestjs/config';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -6,6 +7,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import Bull, { Queue } from 'bull';
 
+import { sendGridConfig } from '../../config/sendgrid.config';
 import { DeadLetterQueueModule } from '../deadletter/deadletter.queue.module';
 import { queues } from '../queues';
 
@@ -25,6 +27,10 @@ describe('NotificationQueue E2E', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [sendGridConfig],
+        }),
         BullModule.registerQueue({
           name: queues.notification.name,
           defaultJobOptions: {
