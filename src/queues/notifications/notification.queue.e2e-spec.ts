@@ -62,7 +62,7 @@ describe('NotificationQueue E2E', () => {
   it('should trigger email send when processing a job', async () => {
     const jobData = {
       jobId: 'EVENT_CREATED',
-      metadata: { customerId: '1', eventId: '100' },
+      metadata: { customerId: 1, eventId: 1, artistId: 1 },
       notificationTypeId: 'EMAIL',
     } satisfies JobType;
 

@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Queue } from 'bull';
 
 import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
 import {
@@ -9,17 +11,24 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
+import { AgendaEventCreatedType } from '../../notifications/services/email/schemas/email';
+import { AgendaEventcreatedJobType } from '../../queues/notifications/domain/schemas/agenda';
+import { queues } from '../../queues/queues';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
-import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
 import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
 
 @Injectable()
-export class AddEventUseCase extends BaseUseCase implements UseCase {
+export class AddEventUseCase
+  extends BaseUseCase
+  implements UseCase, OnModuleDestroy
+{
   constructor(
     private readonly agendaProvider: AgendaProvider,
     private readonly agendaEventProvider: AgendaEventProvider,
     private readonly customerProvider: CustomerProvider,
+    @InjectQueue(queues.notification.name)
+    private readonly notificationQueue: Queue,
   ) {
     super(AddEventUseCase.name);
   }
@@ -67,5 +76,30 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
     if (!transactionResult) {
       throw new DomainBadRule('Error creating event');
     }
+
+    const queueMessage: AgendaEventcreatedJobType = {
+      jobId: 'EVENT_CREATED',
+      metadata: {
+        eventId: transactionResult.eventId,
+        artistId: existsAgenda.artistId,
+        customerId: existsCustomer.id,
+      },
+      notificationTypeId: 'EMAIL',
+    };
+
+    try {
+      const job = await this.notificationQueue.add(queueMessage);
+      this.logger.log({
+        message: 'Event published to notification queue',
+        data: queueMessage,
+        job,
+      });
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  async onModuleDestroy() {
+    await this.notificationQueue.close();
   }
 }

@@ -17,6 +17,7 @@ export class EmailNotificationService extends BaseComponent {
   ) {
     super(EmailNotificationService.name);
   }
+
   /**
    * Sends an email using the SendGrid client.
    * @param email The email data transfer object.
@@ -24,10 +25,18 @@ export class EmailNotificationService extends BaseComponent {
    * @throws Error if the email template could not be retrieved.
    */
   async sendEmail(data: EmailType): Promise<void> {
-    // const { content, subject } =
-    //   await this.templateService.getContentAndSubject(data);
+    const { to } = data;
+    const { from } = this;
+    const { html, subject } = await this.templateService.getContentAndSubject(
+      data,
+    );
 
-    const mailData: MailDataRequired = this.createMailData(data);
+    const mailData: MailDataRequired = {
+      to,
+      from,
+      subject,
+      html,
+    };
 
     try {
       const response = await this.sendGridClient.send(mailData);
@@ -36,14 +45,5 @@ export class EmailNotificationService extends BaseComponent {
       this.logger.error(error);
       throw error;
     }
-  }
-
-  private createMailData(data: EmailType): MailDataRequired {
-    return {
-      to: data.to,
-      from: this.from,
-      templateId: data.templateId,
-      dynamicTemplateData: data,
-    };
   }
 }

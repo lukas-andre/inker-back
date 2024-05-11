@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bull';
 import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
@@ -24,6 +25,12 @@ import { TagsModule } from './tags/tags.module';
 import { UsersModule } from './users/users.module';
 @Module({
   imports: [
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     DevtoolsModule.register({
       http: process.env.NODE_ENV !== 'production',
       port: 8000,

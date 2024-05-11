@@ -18,7 +18,8 @@ export const TemplateRegistry: Record<
   EVENT_CREATED: {
     schema: AgendaEventCreatedSchema,
     path: path.join(__dirname, './agendaEventCreated.hbs'),
-    subject: 'Event Created',
+    subject:
+      '💈 Tu próxima cita de barbería/tatuaje te espera! No te la pierdas',
   },
   EVENT_CANCELED: {
     schema: AgendaEventCanceledSchema,

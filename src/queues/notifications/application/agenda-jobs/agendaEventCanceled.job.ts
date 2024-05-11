@@ -16,7 +16,7 @@ export class AgendaEventCanceledJob implements AgendaEventJob {
       to: 'lucas.henrydz@gmail.com',
       customerId: job.jobId,
       eventDate: new Date(),
-      eventName: job.metadata.eventId,
+      eventName: '',
       mailId: 'EVENT_CANCELED',
     };
     await this.emailNotificationService.sendEmail(agendaEventCanceledEmailData);

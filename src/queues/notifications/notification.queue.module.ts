@@ -1,6 +1,11 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 
+import { AgendaProviderModule } from '../../agenda/infrastructure/providers/agendaProvider.module';
+import { ArtistsProviderModule } from '../../artists/infrastructure/database/artistProvider.module';
+import { CustomerProviderModule } from '../../customers/infrastructure/providers/customerProvider.module';
+import { LocationProviderModule } from '../../locations/infrastructure/database/locationProvider.module';
+import { LocationsModule } from '../../locations/locations.module';
 import { NotificationsModule } from '../../notifications/notifications.module';
 import { DeadLetterProcessor } from '../deadletter/deadletter.processor';
 import { queues } from '../queues';
@@ -12,10 +17,6 @@ import { NotificationProcessor } from './infrastructure/notification.processor';
   imports: [
     BullModule.registerQueue({
       name: queues.deadLetter.name,
-      redis: {
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
-      },
     }),
     BullModule.registerQueue({
       name: queues.notification.name,
@@ -23,13 +24,14 @@ import { NotificationProcessor } from './infrastructure/notification.processor';
         attempts: 3,
         lifo: false,
       },
-      redis: {
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
-      },
     }),
     NotificationsModule,
+    LocationProviderModule,
+    ArtistsProviderModule,
+    CustomerProviderModule,
+    AgendaProviderModule,
   ],
   providers: [NotificationProcessor, JobHandlerFactory, DeadLetterProcessor],
+  exports: [BullModule],
 })
 export class NotificationQueueModule {}

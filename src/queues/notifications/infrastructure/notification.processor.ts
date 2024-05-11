@@ -1,4 +1,4 @@
-import { InjectQueue, Process } from '@nestjs/bull';
+import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Job, Queue } from 'bull';
 import { ZodError } from 'zod';
@@ -11,7 +11,7 @@ import { JobType } from '../domain/schemas/job';
 
 type AnyJobData = any;
 
-@Injectable()
+@Processor(queues.notification.name)
 export class NotificationProcessor extends BaseComponent {
   constructor(
     @InjectQueue(queues.deadLetter.name)
@@ -22,7 +22,7 @@ export class NotificationProcessor extends BaseComponent {
     this.logger.log('Notification processor initialized');
   }
 
-  @Process(queues.notification.name)
+  @Process()
   async process(job: Job<JobType>): Promise<void> {
     if (this.shouldMoveToDeadLetter(job)) {
       await this.moveToDeadLetter(job);

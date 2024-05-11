@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
+import { AgendaEventProvider } from '../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
+import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
+import { ArtistLocationProvider } from '../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../notifications/services/email/email.notification';
 import { JobType } from '../domain/schemas/job';
 
@@ -15,9 +19,17 @@ import { RsvpUnschedulableJob } from './agenda-jobs/rsvpUnschedulable.job';
 export class JobHandlerFactory {
   constructor(
     private readonly emailNotificationService: EmailNotificationService,
+    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly artistProvider: ArtistProvider,
+    private readonly customerProvider: CustomerProvider,
+    private readonly locationProvider: ArtistLocationProvider,
   ) {}
   private readonly agendaEventCreatedJob = new AgendaEventCreatedJob(
     this.emailNotificationService,
+    this.agendaEventProvider,
+    this.artistProvider,
+    this.customerProvider,
+    this.locationProvider,
   );
   private readonly agendaEventCanceledJob = new AgendaEventCanceledJob(
     this.emailNotificationService,

@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
 import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
+import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
 import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
 import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
 
@@ -25,6 +26,7 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     CustomerProviderModule,
     ReviewProviderModule,
     MultimediasModule,
+    NotificationQueueModule,
   ],
   providers: [
     AgendaHandler,

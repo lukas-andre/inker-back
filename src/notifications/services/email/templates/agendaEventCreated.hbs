@@ -1,6 +1,45 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
 <body>
-  <h1>Event Created</h1>
-  <p>Dear Customer, your event {{eventName}} has been successfully created and is scheduled for {{eventDate}}.</p>
+    <!-- Header Part -->
+    {{> header }}
+
+    <!-- Main Content -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff;">
+        <tr>
+            <td align="center">
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="margin: 0 auto;">
+                    <tr>
+                        <td style="padding: 20px; font-family: Arial, sans-serif;">
+                            <h2 style="color: #292929; font-size: 20px; line-height: 24px; text-align: center; margin-top: 0; margin-bottom: 20px;">
+                            Hola {{customerName}}, tienes una nueva cita con {{artistName}}!
+                            </h2>
+                            <h3 style="color: #292929; font-size: 18px; text-align: center; margin-top: 0; margin-bottom: 20px;">
+                            {{eventTitle}}
+                            </h3>
+                            <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
+                                La cita es el {{formatDate eventDate "dddd, MMMM Do YYYY"}} a las {{formatDate eventDate "h:mm a"}}. No olvides asistir!
+                            </p>
+                            <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
+                                Ubicación: {{eventLocation}} <br>
+                                <a href="{{googleMapsLink}}" style="color: #3e2d9c; text-decoration: underline;">Ver en Google Maps</a>
+                            </p>
+                            <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
+                                Invita a un amigo o conocido a la app y podrás participar por premios. 
+                                <a href="http://www.example.com/" style="color: #3e2d9c; text-decoration: underline;">Participa aquí</a>.
+                                <br>
+                                <img src="https://i.ibb.co/qkzvLtM/Gift-Emoji.png" alt="Gift-Emoji" style="width: 34px; vertical-align: middle; margin: 0 5px;">
+                                <strong>¡Revisa los premios que puedes ganar!</strong>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Footer Part -->
+    {{> footer}}
 </body>
 </html>
