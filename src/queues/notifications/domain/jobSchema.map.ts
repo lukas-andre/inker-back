@@ -8,7 +8,7 @@ import {
   RsvpUnschedulableJobSchema,
 } from './schemas/agenda';
 
-export const jobSchemaMap = {
+export const JobTypeSchemaRegistry = {
   EVENT_CREATED: AgendaEventCreatedJobSchema,
   EVENT_CANCELED: AgendaEventCanceledJobSchema,
   EVENT_REMINDER: AgendaEventReminderJobSchema,
