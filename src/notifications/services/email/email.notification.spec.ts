@@ -1,12 +1,12 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { MailService } from '@sendgrid/mail';
 
-import { sendGridConfig } from '../../../../config/sendgrid.config';
-import { SendGridClient } from '../../../../notifications/clients/sendGrid.client';
-import { CustomerNotification } from '../../domain/notificiation.service';
+import { sendGridConfig } from '../../../config/sendgrid.config';
+import { CustomerNotification } from '../../../queue/notifications/domain/notificiation.service';
+import { SendGridClient } from '../../clients/sendGrid.client';
 
 import { EmailNotificationService } from './email.notification';
+import { TemplateService } from './template.service';
 
 describe('EmailNotificationService', () => {
   let emailNotificationService: EmailNotificationService;
@@ -19,7 +19,7 @@ describe('EmailNotificationService', () => {
           load: [sendGridConfig],
         }),
       ],
-      providers: [EmailNotificationService, SendGridClient],
+      providers: [EmailNotificationService, SendGridClient, TemplateService],
     }).compile();
 
     emailNotificationService = moduleRef.get<EmailNotificationService>(

@@ -12,8 +12,8 @@ import { DeadLetterQueueModule } from '../deadletter/deadletter.queue.module';
 import { queues } from '../queues';
 
 import { NotificationFactory } from './application/notification.factory';
-import { NotificationEvents } from './domain/notificationEvents';
-import { NotificationType } from './domain/notificationType';
+import { NotificationEvents } from './domain/agenda.job';
+import { NotificationType } from './domain/schemas/notification';
 import { NotificationProcessor } from './infrastructure/notification.processor';
 import { mockBullQueue } from './infrastructure/notification.processor.spec';
 
