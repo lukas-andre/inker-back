@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { DeadLetterQueueModule } from '../deadletter/deadletter.queue.module';
 import { queues } from '../queues';
 
-import { NotificationFactory } from './application/notification.factory';
+import { JobHandlerFactory } from './application/job.factory';
 import { NotificationProcessor } from './infrastructure/notification.processor';
 
 @Module({
@@ -22,6 +22,6 @@ import { NotificationProcessor } from './infrastructure/notification.processor';
     }),
     DeadLetterQueueModule,
   ],
-  providers: [NotificationProcessor, NotificationFactory],
+  providers: [NotificationProcessor, JobHandlerFactory],
 })
 export class NotificationQueueModule {}
