@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { EmailNotificationService } from '../../../notifications/services/email/email.notification';
 import { JobType } from '../domain/schemas/job';
 
 import { AgendaEventCanceledJob } from './agenda-jobs/agendaEventCanceled.job';
@@ -12,6 +13,9 @@ import { RsvpUnschedulableJob } from './agenda-jobs/rsvpUnschedulable.job';
 
 @Injectable()
 export class JobHandlerFactory {
+  constructor(
+    private readonly emailNotificationService: EmailNotificationService,
+  ) {}
   private readonly agendaEventCreatedJob = new AgendaEventCreatedJob();
   private readonly agendaEventCanceledJob = new AgendaEventCanceledJob();
   private readonly agendaEventReminderJob = new AgendaEventReminderJob();

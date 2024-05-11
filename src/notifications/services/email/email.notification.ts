@@ -4,8 +4,8 @@ import { MailDataRequired } from '@sendgrid/mail';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { SendGridClient } from '../../clients/sendGrid.client';
 
-import { BaseEmailDto } from './email.dto';
-import { TemplateService } from './template.service';
+import { EmailType } from './schemas/email';
+import { TemplateService } from './templates/template.service';
 
 @Injectable()
 export class EmailNotificationService extends BaseComponent {
@@ -17,13 +17,40 @@ export class EmailNotificationService extends BaseComponent {
   ) {
     super(EmailNotificationService.name);
   }
+  /**
+   * Sends an email using the SendGrid client.
+   * @param email The email data transfer object.
+   * @throws Error if the email could not be sent.
+   * @throws Error if the email template could not be retrieved.
+   */
+  async sendEmail(data: EmailType): Promise<void> {
+    const { content, subject } =
+      await this.templateService.getContentAndSubject(data);
 
-  async sendEmail(dto: BaseEmailDto): Promise<void> {
-    const content = await this.templateService.getContent(dto);
-    const mailData: MailDataRequired = {
-      to: dto.to,
+    const mailData: MailDataRequired = this.createMailData(
+      data,
+      subject,
+      content,
+    );
+
+    try {
+      const response = await this.sendGridClient.send(mailData);
+      this.logger.log(response);
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  private createMailData(
+    data: EmailType,
+    subject: string,
+    content: string,
+  ): MailDataRequired {
+    return {
+      to: data.to,
       from: this.from,
-      subject: 'Notification',
+      subject,
       content: [
         {
           type: 'html',
@@ -31,13 +58,5 @@ export class EmailNotificationService extends BaseComponent {
         },
       ],
     };
-
-    try {
-      const response = await this.sendGridClient.send(mailData);
-      console.log(`Email successfully dispatched to ${mailData.to}`);
-    } catch (error) {
-      console.error('Error while sending email', error);
-      throw error;
-    }
   }
 }

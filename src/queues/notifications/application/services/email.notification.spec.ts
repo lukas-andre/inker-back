@@ -4,7 +4,7 @@ import { MailService } from '@sendgrid/mail';
 
 import { sendGridConfig } from '../../../../config/sendgrid.config';
 import { SendGridClient } from '../../../../notifications/clients/sendGrid.client';
-import { AgendaEventCreatedDto } from '../../../../notifications/services/email/email.dto';
+import { AgendaEventCreatedDto } from '../../../../notifications/services/email/schemas/email';
 
 import { EmailNotificationService } from './email.notification';
 

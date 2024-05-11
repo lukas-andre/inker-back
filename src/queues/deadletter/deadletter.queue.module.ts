@@ -16,5 +16,6 @@ import { DeadLetterProcessor } from './deadletter.processor';
     }),
   ],
   providers: [DeadLetterProcessor],
+  exports: [DeadLetterProcessor],
 })
 export class DeadLetterQueueModule {}

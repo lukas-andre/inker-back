@@ -16,6 +16,8 @@ import { HealthModule } from './health/health.module';
 import { LocationsModule } from './locations/locations.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { PostsModule } from './posts/posts.module';
+import { DeadLetterQueueModule } from './queues/deadletter/deadletter.queue.module';
+import { NotificationQueueModule } from './queues/notifications/notification.queue.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { TagsModule } from './tags/tags.module';
@@ -42,6 +44,7 @@ import { UsersModule } from './users/users.module';
     ReactionsModule,
     TagsModule,
     UsersModule,
+    NotificationQueueModule,
   ],
   providers: [ChatGateway, AlertGateway, ModulesContainer],
 })
