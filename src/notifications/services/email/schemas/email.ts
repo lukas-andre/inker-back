@@ -1,3 +1,4 @@
+import { template } from 'handlebars';
 import { z } from 'zod';
 
 export const MailIdSchema = z.enum([
@@ -12,6 +13,7 @@ export const MailIdSchema = z.enum([
 export type MailIdType = z.infer<typeof MailIdSchema>;
 
 export const BaseEmailSchema = z.object({
+  templateId: z.string(),
   mailId: MailIdSchema,
   to: z.string(),
 });

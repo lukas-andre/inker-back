@@ -1,3 +1,5 @@
+import path from 'path';
+
 import {
   AgendaEventCanceledSchema,
   AgendaEventCreatedSchema,
@@ -15,37 +17,37 @@ export const TemplateRegistry: Record<
 > = {
   EVENT_CREATED: {
     schema: AgendaEventCreatedSchema,
-    path: 'templates/agendaEventCreated.hbs',
+    path: path.join(__dirname, './agendaEventCreated.hbs'),
     subject: 'Event Created',
   },
   EVENT_CANCELED: {
     schema: AgendaEventCanceledSchema,
-    path: 'templates/agendaEventCanceled.hbs',
+    path: 'agendaEventCanceled.hbs',
     subject: 'Event Canceled',
   },
   EVENT_REMINDER: {
     schema: AgendaEventReminderSchema,
-    path: 'templates/agendaEventReminder.hbs',
+    path: 'agendaEventReminder.hbs',
     subject: 'Event Reminder',
   },
   EVENT_UPDATED: {
     schema: AgendaEventUpdatedSchema,
-    path: 'templates/agendaEventUpdated.hbs',
+    path: 'agendaEventUpdated.hbs',
     subject: 'Event Updated',
   },
   RSVP_ACCEPTED: {
     schema: RsvpAcceptedSchema,
-    path: 'templates/rsvpAccepted.hbs',
+    path: 'rsvpAccepted.hbs',
     subject: 'RSVP Accepted',
   },
   RSVP_DECLINED: {
     schema: RsvpDeclinedSchema,
-    path: 'templates/rsvpDeclined.hbs',
+    path: 'rsvpDeclined.hbs',
     subject: 'RSVP Declined',
   },
   RSVP_UNSCHEDULABLE: {
     schema: RsvpUnschedulableSchema,
-    path: 'templates/rsvpUnschedulable.hbs',
+    path: 'rsvpUnschedulable.hbs',
     subject: 'RSVP Unschedulable',
   },
 };

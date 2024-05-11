@@ -16,8 +16,12 @@ export class JobHandlerFactory {
   constructor(
     private readonly emailNotificationService: EmailNotificationService,
   ) {}
-  private readonly agendaEventCreatedJob = new AgendaEventCreatedJob();
-  private readonly agendaEventCanceledJob = new AgendaEventCanceledJob();
+  private readonly agendaEventCreatedJob = new AgendaEventCreatedJob(
+    this.emailNotificationService,
+  );
+  private readonly agendaEventCanceledJob = new AgendaEventCanceledJob(
+    this.emailNotificationService,
+  );
   private readonly agendaEventReminderJob = new AgendaEventReminderJob();
   private readonly agendaEventUpdatedJob = new AgendaEventUpdatedJob();
   private readonly rsvpAcceptedJob = new RsvpAcceptedJob();
