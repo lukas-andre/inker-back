@@ -17,8 +17,9 @@ const AgendaJobSchema = z.object({
   jobId: AgendaJobIdSchema,
   notificationTypeId: NotificationTypeSchema,
   metadata: z.object({
-    customerId: z.string(),
-    eventId: z.string(),
+    customerId: z.number(),
+    eventId: z.number(),
+    artistId: z.number(),
   }),
 });
 

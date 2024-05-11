@@ -126,17 +126,19 @@ describe('AddEventUseCase', () => {
     });
 
     it('should throw DomainBadRule if transaction fails', async () => {
-      agendaProvider.createEventAndInvitationTransaction.mockResolvedValueOnce(
-        false,
-      );
+      agendaProvider.createEventAndInvitationTransaction.mockResolvedValueOnce({
+        transactionIsOK: true,
+        eventId: 1,
+      });
 
       await expect(useCase.execute(dto)).rejects.toThrow(DomainBadRule);
     });
 
     it('should return the event if transaction is successful', async () => {
-      agendaProvider.createEventAndInvitationTransaction.mockResolvedValueOnce(
-        true,
-      );
+      agendaProvider.createEventAndInvitationTransaction.mockResolvedValueOnce({
+        transactionIsOK: true,
+        eventId: 1,
+      });
 
       const result = await useCase.execute(dto);
 

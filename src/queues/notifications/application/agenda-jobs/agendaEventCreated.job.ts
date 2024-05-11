@@ -1,8 +1,9 @@
+import { AgendaEventProvider } from '../../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { ArtistProvider } from '../../../../artists/infrastructure/database/artist.provider';
+import { CustomerProvider } from '../../../../customers/infrastructure/providers/customer.provider';
+import { ArtistLocationProvider } from '../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../notifications/services/email/email.notification';
-import {
-  AgendaEventCanceledType,
-  AgendaEventCreatedType,
-} from '../../../../notifications/services/email/schemas/email';
+import { AgendaEventCreatedType } from '../../../../notifications/services/email/schemas/email';
 import { AgendaEventcreatedJobType } from '../../domain/schemas/agenda';
 
 import { AgendaEventJob } from './agendaEvent.job';
@@ -10,18 +11,29 @@ import { AgendaEventJob } from './agendaEvent.job';
 export class AgendaEventCreatedJob implements AgendaEventJob {
   constructor(
     private readonly emailNotificationService: EmailNotificationService,
+    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly artistProvider: ArtistProvider,
+    private readonly customerProvider: CustomerProvider,
+    private readonly locationProvider: ArtistLocationProvider,
   ) {}
   async handle(job: AgendaEventcreatedJobType): Promise<void> {
+    const { artistId, customerId, eventId } = job.metadata;
+    const [agendaEvent, artist, customer, location] = await Promise.all([
+      this.agendaEventProvider.findById(eventId),
+      this.artistProvider.findById(artistId),
+      this.customerProvider.findById(customerId),
+      this.locationProvider.find({ where: { artistId } }),
+    ]);
+
     const agendaEventCanceledEmailData: AgendaEventCreatedType = {
-      to: 'lucas.henrydz@gmail.com',
-      artistName: 'mock',
-      customerName: 'mock',
-      eventLocation: 'mock',
-      googleMapsLink: 'mock',
-      eventDate: new Date(),
-      eventName: job.metadata.eventId,
+      to: customer.contactEmail,
+      artistName: artist.username,
+      customerName: customer.firstName,
+      eventLocation: location[0].formattedAddress,
+      googleMapsLink: `https://www.google.com/maps/@?api=1&map_action=map&center=${location[0].lat}%2C${location[0].lng}`,
+      eventDate: agendaEvent.start,
+      eventName: agendaEvent.title,
       mailId: 'EVENT_CREATED',
-      templateId: 'd-fd173c79745449a38b2064426bc1101c',
     };
     await this.emailNotificationService.sendEmail(agendaEventCanceledEmailData);
   }

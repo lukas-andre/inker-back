@@ -211,8 +211,9 @@ export class AgendaProvider extends BaseComponent {
     start: string;
     notification: boolean;
     customerId: number;
-  }): Promise<boolean> {
+  }): Promise<{ transactionIsOK: boolean; eventId: number }> {
     let transactionIsOK = false;
+    let eventId: number = undefined;
 
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -238,7 +239,7 @@ export class AgendaProvider extends BaseComponent {
       ];
       const eventResult = await queryRunner.query(createEventSql, eventParams);
 
-      const eventId = eventResult[0].id;
+      eventId = eventResult[0].id;
 
       const createInvitationSql = `
         INSERT INTO agenda_invitation (event_id, invitee_id, status, updated_at)
@@ -262,6 +263,6 @@ export class AgendaProvider extends BaseComponent {
       await queryRunner.release();
     }
 
-    return transactionIsOK;
+    return { transactionIsOK, eventId };
   }
 }
