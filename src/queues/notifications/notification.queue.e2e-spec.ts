@@ -11,21 +11,22 @@ import { sendGridConfig } from '../../config/sendgrid.config';
 import { DeadLetterQueueModule } from '../deadletter/deadletter.queue.module';
 import { queues } from '../queues';
 
-import { NotificationFactory } from './application/notification.factory';
-import { NotificationEvents } from './domain/agenda.job';
-import { NotificationType } from './domain/schemas/notification';
+import { JobHandlerFactory } from './application/job.factory';
+import { JobType } from './domain/schemas/job';
 import { NotificationProcessor } from './infrastructure/notification.processor';
-import { mockBullQueue } from './infrastructure/notification.processor.spec';
+
+const mockBullQueue: Partial<Queue> = {
+  add: jest.fn(),
+  process: jest.fn(),
+};
 
 describe('NotificationQueue E2E', () => {
   let app: NestFastifyApplication;
   let notificationQueue: Queue;
-  let notificationProcessor: NotificationProcessor;
-  let deadLetterQueue: typeof mockBullQueue;
-  let notificationFactory: NotificationFactory;
+  let jobHandlerFactory: JobHandlerFactory;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
@@ -33,10 +34,6 @@ describe('NotificationQueue E2E', () => {
         }),
         BullModule.registerQueue({
           name: queues.notification.name,
-          defaultJobOptions: {
-            attempts: 3,
-            lifo: false,
-          },
           redis: {
             host: process.env.REDIS_HOST || 'localhost',
             port: Number(process.env.REDIS_PORT) || 6379,
@@ -46,7 +43,7 @@ describe('NotificationQueue E2E', () => {
       ],
       providers: [
         NotificationProcessor,
-        NotificationFactory,
+        JobHandlerFactory,
         {
           provide: getQueueToken(queues.deadLetter.name),
           useValue: mockBullQueue,
@@ -54,80 +51,55 @@ describe('NotificationQueue E2E', () => {
       ],
     }).compile();
 
-    app = moduleFixture.createNestApplication(new FastifyAdapter());
+    app = module.createNestApplication(new FastifyAdapter());
     await app.init();
-    await app.getHttpAdapter().getInstance().ready();
-
-    notificationQueue = moduleFixture.get(
-      getQueueToken(queues.notification.name),
-    );
-    notificationProcessor = moduleFixture.get(NotificationProcessor);
-    deadLetterQueue = moduleFixture.get<typeof mockBullQueue>(
-      getQueueToken(queues.deadLetter.name),
-    );
-    notificationFactory =
-      moduleFixture.get<NotificationFactory>(NotificationFactory);
+    notificationQueue = app.get<Queue>(getQueueToken(queues.notification.name));
+    jobHandlerFactory = app.get(JobHandlerFactory);
   });
 
-  afterAll(async () => {
-    await app.close();
-  });
-
-  it('should process a job E2E', async () => {
+  it('should trigger email send when processing a job', async () => {
     const jobData = {
-      data: {
-        template: NotificationEvents.EVENT_CREATED,
-        customerId: 'customerId',
-        message: 'Your event has been created',
-        notificationType: NotificationType.EMAIL,
-      },
-    };
+      jobId: 'EVENT_CREATED',
+      metadata: { customerId: '1', eventId: '100' },
+      notificationTypeId: 'EMAIL',
+    } satisfies JobType;
 
-    const spy = jest.spyOn(notificationProcessor, 'process');
+    const jobHandlerFactoryCreateSpy = jest.spyOn(jobHandlerFactory, 'create');
+    const jobHandler = jobHandlerFactory.create(jobData);
+    const jobHandlerHandleSpy = jest.spyOn(jobHandler, 'handle');
 
-    const job = await notificationQueue.add(jobData.data);
+    await notificationQueue.add(jobData);
 
-    let lastJob: Bull.Job<any>;
     notificationQueue.process(async (job, done) => {
-      lastJob = job;
-      const result = await notificationProcessor.process(job);
+      const result = await app.get(NotificationProcessor).process(job);
       done(null, result);
     });
 
-    jest
-      .spyOn(notificationFactory, 'createNotificationService')
-      .mockReturnValue({
-        sendCustomerNotification: jest.fn(),
-      });
     await new Promise<void>((resolve, reject) => {
-      notificationQueue.on('completed', (completedJob, result) => {
+      notificationQueue.on('completed', () => {
         try {
-          expect(completedJob.id).toEqual(job.id);
-          expect(spy).toHaveBeenCalledWith(lastJob);
-          expect(
-            notificationFactory.createNotificationService,
-          ).toHaveBeenCalledWith(job.data.notificationType);
-
-          expect(
-            notificationFactory.createNotificationService(
-              job.data.notificationType,
-            ).sendCustomerNotification,
-          ).toHaveBeenCalledWith({
-            template: job.data.template,
-            customerId: job.data.customerId,
-            message: job.data.message,
+          // 2 calls because one is in the test and the other is in the processor,
+          // sorry for the that's now i dont find a better way to test factory.create
+          // withour creating a new class on the test
+          expect(jobHandlerFactoryCreateSpy).toHaveBeenCalledTimes(2);
+          expect(jobHandlerHandleSpy).toHaveBeenCalledWith({
+            jobId: 'EVENT_CREATED',
+            metadata: { customerId: '1', eventId: '100' },
+            notificationTypeId: 'EMAIL',
           });
-
-          expect(result).toEqual(expect.anything());
           resolve();
         } catch (error) {
           reject(error);
         }
       });
 
-      notificationQueue.on('failed', (failedJob, err) => {
-        reject(err);
+      notificationQueue.on('failed', error => {
+        reject(error);
       });
     });
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });
