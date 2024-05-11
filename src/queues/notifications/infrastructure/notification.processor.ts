@@ -1,43 +1,66 @@
 import { InjectQueue, Process } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Job, Queue } from 'bull';
+import { ZodError } from 'zod';
 
+import { BaseComponent } from '../../../global/domain/components/base.component';
 import { queues } from '../../queues';
 import { JobHandlerFactory } from '../application/job.factory';
 import { jobSchemaMap } from '../domain/jobSchema.map';
 import { JobType } from '../domain/schemas/job';
 
+type AnyJobData = any;
+
 @Injectable()
-export class NotificationProcessor {
+export class NotificationProcessor extends BaseComponent {
   constructor(
     @InjectQueue(queues.deadLetter.name)
     private readonly deadLetterQueue: Queue,
     private readonly jobHandlerFactory: JobHandlerFactory,
   ) {
-    console.log('NotificationProcessor created');
+    super(NotificationProcessor.name);
+    this.logger.log('Notification processor initialized');
   }
+
   @Process(queues.notification.name)
-  async process(queueJob: Job<JobType>) {
-    console.log('processing notification job');
-    if (queueJob.attemptsMade > queues.notification.attempts) {
-      this.deadLetterQueue.add(queues.deadLetter.name, queueJob.data);
+  async process(job: Job<JobType>): Promise<void> {
+    if (this.shouldMoveToDeadLetter(job)) {
+      await this.moveToDeadLetter(job);
       return;
     }
 
     try {
-      const validatedJob: JobType = jobSchemaMap[queueJob.data?.jobId].parse(
-        queueJob.data,
-      );
-      console.log('Job validated successfully', validatedJob);
-
-      const jobHandler = this.jobHandlerFactory.create(validatedJob);
-
-      await jobHandler.handle(validatedJob as any);
-
-      return { success: true };
-    } catch (error) {
-      console.error('Validation or processing failed:', error);
-      throw new Error('Job validation failed');
+      this.validateJob(job.data);
+    } catch (error: any | ZodError) {
+      this.logger.error(error);
+      throw error;
     }
+
+    const jobHandler = this.jobHandlerFactory.create(job.data);
+    await jobHandler.handle(job.data as AnyJobData);
+  }
+
+  private shouldMoveToDeadLetter(job: Job<JobType>): boolean {
+    return job.attemptsMade > queues.notification.attempts;
+  }
+
+  private async moveToDeadLetter(job: Job<JobType>): Promise<void> {
+    await this.deadLetterQueue.add(queues.deadLetter.name, job.data);
+    this.logger.warn(
+      `Job ${job.id} moved to dead letter queue after ${job.attemptsMade} attempts`,
+    );
+  }
+
+  /**
+   * Validates the notification job schema.
+   * @param jobData The job data to validate.
+   * @throws ValidationError if the job is invalid.
+   */
+  private validateJob(jobData: JobType): void {
+    const validator = jobSchemaMap[jobData.jobId];
+    if (!validator) {
+      throw new Error(`Validator not found for job ID ${jobData.jobId}`);
+    }
+    validator.parse(jobData);
   }
 }
