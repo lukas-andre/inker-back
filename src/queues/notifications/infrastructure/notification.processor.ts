@@ -6,7 +6,7 @@ import { ZodError } from 'zod';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { queues } from '../../queues';
 import { JobHandlerFactory } from '../application/job.factory';
-import { jobSchemaMap } from '../domain/jobSchema.map';
+import { JobTypeSchemaRegistry } from '../domain/jobSchema.map';
 import { JobType } from '../domain/schemas/job';
 
 type AnyJobData = any;
@@ -57,7 +57,7 @@ export class NotificationProcessor extends BaseComponent {
    * @throws ValidationError if the job is invalid.
    */
   private validateJob(jobData: JobType): void {
-    const validator = jobSchemaMap[jobData.jobId];
+    const validator = JobTypeSchemaRegistry[jobData.jobId];
     if (!validator) {
       throw new Error(`Validator not found for job ID ${jobData.jobId}`);
     }
