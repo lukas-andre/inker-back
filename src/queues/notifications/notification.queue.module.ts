@@ -1,7 +1,8 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 
-import { DeadLetterQueueModule } from '../deadletter/deadletter.queue.module';
+import { NotificationsModule } from '../../notifications/notifications.module';
+import { DeadLetterProcessor } from '../deadletter/deadletter.processor';
 import { queues } from '../queues';
 
 import { JobHandlerFactory } from './application/job.factory';
@@ -9,6 +10,13 @@ import { NotificationProcessor } from './infrastructure/notification.processor';
 
 @Module({
   imports: [
+    BullModule.registerQueue({
+      name: queues.deadLetter.name,
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
+      },
+    }),
     BullModule.registerQueue({
       name: queues.notification.name,
       defaultJobOptions: {
@@ -20,8 +28,8 @@ import { NotificationProcessor } from './infrastructure/notification.processor';
         port: Number(process.env.REDIS_PORT),
       },
     }),
-    DeadLetterQueueModule,
+    NotificationsModule,
   ],
-  providers: [NotificationProcessor, JobHandlerFactory],
+  providers: [NotificationProcessor, JobHandlerFactory, DeadLetterProcessor],
 })
 export class NotificationQueueModule {}

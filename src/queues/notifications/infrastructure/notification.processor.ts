@@ -6,7 +6,7 @@ import { ZodError } from 'zod';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { queues } from '../../queues';
 import { JobHandlerFactory } from '../application/job.factory';
-import { JobTypeSchemaRegistry } from '../domain/jobSchema.map';
+import { JobTypeSchemaRegistry } from '../domain/jobSchema.registry';
 import { JobType } from '../domain/schemas/job';
 
 type AnyJobData = any;
