@@ -12,7 +12,6 @@ import { AgendaEventcreatedJobType } from '../domain/schemas/agenda';
 
 import { NotificationProcessor } from './notification.processor';
 
-// Mock setup for the Job instance
 const mockJob: Partial<Job<AgendaEventcreatedJobType>> = {
   id: '1',
   attemptsMade: 0,

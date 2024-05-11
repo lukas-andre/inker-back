@@ -12,22 +12,30 @@ import { RsvpUnschedulableJob } from './agenda-jobs/rsvpUnschedulable.job';
 
 @Injectable()
 export class JobHandlerFactory {
+  private readonly agendaEventCreatedJob = new AgendaEventCreatedJob();
+  private readonly agendaEventCanceledJob = new AgendaEventCanceledJob();
+  private readonly agendaEventReminderJob = new AgendaEventReminderJob();
+  private readonly agendaEventUpdatedJob = new AgendaEventUpdatedJob();
+  private readonly rsvpAcceptedJob = new RsvpAcceptedJob();
+  private readonly rsvpDeclinedJob = new RsvpDeclinedJob();
+  private readonly rsvpUnschedulableJob = new RsvpUnschedulableJob();
+
   create(job: JobType) {
     switch (job.jobId) {
       case 'EVENT_CREATED':
-        return new AgendaEventCreatedJob();
+        return this.agendaEventCreatedJob;
       case 'EVENT_CANCELED':
-        return new AgendaEventCanceledJob();
+        return this.agendaEventCanceledJob;
       case 'EVENT_REMINDER':
-        return new AgendaEventReminderJob();
+        return this.agendaEventReminderJob;
       case 'EVENT_UPDATED':
-        return new AgendaEventUpdatedJob();
+        return this.agendaEventUpdatedJob;
       case 'RSVP_ACCEPTED':
-        return new RsvpAcceptedJob();
+        return this.rsvpAcceptedJob;
       case 'RSVP_DECLINED':
-        return new RsvpDeclinedJob();
+        return this.rsvpDeclinedJob;
       case 'RSVP_UNSCHEDULABLE':
-        return new RsvpUnschedulableJob();
+        return this.rsvpUnschedulableJob;
       default:
         throw new Error(`Job type ${job} not implemented`);
     }
