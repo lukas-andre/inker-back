@@ -8,6 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import Bull, { Queue } from 'bull';
 
 import { sendGridConfig } from '../../config/sendgrid.config';
+import { NotificationsModule } from '../../notifications/notifications.module';
 import { DeadLetterQueueModule } from '../deadletter/deadletter.queue.module';
 import { queues } from '../queues';
 
@@ -28,6 +29,7 @@ describe('NotificationQueue E2E', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
+        NotificationsModule,
         ConfigModule.forRoot({
           isGlobal: true,
           load: [sendGridConfig],
@@ -95,6 +97,13 @@ describe('NotificationQueue E2E', () => {
 
       notificationQueue.on('failed', error => {
         reject(error);
+      });
+
+      notificationQueue.on('error', error => {
+        reject(error);
+      });
+      notificationQueue.on('stalled', () => {
+        reject(new Error('Job stalled'));
       });
     });
   });

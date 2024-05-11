@@ -24,14 +24,10 @@ export class EmailNotificationService extends BaseComponent {
    * @throws Error if the email template could not be retrieved.
    */
   async sendEmail(data: EmailType): Promise<void> {
-    const { content, subject } =
-      await this.templateService.getContentAndSubject(data);
+    // const { content, subject } =
+    //   await this.templateService.getContentAndSubject(data);
 
-    const mailData: MailDataRequired = this.createMailData(
-      data,
-      subject,
-      content,
-    );
+    const mailData: MailDataRequired = this.createMailData(data);
 
     try {
       const response = await this.sendGridClient.send(mailData);
@@ -42,21 +38,12 @@ export class EmailNotificationService extends BaseComponent {
     }
   }
 
-  private createMailData(
-    data: EmailType,
-    subject: string,
-    content: string,
-  ): MailDataRequired {
+  private createMailData(data: EmailType): MailDataRequired {
     return {
       to: data.to,
       from: this.from,
-      subject,
-      content: [
-        {
-          type: 'html',
-          value: content,
-        },
-      ],
+      templateId: data.templateId,
+      dynamicTemplateData: data,
     };
   }
 }

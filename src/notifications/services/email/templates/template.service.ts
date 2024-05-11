@@ -4,6 +4,7 @@ import * as util from 'util';
 import { Injectable } from '@nestjs/common';
 import * as Handlebars from 'handlebars';
 
+import { BaseComponent } from '../../../../global/domain/components/base.component';
 import { EmailType } from '../schemas/email';
 
 import { TemplateRegistry } from './template.registry';
@@ -13,7 +14,11 @@ export class EmailTemplateNotFound extends Error {}
 export class TemaplateEmailCompilerCrash extends Error {}
 
 @Injectable()
-export class TemplateService {
+export class TemplateService extends BaseComponent {
+  constructor() {
+    super(TemplateService.name);
+  }
+
   private readonly readFile = util.promisify(fs.readFile);
 
   private async loadTemplate(templatePath: string): Promise<string> {
@@ -37,6 +42,7 @@ export class TemplateService {
     try {
       template.schema.parse(data);
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
 
@@ -51,6 +57,7 @@ export class TemplateService {
         subject: template.subject,
       };
     } catch (error) {
+      this.logger.error(error);
       throw new TemaplateEmailCompilerCrash();
     }
   }
