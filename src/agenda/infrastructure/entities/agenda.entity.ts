@@ -4,6 +4,7 @@ import { Column, DeleteDateColumn, Entity, Index, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 import { AgendaEvent } from './agendaEvent.entity';
+import { AgendaEventHistory } from './agendaEventHistory.entity';
 
 @Entity()
 export class Agenda extends BaseEntity {
@@ -29,7 +30,7 @@ export class Agenda extends BaseEntity {
   open: boolean;
 
   @OneToMany(() => AgendaEvent, agendaEvent => agendaEvent.agenda)
-  agendaEvent: AgendaEvent;
+  agendaEvent: AgendaEvent[];
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;

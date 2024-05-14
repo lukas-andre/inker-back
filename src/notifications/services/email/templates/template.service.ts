@@ -88,6 +88,7 @@ export class TemplateService extends BaseComponent {
     }
 
     const { path, subject } = template;
+    subject.replace(/:customerName/g, (templateData as any).customerName ?? '');
 
     try {
       const templateString = await this.loadTemplateFromPath(path);

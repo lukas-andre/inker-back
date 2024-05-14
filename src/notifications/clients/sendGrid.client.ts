@@ -16,7 +16,7 @@ export class SendGridClient extends BaseComponent {
   }
 
   async send(mail: MailDataRequired): Promise<void> {
-    console.log(`Sending email to ${mail.to} with template ${mail.templateId}`);
+    console.log(`Sending email to ${mail.to} from ${mail.from}`);
 
     try {
       const response = await SendGrid.send(mail);

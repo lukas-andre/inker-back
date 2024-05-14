@@ -5,6 +5,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 
@@ -12,6 +13,7 @@ import { BaseEntity } from '../../../global/infrastructure/entities/base.entity'
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 import { Agenda } from './agenda.entity';
+import { AgendaEventHistory } from './agendaEventHistory.entity';
 import { AgendaInvitation } from './agendaInvitation.entity';
 
 @Entity()
@@ -51,7 +53,12 @@ export class AgendaEvent extends BaseEntity {
   @OneToOne(() => AgendaInvitation, agendaInvitation => agendaInvitation.event)
   agendaInvitation: AgendaInvitation;
 
+  @Column({ name: 'cancelation_reason', nullable: true })
+  cancelationReason: string;
+
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
-  // TODO: HACER RELACION OneToOne A UNA ENTIDAD customer que tenga su informacion basica;
+
+  @OneToMany(() => AgendaEventHistory, history => history.event)
+  history: AgendaEventHistory[];
 }

@@ -18,8 +18,9 @@ const mockJob: Partial<Job<AgendaEventcreatedJobType>> = {
   data: {
     jobId: 'EVENT_CREATED',
     metadata: {
-      customerId: '1',
-      eventId: '100',
+      customerId: 1,
+      eventId: 1,
+      artistId: 1,
     },
     notificationTypeId: 'EMAIL',
   },

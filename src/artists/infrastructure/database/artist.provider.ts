@@ -13,9 +13,9 @@ import {
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
-  DbServiceBadRule,
   DBServiceFindOneException,
   DBServiceSaveException,
+  DbServiceBadRule,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { PROBLEMS_FILTERING_ARTISTS } from '../../../locations/domain/codes/codes';
 import { RawFindByArtistIdsResponseDTO } from '../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';

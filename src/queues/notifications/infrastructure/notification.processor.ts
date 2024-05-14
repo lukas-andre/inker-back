@@ -38,6 +38,10 @@ export class NotificationProcessor extends BaseComponent {
 
     const jobHandler = this.jobHandlerFactory.create(job.data);
     await jobHandler.handle(job.data as AnyJobData);
+
+    this.logger.log(`Job ${job.id} processed successfully`);
+
+    return;
   }
 
   private shouldMoveToDeadLetter(job: Job<JobType>): boolean {

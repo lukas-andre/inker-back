@@ -31,25 +31,36 @@ export type AgendaEventCreatedType = z.infer<typeof AgendaEventCreatedSchema>;
 
 const AgendaEventCanceledSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.EVENT_CANCELED),
-  customerId: z.string(),
+  customerName: z.string(),
+  artistName: z.string(),
   eventName: z.string(),
   eventDate: z.date(),
+  eventLocation: z.string(),
+  googleMapsLink: z.string(),
+  cancelationReason: z.string(),
 });
 export type AgendaEventCanceledType = z.infer<typeof AgendaEventCanceledSchema>;
 
 const AgendaEventReminderSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.EVENT_REMINDER),
-  customerId: z.string(),
+  customerName: z.string(),
+  artistName: z.string(),
   eventName: z.string(),
   eventDate: z.date(),
+  eventLocation: z.string(),
+  googleMapsLink: z.string(),
 });
 export type AgendaEventReminderType = z.infer<typeof AgendaEventReminderSchema>;
 
 const AgendaEventUpdatedSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.EVENT_UPDATED),
-  customerId: z.string(),
+  customerName: z.string(),
+  artistName: z.string(),
   eventName: z.string(),
   eventDate: z.date(),
+  eventOldDate: z.date().optional(),
+  eventLocation: z.string(),
+  googleMapsLink: z.string(),
 });
 export type AgendaEventUpdatedType = z.infer<typeof AgendaEventUpdatedSchema>;
 
