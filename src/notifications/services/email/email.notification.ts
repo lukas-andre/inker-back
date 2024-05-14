@@ -38,12 +38,6 @@ export class EmailNotificationService extends BaseComponent {
       html,
     };
 
-    try {
-      const response = await this.sendGridClient.send(mailData);
-      this.logger.log(response);
-    } catch (error) {
-      this.logger.error(error);
-      throw error;
-    }
+    await this.sendGridClient.send(mailData);
   }
 }

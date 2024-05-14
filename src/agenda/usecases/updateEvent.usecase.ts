@@ -49,24 +49,22 @@ export class UpdateEventUseCase extends BaseUseCase {
       throw new DomainConflict('Already exists event in current date range');
     }
 
-    event.title = updateEventReqDto.title
-      ? updateEventReqDto.title
-      : event.title;
-    event.info = updateEventReqDto.info ? updateEventReqDto.info : event.info;
-    event.color = updateEventReqDto.color
-      ? updateEventReqDto.color
-      : event.color;
-    event.end = updateEventReqDto.end
-      ? updateEventReqDto.end
-      : (event.end as any);
-    event.start = updateEventReqDto.start
-      ? updateEventReqDto.start
-      : (event.start as any);
+    await this.agendaEventProvider.createEventHistoryWithNativeQuery(
+      event.id,
+      event,
+      existsAgenda.artistId,
+    );
+
+    event.title = updateEventReqDto.title || event.title;
+    event.info = updateEventReqDto.info || event.info;
+    event.color = updateEventReqDto.color || event.color;
+    event.end = new Date(updateEventReqDto.end) || event.end;
+    event.start = new Date(updateEventReqDto.start) || event.start;
     event.notification =
       typeof updateEventReqDto.notification === 'boolean'
         ? updateEventReqDto.notification
         : event.notification;
 
-    return this.agendaEventProvider.save(event);
+    return await this.agendaEventProvider.save(event);
   }
 }

@@ -10,8 +10,8 @@ import {
 
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import {
-  DbServiceBadRule,
   DBServiceCreateException,
+  DbServiceBadRule,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { FollowTopic } from '../../domain/interfaces/customerFollows.interface';
 import { CreateCustomerParams } from '../../usecases/interfaces/createCustomer.params';
@@ -24,6 +24,10 @@ export class CustomerProvider extends BaseComponent {
     private readonly customersRepository: Repository<Customer>,
   ) {
     super(CustomerProvider.name);
+  }
+
+  get repo(): Repository<Customer> {
+    return this.customersRepository;
   }
 
   async create(params: CreateCustomerParams): Promise<Customer> {

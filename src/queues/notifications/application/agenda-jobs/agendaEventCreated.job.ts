@@ -6,7 +6,7 @@ import { EmailNotificationService } from '../../../../notifications/services/ema
 import { AgendaEventCreatedType } from '../../../../notifications/services/email/schemas/email';
 import { AgendaEventcreatedJobType } from '../../domain/schemas/agenda';
 
-import { AgendaEventJob } from './agendaEvent.job';
+import { AgendaEventJob, getGoogleMapsLink } from './agendaEvent.job';
 
 export class AgendaEventCreatedJob implements AgendaEventJob {
   constructor(
@@ -22,19 +22,21 @@ export class AgendaEventCreatedJob implements AgendaEventJob {
       this.agendaEventProvider.findById(eventId),
       this.artistProvider.findById(artistId),
       this.customerProvider.findById(customerId),
-      this.locationProvider.find({ where: { artistId } }),
+      this.locationProvider.findOne({ where: { artistId } }),
     ]);
 
     const agendaEventCanceledEmailData: AgendaEventCreatedType = {
       to: customer.contactEmail,
       artistName: artist.username,
       customerName: customer.firstName,
-      eventLocation: location[0].formattedAddress,
-      googleMapsLink: `https://www.google.com/maps/@?api=1&map_action=map&center=${location[0].lat}%2C${location[0].lng}`,
+      eventLocation: location.formattedAddress,
+      googleMapsLink: getGoogleMapsLink(location.lat, location.lng),
       eventDate: agendaEvent.start,
       eventName: agendaEvent.title,
       mailId: 'EVENT_CREATED',
     };
     await this.emailNotificationService.sendEmail(agendaEventCanceledEmailData);
+
+    return;
   }
 }

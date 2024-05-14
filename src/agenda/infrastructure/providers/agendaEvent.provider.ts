@@ -243,4 +243,70 @@ export class AgendaEventProvider extends BaseComponent {
       );
     }
   }
+
+  async createEventWithNativeQuery(dto: AddEventReqDto): Promise<AgendaEvent> {
+    try {
+      const insertedEvent = await this.agendaEventRepository.query(
+        `INSERT INTO agenda_event (agenda_id, title, info, color, start, end, notification, customer_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING id, agenda_id AS "agendaId", title, info, color, start, end, notification, customer_id AS "customerId"`, // Usar alias para adaptar a camelCase
+        [
+          dto.agendaId,
+          dto.title,
+          dto.info,
+          dto.color,
+          dto.start,
+          dto.end,
+          dto.notification,
+          dto.customerId,
+        ],
+      );
+      return insertedEvent[0];
+    } catch (error) {
+      throw new DBServiceCreateException(
+        this,
+        'Trouble creating event with native query',
+        error,
+      );
+    }
+  }
+
+  async createEventHistoryWithNativeQuery(
+    eventId: number,
+    previousEventData: Partial<AgendaEvent>,
+    updatedBy: number,
+  ): Promise<void> {
+    try {
+      await this.agendaEventRepository.query(
+        `INSERT INTO agenda_event_history (event_id, title, start, end, color, info, notification, done, cancelation_reason, recorded_at, updated_by)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)`,
+        [
+          eventId,
+          previousEventData.title,
+          previousEventData.start,
+          previousEventData.end,
+          previousEventData.color,
+          previousEventData.info,
+          previousEventData.notification,
+          previousEventData.done,
+          previousEventData.cancelationReason,
+          updatedBy,
+        ],
+      );
+    } catch (error) {
+      throw new DBServiceCreateException(
+        this,
+        'Trouble creating event history with native query',
+        error,
+      );
+    }
+  }
+
+  async findMostRecentHistoryRecord(eventId: number): Promise<AgendaEvent> {
+    return this.agendaEventRepository
+      .createQueryBuilder('agenda_event_history')
+      .where('event_id = :eventId', { eventId })
+      .orderBy('recorded_at', 'DESC')
+      .getOne();
+  }
 }

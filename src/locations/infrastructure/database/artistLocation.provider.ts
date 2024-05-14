@@ -29,6 +29,10 @@ export class ArtistLocationProvider extends BaseComponent {
     super(ArtistLocationProvider.name);
   }
 
+  get repo(): Repository<ArtistLocation> {
+    return this.artistLocationsRepository;
+  }
+
   async findById(id: number) {
     return this.artistLocationsRepository.findOne({ where: { id } });
   }
