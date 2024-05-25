@@ -19,36 +19,37 @@ export const TemplateRegistry: Record<
     schema: AgendaEventCreatedSchema,
     path: path.join(__dirname, './agendaEventCreated.hbs'),
     subject:
-      '💈 :customerName Tu próxima cita de barbería/tatuaje te espera! No te la pierdas',
+      '💈 :customerName Tu próxima cita de con :artistName te espera! No te la pierdas',
   },
   EVENT_CANCELED: {
     schema: AgendaEventCanceledSchema,
-    path: 'agendaEventCanceled.hbs',
-    subject: 'Event Canceled',
+    path: path.join(__dirname, './agendaEventCanceled.hbs'),
+    subject:
+      '💈 :customerName Lamentamos informarte que tu cita con :artistName ha sido cancelada',
   },
   EVENT_REMINDER: {
     schema: AgendaEventReminderSchema,
-    path: 'agendaEventReminder.hbs',
-    subject: 'Event Reminder',
+    path: path.join(__dirname, './agendaEventReminder.hbs'),
+    subject: '💈 :customerName Tu cita con :artistName se acerca',
   },
   EVENT_UPDATED: {
     schema: AgendaEventUpdatedSchema,
-    path: 'agendaEventUpdated.hbs',
-    subject: 'Event Updated',
+    path: path.join(__dirname, './agendaEventUpdated.hbs'),
+    subject: '💈 :customerName Tu cita con :artistName ha sido actualizada',
   },
   RSVP_ACCEPTED: {
     schema: RsvpAcceptedSchema,
-    path: 'rsvpAccepted.hbs',
-    subject: 'RSVP Accepted',
+    path: path.join(__dirname, './rsvpAccepted.hbs'),
+    subject: '💈 :artistName Tu cita con :customerName ha sido aceptada',
   },
   RSVP_DECLINED: {
     schema: RsvpDeclinedSchema,
-    path: 'rsvpDeclined.hbs',
-    subject: 'RSVP Declined',
+    path: path.join(__dirname, './rsvpDeclined.hbs'),
+    subject: '💈 :artistName Tu cita con :customerName ha sido rechazada',
   },
   RSVP_UNSCHEDULABLE: {
     schema: RsvpUnschedulableSchema,
-    path: 'rsvpUnschedulable.hbs',
-    subject: 'RSVP Unschedulable',
+    path: path.join(__dirname, './rsvpUnschedulable.hbs'),
+    subject: '💈 :artistName Tu cita con :customerName no se pudo agendar',
   },
 };

@@ -33,9 +33,25 @@ export class JobHandlerFactory {
   );
   private readonly agendaEventCanceledJob = new AgendaEventCanceledJob(
     this.emailNotificationService,
+    this.agendaEventProvider,
+    this.artistProvider,
+    this.customerProvider,
+    this.locationProvider,
   );
-  private readonly agendaEventReminderJob = new AgendaEventReminderJob();
-  private readonly agendaEventUpdatedJob = new AgendaEventUpdatedJob();
+  private readonly agendaEventReminderJob = new AgendaEventReminderJob(
+    this.emailNotificationService,
+    this.agendaEventProvider,
+    this.artistProvider,
+    this.customerProvider,
+    this.locationProvider,
+  );
+  private readonly agendaEventUpdatedJob = new AgendaEventUpdatedJob(
+    this.emailNotificationService,
+    this.agendaEventProvider,
+    this.artistProvider,
+    this.customerProvider,
+    this.locationProvider,
+  );
   private readonly rsvpAcceptedJob = new RsvpAcceptedJob();
   private readonly rsvpDeclinedJob = new RsvpDeclinedJob();
   private readonly rsvpUnschedulableJob = new RsvpUnschedulableJob();

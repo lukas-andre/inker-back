@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import path from 'path';
 import * as util from 'util';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as Handlebars from 'handlebars';
 import moment from 'moment';
 import { ZodError } from 'zod';
@@ -16,20 +16,27 @@ import { TemplateRegistry } from './template.registry';
 
 export class EmailTemplateNotFound extends Error {}
 
-export class TemaplateEmailCompilerCrash extends Error {}
+export class TemplateEmailCompilerCrash extends Error {}
 
 @Injectable()
-export class TemplateService extends BaseComponent {
+export class TemplateService extends BaseComponent implements OnModuleInit {
   constructor() {
     super(TemplateService.name);
-    this.registerHelpers();
-    this.registerPartials(__dirname + '/partials');
     moment.locale('es');
+  }
+
+  async onModuleInit(): Promise<void> {
+    this.registerHelpers();
+    await this.registerPartials(__dirname + '/partials');
   }
 
   private registerHelpers(): void {
     Handlebars.registerHelper('formatDate', (date, format) => {
       return moment(date).format(format);
+    });
+
+    Handlebars.registerHelper('formatDateCustom', date => {
+      return moment(date).format('dddd D [de] MMMM [del] YYYY [a las] HH:mm');
     });
   }
 
@@ -68,7 +75,7 @@ export class TemplateService extends BaseComponent {
    * Retrieves the email content and subject from the template.
    * @param templateData The email data transfer object.
    * @throws EmailTemplateNotFound if the template is not found.
-   * @throws TemaplateEmailCompilerCrash if the template could not be compiled.
+   * @throws TemplateEmailCompilerCrash if the template could not be compiled.
    * @throws ZodError if the template data is invalid.
    */
   async getContentAndSubject(
@@ -87,8 +94,15 @@ export class TemplateService extends BaseComponent {
       throw new EmailTemplateNotFound();
     }
 
-    const { path, subject } = template;
-    subject.replace(/:customerName/g, (templateData as any).customerName ?? '');
+    const { path } = template;
+    let subject = template.subject.replace(
+      /:customerName/g,
+      (templateData as any).customerName ?? '',
+    );
+    subject = subject.replace(
+      /:artistName/g,
+      (templateData as any).artistName ?? '',
+    );
 
     try {
       const templateString = await this.loadTemplateFromPath(path);
@@ -96,7 +110,7 @@ export class TemplateService extends BaseComponent {
       return { html, subject };
     } catch (error) {
       this.logger.error(error);
-      throw new TemaplateEmailCompilerCrash();
+      throw new TemplateEmailCompilerCrash();
     }
   }
 }

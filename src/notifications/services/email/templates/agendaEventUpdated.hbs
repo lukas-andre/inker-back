@@ -3,7 +3,7 @@
 {{> head}}
 <body>
     <!-- Header Part -->
-    {{> header message="Importante: ¡Tu cita con {{artistName}} ha sido actualizada!"}}
+    {{> header message="Importante: ¡Tu cita cha sido actualizada!"}}
 
     <!-- Main Content -->
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff;">
@@ -23,9 +23,9 @@
                             </p>
                             <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
                                 {{#if eventOldDate}}
-                                    <strong>Fecha y hora anterior:</strong> {{formatDate eventOldDate "dddd, MMMM Do YYYY, h:mm a"}} (anterior)<br>
+                                    <strong>Fecha y hora anterior:</strong> {{formatDateCustom eventOldDate }} (anterior)<br>
                                 {{/if}}
-                                <strong>Fecha y hora nueva:</strong> {{formatDate eventDate "dddd, MMMM Do YYYY, h:mm a"}}
+                                <strong>Fecha y hora nueva:</strong> {{formatDateCustom eventDate }}
                             </p>
                             <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
                                 Ubicación: {{eventLocation}} <br>
