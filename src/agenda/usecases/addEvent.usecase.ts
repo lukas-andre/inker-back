@@ -33,6 +33,10 @@ export class AddEventUseCase
     super(AddEventUseCase.name);
   }
 
+  async onModuleDestroy() {
+    await this.notificationQueue.close();
+  }
+
   async execute(addEventDto: AddEventReqDto): Promise<void> {
     const existsAgenda = await this.agendaProvider.findById(
       addEventDto.agendaId,
@@ -97,9 +101,5 @@ export class AddEventUseCase
     } catch (error) {
       this.logger.error(error);
     }
-  }
-
-  async onModuleDestroy() {
-    await this.notificationQueue.close();
   }
 }
