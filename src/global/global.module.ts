@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import * as Joi from 'joi';
+import { ClsModule } from 'nestjs-cls';
 
 import { appConfigSchema } from '../config/app.config';
 import { authConfigSchema } from '../config/auth.config';
@@ -35,6 +36,10 @@ import { RequestService } from './infrastructure/services/request.service';
         .concat(AWSConfigSchema)
         .concat(databaseConfigSchema)
         .concat(sendGridSchema),
+    }),
+    ClsModule.forRoot({
+      global: true,
+      guard: { mount: true },
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],

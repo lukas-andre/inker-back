@@ -7,6 +7,7 @@ import {
   HttpCode,
   Logger,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Post,
   Put,
@@ -185,6 +186,27 @@ export class AgendaController {
       page,
       limit,
     );
+  }
+
+  @ApiOperation({ summary: 'RSVP for an event' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'RSVP successful.', type: undefined })
+  @ApiConflictResponse({ description: 'RSVP failed.' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
+  @ApiQuery({
+    name: 'willAttend',
+    required: true,
+    type: Boolean,
+    example: true,
+  })
+  @Post(':agendaId/event/:eventId/rsvp')
+  async rsvp(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Query('willAttend', ParseBoolPipe) willAttend: boolean,
+  ): Promise<any> {
+    return this.agendaHandler.handleRsvp(agendaId, eventId, willAttend);
   }
 
   // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,
