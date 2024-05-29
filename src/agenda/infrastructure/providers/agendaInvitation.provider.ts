@@ -18,7 +18,10 @@ import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import { DBServiceSaveException } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { AgendaInvitation } from '../entities/agendaInvitation.entity';
+import {
+  AgendaInvitation,
+  AgendaInvitationStatusEnum,
+} from '../entities/agendaInvitation.entity';
 
 @Injectable()
 export class AgendaInvitationProvider extends BaseComponent {
@@ -82,5 +85,12 @@ export class AgendaInvitationProvider extends BaseComponent {
 
   async delete(id: number): Promise<DeleteResult> {
     return this.agendaInvitationRepository.delete(id);
+  }
+
+  async updateStatus(eventId: number, status: AgendaInvitationStatusEnum) {
+    return this.agendaInvitationRepository.query(
+      `UPDATE agenda_invitation SET status = $1, updated_at = now() WHERE event_id = $2`,
+      [status, eventId],
+    );
   }
 }

@@ -8,6 +8,7 @@ import { AgendaInvitation } from '../entities/agendaInvitation.entity';
 
 import { AgendaProvider } from './agenda.provider';
 import { AgendaEventProvider } from './agendaEvent.provider';
+import { AgendaInvitationProvider } from './agendaInvitation.provider';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { AgendaEventProvider } from './agendaEvent.provider';
       AGENDA_DB_CONNECTION_NAME,
     ),
   ],
-  providers: [AgendaProvider, AgendaEventProvider],
-  exports: [AgendaProvider, AgendaEventProvider],
+  providers: [AgendaProvider, AgendaEventProvider, AgendaInvitationProvider],
+  exports: [AgendaProvider, AgendaEventProvider, AgendaInvitationProvider],
 })
 export class AgendaProviderModule {}

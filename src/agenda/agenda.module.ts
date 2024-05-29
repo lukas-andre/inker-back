@@ -16,6 +16,7 @@ import { FindEventByAgendaIdAndEventIdUseCase } from './usecases/findEventByAgen
 import { GetWorkEvidenceByArtistIdUseCase } from './usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from './usecases/listEventByViewType.usecase';
 import { MarkEventAsDoneUseCase } from './usecases/markEventAsDone.usecase';
+import { RsvpUseCase } from './usecases/rsvp.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 
 @Module({
@@ -37,6 +38,7 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     FindEventByAgendaIdAndEventIdUseCase,
     MarkEventAsDoneUseCase,
     GetWorkEvidenceByArtistIdUseCase,
+    RsvpUseCase,
   ],
   controllers: [AgendaController],
 })

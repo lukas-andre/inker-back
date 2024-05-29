@@ -70,6 +70,11 @@ export type RsvpUnschedulableJobType = z.infer<
   typeof RsvpUnschedulableJobSchema
 >;
 
+export type RsvpJobType =
+  | RsvpAcceptedJobType
+  | RsvpDeclinedJobType
+  | RsvpUnschedulableJobType;
+
 export {
   AgendaEventCreatedJobSchema,
   AgendaEventCanceledJobSchema,

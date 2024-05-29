@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToOne,
@@ -34,6 +35,7 @@ export class AgendaInvitation extends BaseEntity {
   })
   status: AgendaInvitationStatusEnum;
 
+  @Index()
   @OneToOne(() => AgendaEvent, event => event.agendaInvitation)
   @JoinColumn({ name: 'event_id' })
   event: AgendaEvent;

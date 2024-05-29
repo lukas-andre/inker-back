@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ClsService } from 'nestjs-cls';
 
 import { BaseHandler } from '../../global/infrastructure/base.handler';
+import { InkerClsStore } from '../../global/infrastructure/guards/auth.guard';
 import { RequestService } from '../../global/infrastructure/services/request.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { AddEventUseCase } from '../usecases/addEvent.usecase';
@@ -10,12 +12,19 @@ import { FindEventByAgendaIdAndEventIdUseCase } from '../usecases/findEventByAge
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
+import { RsvpUseCase } from '../usecases/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
 import { AddEventReqDto } from './dtos/addEventReq.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
+
+type RSVPType = {
+  agendaId: number;
+  eventId: number;
+  willAttend: boolean;
+};
 
 @Injectable()
 export class AgendaHandler extends BaseHandler {
@@ -29,6 +38,8 @@ export class AgendaHandler extends BaseHandler {
     private readonly getWorkEvidenceByArtistIdUseCase: GetWorkEvidenceByArtistIdUseCase,
     private readonly requestService: RequestService,
     private readonly jwtService: JwtService,
+    private readonly rsvpUseCase: RsvpUseCase,
+    private readonly clsService: ClsService<InkerClsStore>,
   ) {
     super(jwtService);
   }
@@ -81,6 +92,16 @@ export class AgendaHandler extends BaseHandler {
       page,
       limit,
       this.requestService.userTypeId,
+    );
+  }
+
+  handleRsvp(agendaId: number, eventId: number, willAttend: boolean): any {
+    // it's suposed to just the customer is able to RSVP
+    return this.rsvpUseCase.execute(
+      this.clsService.get('jwt.userTypeId'),
+      agendaId,
+      eventId,
+      willAttend,
     );
   }
 }
