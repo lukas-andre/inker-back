@@ -3,7 +3,7 @@
 {{> head}}
 <body>
     <!-- Header Part -->
-    {{> header message="¡Asistencia confirmada para tu cita!"}}
+    {{> header message="Cancelación de asistencia para tu cita"}}
 
     <!-- Main Content -->
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff;">
@@ -16,10 +16,10 @@
                             Hola {{artistName}},
                             </h2>
                             <h3 style="color: #292929; font-size: 18px; text-align: center; margin-top: 0; margin-bottom: 20px;">
-                            ¡El cliente {{customerName}} ha confirmado su asistencia a la cita!
+                            El cliente {{customerName}} ha cancelado su asistencia a la cita.
                             </h3>
                             <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
-                                La cita está programada para el {{formatDateCustom eventDate}}.
+                                La cita estaba programada para el {{formatDateCustom eventDate}}.
                             </p>
                             <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
                                 Ubicación: {{eventLocation}} <br>
