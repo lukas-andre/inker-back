@@ -66,25 +66,31 @@ export type AgendaEventUpdatedType = z.infer<typeof AgendaEventUpdatedSchema>;
 
 const RsvpAcceptedSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.RSVP_ACCEPTED),
-  customerId: z.string(),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
   eventDate: z.date(),
-  hostName: z.string(),
+  eventLocation: z.string(),
+  googleMapsLink: z.string(),
 });
 export type RsvpAcceptedType = z.infer<typeof RsvpAcceptedSchema>;
 
 const RsvpDeclinedSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.RSVP_DECLINED),
-  customerId: z.string(),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
   eventDate: z.date(),
-  hostName: z.string(),
+  eventLocation: z.string(),
+  googleMapsLink: z.string(),
 });
 export type RsvpDeclinedType = z.infer<typeof RsvpDeclinedSchema>;
 
 const RsvpUnschedulableSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.RSVP_UNSCHEDULABLE),
-  customerId: z.string(),
+  customerName: z.string(),
+  artistName: z.string(),
   eventDate: z.date(),
-  hostName: z.string(),
 });
 export type RsvpUnschedulableType = z.infer<typeof RsvpUnschedulableSchema>;
 

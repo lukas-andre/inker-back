@@ -10,6 +10,7 @@ import { NotificationsModule } from '../../notifications/notifications.module';
 import { DeadLetterProcessor } from '../deadletter/deadletter.processor';
 import { queues } from '../queues';
 
+import { AgendaJobRegistry } from './application/agenda-jobs/agendaJob.registry';
 import { JobHandlerFactory } from './application/job.factory';
 import { NotificationProcessor } from './infrastructure/notification.processor';
 
@@ -31,7 +32,12 @@ import { NotificationProcessor } from './infrastructure/notification.processor';
     CustomerProviderModule,
     AgendaProviderModule,
   ],
-  providers: [NotificationProcessor, JobHandlerFactory, DeadLetterProcessor],
+  providers: [
+    NotificationProcessor,
+    JobHandlerFactory,
+    AgendaJobRegistry,
+    DeadLetterProcessor,
+  ],
   exports: [BullModule],
 })
 export class NotificationQueueModule {}

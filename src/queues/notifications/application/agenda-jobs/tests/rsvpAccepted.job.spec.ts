@@ -10,11 +10,11 @@ import { SendGridClient } from '../../../../../notifications/clients/sendGrid.cl
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { TemplateService } from '../../../../../notifications/services/email/templates/template.service';
 import { JobHandlerFactory } from '../../job.factory';
-import { AgendaEventCanceledJob } from '../agendaEventCanceled.job';
 import { AgendaJobRegistry } from '../agendaJob.registry';
+import { RsvpAcceptedJob } from '../rsvpAccepted.job';
 
-describe('AgendaEventCanceledJob', () => {
-  let job: AgendaEventCanceledJob;
+describe('RsvpAcceptedJob', () => {
+  let job: RsvpAcceptedJob;
   let emailService: EmailNotificationService;
   let mockAgendaEventProvider,
     mockArtistProvider,
@@ -28,15 +28,17 @@ describe('AgendaEventCanceledJob', () => {
       findById: jest.fn().mockResolvedValue({
         start: new Date(),
         title: 'Concert',
-        cancelationReason: 'Rain',
       }),
     };
     mockArtistProvider = {
-      findById: jest.fn().mockResolvedValue({ username: 'John Doe' }),
+      findById: jest.fn().mockResolvedValue({
+        username: 'John Doe',
+        contact: { email: 'lucas.henrydz@gmail.com' },
+      }),
     };
     mockCustomerProvider = {
       findById: jest.fn().mockResolvedValue({
-        contactEmail: 'lucas.henrydz@gmail.com',
+        contactEmail: 'customer@example.com',
         firstName: 'Jane',
       }),
     };
@@ -56,7 +58,7 @@ describe('AgendaEventCanceledJob', () => {
         }),
       ],
       providers: [
-        AgendaEventCanceledJob,
+        RsvpAcceptedJob,
         { provide: AgendaEventProvider, useValue: mockAgendaEventProvider },
         { provide: ArtistProvider, useValue: mockArtistProvider },
         { provide: CustomerProvider, useValue: mockCustomerProvider },
@@ -77,12 +79,12 @@ describe('AgendaEventCanceledJob', () => {
     await templateService.onModuleInit();
   });
 
-  it('should send an email with the correct data when an event is canceled', async () => {
+  it('should send an email with the correct data when an RSVP is accepted', async () => {
     const sendEmailSpy = jest.spyOn(emailService, 'sendEmail');
 
     const jobMetadata = { artistId: 1, customerId: 1, eventId: 1 };
     const job = jobHandlerFactory.create({
-      jobId: 'EVENT_CANCELED',
+      jobId: 'RSVP_ACCEPTED',
       metadata: jobMetadata,
       notificationTypeId: 'EMAIL',
     });
@@ -104,8 +106,7 @@ describe('AgendaEventCanceledJob', () => {
         'https://www.google.com/maps/@?api=1&map_action=map&center=34.05%2C-118.25',
       eventDate: expect.any(Date),
       eventName: 'Concert',
-      cancelationReason: 'Rain',
-      mailId: 'EVENT_CANCELED',
+      mailId: 'RSVP_ACCEPTED',
     });
   });
 });
