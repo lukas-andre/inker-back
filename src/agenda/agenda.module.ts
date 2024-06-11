@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
 import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
+import { LocationProviderModule } from '../locations/infrastructure/database/locationProvider.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
 import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
 import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
@@ -12,9 +13,10 @@ import { AgendaHandler } from './infrastructure/agenda.handler';
 import { AgendaProviderModule } from './infrastructure/providers/agendaProvider.module';
 import { AddEventUseCase } from './usecases/addEvent.usecase';
 import { CancelEventUseCase } from './usecases/cancelEvent.usecase';
-import { FindEventByAgendaIdAndEventIdUseCase } from './usecases/findEventByAgendaIdAndEventId.usecase';
+import { FindEventFromArtistByEventIdUseCase } from './usecases/findEventFromArtistByEventId.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from './usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from './usecases/listEventByViewType.usecase';
+import { ListEventFromArtistAgenda } from './usecases/listEventFromArtistAgenda.usecase';
 import { MarkEventAsDoneUseCase } from './usecases/markEventAsDone.usecase';
 import { RsvpUseCase } from './usecases/rsvp.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
@@ -28,6 +30,7 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     ReviewProviderModule,
     MultimediasModule,
     NotificationQueueModule,
+    LocationProviderModule,
   ],
   providers: [
     AgendaHandler,
@@ -35,9 +38,10 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     UpdateEventUseCase,
     CancelEventUseCase,
     ListEventByViewTypeUseCase,
-    FindEventByAgendaIdAndEventIdUseCase,
+    FindEventFromArtistByEventIdUseCase,
     MarkEventAsDoneUseCase,
     GetWorkEvidenceByArtistIdUseCase,
+    ListEventFromArtistAgenda,
     RsvpUseCase,
   ],
   controllers: [AgendaController],

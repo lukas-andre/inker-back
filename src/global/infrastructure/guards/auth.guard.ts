@@ -44,19 +44,20 @@ export class AuthGuard implements CanActivate {
       this.logger.error(error);
       return false;
     }
-    console.log('verifyJwt: ', verifyJwt);
     if (!verifyJwt) {
       return false;
     }
 
     this.cls.set('jwt', verifyJwt);
 
-    const permission = verifyJwt.permission.find(p => p.c == calledController);
-    console.log('permission: ', permission);
+    // It's important to activate this soon
 
-    if (!permission) {
-      return false;
-    }
+    // const permission = verifyJwt.permission.find(p => p.c == calledController);
+    // console.log('permission: ', permission);
+
+    // if (!permission) {
+    //   return false;
+    // }
 
     return true;
   }

@@ -309,4 +309,22 @@ export class AgendaEventProvider extends BaseComponent {
       .orderBy('recorded_at', 'DESC')
       .getOne();
   }
+
+  async findByArtistId(agendaId: number): Promise<AgendaEvent[]> {
+    return this.agendaEventRepository
+      .createQueryBuilder('agenda_event')
+      .where('agenda_id = :agendaId', { agendaId })
+      .getMany();
+  }
+
+  async findEventByAgendaIdAndEventId(
+    agendaId: number,
+    eventId: number,
+  ): Promise<AgendaEvent> {
+    return this.agendaEventRepository
+      .createQueryBuilder('agenda_event')
+      .where('agenda_id = :agendaId', { agendaId })
+      .andWhere('id = :eventId', { eventId })
+      .getOne();
+  }
 }

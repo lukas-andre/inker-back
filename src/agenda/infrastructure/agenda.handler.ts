@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClsService } from 'nestjs-cls';
 
@@ -6,11 +6,13 @@ import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { InkerClsStore } from '../../global/infrastructure/guards/auth.guard';
 import { RequestService } from '../../global/infrastructure/services/request.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
+import { UserType } from '../../users/domain/enums/userType.enum';
 import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
-import { FindEventByAgendaIdAndEventIdUseCase } from '../usecases/findEventByAgendaIdAndEventId.usecase';
+import { FindEventFromArtistByEventIdUseCase } from '../usecases/findEventFromArtistByEventId.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
+import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda.usecase';
 import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
 import { RsvpUseCase } from '../usecases/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
@@ -33,9 +35,10 @@ export class AgendaHandler extends BaseHandler {
     private readonly updateEventUseCase: UpdateEventUseCase,
     private readonly cancelEventUseCase: CancelEventUseCase,
     private readonly listEventByViewTypeUseCase: ListEventByViewTypeUseCase,
-    private readonly findEventByAgendaIdAndEventIdUseCase: FindEventByAgendaIdAndEventIdUseCase,
+    private readonly findEventByAgendaIdAndEventIdUseCase: FindEventFromArtistByEventIdUseCase,
     private readonly markEventAsDoneUseCase: MarkEventAsDoneUseCase,
     private readonly getWorkEvidenceByArtistIdUseCase: GetWorkEvidenceByArtistIdUseCase,
+    private readonly listEventFromArtistAgenda: ListEventFromArtistAgenda,
     private readonly requestService: RequestService,
     private readonly jwtService: JwtService,
     private readonly rsvpUseCase: RsvpUseCase,
@@ -63,11 +66,28 @@ export class AgendaHandler extends BaseHandler {
     return this.listEventByViewTypeUseCase.execute(agendaId, query);
   }
 
-  async handleGetEventByEventId(
-    agendaId: number,
-    eventId: number,
-  ): Promise<any> {
-    return this.findEventByAgendaIdAndEventIdUseCase.execute(agendaId, eventId);
+  async handleListEventFromArtistAgenda(): Promise<any> {
+    const jwt = this.clsService.get('jwt');
+    if (jwt.userType !== UserType.ARTIST) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+
+    return this.listEventFromArtistAgenda.execute(jwt.userTypeId);
+  }
+
+  async handleGetEventByEventId(eventId: number): Promise<any> {
+    const jwt = this.clsService.get('jwt');
+    if (jwt.userType !== UserType.ARTIST) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+    return this.findEventByAgendaIdAndEventIdUseCase.execute(
+      jwt.userTypeId,
+      eventId,
+    );
   }
 
   async handleMarkEventAsDone(

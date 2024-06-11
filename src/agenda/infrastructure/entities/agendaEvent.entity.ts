@@ -18,6 +18,7 @@ import { AgendaInvitation } from './agendaInvitation.entity';
 
 @Entity()
 @Index(['start', 'end'])
+@Index('idx_agenda_id', ['agenda'])
 export class AgendaEvent extends BaseEntity {
   @ManyToOne(() => Agenda, agenda => agenda.agendaEvent)
   @JoinColumn({ name: 'agenda_id' })
