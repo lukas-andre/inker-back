@@ -13,11 +13,13 @@ import {
   Put,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiHeader,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -30,6 +32,7 @@ import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
 
 import { ArtistIdPipe } from '../../artists/infrastructure/pipes/artistId.pipe';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
+import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import {
@@ -52,6 +55,7 @@ import { AgendaIdPipe } from './pipes/agendaId.pipe';
 
 @ApiTags('agenda')
 @Controller('agenda')
+@UseGuards(AuthGuard)
 export class AgendaController {
   private readonly serviceName = AgendaController.name;
   private readonly logger = new Logger(this.serviceName);
@@ -110,18 +114,32 @@ export class AgendaController {
     );
   }
 
+  @ApiOperation({
+    summary: 'get all events from artist agenda',
+  })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Event list successful.', type: undefined })
+  @ApiConflictResponse({ description: 'Trouble listing events.' })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token',
+    required: true,
+  })
+  @Get()
+  async listEventFromArtistAgenda(): Promise<any> {
+    return this.agendaHandler.handleListEventFromArtistAgenda();
+  }
+
   @ApiOperation({ summary: 'Get events by id' })
   @HttpCode(200)
   @ApiOkResponse({ description: 'Get Event successful.', type: undefined })
   @ApiConflictResponse({ description: 'Trouble finding event.' })
-  @ApiParam({ name: 'agendaId', required: true, type: Number })
   @ApiParam({ name: 'eventId', required: true, type: Number })
-  @Get(':agendaId/event/:eventId')
+  @Get('/event/:eventId')
   async getEventByEventId(
-    @Param('agendaId', ParseIntPipe) agendaId: number,
     @Param('eventId', ParseIntPipe) eventId: number,
   ): Promise<any> {
-    return this.agendaHandler.handleGetEventByEventId(agendaId, eventId);
+    return this.agendaHandler.handleGetEventByEventId(eventId);
   }
 
   // TODO: VALIDATE IF THE ARTIST IS THE OWNER OF THE AGENDA, DO THIS WITH A GUARD OR VALIDATE THE TOKEN
