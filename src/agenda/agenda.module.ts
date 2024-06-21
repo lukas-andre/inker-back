@@ -8,16 +8,19 @@ import { NotificationQueueModule } from '../queues/notifications/notification.qu
 import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
 import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
 
+import { QuotationStateMachine } from './domain/quotation.statemachine';
 import { AgendaController } from './infrastructure/agenda.controller';
 import { AgendaHandler } from './infrastructure/agenda.handler';
 import { AgendaProviderModule } from './infrastructure/providers/agendaProvider.module';
 import { AddEventUseCase } from './usecases/addEvent.usecase';
 import { CancelEventUseCase } from './usecases/cancelEvent.usecase';
+import { CreateQuotationUseCase } from './usecases/createQuotation.usecase';
 import { FindEventFromArtistByEventIdUseCase } from './usecases/findEventFromArtistByEventId.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from './usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from './usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from './usecases/listEventFromArtistAgenda.usecase';
 import { MarkEventAsDoneUseCase } from './usecases/markEventAsDone.usecase';
+import { ReplyQuotationUseCase } from './usecases/replyQuotation.usecase';
 import { RsvpUseCase } from './usecases/rsvp.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 
@@ -33,6 +36,7 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     LocationProviderModule,
   ],
   providers: [
+    QuotationStateMachine,
     AgendaHandler,
     AddEventUseCase,
     UpdateEventUseCase,
@@ -43,6 +47,8 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     GetWorkEvidenceByArtistIdUseCase,
     ListEventFromArtistAgenda,
     RsvpUseCase,
+    CreateQuotationUseCase,
+    ReplyQuotationUseCase,
   ],
   controllers: [AgendaController],
 })
