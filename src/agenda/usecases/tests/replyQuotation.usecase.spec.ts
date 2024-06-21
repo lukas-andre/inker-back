@@ -6,28 +6,32 @@ import { Queue } from 'bull';
 import { QueryRunner, Repository } from 'typeorm';
 
 import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
-import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
-import { S3Client } from '../../../global/infrastructure/clients/s3.client';
+import {
+  DomainBadRule,
+  DomainNotFound,
+} from '../../../global/domain/exceptions/domain.exception';
+import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { MultimediasService } from '../../../multimedias/services/multimedias.service';
 import { queues } from '../../../queues/queues';
+import { QuotationStateMachine } from '../../domain/quotation.statemachine';
+import { ReplyQuotationReqDto } from '../../infrastructure/dtos/replyQuotationReq.dto';
 import {
   Quotation,
   QuotationStatus,
 } from '../../infrastructure/entities/quotation.entity';
 import { QuotationHistory } from '../../infrastructure/entities/quotationHistory.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
-import { CreateQuotationUseCase } from '../createQuotation.usecase';
+import { ReplyQuotationUseCase } from '../replyQuotation.usecase';
 
-describe('CreateQuotationUseCase', () => {
-  let createQuotationUseCase: CreateQuotationUseCase;
+describe('ReplyQuotationUseCase', () => {
+  let replyQuotationUseCase: ReplyQuotationUseCase;
   let notificationQueue: DeepMocked<Queue>;
   let quotationProvider: QuotationProvider;
   let moduleFixture: TestingModule;
   let artistProvider: ArtistProvider;
-  let customerProvider: CustomerProvider;
-  let multimediasService: MultimediasService;
+  let quotationStateMachine: QuotationStateMachine;
+  let multimediaService: MultimediasService;
 
   beforeAll(async () => {
     moduleFixture = await Test.createTestingModule({
@@ -51,22 +55,19 @@ describe('CreateQuotationUseCase', () => {
         ),
       ],
       providers: [
-        CreateQuotationUseCase,
+        ReplyQuotationUseCase,
+        QuotationProvider,
         {
           provide: ArtistProvider,
           useValue: createMock<ArtistProvider>(),
         },
         {
-          provide: CustomerProvider,
-          useValue: createMock<CustomerProvider>(),
+          provide: QuotationStateMachine,
+          useValue: createMock<QuotationStateMachine>(),
         },
         {
           provide: MultimediasService,
           useValue: createMock<MultimediasService>(),
-        },
-        {
-          provide: S3Client,
-          useValue: createMock<S3Client>(),
         },
         {
           provide: getRepositoryToken(Quotation),
@@ -76,20 +77,21 @@ describe('CreateQuotationUseCase', () => {
           provide: getQueueToken(queues.notification.name),
           useValue: createMock<Queue>(),
         },
-        QuotationProvider,
       ],
     }).compile();
 
-    createQuotationUseCase = moduleFixture.get<CreateQuotationUseCase>(
-      CreateQuotationUseCase,
+    replyQuotationUseCase = moduleFixture.get<ReplyQuotationUseCase>(
+      ReplyQuotationUseCase,
     );
     notificationQueue = moduleFixture.get(
       getQueueToken(queues.notification.name),
     );
     quotationProvider = moduleFixture.get<QuotationProvider>(QuotationProvider);
     artistProvider = moduleFixture.get<ArtistProvider>(ArtistProvider);
-    customerProvider = moduleFixture.get<CustomerProvider>(CustomerProvider);
-    multimediasService =
+    quotationStateMachine = moduleFixture.get<QuotationStateMachine>(
+      QuotationStateMachine,
+    );
+    multimediaService =
       moduleFixture.get<MultimediasService>(MultimediasService);
   });
 
@@ -103,13 +105,12 @@ describe('CreateQuotationUseCase', () => {
   });
 
   it('should be defined', () => {
-    expect(createQuotationUseCase).toBeDefined();
+    expect(replyQuotationUseCase).toBeDefined();
   });
 
-  it('should create a quotation and add a job to the notification queue', async () => {
+  it('should reply to a quotation and add a job to the notification queue', async () => {
     jest.spyOn(artistProvider, 'exists').mockResolvedValue(true);
-    jest.spyOn(customerProvider, 'exists').mockResolvedValue(true);
-    jest.spyOn(multimediasService, 'uploadReferenceImages').mockResolvedValue({
+    jest.spyOn(multimediaService, 'uploadProposedImages').mockResolvedValue({
       count: 1,
       metadata: [
         {
@@ -124,14 +125,15 @@ describe('CreateQuotationUseCase', () => {
       ],
     });
 
-    const createQuotationDto = {
-      customerId: 1,
+    const replyQuotationDto: ReplyQuotationReqDto = {
       artistId: 1,
-      description: 'Tattoo design',
-      title: 'Tattoo title',
+      quotationId: 1,
+      estimatedCost: 200,
+      appointmentDate: new Date(),
+      appointmentDuration: 1,
     };
 
-    const referenceImages = [
+    const proposedImages: FileInterface[] = [
       {
         fieldname: 'files[]',
         originalname: 'image1.png',
@@ -142,49 +144,51 @@ describe('CreateQuotationUseCase', () => {
       },
     ];
 
-    const result = await createQuotationUseCase.execute(
-      createQuotationDto,
-      referenceImages,
+    await quotationProvider.repo.query(
+      'INSERT INTO quotation (id, customer_id, artist_id, description, status, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, NOW(), NOW())',
+      [1, 1, 1, 'descriptionTest', 'pending'],
+    );
+
+    const result = await replyQuotationUseCase.execute(
+      replyQuotationDto,
+      proposedImages,
     );
 
     expect(result).toEqual({
-      message: 'Quotation created successfully',
-      created: true,
+      message: 'Quotation replied successfully',
+      updated: true,
     });
 
-    const quotation = await quotationProvider.findOne({
-      where: {
-        customerId: createQuotationDto.customerId,
-        artistId: createQuotationDto.artistId,
-      },
+    const quotation = await quotationProvider.repo.findOne({
+      relations: ['history'],
+      where: { id: replyQuotationDto.quotationId },
     });
+
+    const { history } = quotation;
 
     expect(quotation).toBeDefined();
-    expect(quotation.status).toBe('pending' as QuotationStatus);
-    expect(quotation.description).toBe(createQuotationDto.description);
-    expect(quotation.referenceImages).toEqual({
-      count: 1,
-      metadata: [
-        {
-          encoding: '7bit',
-          fieldname: 'files[]',
-          originalname: 'image1.png',
-          position: 0,
-          size: 441730,
-          type: 'image/png',
-          url: 'http://example.com/image1.png',
-        },
-      ],
-    });
+    expect(quotation.status).toBe('quoted' as QuotationStatus);
+    expect(quotation.estimatedCost).toBe(replyQuotationDto.estimatedCost);
+    expect(quotation.appointmentDate).toEqual(
+      replyQuotationDto.appointmentDate,
+    );
+    expect(quotation.appointmentDuration).toBe(
+      replyQuotationDto.appointmentDuration,
+    );
+
+    expect(history).toHaveLength(1);
+    expect(history[0].status).toBe('pending' as QuotationStatus);
+    expect(history[0].changedBy).toBe(1);
+    expect(history[0].changedByUserType).toBe('customer');
 
     const add = jest.spyOn(notificationQueue, 'add');
     expect(add).toHaveBeenCalled();
     expect(add).toHaveBeenCalledWith({
-      jobId: 'QUOTATION_CREATED',
+      jobId: 'QUOTATION_REPLIED',
       metadata: {
         quotationId: quotation.id,
-        artistId: createQuotationDto.artistId,
-        customerId: createQuotationDto.customerId,
+        artistId: replyQuotationDto.artistId,
+        estimatedCost: replyQuotationDto.estimatedCost,
       },
       notificationTypeId: 'EMAIL',
     });
@@ -193,35 +197,37 @@ describe('CreateQuotationUseCase', () => {
   it('should throw DomainNotFound if artist does not exist', async () => {
     jest.spyOn(artistProvider, 'exists').mockResolvedValue(false);
 
-    const createQuotationDto = {
-      customerId: 1,
+    const replyQuotationDto: ReplyQuotationReqDto = {
       artistId: 999,
-      description: 'Tattoo design',
-      title: 'Tattoo title',
+      quotationId: 1,
+      estimatedCost: 200,
+      appointmentDate: new Date(),
+      appointmentDuration: 1,
     };
 
-    const referenceImages = [];
+    const proposedImages: FileInterface[] = [];
 
     await expect(
-      createQuotationUseCase.execute(createQuotationDto, referenceImages),
+      replyQuotationUseCase.execute(replyQuotationDto, proposedImages),
     ).rejects.toThrow(DomainNotFound);
   });
 
-  it('should throw DomainNotFound if customer does not exist', async () => {
+  it('should throw DomainNotFound if quotation does not exist', async () => {
     jest.spyOn(artistProvider, 'exists').mockResolvedValue(true);
-    jest.spyOn(customerProvider, 'exists').mockResolvedValue(false);
+    jest.spyOn(quotationProvider, 'findById').mockResolvedValue(null);
 
-    const createQuotationDto = {
-      customerId: 999,
+    const replyQuotationDto: ReplyQuotationReqDto = {
       artistId: 1,
-      description: 'Tattoo design',
-      title: 'Tattoo title',
+      quotationId: 999,
+      estimatedCost: 200,
+      appointmentDate: new Date(),
+      appointmentDuration: 1,
     };
 
-    const referenceImages = [];
+    const proposedImages: FileInterface[] = [];
 
     await expect(
-      createQuotationUseCase.execute(createQuotationDto, referenceImages),
+      replyQuotationUseCase.execute(replyQuotationDto, proposedImages),
     ).rejects.toThrow(DomainNotFound);
   });
 });

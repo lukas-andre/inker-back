@@ -7,10 +7,15 @@ import { QuotationHistory } from './quotationHistory.entity';
 
 export type QuotationStatus =
   | 'pending'
+  | 'quoted'
   | 'accepted'
   | 'rejected'
   | 'appealed'
   | 'canceled';
+
+export type AppealedReason = 'dateChange';
+
+export type CancelReason = 'customer' | 'artist';
 
 @Entity()
 export class Quotation extends BaseEntity {
@@ -28,9 +33,19 @@ export class Quotation extends BaseEntity {
   @Column({ name: 'reference_images', type: 'jsonb', nullable: true })
   referenceImages?: MultimediasMetadataInterface;
 
+  @Column({ name: 'proposed_designs', type: 'jsonb', nullable: true })
+  proposedDesigns?: MultimediasMetadataInterface;
+
   @Column({
     name: 'status',
-    enum: ['pending', 'accepted', 'rejected', 'appealed', 'canceled'],
+    enum: [
+      'pending',
+      'accepted',
+      'rejected',
+      'appealed',
+      'canceled',
+      'quotaed',
+    ],
     enumName: 'quotation_status',
   })
   status: QuotationStatus;
@@ -56,7 +71,7 @@ export class Quotation extends BaseEntity {
     enum: ['dateChange'],
     enumName: 'quotation_appealed_reason',
   })
-  appealedReason?: 'dateChange';
+  appealedReason?: AppealedReason;
 
   @Column({ name: 'appealed_date', nullable: true })
   appealedDate?: Date;

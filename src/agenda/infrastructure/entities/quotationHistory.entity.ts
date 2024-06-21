@@ -4,6 +4,8 @@ import { BaseEntity } from '../../../global/infrastructure/entities/base.entity'
 
 import { Quotation } from './quotation.entity';
 
+export type QuotationRole = 'customer' | 'artist';
+
 @Entity()
 export class QuotationHistory extends BaseEntity {
   @ManyToOne(() => Quotation, event => event.history)
@@ -20,5 +22,5 @@ export class QuotationHistory extends BaseEntity {
   changedBy: number;
 
   @Column({ name: 'changed_by_user_type' })
-  changedByUserType: 'customer' | 'artist';
+  changedByUserType: QuotationRole;
 }

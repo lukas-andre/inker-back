@@ -53,6 +53,7 @@ import { AddEventReqDto } from './dtos/addEventReq.dto';
 import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
+import { ReplyQuotationReqDto } from './dtos/replyQuotationReq.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 import { AgendaEventIdPipe } from './pipes/agendaEventId.pipe';
 import { AgendaIdPipe } from './pipes/agendaId.pipe';
@@ -188,6 +189,26 @@ export class AgendaController {
     );
   }
 
+  @ApiOperation({ summary: 'Reply to quotation' })
+  @HttpCode(200)
+  @ApiCreatedResponse({
+    description: 'Quotation replied successfully.',
+    type: DefaultResponseDto,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Reply Quotation',
+    type: ReplyQuotationReqDto,
+  })
+  @Put('reply')
+  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
+  async replyQuotation(
+    @UploadedFiles() proposedImages: FileInterface[],
+    @Body() dto: ReplyQuotationReqDto,
+  ): Promise<any> {
+    return this.agendaHandler.replyQuotation(dto, proposedImages);
+  }
+
   @ApiOperation({ summary: 'Create quotation' })
   @HttpCode(201)
   @ApiCreatedResponse({
@@ -205,8 +226,9 @@ export class AgendaController {
     @UploadedFiles() referenceImages: FileInterface[],
     @Body() dto: CreateQuotationReqDto,
   ): Promise<any> {
-    return this.agendaHandler.createQuotation(referenceImages, dto);
+    return this.agendaHandler.createQuotation(dto, referenceImages);
   }
+
   @ApiOperation({ summary: 'Get work evidence by artistId' })
   @ApiOkResponse({
     description: 'Work evidence list successful.',

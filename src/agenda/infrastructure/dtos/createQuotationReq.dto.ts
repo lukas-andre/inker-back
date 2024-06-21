@@ -35,7 +35,7 @@ export class CreateQuotationReqDto {
     type: 'string',
     format: 'binary',
     isArray: true,
-    description: 'Work evidence files',
+    description: 'proposed design',
     required: false,
   })
   @IsOptional()
