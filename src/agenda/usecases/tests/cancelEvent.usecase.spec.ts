@@ -7,6 +7,7 @@ import {
   DomainInternalServerError,
   DomainNotFound,
 } from '../../../global/domain/exceptions/domain.exception';
+import { S3Client } from '../../../global/infrastructure/clients/s3.client';
 import { AgendaEventCanceledJobType } from '../../../queues/notifications/domain/schemas/agenda';
 import { queues } from '../../../queues/queues';
 import { Agenda } from '../../infrastructure/entities/agenda.entity';
@@ -32,6 +33,10 @@ describe('CancelEventUseCase', () => {
         {
           provide: AgendaEventProvider,
           useValue: createMock<AgendaEventProvider>(),
+        },
+        {
+          provide: S3Client,
+          useValue: createMock<S3Client>(),
         },
         {
           provide: getQueueToken(queues.notification.name),

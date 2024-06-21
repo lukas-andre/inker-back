@@ -20,3 +20,41 @@ Authorization: Bearer {{token}}
 ### 
 GET {{$dotenv APP_URL}}/agenda/event/8 HTTP/1.1
 Authorization: Bearer {{token}}
+
+### Search Customer by full text search
+GET {{$dotenv APP_URL}}/customers/search?term=luc HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Crear Cotización
+POST {{$dotenv APP_URL}}/agenda/quotation?agendaId=1&eventId=2 HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="title"
+
+Please make me a tattoo
+--boundary
+Content-Disposition: form-data; name="description"
+
+I want a tatto bla bla bla bla ba
+--boundary
+Content-Disposition: form-data; name="customerId"
+
+1
+--boundary
+Content-Disposition: form-data; name="artistId"
+
+1
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="rocket1.png"
+Content-Type: image/png
+
+< /Users/noname/Downloads/rocket1.png
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="rocket2.png"
+Content-Type: image/png
+
+< /Users/noname/Downloads/rocket2.png
+--boundary--

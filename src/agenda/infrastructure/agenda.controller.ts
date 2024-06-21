@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
+  ApiCreatedResponse,
   ApiHeader,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
@@ -47,6 +50,7 @@ import {
 
 import { AgendaHandler } from './agenda.handler';
 import { AddEventReqDto } from './dtos/addEventReq.dto';
+import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
@@ -184,6 +188,25 @@ export class AgendaController {
     );
   }
 
+  @ApiOperation({ summary: 'Create quotation' })
+  @HttpCode(201)
+  @ApiCreatedResponse({
+    description: 'Quotation created successfully.',
+    type: DefaultResponseDto,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Create Quotation',
+    type: CreateQuotationReqDto,
+  })
+  @Post('quotation')
+  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
+  async createQuotation(
+    @UploadedFiles() referenceImages: FileInterface[],
+    @Body() dto: CreateQuotationReqDto,
+  ): Promise<any> {
+    return this.agendaHandler.createQuotation(referenceImages, dto);
+  }
   @ApiOperation({ summary: 'Get work evidence by artistId' })
   @ApiOkResponse({
     description: 'Work evidence list successful.',

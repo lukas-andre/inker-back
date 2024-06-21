@@ -1,0 +1,21 @@
+@startuml User-Tattoo Appointment Flow
+title User-Tattoo Appointment Flow
+start
+:User sends details with images;
+:Details received by Artist;
+:Artist creates a quotation with amount and date;
+repeat
+    if (User accepts the quotation?) then (yes)
+        :Quotation accepted;
+        stop
+    else (no)
+        if (User rejects the quotation?) then (yes)
+            :Quotation rejected;
+            stop
+        else (appeals)
+            :User requests a change of time;
+            :Artist provides new time;
+        endif
+    endif
+repeat while (User requests a change of time)
+@enduml

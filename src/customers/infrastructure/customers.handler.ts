@@ -4,6 +4,7 @@ import { FindOneOptions } from 'typeorm';
 
 import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { CRCustomerUseCase } from '../usecases/CRCustomer.usecase';
+import { FullTextSearchCustomerUseCase } from '../usecases/fullTextSearchCustomer.usecase';
 
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
 import { Customer } from './entities/customer.entity';
@@ -12,6 +13,7 @@ import { Customer } from './entities/customer.entity';
 export class CustomerHandler extends BaseHandler {
   constructor(
     private readonly cRCustomerUseCase: CRCustomerUseCase,
+    private readonly fullTextSearchCustomerUseCase: FullTextSearchCustomerUseCase,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);
@@ -31,5 +33,9 @@ export class CustomerHandler extends BaseHandler {
 
   async handleFindById(id: number): Promise<Customer> {
     return this.cRCustomerUseCase.findById(id);
+  }
+
+  async handleSearchByTerm(term: string): Promise<Customer[]> {
+    return this.fullTextSearchCustomerUseCase.execute(term);
   }
 }
