@@ -123,6 +123,7 @@ export class CreateQuotationUseCase
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      this.logger.error(error);
       throw new DomainBadRule('Error during transaction');
     } finally {
       await queryRunner.release();

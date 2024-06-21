@@ -10,6 +10,17 @@ Content-Type: application/json
   "loginType": "EMAIL"
 }
 
+### Customer Login
+# @name login
+POST {{$dotenv APP_URL}}/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "identifier": "paula@gmail.com",
+  "password": "admin1",
+  "loginType": "EMAIL"
+}
+
 ### Token
 @token = {{login.response.body.accessToken}}
 
@@ -27,7 +38,7 @@ Authorization: Bearer {{token}}
 
 
 ### Crear Cotización
-POST {{$dotenv APP_URL}}/agenda/quotation?agendaId=1&eventId=2 HTTP/1.1
+POST {{$dotenv APP_URL}}/agenda/quotation HTTP/1.1
 Authorization: Bearer {{token}}
 Content-Type: multipart/form-data; boundary=boundary
 
