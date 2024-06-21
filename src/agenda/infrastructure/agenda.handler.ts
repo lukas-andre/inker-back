@@ -18,6 +18,7 @@ import { RsvpUseCase } from '../usecases/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
 import { AddEventReqDto } from './dtos/addEventReq.dto';
+import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
@@ -123,5 +124,16 @@ export class AgendaHandler extends BaseHandler {
       eventId,
       willAttend,
     );
+  }
+
+  createQuotation(
+    referenceImages: FileInterface[],
+    dto: CreateQuotationReqDto,
+  ): any {
+    if (this.clsService.get('jwt.userType') !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
   }
 }

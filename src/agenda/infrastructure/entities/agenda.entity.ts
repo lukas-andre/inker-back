@@ -1,14 +1,11 @@
-import { A } from 'ts-toolbelt';
 import { Column, DeleteDateColumn, Entity, Index, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
 import { AgendaEvent } from './agendaEvent.entity';
-import { AgendaEventHistory } from './agendaEventHistory.entity';
 
 @Entity()
 export class Agenda extends BaseEntity {
-  @Index()
   @Column({ name: 'user_id' })
   userId: number;
 

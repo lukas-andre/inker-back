@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const calledController = context.getClass().name;
     const calledAction = context.getHandler().name;
-    console.log('calledAction: ', calledAction);
+    console.log('calledAcion: ', calledAction);
     console.log('calledController: ', calledController);
 
     const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(request);

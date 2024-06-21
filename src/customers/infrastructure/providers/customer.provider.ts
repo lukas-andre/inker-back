@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
@@ -9,15 +9,18 @@ import {
 } from 'typeorm';
 
 import { BaseComponent } from '../../../global/domain/components/base.component';
+import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
   DBServiceCreateException,
   DbServiceBadRule,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
+import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { FollowTopic } from '../../domain/interfaces/customerFollows.interface';
 import { CreateCustomerParams } from '../../usecases/interfaces/createCustomer.params';
 import { Customer } from '../entities/customer.entity';
 
 @Injectable()
+@UseGuards(AuthGuard)
 export class CustomerProvider extends BaseComponent {
   constructor(
     @InjectRepository(Customer, 'customer-db')
@@ -86,5 +89,25 @@ export class CustomerProvider extends BaseComponent {
   }
   async delete(id: string): Promise<DeleteResult> {
     return this.customersRepository.delete(id);
+  }
+
+  async searchByTerm(term: string): Promise<Customer[]> {
+    return this.customersRepository
+      .createQueryBuilder('customer')
+      .where(
+        `customer.tsv @@ plainto_tsquery('english', :term) 
+              OR customer.tsv @@ plainto_tsquery('spanish', :term)`,
+        { term },
+      )
+      .getMany();
+  }
+
+  async exists(id: number): Promise<boolean | undefined> {
+    const [result]: ExistsQueryResult[] = await this.customersRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM customer c WHERE c.id = $1)`,
+      [id],
+    );
+
+    return result.exists;
   }
 }

@@ -1,0 +1,9 @@
+@startuml Quotation State Machine
+title Quotation State Machine
+[*] --> Pending : Request Details
+Pending --> Quoted : Artist Provides Quotation
+Quoted --> Accepted : User Accepts Quotation
+Quoted --> Rejected : User Rejects Quotation
+Quoted --> Appealed : User Requests Change of Time
+Appealed --> Quoted : Artist Provides New Time
+@enduml

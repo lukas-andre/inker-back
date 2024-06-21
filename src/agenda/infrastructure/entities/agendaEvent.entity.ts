@@ -62,4 +62,8 @@ export class AgendaEvent extends BaseEntity {
 
   @OneToMany(() => AgendaEventHistory, history => history.event)
   history: AgendaEventHistory[];
+
+  @Index()
+  @Column({ name: 'quotation_id', nullable: true })
+  quotationId: number;
 }
