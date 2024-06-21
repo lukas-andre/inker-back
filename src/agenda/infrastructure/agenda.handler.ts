@@ -9,11 +9,13 @@ import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
+import { CreateQuotationUseCase } from '../usecases/createQuotation.usecase';
 import { FindEventFromArtistByEventIdUseCase } from '../usecases/findEventFromArtistByEventId.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda.usecase';
 import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
+import { ReplyQuotationUseCase } from '../usecases/replyQuotation.usecase';
 import { RsvpUseCase } from '../usecases/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
@@ -21,6 +23,7 @@ import { AddEventReqDto } from './dtos/addEventReq.dto';
 import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
+import { ReplyQuotationReqDto } from './dtos/replyQuotationReq.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 
 type RSVPType = {
@@ -40,6 +43,8 @@ export class AgendaHandler extends BaseHandler {
     private readonly markEventAsDoneUseCase: MarkEventAsDoneUseCase,
     private readonly getWorkEvidenceByArtistIdUseCase: GetWorkEvidenceByArtistIdUseCase,
     private readonly listEventFromArtistAgenda: ListEventFromArtistAgenda,
+    private readonly createQuotationUseCase: CreateQuotationUseCase,
+    private readonly replyQuotationUseCase: ReplyQuotationUseCase,
     private readonly requestService: RequestService,
     private readonly jwtService: JwtService,
     private readonly rsvpUseCase: RsvpUseCase,
@@ -127,13 +132,28 @@ export class AgendaHandler extends BaseHandler {
   }
 
   createQuotation(
-    referenceImages: FileInterface[],
     dto: CreateQuotationReqDto,
+    referenceImages: FileInterface[],
   ): any {
     if (this.clsService.get('jwt.userType') !== UserType.CUSTOMER) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
     }
+
+    return this.createQuotationUseCase.execute(dto, referenceImages);
+  }
+
+  replyQuotation(
+    dto: ReplyQuotationReqDto,
+    proposedImages: FileInterface[],
+  ): any {
+    if (this.clsService.get('jwt.userType') !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+
+    return this.replyQuotationUseCase.execute(dto, proposedImages);
   }
 }
