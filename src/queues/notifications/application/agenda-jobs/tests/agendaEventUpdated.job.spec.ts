@@ -11,7 +11,7 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { TemplateService } from '../../../../../notifications/services/email/templates/template.service';
 import { JobHandlerFactory } from '../../job.factory';
 import { AgendaEventUpdatedJob } from '../agendaEventUpdated.job';
-import { AgendaJobRegistry } from '../agendaJob.registry';
+import { NotificationJobRegistry } from '../agendaJob.registry';
 
 describe('AgendaEventUpdatedJob', () => {
   let job: AgendaEventUpdatedJob;
@@ -67,7 +67,7 @@ describe('AgendaEventUpdatedJob', () => {
         TemplateService,
         SendGridClient,
         JobHandlerFactory,
-        AgendaJobRegistry,
+        NotificationJobRegistry,
         EmailNotificationService,
       ],
     }).compile();

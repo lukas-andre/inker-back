@@ -10,7 +10,7 @@ import { SendGridClient } from '../../../../../notifications/clients/sendGrid.cl
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { TemplateService } from '../../../../../notifications/services/email/templates/template.service';
 import { JobHandlerFactory } from '../../job.factory';
-import { AgendaJobRegistry } from '../agendaJob.registry';
+import { NotificationJobRegistry } from '../agendaJob.registry';
 import { RsvpDeclinedJob } from '../rsvpDeclined.job';
 
 describe('RsvpDeclinedJob', () => {
@@ -66,7 +66,7 @@ describe('RsvpDeclinedJob', () => {
         TemplateService,
         SendGridClient,
         JobHandlerFactory,
-        AgendaJobRegistry,
+        NotificationJobRegistry,
         EmailNotificationService,
       ],
     }).compile();

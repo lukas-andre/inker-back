@@ -5,8 +5,9 @@ import { ArtistProvider } from '../../../../artists/infrastructure/database/arti
 import { CustomerProvider } from '../../../../customers/infrastructure/providers/customer.provider';
 import { ArtistLocationProvider } from '../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../notifications/services/email/email.notification';
+import { JobTypeKey } from '../../domain/jobSchema.registry';
 
-import { AgendaEventJob } from './agendaEvent.job';
+import { NotificationJob } from './agendaEvent.job';
 import { AgendaEventCanceledJob } from './agendaEventCanceled.job';
 import { AgendaEventCreatedJob } from './agendaEventCreated.job';
 import { AgendaEventReminderJob } from './agendaEventReminder.job';
@@ -15,17 +16,17 @@ import { RsvpAcceptedJob } from './rsvpAccepted.job';
 import { RsvpDeclinedJob } from './rsvpDeclined.job';
 import { RsvpUnschedulableJob } from './rsvpUnschedulable.job';
 
-type AgendaJobConstructor = new (
+type NotificationJobConstructor = new (
   emailNotificationService: EmailNotificationService,
   agendaEventProvider: AgendaEventProvider,
   artistProvider: ArtistProvider,
   customerProvider: CustomerProvider,
   locationProvider: ArtistLocationProvider,
-) => AgendaEventJob;
+) => NotificationJob;
 
 @Injectable()
-export class AgendaJobRegistry {
-  private jobMap: Map<string, AgendaJobConstructor> = new Map();
+export class NotificationJobRegistry {
+  private jobMap: Map<JobTypeKey, NotificationJobConstructor> = new Map();
 
   constructor() {
     this.jobMap.set('EVENT_CREATED', AgendaEventCreatedJob);
@@ -37,7 +38,7 @@ export class AgendaJobRegistry {
     this.jobMap.set('RSVP_UNSCHEDULABLE', RsvpUnschedulableJob);
   }
 
-  getJobConstructor(jobId: string): AgendaJobConstructor | undefined {
+  getJobConstructor(jobId: JobTypeKey): NotificationJobConstructor | undefined {
     return this.jobMap.get(jobId);
   }
 }

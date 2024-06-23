@@ -6,9 +6,9 @@ import { EmailNotificationService } from '../../../../notifications/services/ema
 import { RsvpAcceptedType } from '../../../../notifications/services/email/schemas/email';
 import { RsvpAcceptedJobType } from '../../domain/schemas/agenda';
 
-import { AgendaEventJob, getGoogleMapsLink } from './agendaEvent.job';
+import { NotificationJob, getGoogleMapsLink } from './agendaEvent.job';
 
-export class RsvpAcceptedJob implements AgendaEventJob {
+export class RsvpAcceptedJob implements NotificationJob {
   constructor(
     private readonly emailNotificationService: EmailNotificationService,
     private readonly agendaEventProvider: AgendaEventProvider,

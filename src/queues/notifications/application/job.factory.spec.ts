@@ -1,6 +1,4 @@
-import { getQueueToken } from '@nestjs/bull';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Queue } from 'bull';
 
 import { AgendaEventProvider } from '../../../agenda/infrastructure/providers/agendaEvent.provider';
 import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
@@ -11,7 +9,7 @@ import { JobType } from '../domain/schemas/job';
 
 import { AgendaEventCanceledJob } from './agenda-jobs/agendaEventCanceled.job';
 import { AgendaEventCreatedJob } from './agenda-jobs/agendaEventCreated.job';
-import { AgendaJobRegistry } from './agenda-jobs/agendaJob.registry';
+import { NotificationJobRegistry } from './agenda-jobs/agendaJob.registry';
 import { JobHandlerFactory } from './job.factory';
 
 describe('JobHandlerFactory', () => {
@@ -21,7 +19,7 @@ describe('JobHandlerFactory', () => {
   let artistProvider: ArtistProvider;
   let customerProvider: CustomerProvider;
   let locationProvider: ArtistLocationProvider;
-  let jobRegistry: AgendaJobRegistry;
+  let jobRegistry: NotificationJobRegistry;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,7 +29,7 @@ describe('JobHandlerFactory', () => {
         ArtistProvider,
         CustomerProvider,
         ArtistLocationProvider,
-        AgendaJobRegistry,
+        NotificationJobRegistry,
         JobHandlerFactory,
       ],
     })
@@ -57,7 +55,7 @@ describe('JobHandlerFactory', () => {
     locationProvider = module.get<ArtistLocationProvider>(
       ArtistLocationProvider,
     );
-    jobRegistry = module.get<AgendaJobRegistry>(AgendaJobRegistry);
+    jobRegistry = module.get<NotificationJobRegistry>(NotificationJobRegistry);
   });
 
   it('should create an AgendaEventCreatedJob instance', () => {
