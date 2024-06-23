@@ -6,7 +6,7 @@ import { ZodError } from 'zod';
 
 import { sendGridConfig } from '../../../config/sendgrid.config';
 import { queues } from '../../queues';
-import { AgendaEventJob } from '../application/agenda-jobs/agendaEvent.job';
+import { NotificationJob } from '../application/agenda-jobs/agendaEvent.job';
 import { JobHandlerFactory } from '../application/job.factory';
 import { AgendaEventcreatedJobType } from '../domain/schemas/agenda';
 
@@ -26,12 +26,12 @@ const mockJob: Partial<Job<AgendaEventcreatedJobType>> = {
   },
 };
 
-const mockJobHandler: Partial<AgendaEventJob> = {
+const mockJobHandler: Partial<NotificationJob> = {
   handle: jest.fn(),
 };
 
 const mockJobHandlerFactory: Partial<JobHandlerFactory> = {
-  create: jest.fn(() => mockJobHandler as AgendaEventJob),
+  create: jest.fn(() => mockJobHandler as NotificationJob),
 };
 
 const mockDeadLetterQueue: any = {

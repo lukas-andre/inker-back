@@ -6,9 +6,9 @@ import { EmailNotificationService } from '../../../../notifications/services/ema
 import { AgendaEventCanceledType } from '../../../../notifications/services/email/schemas/email';
 import { AgendaEventCanceledJobType } from '../../domain/schemas/agenda';
 
-import { AgendaEventJob, getGoogleMapsLink } from './agendaEvent.job';
+import { NotificationJob, getGoogleMapsLink } from './agendaEvent.job';
 
-export class AgendaEventCanceledJob implements AgendaEventJob {
+export class AgendaEventCanceledJob implements NotificationJob {
   constructor(
     private readonly emailNotificationService: EmailNotificationService,
     private readonly agendaEventProvider: AgendaEventProvider,

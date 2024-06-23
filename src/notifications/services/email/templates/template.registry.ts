@@ -6,6 +6,7 @@ import {
   AgendaEventReminderSchema,
   AgendaEventUpdatedSchema,
   MailIdType,
+  QuotationRepliedSchema,
   RsvpAcceptedSchema,
   RsvpDeclinedSchema,
   RsvpUnschedulableSchema,
@@ -51,5 +52,35 @@ export const TemplateRegistry: Record<
     schema: RsvpUnschedulableSchema,
     path: path.join(__dirname, './rsvpUnschedulable.hbs'),
     subject: '💈 :artistName Tu cita con :customerName no se pudo agendar',
+  },
+  QUOTATION_REPLIED: {
+    schema: QuotationRepliedSchema,
+    path: path.join(__dirname, './quotationReplied.hbs'),
+    subject: '💈 :customerName Tu cotización de :artistName ha sido respondida',
+  },
+  QUOTATION_ACCEPTED: {
+    schema: QuotationRepliedSchema,
+    path: path.join(__dirname, './quotationAccepted.hbs'),
+    subject: '💈 :customerName Tu cotización de :artistName ha sido aceptada',
+  },
+  QUOTATION_APPEALED: {
+    schema: QuotationRepliedSchema,
+    path: path.join(__dirname, './quotationAppealed.hbs'),
+    subject: '💈 Hola :artistName, :customerName ha apelado tu cotización',
+  },
+  QUOTATION_REJECTED: {
+    schema: QuotationRepliedSchema,
+    path: path.join(__dirname, './quotationRejected.hbs'),
+    subject: '💈 :artistName, :customerName ha rechazado tu cotización',
+  },
+  QUOTATION_CANCELED: {
+    schema: QuotationRepliedSchema,
+    path: path.join(__dirname, './quotationCanceled.hbs'),
+    subject: '💈 :customerName Tu cotización de :artistName ha sido cancelada',
+  },
+  QUOTATION_CREATED: {
+    schema: QuotationRepliedSchema,
+    path: path.join(__dirname, './quotationCreated.hbs'),
+    subject: '💈 :artistName tienes una nueva cotización de :customerName',
   },
 };

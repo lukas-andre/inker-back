@@ -8,6 +8,12 @@ export const MailIdSchema = z.enum([
   'RSVP_ACCEPTED',
   'RSVP_DECLINED',
   'RSVP_UNSCHEDULABLE',
+  'QUOTATION_CREATED',
+  'QUOTATION_REPLIED',
+  'QUOTATION_ACCEPTED',
+  'QUOTATION_REJECTED',
+  'QUOTATION_APPEALED',
+  'QUOTATION_CANCELED',
 ]);
 export type MailIdType = z.infer<typeof MailIdSchema>;
 
@@ -94,6 +100,59 @@ const RsvpUnschedulableSchema = BaseEmailSchema.extend({
 });
 export type RsvpUnschedulableType = z.infer<typeof RsvpUnschedulableSchema>;
 
+const QuotationCreatedSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.QUOTATION_CREATED),
+  customerName: z.string(),
+  artistName: z.string(),
+  description: z.string(),
+  referenceImages: z.array(z.string()).optional(),
+});
+export type QuotationCreatedType = z.infer<typeof QuotationCreatedSchema>;
+
+const QuotationRepliedSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.QUOTATION_REPLIED),
+  customerName: z.string(),
+  artistName: z.string(),
+  estimatedCost: z.number(),
+  appointmentDate: z.date().optional(),
+  appointmentDuration: z.number().optional(),
+});
+export type QuotationRepliedType = z.infer<typeof QuotationRepliedSchema>;
+
+const QuotationAcceptedSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.QUOTATION_ACCEPTED),
+  customerName: z.string(),
+  artistName: z.string(),
+  estimatedCost: z.number(),
+  appointmentDate: z.date().optional(),
+  appointmentDuration: z.number().optional(),
+});
+export type QuotationAcceptedType = z.infer<typeof QuotationAcceptedSchema>;
+
+const QuotationRejectedSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.QUOTATION_REJECTED),
+  customerName: z.string(),
+  artistName: z.string(),
+  rejectionReason: z.string(),
+});
+export type QuotationRejectedType = z.infer<typeof QuotationRejectedSchema>;
+
+const QuotationAppealedSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.QUOTATION_APPEALED),
+  customerName: z.string(),
+  artistName: z.string(),
+  appealReason: z.string(),
+});
+export type QuotationAppealedType = z.infer<typeof QuotationAppealedSchema>;
+
+const QuotationCanceledSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.QUOTATION_CANCELED),
+  customerName: z.string(),
+  artistName: z.string(),
+  cancelationReason: z.string(),
+});
+export type QuotationCanceledType = z.infer<typeof QuotationCanceledSchema>;
+
 export const EmailSchema = z.union([
   AgendaEventCreatedSchema,
   AgendaEventCanceledSchema,
@@ -102,6 +161,12 @@ export const EmailSchema = z.union([
   RsvpAcceptedSchema,
   RsvpDeclinedSchema,
   RsvpUnschedulableSchema,
+  QuotationCreatedSchema,
+  QuotationRepliedSchema,
+  QuotationAcceptedSchema,
+  QuotationRejectedSchema,
+  QuotationAppealedSchema,
+  QuotationCanceledSchema,
 ]);
 
 export type EmailType = z.infer<typeof EmailSchema>;
@@ -114,4 +179,10 @@ export {
   RsvpAcceptedSchema,
   RsvpDeclinedSchema,
   RsvpUnschedulableSchema,
+  QuotationCreatedSchema,
+  QuotationRepliedSchema,
+  QuotationAcceptedSchema,
+  QuotationRejectedSchema,
+  QuotationAppealedSchema,
+  QuotationCanceledSchema,
 };

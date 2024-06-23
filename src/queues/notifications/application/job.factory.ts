@@ -7,8 +7,8 @@ import { ArtistLocationProvider } from '../../../locations/infrastructure/databa
 import { EmailNotificationService } from '../../../notifications/services/email/email.notification';
 import { JobType } from '../domain/schemas/job';
 
-import { AgendaEventJob } from './agenda-jobs/agendaEvent.job';
-import { AgendaJobRegistry } from './agenda-jobs/agendaJob.registry';
+import { NotificationJob } from './agenda-jobs/agendaEvent.job';
+import { NotificationJobRegistry } from './agenda-jobs/agendaJob.registry';
 
 @Injectable()
 export class JobHandlerFactory {
@@ -18,10 +18,10 @@ export class JobHandlerFactory {
     private readonly artistProvider: ArtistProvider,
     private readonly customerProvider: CustomerProvider,
     private readonly locationProvider: ArtistLocationProvider,
-    private readonly agendaJobRegistry: AgendaJobRegistry,
+    private readonly agendaJobRegistry: NotificationJobRegistry,
   ) {}
 
-  create(job: JobType): AgendaEventJob {
+  create(job: JobType): NotificationJob {
     const JobClass = this.agendaJobRegistry.getJobConstructor(job.jobId);
 
     if (!JobClass) {
