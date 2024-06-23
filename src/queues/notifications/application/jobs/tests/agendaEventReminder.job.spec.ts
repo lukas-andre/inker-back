@@ -1,7 +1,9 @@
+import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
 import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
 import { sendGridConfig } from '../../../../../config/sendgrid.config';
 import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
@@ -10,11 +12,11 @@ import { SendGridClient } from '../../../../../notifications/clients/sendGrid.cl
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { TemplateService } from '../../../../../notifications/services/email/templates/template.service';
 import { JobHandlerFactory } from '../../job.factory';
-import { AgendaEventCanceledJob } from '../agendaEventCanceled.job';
-import { NotificationJobRegistry } from '../agendaJob.registry';
+import { NotificationJobRegistry } from '../../job.registry';
+import { AgendaEventReminderJob } from '../agenda/agendaEventReminder.job';
 
-describe('AgendaEventCanceledJob', () => {
-  let job: AgendaEventCanceledJob;
+describe('AgendaEventReminderJob', () => {
+  let job: AgendaEventReminderJob;
   let emailService: EmailNotificationService;
   let mockAgendaEventProvider,
     mockArtistProvider,
@@ -28,7 +30,6 @@ describe('AgendaEventCanceledJob', () => {
       findById: jest.fn().mockResolvedValue({
         start: new Date(),
         title: 'Concert',
-        cancelationReason: 'Rain',
       }),
     };
     mockArtistProvider = {
@@ -56,11 +57,15 @@ describe('AgendaEventCanceledJob', () => {
         }),
       ],
       providers: [
-        AgendaEventCanceledJob,
+        AgendaEventReminderJob,
         { provide: AgendaEventProvider, useValue: mockAgendaEventProvider },
         { provide: ArtistProvider, useValue: mockArtistProvider },
         { provide: CustomerProvider, useValue: mockCustomerProvider },
         { provide: ArtistLocationProvider, useValue: mockLocationProvider },
+        {
+          provide: QuotationProvider,
+          useValue: createMock<QuotationProvider>(),
+        },
         TemplateService,
         SendGridClient,
         JobHandlerFactory,
@@ -77,12 +82,12 @@ describe('AgendaEventCanceledJob', () => {
     await templateService.onModuleInit();
   });
 
-  it('should send an email with the correct data when an event is canceled', async () => {
+  it('should send an email reminder with the correct data', async () => {
     const sendEmailSpy = jest.spyOn(emailService, 'sendEmail');
 
     const jobMetadata = { artistId: 1, customerId: 1, eventId: 1 };
     const job = jobHandlerFactory.create({
-      jobId: 'EVENT_CANCELED',
+      jobId: 'EVENT_REMINDER',
       metadata: jobMetadata,
       notificationTypeId: 'EMAIL',
     });
@@ -104,8 +109,7 @@ describe('AgendaEventCanceledJob', () => {
         'https://www.google.com/maps/@?api=1&map_action=map&center=34.05%2C-118.25',
       eventDate: expect.any(Date),
       eventName: 'Concert',
-      cancelationReason: 'Rain',
-      mailId: 'EVENT_CANCELED',
+      mailId: 'EVENT_REMINDER',
     });
   });
 });

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
-import { AgendaEventProvider } from '../../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { ArtistProvider } from '../../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../../locations/infrastructure/database/artistLocation.provider';
-import { EmailNotificationService } from '../../../../notifications/services/email/email.notification';
-import { AgendaEventUpdatedType } from '../../../../notifications/services/email/schemas/email';
-import { AgendaEventUpdatedJobType } from '../../domain/schemas/agenda';
-
-import { getGoogleMapsLink } from './agendaEvent.job';
+import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
+import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
+import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
+import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
+import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
+import { AgendaEventUpdatedType } from '../../../../../notifications/services/email/schemas/email';
+import { AgendaEventUpdatedJobType } from '../../../domain/schemas/agenda';
+import { getGoogleMapsLink } from '../notification.job';
 
 @Injectable()
 export class AgendaEventUpdatedJob {
@@ -18,6 +18,7 @@ export class AgendaEventUpdatedJob {
     private readonly artistProvider: ArtistProvider,
     private readonly customerProvider: CustomerProvider,
     private readonly locationProvider: ArtistLocationProvider,
+    private readonly _: QuotationProvider,
   ) {}
 
   async handle(job: AgendaEventUpdatedJobType): Promise<void> {

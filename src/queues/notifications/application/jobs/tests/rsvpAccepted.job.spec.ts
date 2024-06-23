@@ -1,7 +1,9 @@
+import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
 import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
 import { sendGridConfig } from '../../../../../config/sendgrid.config';
 import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
@@ -10,8 +12,8 @@ import { SendGridClient } from '../../../../../notifications/clients/sendGrid.cl
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { TemplateService } from '../../../../../notifications/services/email/templates/template.service';
 import { JobHandlerFactory } from '../../job.factory';
-import { NotificationJobRegistry } from '../agendaJob.registry';
-import { RsvpAcceptedJob } from '../rsvpAccepted.job';
+import { NotificationJobRegistry } from '../../job.registry';
+import { RsvpAcceptedJob } from '../rsvp/rsvpAccepted.job';
 
 describe('RsvpAcceptedJob', () => {
   let job: RsvpAcceptedJob;
@@ -63,6 +65,10 @@ describe('RsvpAcceptedJob', () => {
         { provide: ArtistProvider, useValue: mockArtistProvider },
         { provide: CustomerProvider, useValue: mockCustomerProvider },
         { provide: ArtistLocationProvider, useValue: mockLocationProvider },
+        {
+          provide: QuotationProvider,
+          useValue: createMock<QuotationProvider>(),
+        },
         TemplateService,
         SendGridClient,
         JobHandlerFactory,

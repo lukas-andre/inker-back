@@ -1,16 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock } from '@golevelup/ts-jest';
+import { Test } from '@nestjs/testing';
 
 import { AgendaEventProvider } from '../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { QuotationProvider } from '../../../agenda/infrastructure/providers/quotation.provider';
 import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
 import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
 import { ArtistLocationProvider } from '../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../notifications/services/email/email.notification';
 import { JobType } from '../domain/schemas/job';
 
-import { AgendaEventCanceledJob } from './agenda-jobs/agendaEventCanceled.job';
-import { AgendaEventCreatedJob } from './agenda-jobs/agendaEventCreated.job';
-import { NotificationJobRegistry } from './agenda-jobs/agendaJob.registry';
 import { JobHandlerFactory } from './job.factory';
+import { NotificationJobRegistry } from './job.registry';
+import { AgendaEventCanceledJob } from './jobs/agenda/agendaEventCanceled.job';
+import { AgendaEventCreatedJob } from './jobs/agenda/agendaEventCreated.job';
 
 describe('JobHandlerFactory', () => {
   let jobHandlerFactory: JobHandlerFactory;
@@ -19,31 +21,40 @@ describe('JobHandlerFactory', () => {
   let artistProvider: ArtistProvider;
   let customerProvider: CustomerProvider;
   let locationProvider: ArtistLocationProvider;
+  let quotationProvider: QuotationProvider;
   let jobRegistry: NotificationJobRegistry;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [
-        EmailNotificationService,
-        AgendaEventProvider,
-        ArtistProvider,
-        CustomerProvider,
-        ArtistLocationProvider,
+        {
+          provide: EmailNotificationService,
+          useValue: createMock<EmailNotificationService>(),
+        },
+        {
+          provide: AgendaEventProvider,
+          useValue: createMock<AgendaEventProvider>(),
+        },
+        {
+          provide: ArtistProvider,
+          useValue: createMock<ArtistProvider>(),
+        },
+        {
+          provide: CustomerProvider,
+          useValue: createMock<CustomerProvider>(),
+        },
+        {
+          provide: ArtistLocationProvider,
+          useValue: createMock<ArtistLocationProvider>(),
+        },
+        {
+          provide: QuotationProvider,
+          useValue: createMock<QuotationProvider>(),
+        },
         NotificationJobRegistry,
         JobHandlerFactory,
       ],
-    })
-      .overrideProvider(EmailNotificationService)
-      .useValue(jest.fn())
-      .overrideProvider(AgendaEventProvider)
-      .useValue(jest.fn())
-      .overrideProvider(ArtistProvider)
-      .useValue(jest.fn())
-      .overrideProvider(CustomerProvider)
-      .useValue(jest.fn())
-      .overrideProvider(ArtistLocationProvider)
-      .useValue(jest.fn())
-      .compile();
+    }).compile();
 
     jobHandlerFactory = module.get<JobHandlerFactory>(JobHandlerFactory);
     emailNotificationService = module.get<EmailNotificationService>(
@@ -55,6 +66,7 @@ describe('JobHandlerFactory', () => {
     locationProvider = module.get<ArtistLocationProvider>(
       ArtistLocationProvider,
     );
+    quotationProvider = module.get<QuotationProvider>(QuotationProvider);
     jobRegistry = module.get<NotificationJobRegistry>(NotificationJobRegistry);
   });
 

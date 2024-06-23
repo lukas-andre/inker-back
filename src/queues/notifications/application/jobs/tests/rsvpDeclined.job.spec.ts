@@ -1,7 +1,9 @@
+import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
 import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
 import { sendGridConfig } from '../../../../../config/sendgrid.config';
 import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
@@ -10,11 +12,11 @@ import { SendGridClient } from '../../../../../notifications/clients/sendGrid.cl
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { TemplateService } from '../../../../../notifications/services/email/templates/template.service';
 import { JobHandlerFactory } from '../../job.factory';
-import { AgendaEventCreatedJob } from '../agendaEventCreated.job';
-import { NotificationJobRegistry } from '../agendaJob.registry';
+import { NotificationJobRegistry } from '../../job.registry';
+import { RsvpDeclinedJob } from '../rsvp/rsvpDeclined.job';
 
-describe('AgendaEventCreatedJob', () => {
-  let job: AgendaEventCreatedJob;
+describe('RsvpDeclinedJob', () => {
+  let job: RsvpDeclinedJob;
   let emailService: EmailNotificationService;
   let mockAgendaEventProvider,
     mockArtistProvider,
@@ -31,11 +33,14 @@ describe('AgendaEventCreatedJob', () => {
       }),
     };
     mockArtistProvider = {
-      findById: jest.fn().mockResolvedValue({ username: 'John Doe' }),
+      findById: jest.fn().mockResolvedValue({
+        username: 'John Doe',
+        contact: { email: 'lucas.henrydz@gmail.com' },
+      }),
     };
     mockCustomerProvider = {
       findById: jest.fn().mockResolvedValue({
-        contactEmail: 'lucas.henrydz@gmail.com',
+        contactEmail: 'customer@example.com',
         firstName: 'Jane',
       }),
     };
@@ -55,11 +60,15 @@ describe('AgendaEventCreatedJob', () => {
         }),
       ],
       providers: [
-        AgendaEventCreatedJob,
+        RsvpDeclinedJob,
         { provide: AgendaEventProvider, useValue: mockAgendaEventProvider },
         { provide: ArtistProvider, useValue: mockArtistProvider },
         { provide: CustomerProvider, useValue: mockCustomerProvider },
         { provide: ArtistLocationProvider, useValue: mockLocationProvider },
+        {
+          provide: QuotationProvider,
+          useValue: createMock<QuotationProvider>(),
+        },
         TemplateService,
         SendGridClient,
         JobHandlerFactory,
@@ -76,12 +85,12 @@ describe('AgendaEventCreatedJob', () => {
     await templateService.onModuleInit();
   });
 
-  it('should send an email with the correct data when an event is created', async () => {
+  it('should send an email with the correct data when an RSVP is declined', async () => {
     const sendEmailSpy = jest.spyOn(emailService, 'sendEmail');
 
     const jobMetadata = { artistId: 1, customerId: 1, eventId: 1 };
     const job = jobHandlerFactory.create({
-      jobId: 'EVENT_CREATED',
+      jobId: 'RSVP_DECLINED',
       metadata: jobMetadata,
       notificationTypeId: 'EMAIL',
     });
@@ -103,7 +112,7 @@ describe('AgendaEventCreatedJob', () => {
         'https://www.google.com/maps/@?api=1&map_action=map&center=34.05%2C-118.25',
       eventDate: expect.any(Date),
       eventName: 'Concert',
-      mailId: 'EVENT_CREATED',
+      mailId: 'RSVP_DECLINED',
     });
   });
 });

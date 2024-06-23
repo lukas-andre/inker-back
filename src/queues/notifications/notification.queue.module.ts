@@ -10,8 +10,8 @@ import { NotificationsModule } from '../../notifications/notifications.module';
 import { DeadLetterProcessor } from '../deadletter/deadletter.processor';
 import { queues } from '../queues';
 
-import { NotificationJobRegistry } from './application/agenda-jobs/agendaJob.registry';
 import { JobHandlerFactory } from './application/job.factory';
+import { NotificationJobRegistry } from './application/job.registry';
 import { NotificationProcessor } from './infrastructure/notification.processor';
 
 @Module({
