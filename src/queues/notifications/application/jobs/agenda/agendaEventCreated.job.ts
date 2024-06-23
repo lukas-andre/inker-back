@@ -1,12 +1,12 @@
-import { AgendaEventProvider } from '../../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { ArtistProvider } from '../../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../../locations/infrastructure/database/artistLocation.provider';
-import { EmailNotificationService } from '../../../../notifications/services/email/email.notification';
-import { AgendaEventCreatedType } from '../../../../notifications/services/email/schemas/email';
-import { AgendaEventcreatedJobType } from '../../domain/schemas/agenda';
-
-import { NotificationJob, getGoogleMapsLink } from './agendaEvent.job';
+import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
+import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
+import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
+import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
+import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
+import { AgendaEventCreatedType } from '../../../../../notifications/services/email/schemas/email';
+import { AgendaEventcreatedJobType } from '../../../domain/schemas/agenda';
+import { NotificationJob, getGoogleMapsLink } from '../notification.job';
 
 export class AgendaEventCreatedJob implements NotificationJob {
   constructor(
@@ -15,6 +15,7 @@ export class AgendaEventCreatedJob implements NotificationJob {
     private readonly artistProvider: ArtistProvider,
     private readonly customerProvider: CustomerProvider,
     private readonly locationProvider: ArtistLocationProvider,
+    private readonly _: QuotationProvider,
   ) {}
   async handle(job: AgendaEventcreatedJobType): Promise<void> {
     const { artistId, customerId, eventId } = job.metadata;

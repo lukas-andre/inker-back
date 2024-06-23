@@ -6,8 +6,8 @@ import { ZodError } from 'zod';
 
 import { sendGridConfig } from '../../../config/sendgrid.config';
 import { queues } from '../../queues';
-import { NotificationJob } from '../application/agenda-jobs/agendaEvent.job';
 import { JobHandlerFactory } from '../application/job.factory';
+import { NotificationJob } from '../application/jobs/notification.job';
 import { AgendaEventcreatedJobType } from '../domain/schemas/agenda';
 
 import { NotificationProcessor } from './notification.processor';

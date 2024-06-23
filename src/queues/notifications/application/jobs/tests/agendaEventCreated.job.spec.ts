@@ -1,7 +1,9 @@
+import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
+import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
 import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
 import { sendGridConfig } from '../../../../../config/sendgrid.config';
 import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
@@ -10,11 +12,11 @@ import { SendGridClient } from '../../../../../notifications/clients/sendGrid.cl
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { TemplateService } from '../../../../../notifications/services/email/templates/template.service';
 import { JobHandlerFactory } from '../../job.factory';
-import { AgendaEventUpdatedJob } from '../agendaEventUpdated.job';
-import { NotificationJobRegistry } from '../agendaJob.registry';
+import { NotificationJobRegistry } from '../../job.registry';
+import { AgendaEventCreatedJob } from '../agenda/agendaEventCreated.job';
 
-describe('AgendaEventUpdatedJob', () => {
-  let job: AgendaEventUpdatedJob;
+describe('AgendaEventCreatedJob', () => {
+  let job: AgendaEventCreatedJob;
   let emailService: EmailNotificationService;
   let mockAgendaEventProvider,
     mockArtistProvider,
@@ -28,10 +30,6 @@ describe('AgendaEventUpdatedJob', () => {
       findById: jest.fn().mockResolvedValue({
         start: new Date(),
         title: 'Concert',
-      }),
-      findMostRecentHistoryRecord: jest.fn().mockResolvedValue({
-        start: new Date(new Date().setDate(new Date().getDate() - 1)),
-        location: 'Old Location',
       }),
     };
     mockArtistProvider = {
@@ -59,11 +57,15 @@ describe('AgendaEventUpdatedJob', () => {
         }),
       ],
       providers: [
-        AgendaEventUpdatedJob,
+        AgendaEventCreatedJob,
         { provide: AgendaEventProvider, useValue: mockAgendaEventProvider },
         { provide: ArtistProvider, useValue: mockArtistProvider },
         { provide: CustomerProvider, useValue: mockCustomerProvider },
         { provide: ArtistLocationProvider, useValue: mockLocationProvider },
+        {
+          provide: QuotationProvider,
+          useValue: createMock<QuotationProvider>(),
+        },
         TemplateService,
         SendGridClient,
         JobHandlerFactory,
@@ -80,21 +82,18 @@ describe('AgendaEventUpdatedJob', () => {
     await templateService.onModuleInit();
   });
 
-  it('should send an email with the correct data when an event is updated', async () => {
+  it('should send an email with the correct data when an event is created', async () => {
     const sendEmailSpy = jest.spyOn(emailService, 'sendEmail');
 
     const jobMetadata = { artistId: 1, customerId: 1, eventId: 1 };
     const job = jobHandlerFactory.create({
-      jobId: 'EVENT_UPDATED',
+      jobId: 'EVENT_CREATED',
       metadata: jobMetadata,
       notificationTypeId: 'EMAIL',
     });
     await job.handle({ metadata: jobMetadata });
 
     expect(mockAgendaEventProvider.findById).toHaveBeenCalledWith(1);
-    expect(
-      mockAgendaEventProvider.findMostRecentHistoryRecord,
-    ).toHaveBeenCalledWith(1);
     expect(mockArtistProvider.findById).toHaveBeenCalledWith(1);
     expect(mockCustomerProvider.findById).toHaveBeenCalledWith(1);
     expect(mockLocationProvider.findOne).toHaveBeenCalledWith({
@@ -106,30 +105,11 @@ describe('AgendaEventUpdatedJob', () => {
       artistName: 'John Doe',
       customerName: 'Jane',
       eventLocation: '123 Main St',
-      //   oldEventLocation: 'Old Location',
       googleMapsLink:
         'https://www.google.com/maps/@?api=1&map_action=map&center=34.05%2C-118.25',
       eventDate: expect.any(Date),
-      eventOldDate: expect.any(Date),
       eventName: 'Concert',
-      mailId: 'EVENT_UPDATED',
+      mailId: 'EVENT_CREATED',
     });
-  });
-
-  it('should log an error if event is not found', async () => {
-    const jobMetadata = { artistId: 1, customerId: 1, eventId: 1 };
-
-    jest.spyOn(mockAgendaEventProvider, 'findById').mockResolvedValue(null);
-
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-
-    const job = jobHandlerFactory.create({
-      jobId: 'EVENT_UPDATED',
-      metadata: jobMetadata,
-      notificationTypeId: 'EMAIL',
-    });
-    await job.handle({ metadata: jobMetadata });
-
-    expect(consoleSpy).toHaveBeenCalledWith('Event not found for ID: 1');
   });
 });

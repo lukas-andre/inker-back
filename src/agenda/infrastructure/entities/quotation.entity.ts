@@ -15,7 +15,7 @@ export type QuotationStatus =
 
 export type AppealedReason = 'dateChange';
 
-export type CancelReason = 'customer' | 'artist';
+export type CancelReason = 'customer' | 'artist' | 'not_attended';
 
 @Entity()
 export class Quotation extends BaseEntity {
@@ -76,8 +76,12 @@ export class Quotation extends BaseEntity {
   @Column({ name: 'appealed_date', nullable: true })
   appealedDate?: Date;
 
-  @Column({ name: 'canceled_reason', nullable: true })
-  canceledReason?: string;
+  @Column({
+    name: 'canceled_reason',
+    nullable: true,
+    enum: ['customer', 'artist', 'not_attended'],
+  })
+  canceledReason?: CancelReason;
 
   @Column({ name: 'canceled_date', nullable: true })
   canceledDate?: Date;
