@@ -11,6 +11,8 @@ import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
 import { CreateQuotationUseCase } from '../usecases/createQuotation.usecase';
 import { FindEventFromArtistByEventIdUseCase } from '../usecases/findEventFromArtistByEventId.usecase';
+import { GetQuotationUseCase } from '../usecases/getQuotation.usecase';
+import { GetQuotationsUseCase } from '../usecases/getQuotations.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda.usecase';
@@ -21,10 +23,13 @@ import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
 import { AddEventReqDto } from './dtos/addEventReq.dto';
 import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
+import { QuotationDto } from './dtos/getQuotationRes.dto';
+import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { ReplyQuotationReqDto } from './dtos/replyQuotationReq.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
+import { Quotation } from './entities/quotation.entity';
 
 type RSVPType = {
   agendaId: number;
@@ -44,6 +49,8 @@ export class AgendaHandler extends BaseHandler {
     private readonly getWorkEvidenceByArtistIdUseCase: GetWorkEvidenceByArtistIdUseCase,
     private readonly listEventFromArtistAgenda: ListEventFromArtistAgenda,
     private readonly createQuotationUseCase: CreateQuotationUseCase,
+    private readonly getQuotationUseCase: GetQuotationUseCase,
+    private readonly getQuotationsUseCase: GetQuotationsUseCase,
     private readonly replyQuotationUseCase: ReplyQuotationUseCase,
     private readonly requestService: RequestService,
     private readonly jwtService: JwtService,
@@ -141,7 +148,13 @@ export class AgendaHandler extends BaseHandler {
       );
     }
 
-    return this.createQuotationUseCase.execute(dto, referenceImages);
+    return this.createQuotationUseCase.execute(
+      {
+        ...dto,
+        customerId: this.clsService.get('jwt.userTypeId'),
+      },
+      referenceImages,
+    );
   }
 
   replyQuotation(
@@ -155,5 +168,18 @@ export class AgendaHandler extends BaseHandler {
     }
 
     return this.replyQuotationUseCase.execute(dto, proposedImages);
+  }
+
+  async getQuotation(id: number): Promise<QuotationDto> {
+    return this.getQuotationUseCase.execute(id);
+  }
+
+  async getQuotations(query: GetQuotationsQueryDto): Promise<any> {
+    const jwt = this.clsService.get('jwt');
+    return this.getQuotationsUseCase.execute(
+      query,
+      jwt.userType as UserType,
+      jwt.userTypeId,
+    );
   }
 }

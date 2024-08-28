@@ -22,7 +22,7 @@ export class QuotationRejectedJob implements NotificationJob {
     const { artistId, customerId, quotationId } = job.metadata;
     const [quotation, artist, customer] = await Promise.all([
       this.quotationProvider.findById(quotationId),
-      this.artistProvider.findById(artistId),
+      this.artistProvider.findByIdWithContact(artistId),
       this.customerProvider.findById(customerId),
     ]);
 

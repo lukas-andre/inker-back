@@ -69,3 +69,11 @@ Content-Type: image/png
 
 < /Users/noname/Downloads/rocket2.png
 --boundary--
+
+### Get Specific Quotation
+GET {{$dotenv APP_URL}}/agenda/quotation/5 HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get Quotations
+GET {{$dotenv APP_URL}}/agenda/quotations?status=pending&page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{token}}

@@ -43,6 +43,7 @@ export class CreateQuotationUseCase
     createQuotationDto: CreateQuotationReqDto,
     referenceImages: FileInterface[],
   ): Promise<{
+    id: number;
     message: string;
     created: boolean;
   }> {
@@ -61,6 +62,8 @@ export class CreateQuotationUseCase
     if (!existsCustomer) {
       throw new DomainNotFound('Customer not found');
     }
+
+    let quotationId: number;
 
     const queryRunner = this.quotationProvider.source.createQueryRunner();
 
@@ -90,7 +93,7 @@ export class CreateQuotationUseCase
         throw new DomainBadRule('Error creating quotation');
       }
 
-      const quotationId = quotationResult[0].id as number;
+      quotationId = quotationResult[0].id as number;
 
       if (referenceImages.length) {
         const multimedias = await this.multimediasService.uploadReferenceImages(
@@ -130,6 +133,7 @@ export class CreateQuotationUseCase
     }
 
     return {
+      id: quotationId,
       message: 'Quotation created successfully',
       created: true,
     };

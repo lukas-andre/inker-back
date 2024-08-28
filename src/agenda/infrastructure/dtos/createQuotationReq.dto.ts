@@ -19,10 +19,13 @@ export class CreateQuotationReqDto {
 
   @ApiProperty({
     example: 1,
-    description: 'Customer Id',
+    description: 'Customer Id (optional), is decoded from token',
+
+    required: false,
   })
   @IsNumber()
-  readonly customerId: number;
+  @IsOptional()
+  readonly customerId?: number;
 
   @ApiProperty({
     example: 1,
