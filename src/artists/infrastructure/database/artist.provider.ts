@@ -100,6 +100,21 @@ export class ArtistProvider extends BaseComponent {
     }
   }
 
+  async findByIdWithContact(id: number): Promise<Artist> {
+    try {
+      return await this.artistsRepository.findOne({
+        where: { id },
+        relations: ['contact'],
+      });
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        'Problems finding artist',
+        error,
+      );
+    }
+  }
+
   async findByIds(ids: number[]) {
     try {
       return await this.artistsRepository.find({

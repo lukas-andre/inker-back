@@ -16,6 +16,8 @@ import { AddEventUseCase } from './usecases/addEvent.usecase';
 import { CancelEventUseCase } from './usecases/cancelEvent.usecase';
 import { CreateQuotationUseCase } from './usecases/createQuotation.usecase';
 import { FindEventFromArtistByEventIdUseCase } from './usecases/findEventFromArtistByEventId.usecase';
+import { GetQuotationUseCase } from './usecases/getQuotation.usecase';
+import { GetQuotationsUseCase } from './usecases/getQuotations.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from './usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from './usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from './usecases/listEventFromArtistAgenda.usecase';
@@ -49,6 +51,8 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     RsvpUseCase,
     CreateQuotationUseCase,
     ReplyQuotationUseCase,
+    GetQuotationUseCase,
+    GetQuotationsUseCase,
   ],
   controllers: [AgendaController],
 })

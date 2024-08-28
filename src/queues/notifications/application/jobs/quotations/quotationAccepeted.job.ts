@@ -22,7 +22,7 @@ export class QuotationAcceptedJob implements NotificationJob {
     const { artistId, customerId, quotationId } = job.metadata;
     const [quotation, artist, customer] = await Promise.all([
       this.quotationProvider.findById(quotationId),
-      this.artistProvider.findById(artistId),
+      this.artistProvider.findByIdWithContact(artistId),
       this.customerProvider.findById(customerId),
     ]);
 
@@ -35,6 +35,7 @@ export class QuotationAcceptedJob implements NotificationJob {
       appointmentDuration: quotation.appointmentDuration,
       mailId: 'QUOTATION_ACCEPTED',
     };
+
     await this.emailNotificationService.sendEmail(quotationAcceptedEmailData);
   }
 }

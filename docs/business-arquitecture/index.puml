@@ -1,0 +1,85 @@
+@startuml
+skinparam packageStyle rectangle
+
+package "Artistic Services Platform" {
+  [User Management] #LightGreen
+  [Artist Management] #LightGreen
+  [Customer Management] #LightGreen
+  [Event Management] #LightGreen
+  [Booking System] #LightGreen
+  [Payment System] #Red
+  [Marketing and Promotion] #Red
+  [Customer Support] #Red
+}
+
+package "User Management" #LightGreen {
+  [User Registration]
+  [Authentication]
+  [Profile Management]
+  [Roles and Permissions]
+}
+
+package "Artist Management" #LightGreen {
+  [Artist Profiles]
+  [Portfolios]
+  [Availability Management]
+  [Reviews and Ratings]
+}
+
+package "Customer Management" #LightGreen {
+  [Customer Profiles]
+  [Booking History]
+  [Preferences]
+}
+
+package "Event Management" #LightGreen {
+  [Event Creation]
+  [Event Calendar]
+  [Location Management]
+  [Notifications]
+}
+
+package "Booking System" #LightGreen {
+  [Quotations]
+  [Confirmations]
+  [Cancellations]
+  [Rescheduling]
+}
+
+package "Payment System" #Red {
+  [Payment Processing]
+  [Invoicing]
+  [Commission Management]
+  [Financial Reports]
+}
+
+package "Marketing and Promotion" #Red {
+  [Marketing Campaigns]
+  [Social Media Management]
+  [SEO and SEM]
+  [Metrics Analysis]
+}
+
+package "Customer Support" #Red {
+  [Ticket System]
+  [Live Chat]
+  [FAQ and Knowledge Base]
+  [Dispute Resolution]
+}
+
+[Artistic Services Platform] --> [User Management]
+[Artistic Services Platform] --> [Artist Management]
+[Artistic Services Platform] --> [Customer Management]
+[Artistic Services Platform] --> [Event Management]
+[Artistic Services Platform] --> [Booking System]
+[Artistic Services Platform] --> [Payment System]
+[Artistic Services Platform] --> [Marketing and Promotion]
+[Artistic Services Platform] --> [Customer Support]
+
+legend right
+  |Color|Meaning|
+  |<#LightGreen>|Existing Components|
+  |<#Red>|Missing or Needs Development|
+endlegend
+
+@enduml
