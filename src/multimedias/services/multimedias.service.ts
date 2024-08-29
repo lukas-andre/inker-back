@@ -165,4 +165,37 @@ export class MultimediasService {
     }
     return multimediasMetadata;
   }
+
+  async uploadProposedDesigns(
+    files: FileInterface[],
+    quotationId: number,
+    artistId: number,
+  ): Promise<MultimediasMetadataInterface> {
+    const multimediasMetadata: MultimediasMetadataInterface = {
+      count: 0,
+      metadata: [],
+    };
+    for (const [index, file] of files.entries()) {
+      console.log('uploading file: ', file);
+
+      const source = `quotation/${quotationId}/artist/${artistId}/proposed-designs`;
+      const fileName = `design_${index}`;
+
+      console.time('uploadFile');
+      const { cloudFrontUrl } = await this.upload(file, source, fileName);
+      console.timeEnd('uploadFile');
+
+      multimediasMetadata.metadata.push({
+        url: cloudFrontUrl,
+        type: file.mimetype,
+        encoding: file.encoding,
+        fieldname: file.fieldname,
+        originalname: file.originalname,
+        size: file.size,
+        position: index,
+      });
+      multimediasMetadata.count++;
+    }
+    return multimediasMetadata;
+  }
 }

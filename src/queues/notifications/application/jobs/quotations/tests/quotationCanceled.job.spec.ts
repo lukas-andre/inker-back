@@ -11,16 +11,16 @@ import { ArtistLocationProvider } from '../../../../../../locations/infrastructu
 import { SendGridClient } from '../../../../../../notifications/clients/sendGrid.client';
 import { EmailNotificationService } from '../../../../../../notifications/services/email/email.notification';
 import { TemplateService } from '../../../../../../notifications/services/email/templates/template.service';
+import { QuotationCanceledJobType } from '../../../../domain/schemas/quotation';
 import { JobHandlerFactory } from '../../../job.factory';
 import { NotificationJobRegistry } from '../../../job.registry';
 import { QuotationCanceledJob } from '../quotationCanceled.job';
 
 describe('QuotationCanceledJob', () => {
-  let job: QuotationCanceledJob;
-  let emailService: EmailNotificationService;
-  let mockQuotationProvider, mockArtistProvider, mockCustomerProvider;
   let jobHandlerFactory: JobHandlerFactory;
+  let emailService: EmailNotificationService;
   let templateService: TemplateService;
+  let mockQuotationProvider, mockArtistProvider, mockCustomerProvider;
 
   beforeEach(async () => {
     mockQuotationProvider = {
@@ -28,7 +28,6 @@ describe('QuotationCanceledJob', () => {
         estimatedCost: 150,
         appointmentDate: new Date(),
         appointmentDuration: 60,
-        canceledReason: 'customer',
       }),
     };
     mockArtistProvider = {
@@ -53,13 +52,13 @@ describe('QuotationCanceledJob', () => {
       ],
       providers: [
         QuotationCanceledJob,
+        { provide: QuotationProvider, useValue: mockQuotationProvider },
+        { provide: ArtistProvider, useValue: mockArtistProvider },
+        { provide: CustomerProvider, useValue: mockCustomerProvider },
         {
           provide: AgendaEventProvider,
           useValue: createMock<AgendaEventProvider>(),
         },
-        { provide: QuotationProvider, useValue: mockQuotationProvider },
-        { provide: ArtistProvider, useValue: mockArtistProvider },
-        { provide: CustomerProvider, useValue: mockCustomerProvider },
         {
           provide: ArtistLocationProvider,
           useValue: createMock<ArtistLocationProvider>(),
@@ -73,23 +72,31 @@ describe('QuotationCanceledJob', () => {
     }).compile();
 
     jobHandlerFactory = module.get<JobHandlerFactory>(JobHandlerFactory);
-    templateService = module.get<TemplateService>(TemplateService);
     emailService = module.get<EmailNotificationService>(
       EmailNotificationService,
     );
+    templateService = module.get<TemplateService>(TemplateService);
     await templateService.onModuleInit();
   });
 
-  it('should send an email with the correct data when a quotation is canceled', async () => {
+  it('should send an email when a customer cancels a quotation', async () => {
     const sendEmailSpy = jest.spyOn(emailService, 'sendEmail');
 
-    const jobMetadata = { artistId: 1, customerId: 1, quotationId: 1 };
-    const job = jobHandlerFactory.create({
+    const jobData: QuotationCanceledJobType = {
       jobId: 'QUOTATION_CANCELED',
-      metadata: jobMetadata,
       notificationTypeId: 'EMAIL',
-    });
-    await job.handle({ metadata: jobMetadata });
+      metadata: {
+        artistId: 1,
+        customerId: 1,
+        quotationId: 1,
+        cancelReasonType: 'customer' as 'artist' | 'customer' | 'system',
+        cancelReason: 'change_of_mind',
+        cancelReasonDetails: 'Changed project plans',
+        canceledBy: 'customer' as 'artist' | 'customer' | 'system',
+      },
+    };
+    const job = jobHandlerFactory.create(jobData);
+    await job.handle({ metadata: jobData.metadata });
 
     expect(mockQuotationProvider.findById).toHaveBeenCalledWith(1);
     expect(mockArtistProvider.findById).toHaveBeenCalledWith(1);
@@ -99,7 +106,68 @@ describe('QuotationCanceledJob', () => {
       to: 'lucas.henrydz@gmail.com',
       artistName: 'John Doe',
       customerName: 'Jane',
-      cancelationReason: 'customer',
+      cancelMessage:
+        'The customer has canceled the quotation due to: Change of mind Additional details: Changed project plans',
+      canceledBy: 'customer',
+      mailId: 'QUOTATION_CANCELED',
+    });
+  });
+
+  it('should send an email when an artist cancels a quotation', async () => {
+    const sendEmailSpy = jest.spyOn(emailService, 'sendEmail');
+
+    const jobMetadata = {
+      artistId: 1,
+      customerId: 1,
+      quotationId: 1,
+      cancelReasonType: 'artist',
+      cancelReason: 'scheduling_conflict',
+      cancelReasonDetails: 'Unexpected travel',
+      canceledBy: 'artist',
+    };
+    const job = jobHandlerFactory.create({
+      jobId: 'QUOTATION_CANCELED',
+      metadata: jobMetadata,
+      notificationTypeId: 'EMAIL',
+    } as QuotationCanceledJobType);
+    await job.handle({ metadata: jobMetadata });
+
+    expect(sendEmailSpy).toHaveBeenCalledWith({
+      to: 'lucas.henrydz@gmail.com',
+      artistName: 'John Doe',
+      customerName: 'Jane',
+      cancelMessage:
+        'The artist has canceled the quotation due to: Scheduling conflict Additional details: Unexpected travel',
+      canceledBy: 'artist',
+      mailId: 'QUOTATION_CANCELED',
+    });
+  });
+
+  it('should send an email when the system cancels a quotation', async () => {
+    const sendEmailSpy = jest.spyOn(emailService, 'sendEmail');
+
+    const jobMetadata = {
+      artistId: 1,
+      customerId: 1,
+      quotationId: 1,
+      cancelReasonType: 'system',
+      cancelReason: 'not_attended',
+      canceledBy: 'system',
+    };
+    const job = jobHandlerFactory.create({
+      jobId: 'QUOTATION_CANCELED',
+      metadata: jobMetadata,
+      notificationTypeId: 'EMAIL',
+    } as QuotationCanceledJobType);
+    await job.handle({ metadata: jobMetadata });
+
+    expect(sendEmailSpy).toHaveBeenCalledWith({
+      to: 'lucas.henrydz@gmail.com',
+      artistName: 'John Doe',
+      customerName: 'Jane',
+      cancelMessage:
+        'The quotation has been automatically canceled due to: Not attended',
+      canceledBy: 'system',
       mailId: 'QUOTATION_CANCELED',
     });
   });

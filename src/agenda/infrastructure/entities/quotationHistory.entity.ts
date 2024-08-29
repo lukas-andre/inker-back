@@ -1,19 +1,34 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 
-import { Quotation } from './quotation.entity';
+import {
+  Quotation,
+  QuotationAppealedReason,
+  QuotationStatus,
+} from './quotation.entity';
 
-export type QuotationRole = 'customer' | 'artist';
+export type QuotationRole = 'customer' | 'artist' | 'system';
 
 @Entity()
 export class QuotationHistory extends BaseEntity {
-  @ManyToOne(() => Quotation, event => event.history)
+  @ManyToOne(() => Quotation, quotation => quotation.history)
   @JoinColumn({ name: 'quotation_id' })
   quotation: Quotation;
 
-  @Column()
-  status: string;
+  @Column({
+    name: 'previous_status',
+    enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
+    enumName: 'quotation_status',
+  })
+  previousStatus: QuotationStatus;
+
+  @Column({
+    name: 'new_status',
+    enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
+    enumName: 'quotation_status',
+  })
+  newStatus: QuotationStatus;
 
   @Column({ name: 'changed_at', default: () => 'CURRENT_TIMESTAMP' })
   changedAt: Date;
@@ -21,6 +36,56 @@ export class QuotationHistory extends BaseEntity {
   @Column({ name: 'changed_by' })
   changedBy: number;
 
-  @Column({ name: 'changed_by_user_type' })
+  @Column({
+    name: 'changed_by_user_type',
+    enum: ['customer', 'artist', 'system'],
+  })
   changedByUserType: QuotationRole;
+
+  @Column({
+    name: 'previous_estimated_cost',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
+  previousEstimatedCost?: number;
+
+  @Column({
+    name: 'new_estimated_cost',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
+  newEstimatedCost?: number;
+
+  @Column({ name: 'previous_appointment_date', nullable: true })
+  previousAppointmentDate?: Date;
+
+  @Column({ name: 'new_appointment_date', nullable: true })
+  newAppointmentDate?: Date;
+
+  @Column({ name: 'previous_appointment_duration', nullable: true })
+  previousAppointmentDuration?: number;
+
+  @Column({ name: 'new_appointment_duration', nullable: true })
+  newAppointmentDuration?: number;
+
+  @Column({
+    name: 'appealed_reason',
+    nullable: true,
+    enum: ['dateChange', 'priceChange', 'designChange'],
+    enumName: 'quotation_appealed_reason',
+  })
+  appealedReason?: QuotationAppealedReason;
+
+  @Column({ name: 'rejection_reason', nullable: true, type: 'text' })
+  rejectionReason?: string;
+
+  @Column({ name: 'cancellation_reason', nullable: true, type: 'text' })
+  cancellationReason?: string;
+
+  @Column({ name: 'additional_details', nullable: true, type: 'text' })
+  additionalDetails?: string;
 }

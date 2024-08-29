@@ -149,8 +149,10 @@ const QuotationCanceledSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.QUOTATION_CANCELED),
   customerName: z.string(),
   artistName: z.string(),
-  cancelationReason: z.string(),
+  cancelMessage: z.string(),
+  canceledBy: z.enum(['artist', 'customer', 'system']),
 });
+
 export type QuotationCanceledType = z.infer<typeof QuotationCanceledSchema>;
 
 export const EmailSchema = z.union([

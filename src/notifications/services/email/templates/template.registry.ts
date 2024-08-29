@@ -81,7 +81,7 @@ export const TemplateRegistry: Record<
   QUOTATION_CANCELED: {
     schema: QuotationCanceledSchema,
     path: path.join(__dirname, './quotationCanceled.hbs'),
-    subject: '💈 :customerName Tu cotización de :artistName ha sido cancelada',
+    subject: '💈 Tu cotización ha sido cancelada',
   },
   QUOTATION_CREATED: {
     schema: QuotationCreatedSchema,

@@ -17,6 +17,9 @@ import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByA
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda.usecase';
 import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
+import { ArtistSendQuotationUseCase } from '../usecases/quotation/artistSendQuotation.usecase';
+import { CustomerQuotationActionUseCase } from '../usecases/quotation/customQuotationAction.usecase';
+import { EarlyCancellationUseCase } from '../usecases/quotation/earlyCancellation.usecase';
 import { ReplyQuotationUseCase } from '../usecases/replyQuotation.usecase';
 import { RsvpUseCase } from '../usecases/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
@@ -27,15 +30,14 @@ import { QuotationDto } from './dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
+import {
+  ArtistQuoteDto,
+  CustomerQuotationActionDto,
+  QuotationArtistRejectDto,
+  QuotationEarlyCancelDto,
+} from './dtos/quotations.dto';
 import { ReplyQuotationReqDto } from './dtos/replyQuotationReq.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
-import { Quotation } from './entities/quotation.entity';
-
-type RSVPType = {
-  agendaId: number;
-  eventId: number;
-  willAttend: boolean;
-};
 
 @Injectable()
 export class AgendaHandler extends BaseHandler {
@@ -52,6 +54,9 @@ export class AgendaHandler extends BaseHandler {
     private readonly getQuotationUseCase: GetQuotationUseCase,
     private readonly getQuotationsUseCase: GetQuotationsUseCase,
     private readonly replyQuotationUseCase: ReplyQuotationUseCase,
+    private readonly earlyCancellationUseCase: EarlyCancellationUseCase,
+    private readonly artistSendQuotationUseCase: ArtistSendQuotationUseCase,
+    private readonly customerQuotationActionUseCase: CustomerQuotationActionUseCase,
     private readonly requestService: RequestService,
     private readonly jwtService: JwtService,
     private readonly rsvpUseCase: RsvpUseCase,
@@ -181,5 +186,57 @@ export class AgendaHandler extends BaseHandler {
       jwt.userType as UserType,
       jwt.userTypeId,
     );
+  }
+
+  async handleEarlyQuotation(
+    quotationId: number,
+    dto: QuotationEarlyCancelDto,
+  ): Promise<void> {
+    const jwt = this.clsService.get('jwt');
+    if (jwt.userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You do not have permission to cancel this quotation',
+      );
+    }
+
+    return this.earlyCancellationUseCase.execute(
+      quotationId,
+      jwt.userTypeId,
+      jwt.userType,
+      dto,
+    );
+  }
+
+  async artistSendQuotation(
+    quotationId: number,
+    artistQuoteDto: ArtistQuoteDto,
+    proposedDesigns: FileInterface[],
+  ): Promise<{ message: string; updated: boolean }> {
+    const jwt = this.clsService.get('jwt');
+    if (jwt.userType !== UserType.ARTIST) {
+      throw new UnauthorizedException(
+        'You do not have permission to send a quotation',
+      );
+    }
+
+    return this.artistSendQuotationUseCase.execute(
+      quotationId,
+      artistQuoteDto,
+      proposedDesigns,
+    );
+  }
+
+  customerQuotationAction(
+    id: number,
+    customerActionDto: CustomerQuotationActionDto,
+  ) {
+    const jwt = this.clsService.get('jwt');
+    if (jwt.userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You do not have permission to perform this action',
+      );
+    }
+
+    return this.customerQuotationActionUseCase.execute(id, customerActionDto);
   }
 }

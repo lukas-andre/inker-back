@@ -18,10 +18,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBody,
   ApiConflictResponse,
-  ApiConsumes,
-  ApiCreatedResponse,
   ApiHeader,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
@@ -29,16 +26,15 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
 
-import { ArtistIdPipe } from '../../artists/infrastructure/pipes/artistId.pipe';
-import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
-import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
-import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
-import { FileInterface } from '../../multimedias/interfaces/file.interface';
+import { ArtistIdPipe } from '../../../artists/infrastructure/pipes/artistId.pipe';
+import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
+import { errorCodesToOASDescription } from '../../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
+import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import {
   AGENDA_EVENT_ID_PIPE_FAILED,
   AGENDA_EVENT_INVALID_ID_TYPE,
@@ -47,20 +43,14 @@ import {
   AGENDA_ID_PIPE_FAILED,
   AGENDA_INVALID_ID_TYPE,
   AGENDA_NOT_EXISTS,
-} from '../domain/errors/codes';
-
-import { AgendaHandler } from './agenda.handler';
-import { AddEventReqDto } from './dtos/addEventReq.dto';
-import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
-import { QuotationDto } from './dtos/getQuotationRes.dto';
-import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
-import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
-import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
-import { ReplyQuotationReqDto } from './dtos/replyQuotationReq.dto';
-import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
-import { Quotation } from './entities/quotation.entity';
-import { AgendaEventIdPipe } from './pipes/agendaEventId.pipe';
-import { AgendaIdPipe } from './pipes/agendaId.pipe';
+} from '../../domain/errors/codes';
+import { AgendaHandler } from '../agenda.handler';
+import { AddEventReqDto } from '../dtos/addEventReq.dto';
+import { GetWorkEvidenceByArtistIdResponseDto } from '../dtos/getWorkEvidenceByArtistIdResponse.dto';
+import { ListEventByViewTypeQueryDto } from '../dtos/listEventByViewTypeQuery.dto';
+import { UpdateEventReqDto } from '../dtos/updateEventReq.dto';
+import { AgendaEventIdPipe } from '../pipes/agendaEventId.pipe';
+import { AgendaIdPipe } from '../pipes/agendaId.pipe';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -191,71 +181,6 @@ export class AgendaController {
       eventId,
       workEvidenceFiles,
     );
-  }
-
-  @ApiOperation({ summary: 'Reply to quotation' })
-  @HttpCode(200)
-  @ApiCreatedResponse({
-    description: 'Quotation replied successfully.',
-    type: DefaultResponseDto,
-  })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Reply Quotation',
-    type: ReplyQuotationReqDto,
-  })
-  @Put('reply')
-  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
-  async replyQuotation(
-    @UploadedFiles() proposedImages: FileInterface[],
-    @Body() dto: ReplyQuotationReqDto,
-  ): Promise<any> {
-    return this.agendaHandler.replyQuotation(dto, proposedImages);
-  }
-
-  @ApiOperation({ summary: 'Create quotation' })
-  @HttpCode(201)
-  @ApiCreatedResponse({
-    description: 'Quotation created successfully.',
-    type: DefaultResponseDto,
-  })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Create Quotation',
-    type: CreateQuotationReqDto,
-  })
-  @Post('quotation')
-  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
-  async createQuotation(
-    @UploadedFiles() referenceImages: FileInterface[],
-    @Body() dto: CreateQuotationReqDto,
-  ): Promise<any> {
-    return this.agendaHandler.createQuotation(dto, referenceImages);
-  }
-
-  @ApiOperation({ summary: 'Get quotation' })
-  @ApiResponse({
-    status: 200,
-    description: 'Quotation retrieved successfully.',
-    type: QuotationDto,
-  })
-  @Get('quotation/:id')
-  async getQuotation(@Param('id') id: number): Promise<QuotationDto> {
-    return this.agendaHandler.getQuotation(id);
-  }
-
-  @ApiOperation({ summary: 'Get quotations' })
-  @ApiResponse({
-    status: 200,
-    description: 'Quotations retrieved successfully.',
-    type: QuotationDto,
-    isArray: true,
-  })
-  @Get('quotations')
-  async getQuotations(
-    @Query() query: GetQuotationsQueryDto,
-  ): Promise<{ items: QuotationDto[]; total: number }> {
-    return this.agendaHandler.getQuotations(query);
   }
 
   @ApiOperation({ summary: 'Get work evidence by artistId' })

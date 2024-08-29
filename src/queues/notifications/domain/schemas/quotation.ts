@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
 import { NotificationTypeSchema } from './notification';
+import {
+  ArtistCancelReasonSchema,
+  CancelReasonTypeSchema,
+  CustomerCancelReasonSchema,
+  SystemCancelReasonSchema,
+} from './quotationCancelReasons';
 
 export const QuotationJobIdSchema = z.enum([
   'QUOTATION_CREATED',
@@ -55,6 +61,19 @@ export type QuotationAppealedJobType = z.infer<
 
 const QuotationCanceledJobSchema = QuotationJobSchema.extend({
   jobId: z.literal(QuotationJobIdSchema.enum.QUOTATION_CANCELED),
+  metadata: z.object({
+    quotationId: z.number(),
+    artistId: z.number(),
+    customerId: z.number(),
+    canceledBy: z.enum(['artist', 'customer', 'system']),
+    cancelReasonType: CancelReasonTypeSchema,
+    cancelReason: z.union([
+      CustomerCancelReasonSchema,
+      ArtistCancelReasonSchema,
+      SystemCancelReasonSchema,
+    ]),
+    cancelReasonDetails: z.string().optional(),
+  }),
 });
 export type QuotationCanceledJobType = z.infer<
   typeof QuotationCanceledJobSchema
