@@ -5,6 +5,46 @@ import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/mu
 
 import { QuotationHistory } from './quotationHistory.entity';
 
+export const CUSTOMER_CANCEL_REASONS = [
+  'change_of_mind',
+  'found_another_artist',
+  'financial_reasons',
+  'personal_reasons',
+  'other',
+] as const;
+
+export const CUSTOMER_REJECT_REASONS = [
+  'too_expensive',
+  'not_what_i_wanted',
+  'changed_my_mind',
+  'found_another_artist',
+  'other',
+] as const;
+
+export const ARTIST_REJECT_REASONS = [
+  'scheduling_conflict',
+  'artistic_disagreement',
+  'insufficient_details',
+  'beyond_expertise',
+  'other',
+] as const;
+
+export const SYSTEM_CANCEL_REASONS = [
+  'not_attended',
+  'system_timeout',
+] as const;
+
+export type QuotationCustomerCancelReason =
+  (typeof CUSTOMER_CANCEL_REASONS)[number];
+export type QuotationCustomerRejectReason =
+  (typeof CUSTOMER_REJECT_REASONS)[number];
+export type QuotationArtistRejectReason =
+  (typeof ARTIST_REJECT_REASONS)[number];
+export type QuotationSystemCancelReason =
+  (typeof SYSTEM_CANCEL_REASONS)[number];
+export type QuotationCancelBy = 'customer' | 'system';
+export type QuotationRejectBy = 'customer' | 'artist';
+
 export type QuotationStatus =
   | 'pending'
   | 'quoted'
@@ -13,9 +53,10 @@ export type QuotationStatus =
   | 'appealed'
   | 'canceled';
 
-export type AppealedReason = 'dateChange';
-
-export type CancelReason = 'customer' | 'artist' | 'not_attended';
+export type QuotationAppealedReason =
+  | 'dateChange'
+  | 'priceChange'
+  | 'designChange';
 
 @Entity()
 export class Quotation extends BaseEntity {
@@ -38,14 +79,7 @@ export class Quotation extends BaseEntity {
 
   @Column({
     name: 'status',
-    enum: [
-      'pending',
-      'accepted',
-      'rejected',
-      'appealed',
-      'canceled',
-      'quotaed',
-    ],
+    enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
     enumName: 'quotation_status',
   })
   status: QuotationStatus;
@@ -62,26 +96,68 @@ export class Quotation extends BaseEntity {
   @Column({ name: 'appointment_duration', nullable: true })
   appointmentDuration?: number;
 
-  @Column({ name: 'rejected_reason', nullable: true })
-  rejectedReason?: string;
+  @Column({
+    name: 'reject_by',
+    nullable: true,
+    enum: ['customer', 'artist'],
+    enumName: 'quotation_reject_by',
+  })
+  rejectBy?: QuotationRejectBy;
+
+  @Column({
+    name: 'customer_reject_reason',
+    nullable: true,
+    enum: CUSTOMER_REJECT_REASONS,
+    enumName: 'quotation_customer_reject_reason',
+  })
+  customerRejectReason?: QuotationCustomerRejectReason;
+
+  @Column({
+    name: 'artist_reject_reason',
+    nullable: true,
+    enum: ARTIST_REJECT_REASONS,
+    enumName: 'quotation_artist_reject_reason',
+  })
+  artistRejectReason?: QuotationArtistRejectReason;
+
+  @Column({ name: 'reject_reason_details', nullable: true, type: 'text' })
+  rejectReasonDetails?: string;
+
+  @Column({ name: 'rejected_date', nullable: true })
+  rejectedDate?: Date;
 
   @Column({
     name: 'appealed_reason',
     nullable: true,
-    enum: ['dateChange'],
+    enum: ['dateChange', 'priceChange', 'designChange'],
     enumName: 'quotation_appealed_reason',
   })
-  appealedReason?: AppealedReason;
+  appealedReason?: QuotationAppealedReason;
 
   @Column({ name: 'appealed_date', nullable: true })
   appealedDate?: Date;
 
+  @Column({ name: 'canceled_by', nullable: true, enum: ['customer', 'system'] })
+  canceledBy?: 'customer' | 'system';
+
   @Column({
-    name: 'canceled_reason',
+    name: 'customer_cancel_reason',
     nullable: true,
-    enum: ['customer', 'artist', 'not_attended'],
+    enum: CUSTOMER_CANCEL_REASONS,
+    enumName: 'quotation_customer_cancel_reason',
   })
-  canceledReason?: CancelReason;
+  customerCancelReason?: QuotationCustomerCancelReason;
+
+  @Column({
+    name: 'system_cancel_reason',
+    nullable: true,
+    enum: SYSTEM_CANCEL_REASONS,
+    enumName: 'quotation_system_cancel_reason',
+  })
+  systemCancelReason?: QuotationSystemCancelReason;
+
+  @Column({ name: 'cancel_reason_details', nullable: true, type: 'text' })
+  cancelReasonDetails?: string;
 
   @Column({ name: 'canceled_date', nullable: true })
   canceledDate?: Date;

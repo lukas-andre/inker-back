@@ -38,6 +38,8 @@ export class TemplateService extends BaseComponent implements OnModuleInit {
     Handlebars.registerHelper('formatDateCustom', date => {
       return moment(date).format('dddd D [de] MMMM [del] YYYY [a las] HH:mm');
     });
+
+    Handlebars.registerHelper('eq', (a, b) => a === b);
   }
 
   private async registerPartials(dir: string): Promise<void> {
