@@ -26,18 +26,11 @@ import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultR
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { AgendaHandler } from '../agenda.handler';
+import { ArtistQuotationActionDto } from '../dtos/artistQuotationAction.dto';
 import { CreateQuotationReqDto } from '../dtos/createQuotationReq.dto';
+import { CustomerQuotationActionDto } from '../dtos/customerQuotationAction.dto';
 import { QuotationDto } from '../dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from '../dtos/getQuotationsQuery.dto';
-import {
-  ArtistQuoteDto,
-  CustomerQuotationActionDto,
-  QuotationArtistRejectDto,
-  QuotationCustomerAcceptDto,
-  QuotationCustomerAppealDto,
-  QuotationCustomerRejectDto,
-  QuotationEarlyCancelDto,
-} from '../dtos/quotations.dto';
 import { ReplyQuotationReqDto } from '../dtos/replyQuotationReq.dto';
 
 @ApiTags('quotations')
@@ -111,58 +104,35 @@ export class QuotationController {
     return this.quotationHandler.getQuotations(query);
   }
 
-  @Delete(':id/cancel-early')
-  @ApiOperation({ summary: 'Cancel a quotation' })
-  @ApiResponse({ status: 200, description: 'Quotation cancelled successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'Quotation not found' })
-  async cancelEarlyQuotation(
-    @Param('id') id: number,
-    @Body() dto: QuotationEarlyCancelDto,
-  ) {
-    await this.quotationHandler.handleEarlyQuotation(id, dto);
-    return { message: 'Quotation cancelled successfully' };
-  }
-
-  @Put(':id/artist-quote')
-  @ApiOperation({ summary: 'Artist sends a quotation' })
+  @Post(':id/artist-actions')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Artist performs an action on a quotation' })
   @ApiResponse({
-    status: 200,
-    description: 'Quotation sent successfully',
-    type: DefaultResponseDto,
+    status: 204,
+    description: 'Artist action processed successfully',
   })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Artist Quote',
-    type: ArtistQuoteDto,
-  })
+  @ApiBody({ description: 'Artist Action', type: ArtistQuotationActionDto })
   @UseInterceptors(FilesFastifyInterceptor('proposedDesigns', 10))
-  async artistSendQuotation(
+  async processArtistAction(
     @Param('id') id: number,
-    @Body() artistQuoteDto: ArtistQuoteDto,
+    @Body() dto: ArtistQuotationActionDto,
     @UploadedFiles() proposedDesigns: FileInterface[],
   ): Promise<void> {
-    await this.quotationHandler.artistSendQuotation(
-      id,
-      artistQuoteDto,
-      proposedDesigns,
-    );
+    await this.quotationHandler.processArtistAction(id, dto, proposedDesigns);
   }
 
-  @Put(':id/customer-action')
-  @ApiOperation({
-    summary: 'Customer action on a quotation (accept, reject, or appeal)',
-  })
+  @Post(':id/customer-actions')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Customer performs an action on a quotation' })
   @ApiResponse({
-    status: 200,
-    description: 'Quotation action processed successfully',
-    type: DefaultResponseDto,
+    status: 204,
+    description: 'Customer action processed successfully',
   })
-  async customerQuotationAction(
+  async processCustomerAction(
     @Param('id') id: number,
-    @Body() customerActionDto: CustomerQuotationActionDto,
+    @Body() dto: CustomerQuotationActionDto,
   ): Promise<void> {
-    await this.quotationHandler.customerQuotationAction(id, customerActionDto);
+    await this.quotationHandler.processCustomerAction(id, dto);
   }
 }

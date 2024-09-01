@@ -18,10 +18,11 @@ import {
   ArtistQuoteAction,
   ArtistQuoteDto,
 } from '../../infrastructure/dtos/quotations.dto';
+import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
 
 @Injectable()
-export class ArtistSendQuotationUseCase extends BaseUseCase implements UseCase {
+export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly quotationProvider: QuotationProvider,
     private readonly multimediasService: MultimediasService,
@@ -29,7 +30,7 @@ export class ArtistSendQuotationUseCase extends BaseUseCase implements UseCase {
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
-    super(ArtistSendQuotationUseCase.name);
+    super(ProcessArtistActionUseCase.name);
   }
 
   async execute(
@@ -43,7 +44,7 @@ export class ArtistSendQuotationUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotFound('Quotation not found');
     }
 
-    let newStatus;
+    let newStatus: QuotationStatus;
     try {
       switch (artistQuoteDto.action) {
         case ArtistQuoteAction.QUOTE:
@@ -87,10 +88,18 @@ export class ArtistSendQuotationUseCase extends BaseUseCase implements UseCase {
     }
 
     const { transactionIsOK, updatedQuotation } =
-      await this.quotationProvider.artistSendQuotationTransaction(
+      await this.quotationProvider.updateQuotationState(
         quotationId,
         quotation.artistId,
-        artistQuoteDto,
+        'artist',
+        {
+          action: artistQuoteDto.action,
+          additionalDetails: artistQuoteDto.additionalDetails,
+          appointmentDate: artistQuoteDto.appointmentDate,
+          appointmentDuration: artistQuoteDto.appointmentDuration,
+          estimatedCost: artistQuoteDto.estimatedCost,
+          rejectionReason: artistQuoteDto.rejectionReason,
+        },
         newStatus,
         multimedias,
       );

@@ -1,3 +1,4 @@
+import { C } from 'ts-toolbelt';
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
@@ -11,6 +12,12 @@ export const CUSTOMER_CANCEL_REASONS = [
   'financial_reasons',
   'personal_reasons',
   'other',
+] as const;
+
+export const CUSTOMER_APPEAL_REASONS = [
+  'date_change',
+  'price_change',
+  'design_change',
 ] as const;
 
 export const CUSTOMER_REJECT_REASONS = [
@@ -34,6 +41,9 @@ export const SYSTEM_CANCEL_REASONS = [
   'system_timeout',
 ] as const;
 
+export const QUOTATION_CANCELED_BY = ['customer', 'system'] as const;
+export const QUOTATION_REJECTED_BY = ['customer', 'artist', 'system'] as const;
+
 export type QuotationCustomerCancelReason =
   (typeof CUSTOMER_CANCEL_REASONS)[number];
 export type QuotationCustomerRejectReason =
@@ -42,8 +52,10 @@ export type QuotationArtistRejectReason =
   (typeof ARTIST_REJECT_REASONS)[number];
 export type QuotationSystemCancelReason =
   (typeof SYSTEM_CANCEL_REASONS)[number];
-export type QuotationCancelBy = 'customer' | 'system';
-export type QuotationRejectBy = 'customer' | 'artist';
+export type QuotationCustomerAppealReason =
+  (typeof CUSTOMER_APPEAL_REASONS)[number];
+export type QuotationCancelBy = (typeof QUOTATION_CANCELED_BY)[number];
+export type QuotationRejectBy = (typeof QUOTATION_REJECTED_BY)[number];
 
 export type QuotationStatus =
   | 'pending'
@@ -52,11 +64,6 @@ export type QuotationStatus =
   | 'rejected'
   | 'appealed'
   | 'canceled';
-
-export type QuotationAppealedReason =
-  | 'dateChange'
-  | 'priceChange'
-  | 'designChange';
 
 @Entity()
 export class Quotation extends BaseEntity {
@@ -78,6 +85,7 @@ export class Quotation extends BaseEntity {
   proposedDesigns?: MultimediasMetadataInterface;
 
   @Column({
+    type: 'enum',
     name: 'status',
     enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
     enumName: 'quotation_status',
@@ -97,14 +105,16 @@ export class Quotation extends BaseEntity {
   appointmentDuration?: number;
 
   @Column({
+    type: 'enum',
     name: 'reject_by',
     nullable: true,
-    enum: ['customer', 'artist'],
+    enum: QUOTATION_REJECTED_BY,
     enumName: 'quotation_reject_by',
   })
   rejectBy?: QuotationRejectBy;
 
   @Column({
+    type: 'enum',
     name: 'customer_reject_reason',
     nullable: true,
     enum: CUSTOMER_REJECT_REASONS,
@@ -113,6 +123,7 @@ export class Quotation extends BaseEntity {
   customerRejectReason?: QuotationCustomerRejectReason;
 
   @Column({
+    type: 'enum',
     name: 'artist_reject_reason',
     nullable: true,
     enum: ARTIST_REJECT_REASONS,
@@ -127,20 +138,28 @@ export class Quotation extends BaseEntity {
   rejectedDate?: Date;
 
   @Column({
+    type: 'enum',
     name: 'appealed_reason',
     nullable: true,
-    enum: ['dateChange', 'priceChange', 'designChange'],
+    enum: CUSTOMER_APPEAL_REASONS,
     enumName: 'quotation_appealed_reason',
   })
-  appealedReason?: QuotationAppealedReason;
+  appealedReason?: QuotationCustomerAppealReason;
 
   @Column({ name: 'appealed_date', nullable: true })
   appealedDate?: Date;
 
-  @Column({ name: 'canceled_by', nullable: true, enum: ['customer', 'system'] })
-  canceledBy?: 'customer' | 'system';
+  @Column({
+    type: 'enum',
+    name: 'canceled_by',
+    nullable: true,
+    enum: QUOTATION_CANCELED_BY,
+    enumName: 'quotation_canceled_by',
+  })
+  canceledBy?: QuotationCancelBy;
 
   @Column({
+    type: 'enum',
     name: 'customer_cancel_reason',
     nullable: true,
     enum: CUSTOMER_CANCEL_REASONS,
@@ -149,6 +168,7 @@ export class Quotation extends BaseEntity {
   customerCancelReason?: QuotationCustomerCancelReason;
 
   @Column({
+    type: 'enum',
     name: 'system_cancel_reason',
     nullable: true,
     enum: SYSTEM_CANCEL_REASONS,
