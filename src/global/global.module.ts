@@ -19,7 +19,7 @@ import { RequestInterceptor } from './aspects/request.interceptor';
 import { BaseHandler } from './infrastructure/base.handler';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { SMSClient } from './infrastructure/clients/sms.client';
-import { RequestService } from './infrastructure/services/request.service';
+import { RequestContextService } from './infrastructure/services/requestContext.service';
 
 @Global()
 @Module({
@@ -56,7 +56,7 @@ import { RequestService } from './infrastructure/services/request.service';
     BaseHandler,
     S3Client,
     SMSClient,
-    RequestService,
+    RequestContextService,
     // {
     //   provide: APP_INTERCEPTOR,
     //   useClass: LoggingInterceptor,
@@ -66,7 +66,13 @@ import { RequestService } from './infrastructure/services/request.service';
       useClass: RequestInterceptor,
     },
   ],
-  exports: [ConfigModule, S3Client, SMSClient, JwtModule, RequestService],
+  exports: [
+    ConfigModule,
+    S3Client,
+    SMSClient,
+    JwtModule,
+    RequestContextService,
+  ],
 })
 export class GlobalModule {
   constructor(private readonly configService: ConfigService) {}

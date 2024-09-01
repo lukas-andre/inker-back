@@ -1,12 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ClsService } from 'nestjs-cls';
 
-import { BaseHandler } from '../../global/infrastructure/base.handler';
-import { InkerClsStore } from '../../global/infrastructure/guards/auth.guard';
-import { RequestService } from '../../global/infrastructure/services/request.service';
+import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
-import { UserType } from '../../users/domain/enums/userType.enum';
 import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
 import { CreateQuotationUseCase } from '../usecases/createQuotation.usecase';
@@ -35,7 +30,7 @@ import { ReplyQuotationReqDto } from './dtos/replyQuotationReq.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 
 @Injectable()
-export class AgendaHandler extends BaseHandler {
+export class AgendaHandler {
   constructor(
     private readonly addEventUseCase: AddEventUseCase,
     private readonly updateEventUseCase: UpdateEventUseCase,
@@ -51,13 +46,9 @@ export class AgendaHandler extends BaseHandler {
     private readonly replyQuotationUseCase: ReplyQuotationUseCase,
     private readonly artistSendQuotationUseCase: ProcessArtistActionUseCase,
     private readonly customerQuotationActionUseCase: ProcessCustomerActionUseCase,
-    private readonly requestService: RequestService,
-    private readonly jwtService: JwtService,
     private readonly rsvpUseCase: RsvpUseCase,
-    private readonly clsService: ClsService<InkerClsStore>,
-  ) {
-    super(jwtService);
-  }
+    private readonly requestContex: RequestContextService,
+  ) {}
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
     return this.addEventUseCase.execute(dto);
@@ -79,25 +70,25 @@ export class AgendaHandler extends BaseHandler {
   }
 
   async handleListEventFromArtistAgenda(): Promise<any> {
-    const jwt = this.clsService.get('jwt');
-    if (jwt.userType !== UserType.ARTIST) {
+    const { isNotArtist, userTypeId } = this.requestContex;
+    if (isNotArtist) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
     }
 
-    return this.listEventFromArtistAgenda.execute(jwt.userTypeId);
+    return this.listEventFromArtistAgenda.execute(userTypeId);
   }
 
   async handleGetEventByEventId(eventId: number): Promise<any> {
-    const jwt = this.clsService.get('jwt');
-    if (jwt.userType !== UserType.ARTIST) {
+    const { isNotArtist, userTypeId } = this.requestContex;
+    if (isNotArtist) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
     }
     return this.findEventByAgendaIdAndEventIdUseCase.execute(
-      jwt.userTypeId,
+      userTypeId,
       eventId,
     );
   }
@@ -119,11 +110,12 @@ export class AgendaHandler extends BaseHandler {
     page: number,
     limit: number,
   ): Promise<GetWorkEvidenceByArtistIdResponseDto> {
+    const { userTypeId } = this.requestContex;
     return this.getWorkEvidenceByArtistIdUseCase.execute(
       artistId,
       page,
       limit,
-      this.requestService.userTypeId,
+      userTypeId,
     );
   }
 
@@ -133,19 +125,16 @@ export class AgendaHandler extends BaseHandler {
     willAttend: boolean,
   ): Promise<any> {
     // it's suposed to just the customer is able to RSVP
-    return this.rsvpUseCase.execute(
-      this.clsService.get('jwt.userTypeId'),
-      agendaId,
-      eventId,
-      willAttend,
-    );
+    const { userTypeId } = this.requestContex;
+    return this.rsvpUseCase.execute(userTypeId, agendaId, eventId, willAttend);
   }
 
   async createQuotation(
     dto: CreateQuotationReqDto,
     referenceImages: FileInterface[],
   ): Promise<any> {
-    if (this.clsService.get('jwt.userType') !== UserType.CUSTOMER) {
+    const { isNotCustomer, userTypeId } = this.requestContex;
+    if (isNotCustomer) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
@@ -154,7 +143,7 @@ export class AgendaHandler extends BaseHandler {
     return this.createQuotationUseCase.execute(
       {
         ...dto,
-        customerId: this.clsService.get('jwt.userTypeId'),
+        customerId: userTypeId,
       },
       referenceImages,
     );
@@ -164,7 +153,8 @@ export class AgendaHandler extends BaseHandler {
     dto: ReplyQuotationReqDto,
     proposedImages: FileInterface[],
   ): Promise<any> {
-    if (this.clsService.get('jwt.userType') !== UserType.CUSTOMER) {
+    const { isNotCustomer } = this.requestContex;
+    if (isNotCustomer) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
@@ -178,12 +168,8 @@ export class AgendaHandler extends BaseHandler {
   }
 
   async getQuotations(query: GetQuotationsQueryDto): Promise<any> {
-    const jwt = this.clsService.get('jwt');
-    return this.getQuotationsUseCase.execute(
-      query,
-      jwt.userType as UserType,
-      jwt.userTypeId,
-    );
+    const { userType, userTypeId } = this.requestContex;
+    return this.getQuotationsUseCase.execute(query, userType, userTypeId);
   }
 
   async processArtistAction(
@@ -191,14 +177,15 @@ export class AgendaHandler extends BaseHandler {
     artistQuoteDto: ArtistQuotationActionDto,
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {
-    const jwt = this.clsService.get('jwt');
-    if (jwt.userType !== UserType.ARTIST) {
+    const { isNotArtist, userId } = this.requestContex;
+    if (isNotArtist) {
       throw new UnauthorizedException(
         'You do not have permission to send a quotation',
       );
     }
 
     return this.artistSendQuotationUseCase.execute(
+      userId,
       quotationId,
       artistQuoteDto,
       proposedDesigns,
@@ -206,16 +193,20 @@ export class AgendaHandler extends BaseHandler {
   }
 
   async processCustomerAction(
-    id: number,
+    quotationId: number,
     customerActionDto: CustomerQuotationActionDto,
   ) {
-    const jwt = this.clsService.get('jwt');
-    if (jwt.userType !== UserType.CUSTOMER) {
+    const { isNotCustomer, userId } = this.requestContex;
+    if (isNotCustomer) {
       throw new UnauthorizedException(
         'You do not have permission to perform this action',
       );
     }
 
-    return this.customerQuotationActionUseCase.execute(id, customerActionDto);
+    return this.customerQuotationActionUseCase.execute(
+      userId,
+      quotationId,
+      customerActionDto,
+    );
   }
 }

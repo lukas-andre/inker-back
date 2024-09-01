@@ -6,6 +6,7 @@ import {
   CUSTOMER_REJECT_REASONS,
   QuotationCustomerAppealReason,
   QuotationCustomerCancelReason,
+  QuotationCustomerRejectReason,
 } from '../entities/quotation.entity';
 
 export enum CustomerQuotationAction {
@@ -21,7 +22,7 @@ export class CustomerQuotationActionDto {
 
   @IsEnum(CUSTOMER_REJECT_REASONS)
   @IsOptional()
-  rejectionReason?: QuotationCustomerAppealReason;
+  rejectionReason?: QuotationCustomerRejectReason;
 
   @IsString()
   @IsEnum(CUSTOMER_APPEAL_REASONS)

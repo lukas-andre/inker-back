@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing/test';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { ModuleMocker } from 'jest-mock';
 
-import { RequestService } from '../global/infrastructure/services/request.service';
+import { RequestService } from '../global/infrastructure/services/requestContext.service';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 
 import { ReviewProvider } from './database/providers/review.provider';

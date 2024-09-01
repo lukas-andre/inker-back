@@ -21,8 +21,14 @@ import { DBServiceSaveException } from '../../../global/infrastructure/exception
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import {
   Quotation,
+  QuotationArtistRejectReason,
+  QuotationCustomerAppealReason,
+  QuotationCustomerCancelReason,
+  QuotationCustomerRejectReason,
   QuotationRejectBy,
   QuotationStatus,
+  QuotationSystemCancelReason,
+  QuotationUserType,
 } from '../entities/quotation.entity';
 
 type ActionType = 'artist' | 'customer' | 'system';
@@ -32,9 +38,9 @@ interface UpdateQuotationDto {
   estimatedCost?: number;
   appointmentDate?: Date;
   appointmentDuration?: number;
-  rejectionReason?: string;
-  appealReason?: string;
-  cancelReason?: string;
+  rejectionReason?: QuotationArtistRejectReason | QuotationCustomerRejectReason;
+  appealReason?: QuotationCustomerAppealReason;
+  cancelReason?: QuotationCustomerCancelReason | QuotationSystemCancelReason;
   additionalDetails?: string;
 }
 @Injectable()
@@ -150,7 +156,10 @@ export class QuotationProvider extends BaseComponent {
           'customerCancelReason', customer_cancel_reason,
           'systemCancelReason', system_cancel_reason,
           'cancelReasonDetails', cancel_reason_details,
-          'canceledDate', canceled_date
+          'canceledDate', canceled_date,
+          'lastUpdatedBy', last_updated_by,
+          'lastUpdatedByUserType', last_updated_by_user_type,
+          'updatedAt', updated_at
         ) AS quotation
         FROM quotation 
         WHERE id = $1;
@@ -202,7 +211,10 @@ export class QuotationProvider extends BaseComponent {
           reject_reason_details = CASE WHEN $1::quotation_status = 'rejected' THEN $9 ELSE reject_reason_details END,
           reject_by = CASE WHEN $1::quotation_status = 'rejected' THEN $11::quotation_reject_by ELSE reject_by END,
           rejected_date = CASE WHEN $1::quotation_status = 'rejected' THEN NOW() ELSE rejected_date END,
-          appealed_date = CASE WHEN $7 IS NOT NULL THEN NOW() ELSE appealed_date END
+          appealed_date = CASE WHEN $7 IS NOT NULL THEN NOW() ELSE appealed_date END,
+          last_updated_by = $13,
+          last_updated_by_user_type = $14::quotation_user_type,
+          updated_at = NOW()
       WHERE id = $12
       RETURNING json_build_object(
         'id', id,
@@ -227,7 +239,10 @@ export class QuotationProvider extends BaseComponent {
         'customerCancelReason', customer_cancel_reason,
         'systemCancelReason', system_cancel_reason,
         'cancelReasonDetails', cancel_reason_details,
-        'canceledDate', canceled_date
+        'canceledDate', canceled_date,
+        'lastUpdatedBy', last_updated_by,
+        'lastUpdatedByUserType', last_updated_by_user_type,
+        'updatedAt', updated_at
       ) as quotation;
     `;
       const updateParams = [
@@ -243,6 +258,8 @@ export class QuotationProvider extends BaseComponent {
         actionType,
         actionType as QuotationRejectBy,
         quotationId,
+        userId,
+        actionType as QuotationUserType,
       ];
       const [updatedQuotationResult] = await queryRunner.query(
         updateQuotationSql,
@@ -256,9 +273,9 @@ export class QuotationProvider extends BaseComponent {
           quotation_id, previous_status, new_status, changed_at, changed_by, changed_by_user_type, 
           previous_estimated_cost, new_estimated_cost, previous_appointment_date, new_appointment_date, 
           previous_appointment_duration, new_appointment_duration, additional_details, rejection_reason, 
-          appealed_reason, cancellation_reason
+          appealed_reason, cancellation_reason, last_updated_by, last_updated_by_user_type
         )
-        VALUES ($1, $2::quotation_status, $3::quotation_status, NOW(), $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14::quotation_appealed_reason, $15);
+        VALUES ($1, $2::quotation_status, $3::quotation_status, NOW(), $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14::quotation_appealed_reason, $15, $16, $17::quotation_user_type);
       `;
       const historyParams = [
         quotationId,
@@ -276,6 +293,8 @@ export class QuotationProvider extends BaseComponent {
         dto.rejectionReason,
         dto.appealReason,
         dto.cancelReason,
+        userId,
+        actionType as QuotationUserType,
       ];
       await queryRunner.query(createHistorySql, historyParams);
 

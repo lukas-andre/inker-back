@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../global/infrastructure/base.handler';
-import { RequestService } from '../global/infrastructure/services/request.service';
+import { RequestService } from '../global/infrastructure/services/requestContext.service';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
