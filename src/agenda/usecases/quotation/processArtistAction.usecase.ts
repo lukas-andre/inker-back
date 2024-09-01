@@ -11,6 +11,7 @@ import {
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { MultimediasService } from '../../../multimedias/services/multimedias.service';
 import { queues } from '../../../queues/queues';
 import { QuotationStateMachine } from '../../domain/quotation.statemachine';
@@ -78,7 +79,7 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule((error as Error).message);
     }
 
-    let multimedias;
+    let multimedias: MultimediasMetadataInterface;
     if (proposedDesigns && proposedDesigns.length) {
       multimedias = await this.multimediasService.uploadProposedDesigns(
         proposedDesigns,
