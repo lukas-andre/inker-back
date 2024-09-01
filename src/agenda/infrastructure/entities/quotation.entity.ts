@@ -96,6 +96,7 @@ export class Quotation extends BaseEntity {
     name: 'status',
     enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
     enumName: 'quotation_status',
+    default: 'pending',
   })
   status: QuotationStatus;
 

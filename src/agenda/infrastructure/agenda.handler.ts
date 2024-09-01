@@ -14,7 +14,6 @@ import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda
 import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
 import { ProcessArtistActionUseCase } from '../usecases/quotation/processArtistAction.usecase';
 import { ProcessCustomerActionUseCase } from '../usecases/quotation/processCustomerAction.usecase';
-import { ReplyQuotationUseCase } from '../usecases/replyQuotation.usecase';
 import { RsvpUseCase } from '../usecases/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
@@ -26,7 +25,6 @@ import { QuotationDto } from './dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
-import { ReplyQuotationReqDto } from './dtos/replyQuotationReq.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 
 @Injectable()
@@ -43,7 +41,6 @@ export class AgendaHandler {
     private readonly createQuotationUseCase: CreateQuotationUseCase,
     private readonly getQuotationUseCase: GetQuotationUseCase,
     private readonly getQuotationsUseCase: GetQuotationsUseCase,
-    private readonly replyQuotationUseCase: ReplyQuotationUseCase,
     private readonly artistSendQuotationUseCase: ProcessArtistActionUseCase,
     private readonly customerQuotationActionUseCase: ProcessCustomerActionUseCase,
     private readonly rsvpUseCase: RsvpUseCase,
@@ -149,21 +146,7 @@ export class AgendaHandler {
     );
   }
 
-  async replyQuotation(
-    dto: ReplyQuotationReqDto,
-    proposedImages: FileInterface[],
-  ): Promise<any> {
-    const { isNotCustomer } = this.requestContex;
-    if (isNotCustomer) {
-      throw new UnauthorizedException(
-        'You dont have permission to access this resource',
-      );
-    }
-
-    return this.replyQuotationUseCase.execute(dto, proposedImages);
-  }
-
-  async getQuotation(id: number): Promise<QuotationDto> {
+  async getQuotation(id: number): Promise<Partial<QuotationDto>> {
     return this.getQuotationUseCase.execute(id);
   }
 

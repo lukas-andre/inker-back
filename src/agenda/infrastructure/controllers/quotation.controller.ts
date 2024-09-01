@@ -31,33 +31,12 @@ import { CreateQuotationReqDto } from '../dtos/createQuotationReq.dto';
 import { CustomerQuotationActionDto } from '../dtos/customerQuotationAction.dto';
 import { QuotationDto } from '../dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from '../dtos/getQuotationsQuery.dto';
-import { ReplyQuotationReqDto } from '../dtos/replyQuotationReq.dto';
 
 @ApiTags('quotations')
 @Controller('quotations')
 @UseGuards(AuthGuard)
 export class QuotationController {
   constructor(private readonly quotationHandler: AgendaHandler) {}
-
-  @ApiOperation({ summary: 'Reply to quotation' })
-  @HttpCode(200)
-  @ApiCreatedResponse({
-    description: 'Quotation replied successfully.',
-    type: DefaultResponseDto,
-  })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Reply Quotation',
-    type: ReplyQuotationReqDto,
-  })
-  @Put('reply')
-  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
-  async replyQuotation(
-    @UploadedFiles() proposedImages: FileInterface[],
-    @Body() dto: ReplyQuotationReqDto,
-  ): Promise<any> {
-    return this.quotationHandler.replyQuotation(dto, proposedImages);
-  }
 
   @ApiOperation({ summary: 'Create quotation' })
   @HttpCode(201)
@@ -86,7 +65,7 @@ export class QuotationController {
     type: QuotationDto,
   })
   @Get(':id')
-  async getQuotation(@Param('id') id: number): Promise<QuotationDto> {
+  async getQuotation(@Param('id') id: number): Promise<Partial<QuotationDto>> {
     return this.quotationHandler.getQuotation(id);
   }
 

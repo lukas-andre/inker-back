@@ -30,7 +30,7 @@ export class QuotationRejectedJob implements NotificationJob {
       to: artist.contact.email,
       artistName: artist.username,
       customerName: customer.firstName,
-      rejectionReason: quotation.rejectedReason,
+      rejectionReason: quotation.rejectReasonDetails,
       mailId: 'QUOTATION_REJECTED',
     };
     await this.emailNotificationService.sendEmail(quotationRejectedEmailData);
