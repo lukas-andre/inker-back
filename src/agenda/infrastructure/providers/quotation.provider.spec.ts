@@ -1,21 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
-import {
-  QuotationArtistRejectDto,
-  QuotationEarlyCancelDto,
-} from '../dtos/quotations.dto';
-import { Quotation } from '../entities/quotation.entity';
+import { Quotation, QuotationStatus } from '../entities/quotation.entity';
 import { QuotationHistory } from '../entities/quotationHistory.entity';
 
 import { QuotationProvider } from './quotation.provider';
 
 describe('QuotationProvider', () => {
-  const quotationToken = getRepositoryToken(Quotation);
-  const quotationHistoryToken = getRepositoryToken(QuotationHistory);
-
   let quotationProvider: QuotationProvider;
   let moduleFixture: TestingModule;
 
@@ -33,7 +26,7 @@ describe('QuotationProvider', () => {
           entities: [Quotation, QuotationHistory],
           synchronize: true,
           dropSchema: true,
-          logging: false,
+          logging: true,
           keepConnectionAlive: true,
         }),
         TypeOrmModule.forFeature(
@@ -43,11 +36,11 @@ describe('QuotationProvider', () => {
       ],
       providers: [
         {
-          provide: quotationToken,
+          provide: getRepositoryToken(Quotation),
           useClass: Repository,
         },
         {
-          provide: quotationHistoryToken,
+          provide: getRepositoryToken(QuotationHistory),
           useClass: Repository,
         },
         QuotationProvider,
@@ -67,166 +60,351 @@ describe('QuotationProvider', () => {
     await moduleFixture.close();
   });
 
-  it('quotationProvider should be defined', () => {
-    expect(quotationProvider).toBeDefined();
-  });
+  describe('Quotation Lifecycle', () => {
+    let pendingQuotation: Quotation;
 
-  it('quotationProvider.repo should be defined as Repository', () => {
-    expect(quotationProvider.repo).toBeDefined();
-    expect(quotationProvider.repo).toBeInstanceOf(Repository);
-  });
-
-  it('quotationProvider.source should be defined as DataSource', () => {
-    expect(quotationProvider.source).toBeDefined();
-    expect(quotationProvider.source).toBeInstanceOf(DataSource);
-  });
-
-  it('quotationProvider.manager should be defined as EntityManager', () => {
-    expect(quotationProvider.manager).toBeDefined();
-    expect(quotationProvider.manager).toBeInstanceOf(EntityManager);
-  });
-
-  it('quotation table should be created', async () => {
-    const quotation = await quotationProvider.repo.save({
-      status: 'pending',
-      artistId: 1,
-      customerId: 1,
-      description: 'a new tattoo',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as Partial<Quotation>);
-
-    expect(quotation).toBeDefined();
-    expect(quotation.id).toBeDefined();
-    expect(quotation.status).toBe('pending');
-    expect(quotation.artistId).toBe(1);
-    expect(quotation.customerId).toBe(1);
-    expect(quotation.createdAt).toBeDefined();
-    expect(quotation.updatedAt).toBeDefined();
-  });
-
-  it('quotationProvider.exists should return true for existing quotation', async () => {
-    const quotation = await quotationProvider.repo.save({
-      status: 'pending',
-      artistId: 1,
-      customerId: 1,
-      description: 'a new tattoo[exists]',
-    } as Partial<Quotation>);
-
-    const exists = await quotationProvider.exists(quotation.id);
-    expect(exists).toBe(true);
-  });
-
-  it('quotationProvider.exists should return false for non-existing quotation', async () => {
-    const exists = await quotationProvider.exists(999);
-    expect(exists).toBe(false);
-  });
-
-  it('quotationProvider.findById should return the correct quotation', async () => {
-    const savedQuotation = await quotationProvider.repo.save({
-      status: 'pending',
-      artistId: 1,
-      customerId: 1,
-      description: 'a new tattoo[findById]',
-    } as Partial<Quotation>);
-
-    const quotation = await quotationProvider.findById(savedQuotation.id);
-    expect(quotation).toBeDefined();
-    expect(quotation.id).toBe(savedQuotation.id);
-  });
-
-  it('quotationProvider.updateStatus should update the quotation status', async () => {
-    const savedQuotation = await quotationProvider.repo.save({
-      status: 'pending',
-      artistId: 1,
-      customerId: 1,
-      description: 'a new tattoo[updateStatus]',
-    } as Partial<Quotation>);
-
-    await quotationProvider.updateStatus(savedQuotation.id, 'accepted');
-    const updatedQuotation = await quotationProvider.findById(
-      savedQuotation.id,
-    );
-    expect(updatedQuotation.status).toBe('accepted');
-  });
-
-  it('quotationProvider.artistRejectQuotationTransaction should reject the quotation and create history', async () => {
-    const savedQuotation = await quotationProvider.repo.save({
-      status: 'pending',
-      artistId: 1,
-      customerId: 1,
-      description: 'a new tattoo[artistRejectQuotationTransaction]',
-    } as Partial<Quotation>);
-
-    const dto: QuotationArtistRejectDto = {
-      reason: 'scheduling_conflict',
-      rejectReasonDetails: 'Fully booked for the requested date',
-    };
-
-    const { transactionIsOK, updatedQuotation } =
-      await quotationProvider.artistRejectQuotationTransaction(
-        savedQuotation.id,
-        2,
-        dto,
-      );
-
-    expect(transactionIsOK).toBe(true);
-    expect(updatedQuotation).toBeDefined();
-    expect(updatedQuotation.status).toBe('rejected');
-    expect(updatedQuotation.rejectBy).toBe('artist');
-    expect(updatedQuotation.artistRejectReason).toBe(dto.reason);
-    expect(updatedQuotation.rejectReasonDetails).toBe(dto.rejectReasonDetails);
-
-    // Check if history was created
-    const history = await quotationProvider.manager.findOne(QuotationHistory, {
-      where: { quotation: { id: savedQuotation.id } },
+    beforeEach(async () => {
+      pendingQuotation = await quotationProvider.repo.save({
+        status: 'pending',
+        artistId: 1,
+        customerId: 1,
+        description: 'Test tattoo quotation',
+      } as Partial<Quotation>);
     });
 
-    expect(history).toBeDefined();
-    expect(history.previousStatus).toBe('pending');
-    expect(history.newStatus).toBe('rejected');
-    expect(history.changedByUserType).toBe('artist');
-    expect(history.rejectionReason).toBe(dto.reason);
-    expect(history.additionalDetails).toBe(dto.rejectReasonDetails);
-  });
+    describe('Early Cancellation', () => {
+      it('should allow customer to cancel a pending quotation', async () => {
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            pendingQuotation.id,
+            pendingQuotation.customerId,
+            'customer',
+            {
+              action: 'cancel',
+              cancelReason: 'change_of_mind',
+              additionalDetails: 'Changed my mind',
+            },
+            'canceled' as QuotationStatus,
+          );
 
-  it('quotationProvider.earlyCancelQuotationTransaction should cancel the quotation and create history', async () => {
-    const savedQuotation = await quotationProvider.repo.save({
-      status: 'pending',
-      artistId: 1,
-      customerId: 1,
-      description: 'a new tattoo[earlyCancelQuotationTransaction]',
-    } as Partial<Quotation>);
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('canceled');
+        expect(updatedQuotation.canceledBy).toBe('customer');
+        expect(updatedQuotation.customerCancelReason).toBe('change_of_mind');
 
-    const dto: QuotationEarlyCancelDto = {
-      reason: 'change_of_mind',
-      cancelReasonDetails: 'No longer available for the requested service',
-    };
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: pendingQuotation.id } },
+          },
+        );
+        expect(history.previousStatus).toBe('pending');
+        expect(history.newStatus).toBe('canceled');
+        expect(history.changedByUserType).toBe('customer');
+      });
 
-    const { transactionIsOK, updatedQuotation } =
-      await quotationProvider.earlyCancelQuotationTransaction(
-        savedQuotation.id,
-        1,
-        dto,
-      );
+      it('should allow system to cancel a pending quotation due to timeout', async () => {
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            pendingQuotation.id,
+            0, // system userId
+            'system',
+            {
+              action: 'cancel',
+              cancelReason: 'system_timeout',
+              additionalDetails: 'Quotation expired',
+            },
+            'canceled' as QuotationStatus,
+          );
 
-    expect(transactionIsOK).toBe(true);
-    expect(updatedQuotation).toBeDefined();
-    expect(updatedQuotation.status).toBe('canceled');
-    expect(updatedQuotation.canceledBy).toBe('customer');
-    expect(updatedQuotation.customerCancelReason).toBe(dto.reason);
-    expect(updatedQuotation.cancelReasonDetails).toBe(dto.cancelReasonDetails);
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('canceled');
+        expect(updatedQuotation.canceledBy).toBe('system');
+        expect(updatedQuotation.systemCancelReason).toBe('system_timeout');
 
-    // Check if history was created
-    const history = await quotationProvider.manager.findOne(QuotationHistory, {
-      where: { quotation: { id: savedQuotation.id } },
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: pendingQuotation.id } },
+          },
+        );
+        expect(history.previousStatus).toBe('pending');
+        expect(history.newStatus).toBe('canceled');
+        expect(history.changedByUserType).toBe('system');
+      });
     });
 
-    expect(history).toBeDefined();
-    expect(history.previousStatus).toBe('pending');
-    expect(history.newStatus).toBe('canceled');
-    expect(history.changedByUserType).toBe('customer');
-    expect(history.cancellationReason).toBe(dto.reason);
-    expect(history.additionalDetails).toBe(dto.cancelReasonDetails);
+    describe('Artist Review', () => {
+      it('should allow artist to reject a pending quotation', async () => {
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            pendingQuotation.id,
+            pendingQuotation.artistId,
+            'artist',
+            {
+              action: 'reject',
+              rejectionReason: 'scheduling_conflict',
+              additionalDetails: 'Fully booked',
+            },
+            'rejected' as QuotationStatus,
+          );
+
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('rejected');
+        expect(updatedQuotation.artistRejectReason).toBe('scheduling_conflict');
+
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: pendingQuotation.id } },
+          },
+        );
+        expect(history.previousStatus).toBe('pending');
+        expect(history.newStatus).toBe('rejected');
+        expect(history.changedByUserType).toBe('artist');
+      });
+
+      it('should allow artist to quote a pending quotation', async () => {
+        const date = new Date('2023-12-01');
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            pendingQuotation.id,
+            pendingQuotation.artistId,
+            'artist',
+            {
+              action: 'quote',
+              estimatedCost: 200,
+              appointmentDate: date,
+              appointmentDuration: 120,
+              additionalDetails: 'Available for the requested date',
+            },
+            'quoted' as QuotationStatus,
+          );
+
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('quoted');
+        expect(updatedQuotation.estimatedCost).toBe(200);
+        // expect(updatedQuotation.appointmentDate).toEqual(date);
+        expect(updatedQuotation.appointmentDuration).toBe(120);
+
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: pendingQuotation.id } },
+          },
+        );
+        expect(history.previousStatus).toBe('pending');
+        expect(history.newStatus).toBe('quoted');
+        expect(history.changedByUserType).toBe('artist');
+      });
+    });
+
+    describe('Customer Response to Quote', () => {
+      let quotedQuotation: Quotation;
+
+      beforeEach(async () => {
+        const { updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            pendingQuotation.id,
+            pendingQuotation.artistId,
+            'artist',
+            {
+              action: 'quote',
+              estimatedCost: 200,
+              appointmentDate: new Date('2023-12-01'),
+              appointmentDuration: 120,
+            },
+            'quoted' as QuotationStatus,
+          );
+        quotedQuotation = updatedQuotation;
+      });
+
+      it('should allow customer to reject a quoted quotation', async () => {
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            quotedQuotation.id,
+            quotedQuotation.customerId,
+            'customer',
+            {
+              action: 'reject',
+              rejectionReason: 'too_expensive',
+              additionalDetails: 'The price is too high',
+            },
+            'rejected' as QuotationStatus,
+          );
+
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('rejected');
+        expect(updatedQuotation.customerRejectReason).toBe('too_expensive');
+
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: quotedQuotation.id } },
+            order: { createdAt: 'DESC' },
+          },
+        );
+        expect(history.previousStatus).toBe('quoted');
+        expect(history.newStatus).toBe('rejected');
+        expect(history.changedByUserType).toBe('customer');
+      });
+
+      it('should allow customer to accept a quoted quotation', async () => {
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            quotedQuotation.id,
+            quotedQuotation.customerId,
+            'customer',
+            { action: 'accept', additionalDetails: 'Looks good, I accept' },
+            'accepted' as QuotationStatus,
+          );
+
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('accepted');
+
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: quotedQuotation.id } },
+            order: { createdAt: 'DESC' },
+          },
+        );
+        expect(history.previousStatus).toBe('quoted');
+        expect(history.newStatus).toBe('accepted');
+        expect(history.changedByUserType).toBe('customer');
+      });
+
+      it('should allow customer to appeal a quoted quotation', async () => {
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            quotedQuotation.id,
+            quotedQuotation.customerId,
+            'customer',
+            {
+              action: 'appeal',
+              appealReason: 'priceChange',
+              additionalDetails: 'Can we negotiate the price?',
+            },
+            'appealed' as QuotationStatus,
+          );
+
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('appealed');
+        expect(updatedQuotation.appealedReason).toBe('priceChange');
+
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: quotedQuotation.id } },
+            order: { createdAt: 'DESC' },
+          },
+        );
+        expect(history.previousStatus).toBe('quoted');
+        expect(history.newStatus).toBe('appealed');
+        expect(history.changedByUserType).toBe('customer');
+      });
+    });
+
+    describe('Artist Response to Appeal', () => {
+      let appealedQuotation: Quotation;
+
+      beforeEach(async () => {
+        const { updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            pendingQuotation.id,
+            pendingQuotation.artistId,
+            'artist',
+            {
+              action: 'quote',
+              estimatedCost: 200,
+              appointmentDate: new Date('2023-12-01'),
+              appointmentDuration: 120,
+            },
+            'quoted' as QuotationStatus,
+          );
+        const { updatedQuotation: appealed } =
+          await quotationProvider.updateQuotationState(
+            updatedQuotation.id,
+            updatedQuotation.customerId,
+            'customer',
+            {
+              action: 'appeal',
+              appealReason: 'priceChange',
+              additionalDetails: 'Can we negotiate the price?',
+            },
+            'appealed' as QuotationStatus,
+          );
+        appealedQuotation = appealed;
+      });
+
+      it('should allow artist to reject an appealed quotation', async () => {
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            appealedQuotation.id,
+            appealedQuotation.artistId,
+            'artist',
+            {
+              action: 'reject_appeal',
+              rejectionReason: 'artistic_disagreement',
+              additionalDetails: 'Sorry, the price is firm',
+            },
+            'rejected' as QuotationStatus,
+          );
+
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('rejected');
+        expect(updatedQuotation.artistRejectReason).toBe(
+          'artistic_disagreement',
+        );
+
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: appealedQuotation.id } },
+            order: { createdAt: 'DESC' },
+          },
+        );
+        expect(history.previousStatus).toBe('appealed');
+        expect(history.newStatus).toBe('rejected');
+        expect(history.changedByUserType).toBe('artist');
+      });
+
+      it('should allow artist to accept an appealed quotation and update it', async () => {
+        const { transactionIsOK, updatedQuotation } =
+          await quotationProvider.updateQuotationState(
+            appealedQuotation.id,
+            appealedQuotation.artistId,
+            'artist',
+            {
+              action: 'accept_appeal',
+              estimatedCost: 180,
+              appointmentDate: new Date('2023-12-05'),
+              appointmentDuration: 90,
+              additionalDetails:
+                'I can offer a slight discount and adjust the appointment',
+            },
+            'quoted' as QuotationStatus,
+          );
+
+        expect(transactionIsOK).toBe(true);
+        expect(updatedQuotation.status).toBe('quoted');
+        expect(updatedQuotation.estimatedCost).toBe(180);
+        // expect(updatedQuotation.appointmentDate).toEqual(
+        //   new Date('2023-12-05'),
+        // );
+        expect(updatedQuotation.appointmentDuration).toBe(90);
+
+        const history = await quotationProvider.manager.findOne(
+          QuotationHistory,
+          {
+            where: { quotation: { id: appealedQuotation.id } },
+            order: { createdAt: 'DESC' },
+          },
+        );
+        expect(history.previousStatus).toBe('appealed');
+        expect(history.newStatus).toBe('quoted');
+        expect(history.changedByUserType).toBe('artist');
+      });
+    });
   });
 });

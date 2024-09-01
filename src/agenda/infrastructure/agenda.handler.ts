@@ -17,25 +17,20 @@ import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByA
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda.usecase';
 import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
-import { ArtistSendQuotationUseCase } from '../usecases/quotation/artistSendQuotation.usecase';
-import { CustomerQuotationActionUseCase } from '../usecases/quotation/customQuotationAction.usecase';
-import { EarlyCancellationUseCase } from '../usecases/quotation/earlyCancellation.usecase';
+import { ProcessArtistActionUseCase } from '../usecases/quotation/processArtistAction.usecase';
+import { ProcessCustomerActionUseCase } from '../usecases/quotation/processCustomerAction.usecase';
 import { ReplyQuotationUseCase } from '../usecases/replyQuotation.usecase';
 import { RsvpUseCase } from '../usecases/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
 import { AddEventReqDto } from './dtos/addEventReq.dto';
+import { ArtistQuotationActionDto } from './dtos/artistQuotationAction.dto';
 import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
+import { CustomerQuotationActionDto } from './dtos/customerQuotationAction.dto';
 import { QuotationDto } from './dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
-import {
-  ArtistQuoteDto,
-  CustomerQuotationActionDto,
-  QuotationArtistRejectDto,
-  QuotationEarlyCancelDto,
-} from './dtos/quotations.dto';
 import { ReplyQuotationReqDto } from './dtos/replyQuotationReq.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
 
@@ -54,9 +49,8 @@ export class AgendaHandler extends BaseHandler {
     private readonly getQuotationUseCase: GetQuotationUseCase,
     private readonly getQuotationsUseCase: GetQuotationsUseCase,
     private readonly replyQuotationUseCase: ReplyQuotationUseCase,
-    private readonly earlyCancellationUseCase: EarlyCancellationUseCase,
-    private readonly artistSendQuotationUseCase: ArtistSendQuotationUseCase,
-    private readonly customerQuotationActionUseCase: CustomerQuotationActionUseCase,
+    private readonly artistSendQuotationUseCase: ProcessArtistActionUseCase,
+    private readonly customerQuotationActionUseCase: ProcessCustomerActionUseCase,
     private readonly requestService: RequestService,
     private readonly jwtService: JwtService,
     private readonly rsvpUseCase: RsvpUseCase,
@@ -133,7 +127,11 @@ export class AgendaHandler extends BaseHandler {
     );
   }
 
-  handleRsvp(agendaId: number, eventId: number, willAttend: boolean): any {
+  async handleRsvp(
+    agendaId: number,
+    eventId: number,
+    willAttend: boolean,
+  ): Promise<any> {
     // it's suposed to just the customer is able to RSVP
     return this.rsvpUseCase.execute(
       this.clsService.get('jwt.userTypeId'),
@@ -143,10 +141,10 @@ export class AgendaHandler extends BaseHandler {
     );
   }
 
-  createQuotation(
+  async createQuotation(
     dto: CreateQuotationReqDto,
     referenceImages: FileInterface[],
-  ): any {
+  ): Promise<any> {
     if (this.clsService.get('jwt.userType') !== UserType.CUSTOMER) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
@@ -162,10 +160,10 @@ export class AgendaHandler extends BaseHandler {
     );
   }
 
-  replyQuotation(
+  async replyQuotation(
     dto: ReplyQuotationReqDto,
     proposedImages: FileInterface[],
-  ): any {
+  ): Promise<any> {
     if (this.clsService.get('jwt.userType') !== UserType.CUSTOMER) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
@@ -188,28 +186,9 @@ export class AgendaHandler extends BaseHandler {
     );
   }
 
-  async handleEarlyQuotation(
+  async processArtistAction(
     quotationId: number,
-    dto: QuotationEarlyCancelDto,
-  ): Promise<void> {
-    const jwt = this.clsService.get('jwt');
-    if (jwt.userType !== UserType.CUSTOMER) {
-      throw new UnauthorizedException(
-        'You do not have permission to cancel this quotation',
-      );
-    }
-
-    return this.earlyCancellationUseCase.execute(
-      quotationId,
-      jwt.userTypeId,
-      jwt.userType,
-      dto,
-    );
-  }
-
-  async artistSendQuotation(
-    quotationId: number,
-    artistQuoteDto: ArtistQuoteDto,
+    artistQuoteDto: ArtistQuotationActionDto,
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {
     const jwt = this.clsService.get('jwt');
@@ -226,7 +205,7 @@ export class AgendaHandler extends BaseHandler {
     );
   }
 
-  customerQuotationAction(
+  async processCustomerAction(
     id: number,
     customerActionDto: CustomerQuotationActionDto,
   ) {

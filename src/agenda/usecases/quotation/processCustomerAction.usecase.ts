@@ -15,11 +15,12 @@ import { QuotationStateMachine } from '../../domain/quotation.statemachine';
 import {
   CustomerQuotationAction,
   CustomerQuotationActionDto,
-} from '../../infrastructure/dtos/quotations.dto';
+} from '../../infrastructure/dtos/customerQuotationAction.dto';
+import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
 
 @Injectable()
-export class CustomerQuotationActionUseCase
+export class ProcessCustomerActionUseCase
   extends BaseUseCase
   implements UseCase
 {
@@ -29,7 +30,7 @@ export class CustomerQuotationActionUseCase
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
-    super(CustomerQuotationActionUseCase.name);
+    super(ProcessCustomerActionUseCase.name);
   }
 
   async execute(
@@ -42,7 +43,7 @@ export class CustomerQuotationActionUseCase
       throw new DomainNotFound('Quotation not found');
     }
 
-    let newStatus;
+    let newStatus: QuotationStatus;
     try {
       switch (customerActionDto.action) {
         case CustomerQuotationAction.ACCEPT:
@@ -63,6 +64,12 @@ export class CustomerQuotationActionUseCase
             'appealed',
           );
           break;
+        case CustomerQuotationAction.CANCEL:
+          newStatus = this.quotationStateMachine.transition(
+            quotation,
+            'canceled',
+          );
+          break;
         default:
           throw new DomainBadRule('Invalid action');
       }
@@ -71,13 +78,19 @@ export class CustomerQuotationActionUseCase
     }
 
     const { transactionIsOK, updatedQuotation } =
-      await this.quotationProvider.customerQuotationActionTransaction(
+      await this.quotationProvider.updateQuotationState(
         quotationId,
-        quotation.customerId,
-        customerActionDto,
+        quotation.artistId,
+        'customer',
+        {
+          action: customerActionDto.action,
+          rejectionReason: customerActionDto.rejectionReason,
+          appealReason: customerActionDto.appealReason,
+          additionalDetails: customerActionDto.additionalDetails,
+          cancelReason: customerActionDto.cancelReason,
+        },
         newStatus,
       );
-
     if (!transactionIsOK || !updatedQuotation) {
       throw new DomainBadRule('Error updating quotation');
     }
