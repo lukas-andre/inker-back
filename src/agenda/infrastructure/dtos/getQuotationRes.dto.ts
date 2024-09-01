@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
+import { QuotationCustomerAppealReason } from '../entities/quotation.entity';
 
 export class QuotationDto {
   @ApiProperty()
@@ -48,7 +49,7 @@ export class QuotationDto {
   rejectedReason?: string;
 
   @ApiProperty({ enum: ['dateChange'], required: false })
-  appealedReason?: 'dateChange';
+  appealedReason?: QuotationCustomerAppealReason;
 
   @ApiProperty({ required: false })
   appealedDate?: Date;

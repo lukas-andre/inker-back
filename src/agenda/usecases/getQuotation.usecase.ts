@@ -14,7 +14,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
     super(GetQuotationUseCase.name);
   }
 
-  async execute(id: number): Promise<QuotationDto> {
+  async execute(id: number): Promise<Partial<QuotationDto>> {
     const quotation = await this.quotationProvider.findById(id);
 
     if (!quotation) {

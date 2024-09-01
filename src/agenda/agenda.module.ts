@@ -25,7 +25,6 @@ import { ListEventFromArtistAgenda } from './usecases/listEventFromArtistAgenda.
 import { MarkEventAsDoneUseCase } from './usecases/markEventAsDone.usecase';
 import { ProcessArtistActionUseCase } from './usecases/quotation/processArtistAction.usecase';
 import { ProcessCustomerActionUseCase } from './usecases/quotation/processCustomerAction.usecase';
-import { ReplyQuotationUseCase } from './usecases/replyQuotation.usecase';
 import { RsvpUseCase } from './usecases/rsvp.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 
@@ -53,7 +52,6 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     ListEventFromArtistAgenda,
     RsvpUseCase,
     CreateQuotationUseCase,
-    ReplyQuotationUseCase,
     GetQuotationUseCase,
     GetQuotationsUseCase,
     ProcessArtistActionUseCase,

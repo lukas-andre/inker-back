@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../global/infrastructure/base.handler';
-import { RequestService } from '../global/infrastructure/services/requestContext.service';
+import { RequestContextService } from '../global/infrastructure/services/requestContext.service';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
@@ -16,7 +16,7 @@ export class ReviewHandler extends BaseHandler {
     private readonly ratingArtistUseCase: RatingArtistUsecase,
     private readonly reactToReviewUseCase: ReactToReviewUsecase,
     private readonly getReviewsFromArtistUsecase: GetReviewsFromArtistUsecase,
-    private readonly requestService: RequestService,
+    private readonly requestService: RequestContextService,
     private readonly jwtService: JwtService,
   ) {
     super(jwtService);

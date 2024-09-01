@@ -15,7 +15,6 @@ import { oasConfigSchema } from '../config/oas.config';
 import { sendGridSchema } from '../config/sendgrid.config';
 import { verificationHashConfigSchema } from '../config/verificationHash';
 
-import { RequestInterceptor } from './aspects/request.interceptor';
 import { BaseHandler } from './infrastructure/base.handler';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { SMSClient } from './infrastructure/clients/sms.client';
@@ -52,20 +51,7 @@ import { RequestContextService } from './infrastructure/services/requestContext.
     }),
   ],
   controllers: [],
-  providers: [
-    BaseHandler,
-    S3Client,
-    SMSClient,
-    RequestContextService,
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: LoggingInterceptor,
-    // },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: RequestInterceptor,
-    },
-  ],
+  providers: [BaseHandler, S3Client, SMSClient, RequestContextService],
   exports: [
     ConfigModule,
     S3Client,
