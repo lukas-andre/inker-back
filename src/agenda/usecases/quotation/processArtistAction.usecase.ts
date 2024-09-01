@@ -16,9 +16,9 @@ import { MultimediasService } from '../../../multimedias/services/multimedias.se
 import { queues } from '../../../queues/queues';
 import { QuotationStateMachine } from '../../domain/quotation.statemachine';
 import {
+  ArtistQuotationActionDto,
   ArtistQuoteAction,
-  ArtistQuoteDto,
-} from '../../infrastructure/dtos/quotations.dto';
+} from '../../infrastructure/dtos/artistQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
 
@@ -35,8 +35,9 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
   }
 
   async execute(
+    userId: number,
     quotationId: number,
-    artistQuoteDto: ArtistQuoteDto,
+    artistQuoteDto: ArtistQuotationActionDto,
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {
     const quotation = await this.quotationProvider.findById(quotationId);
@@ -91,7 +92,7 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
     const { transactionIsOK, updatedQuotation } =
       await this.quotationProvider.updateQuotationState(
         quotationId,
-        quotation.artistId,
+        userId,
         'artist',
         {
           action: artistQuoteDto.action,

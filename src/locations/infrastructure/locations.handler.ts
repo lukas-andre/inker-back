@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../../global/infrastructure/base.handler';
-import { RequestService } from '../../global/infrastructure/services/request.service';
+import { RequestService } from '../../global/infrastructure/services/requestContext.service';
 import { AddLocationByApiUseCase } from '../usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from '../usecases/findArtistByRange.usecase';
 

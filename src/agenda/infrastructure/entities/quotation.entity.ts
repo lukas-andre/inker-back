@@ -1,4 +1,3 @@
-import { C } from 'ts-toolbelt';
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
@@ -43,6 +42,12 @@ export const SYSTEM_CANCEL_REASONS = [
 
 export const QUOTATION_CANCELED_BY = ['customer', 'system'] as const;
 export const QUOTATION_REJECTED_BY = ['customer', 'artist', 'system'] as const;
+export const QUOTATION_USER_TYPE = [
+  'customer',
+  'artist',
+  'admin',
+  'system',
+] as const;
 
 export type QuotationCustomerCancelReason =
   (typeof CUSTOMER_CANCEL_REASONS)[number];
@@ -56,6 +61,8 @@ export type QuotationCustomerAppealReason =
   (typeof CUSTOMER_APPEAL_REASONS)[number];
 export type QuotationCancelBy = (typeof QUOTATION_CANCELED_BY)[number];
 export type QuotationRejectBy = (typeof QUOTATION_REJECTED_BY)[number];
+
+export type QuotationUserType = (typeof QUOTATION_USER_TYPE)[number];
 
 export type QuotationStatus =
   | 'pending'
@@ -181,6 +188,22 @@ export class Quotation extends BaseEntity {
 
   @Column({ name: 'canceled_date', nullable: true })
   canceledDate?: Date;
+
+  @Column({
+    name: 'last_updated_by',
+    nullable: true,
+    comment: 'User ID of the last person who updated the quotation',
+  })
+  lastUpdatedBy?: number;
+
+  @Column({
+    name: 'last_updated_by_user_type',
+    type: 'enum',
+    enum: ['customer', 'artist', 'admin', 'system'],
+    enumName: 'quotation_user_type',
+    nullable: true,
+  })
+  lastUpdatedByUserType?: QuotationUserType;
 
   @OneToMany(() => QuotationHistory, history => history.quotation)
   history?: QuotationHistory[];

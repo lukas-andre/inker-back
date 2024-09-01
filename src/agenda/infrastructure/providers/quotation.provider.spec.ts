@@ -62,6 +62,8 @@ describe('QuotationProvider', () => {
 
   describe('Quotation Lifecycle', () => {
     let pendingQuotation: Quotation;
+    const customerUserId = 1;
+    const artistUserId = 2;
 
     beforeEach(async () => {
       pendingQuotation = await quotationProvider.repo.save({
@@ -77,7 +79,7 @@ describe('QuotationProvider', () => {
         const { transactionIsOK, updatedQuotation } =
           await quotationProvider.updateQuotationState(
             pendingQuotation.id,
-            pendingQuotation.customerId,
+            customerUserId,
             'customer',
             {
               action: 'cancel',
@@ -112,7 +114,7 @@ describe('QuotationProvider', () => {
             {
               action: 'cancel',
               cancelReason: 'system_timeout',
-              additionalDetails: 'Quotation expired',
+              additionalDetails: 'No response from artist',
             },
             'canceled' as QuotationStatus,
           );
@@ -139,7 +141,7 @@ describe('QuotationProvider', () => {
         const { transactionIsOK, updatedQuotation } =
           await quotationProvider.updateQuotationState(
             pendingQuotation.id,
-            pendingQuotation.artistId,
+            artistUserId,
             'artist',
             {
               action: 'reject',
@@ -169,7 +171,7 @@ describe('QuotationProvider', () => {
         const { transactionIsOK, updatedQuotation } =
           await quotationProvider.updateQuotationState(
             pendingQuotation.id,
-            pendingQuotation.artistId,
+            artistUserId,
             'artist',
             {
               action: 'quote',
@@ -206,7 +208,7 @@ describe('QuotationProvider', () => {
         const { updatedQuotation } =
           await quotationProvider.updateQuotationState(
             pendingQuotation.id,
-            pendingQuotation.artistId,
+            artistUserId,
             'artist',
             {
               action: 'quote',
@@ -223,7 +225,7 @@ describe('QuotationProvider', () => {
         const { transactionIsOK, updatedQuotation } =
           await quotationProvider.updateQuotationState(
             quotedQuotation.id,
-            quotedQuotation.customerId,
+            customerUserId,
             'customer',
             {
               action: 'reject',
@@ -253,7 +255,7 @@ describe('QuotationProvider', () => {
         const { transactionIsOK, updatedQuotation } =
           await quotationProvider.updateQuotationState(
             quotedQuotation.id,
-            quotedQuotation.customerId,
+            customerUserId,
             'customer',
             { action: 'accept', additionalDetails: 'Looks good, I accept' },
             'accepted' as QuotationStatus,
@@ -278,11 +280,11 @@ describe('QuotationProvider', () => {
         const { transactionIsOK, updatedQuotation } =
           await quotationProvider.updateQuotationState(
             quotedQuotation.id,
-            quotedQuotation.customerId,
+            customerUserId,
             'customer',
             {
               action: 'appeal',
-              appealReason: 'priceChange',
+              appealReason: 'price_change',
               additionalDetails: 'Can we negotiate the price?',
             },
             'appealed' as QuotationStatus,
@@ -290,7 +292,7 @@ describe('QuotationProvider', () => {
 
         expect(transactionIsOK).toBe(true);
         expect(updatedQuotation.status).toBe('appealed');
-        expect(updatedQuotation.appealedReason).toBe('priceChange');
+        expect(updatedQuotation.appealedReason).toBe('price_change');
 
         const history = await quotationProvider.manager.findOne(
           QuotationHistory,
@@ -329,7 +331,7 @@ describe('QuotationProvider', () => {
             'customer',
             {
               action: 'appeal',
-              appealReason: 'priceChange',
+              appealReason: 'price_change',
               additionalDetails: 'Can we negotiate the price?',
             },
             'appealed' as QuotationStatus,
@@ -341,7 +343,7 @@ describe('QuotationProvider', () => {
         const { transactionIsOK, updatedQuotation } =
           await quotationProvider.updateQuotationState(
             appealedQuotation.id,
-            appealedQuotation.artistId,
+            artistUserId,
             'artist',
             {
               action: 'reject_appeal',
@@ -373,7 +375,7 @@ describe('QuotationProvider', () => {
         const { transactionIsOK, updatedQuotation } =
           await quotationProvider.updateQuotationState(
             appealedQuotation.id,
-            appealedQuotation.artistId,
+            artistUserId,
             'artist',
             {
               action: 'accept_appeal',

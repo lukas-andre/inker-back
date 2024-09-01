@@ -7,7 +7,7 @@ import {
 import { ExtractJwt } from 'passport-jwt';
 import { Observable } from 'rxjs';
 
-import { RequestService } from '../infrastructure/services/request.service';
+import { RequestService } from '../infrastructure/services/requestContext.service';
 
 @Injectable()
 export class RequestInterceptor implements NestInterceptor {

@@ -34,6 +34,7 @@ export class ProcessCustomerActionUseCase
   }
 
   async execute(
+    userId: number,
     quotationId: number,
     customerActionDto: CustomerQuotationActionDto,
   ): Promise<{ message: string; updated: boolean }> {
@@ -80,7 +81,7 @@ export class ProcessCustomerActionUseCase
     const { transactionIsOK, updatedQuotation } =
       await this.quotationProvider.updateQuotationState(
         quotationId,
-        quotation.artistId,
+        userId,
         'customer',
         {
           action: customerActionDto.action,

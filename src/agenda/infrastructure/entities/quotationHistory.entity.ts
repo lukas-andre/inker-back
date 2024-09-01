@@ -4,8 +4,9 @@ import { BaseEntity } from '../../../global/infrastructure/entities/base.entity'
 
 import {
   Quotation,
-  QuotationAppealedReason,
+  QuotationCustomerAppealReason,
   QuotationStatus,
+  QuotationUserType,
 } from './quotation.entity';
 
 export type QuotationRole = 'customer' | 'artist' | 'system';
@@ -78,7 +79,7 @@ export class QuotationHistory extends BaseEntity {
     enum: ['dateChange', 'priceChange', 'designChange'],
     enumName: 'quotation_appealed_reason',
   })
-  appealedReason?: QuotationAppealedReason;
+  appealedReason?: QuotationCustomerAppealReason;
 
   @Column({ name: 'rejection_reason', nullable: true, type: 'text' })
   rejectionReason?: string;
@@ -88,4 +89,20 @@ export class QuotationHistory extends BaseEntity {
 
   @Column({ name: 'additional_details', nullable: true, type: 'text' })
   additionalDetails?: string;
+
+  @Column({
+    name: 'last_updated_by',
+    nullable: true,
+    comment: 'User ID of the last person who updated the quotation',
+  })
+  lastUpdatedBy?: number;
+
+  @Column({
+    name: 'last_updated_by_user_type',
+    type: 'enum',
+    enum: ['customer', 'artist', 'admin', 'system'],
+    enumName: 'quotation_user_type',
+    nullable: true,
+  })
+  lastUpdatedByUserType?: QuotationUserType;
 }
