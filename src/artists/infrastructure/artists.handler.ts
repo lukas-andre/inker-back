@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../../global/infrastructure/base.handler';
+import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { CreateArtistUseCase } from '../usecases/createArtist.usecase';
 import { FindArtistsUseCases } from '../usecases/findArtist.usecases';
@@ -14,17 +15,15 @@ import { CreateArtistDto } from './dtos/createArtist.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { UpdateStudioPhotoResponseDto } from './dtos/updateStudioPhotoResponse.dto';
 @Injectable()
-export class ArtistsHandler extends BaseHandler {
+export class ArtistsHandler {
   constructor(
     private readonly createArtistUseCase: CreateArtistUseCase,
     private readonly findArtistsUseCases: FindArtistsUseCases,
     private readonly updateArtistProfilePictureUseCase: UpdateArtistProfilePictureUseCase,
     private readonly updateArtistStudioPhotoUseCase: UpdateArtistStudioPhotoUseCase,
     private readonly updateArtistBasicInfoUseCase: UpdateArtistBasicInfoUseCase,
-    private readonly jwtService: JwtService,
-  ) {
-    super(jwtService);
-  }
+    private readonly requestContex: RequestContextService,
+  ) {}
 
   async handleCreate(dto: CreateArtistDto): Promise<BaseArtistResponse> {
     return this.createArtistUseCase.execute(dto);
@@ -47,8 +46,14 @@ export class ArtistsHandler extends BaseHandler {
   async handleFindById(id: number): Promise<BaseArtistResponse> {
     return this.findArtistsUseCases.findById(id);
   }
+
   async handleGetAll(): Promise<BaseArtistResponse[]> {
     return this.findArtistsUseCases.findAll({});
+  }
+
+  async me(): Promise<BaseArtistResponse> {
+    const { userTypeId } = this.requestContex;
+    return this.findArtistsUseCases.findById(userTypeId);
   }
 
   async handleUpdateArtistBasicInfo(

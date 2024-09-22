@@ -129,6 +129,24 @@ export class AgendaController {
     return this.agendaHandler.handleListEventFromArtistAgenda();
   }
 
+  @ApiOperation({
+    summary: 'get all events from artist id',
+  })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Event list successful.', type: undefined })
+  @ApiConflictResponse({ description: 'Trouble listing events.' })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token',
+    required: true,
+  })
+  @Get('/artist/:artistId')
+  async listEventsByAgendaId(
+    @Param('artistId', ParseIntPipe) artistId: number,
+  ): Promise<any> {
+    return this.agendaHandler.handleListEventsByAgendaId(artistId);
+  }
+
   @ApiOperation({ summary: 'Get events by id' })
   @HttpCode(200)
   @ApiOkResponse({ description: 'Get Event successful.', type: undefined })

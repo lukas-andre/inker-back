@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -25,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
 
+import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
 import {
@@ -43,7 +45,7 @@ import { UpdateStudioPhotoResponseDto } from './dtos/updateStudioPhotoResponse.d
 @ApiBearerAuth()
 @ApiTags('artists')
 @Controller('artist')
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class ArtistsController {
   constructor(private readonly artistHandler: ArtistsHandler) {}
 
@@ -127,6 +129,16 @@ export class ArtistsController {
   async findArtistById(@Param('id', ParseIntPipe) id: number) {
     console.log(id);
     return this.artistHandler.handleFindById(id);
+  }
+
+  @ApiOperation({ summary: 'Find Artist by auth token for profile page' })
+  @ApiOkResponse({
+    description: 'Find artist ok',
+    type: BaseArtistResponse,
+  })
+  @Get('me')
+  async me() {
+    return this.artistHandler.me();
   }
 
   @ApiOperation({ summary: 'Update Artist Basic by Id' })

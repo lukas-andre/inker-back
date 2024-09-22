@@ -24,7 +24,7 @@ export class CustomerQuotationActionDto {
   @IsOptional()
   rejectionReason?: QuotationCustomerRejectReason;
 
-  @IsString()
+  @IsOptional()
   @IsEnum(CUSTOMER_APPEAL_REASONS)
   appealReason?: QuotationCustomerAppealReason;
 

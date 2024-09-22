@@ -12,9 +12,9 @@ export class QuotationStateMachine
   implements StateMachine<Quotation, QuotationStatus>
 {
   private readonly transitions: Record<QuotationStatus, QuotationStatus[]> = {
-    pending: ['quoted'],
+    pending: ['quoted', 'canceled', 'rejected'],
     quoted: ['accepted', 'rejected', 'appealed'],
-    appealed: ['quoted'],
+    appealed: ['quoted', 'rejected'],
     accepted: [],
     rejected: [],
     canceled: [],

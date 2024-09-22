@@ -11,6 +11,7 @@ import { GetQuotationsUseCase } from '../usecases/getQuotations.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda.usecase';
+import { ListEventsByArtistId } from '../usecases/listEventsByArtistId.usecase';
 import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
 import { ProcessArtistActionUseCase } from '../usecases/quotation/processArtistAction.usecase';
 import { ProcessCustomerActionUseCase } from '../usecases/quotation/processCustomerAction.usecase';
@@ -43,6 +44,7 @@ export class AgendaHandler {
     private readonly getQuotationsUseCase: GetQuotationsUseCase,
     private readonly artistSendQuotationUseCase: ProcessArtistActionUseCase,
     private readonly customerQuotationActionUseCase: ProcessCustomerActionUseCase,
+    private readonly listEventsbyArtistId: ListEventsByArtistId,
     private readonly rsvpUseCase: RsvpUseCase,
     private readonly requestContex: RequestContextService,
   ) {}
@@ -191,5 +193,9 @@ export class AgendaHandler {
       quotationId,
       customerActionDto,
     );
+  }
+
+  async handleListEventsByAgendaId(artistId: number) {
+    return await this.listEventsbyArtistId.execute(artistId);
   }
 }

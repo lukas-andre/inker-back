@@ -33,6 +33,9 @@ export class Artist extends BaseEntity implements ArtistType {
   @Column({ name: 'profile_thumbnail', nullable: true })
   profileThumbnail?: string;
 
+  @Column({ default: 0 })
+  profileThumbnailVersion: number;
+
   @OneToOne(() => Contact, contact => contact.artist, { cascade: true })
   @JoinColumn({ name: 'contact_id' })
   contact: Contact;
@@ -49,6 +52,9 @@ export class Artist extends BaseEntity implements ArtistType {
 
   @Column({ name: 'studio_photo', nullable: true })
   studioPhoto?: string;
+
+  @Column({ default: 0 })
+  studioPhotoVersion: number;
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;

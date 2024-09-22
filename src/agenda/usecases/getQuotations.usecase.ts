@@ -26,8 +26,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
     const { status, page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;
 
-    const where: FindOptionsWhere<Quotation> | FindOptionsWhere<Quotation>[] =
-      {};
+    const where: FindOptionsWhere<Quotation> = {};
 
     if (userType === UserType.ARTIST) {
       where.artistId = userTypeId;
