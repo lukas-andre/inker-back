@@ -36,9 +36,13 @@ Authorization: Bearer {{token}}
 GET {{$dotenv APP_URL}}/customers/search?term=luc HTTP/1.1
 Authorization: Bearer {{token}}
 
+### Search Artist By Id
+GET {{$dotenv APP_URL}}/artist/1 HTTP/1.1
+Authorization: Bearer {{token}}
+
 
 ### Crear Cotización
-POST {{$dotenv APP_URL}}/agenda/quotation HTTP/1.1
+POST {{$dotenv APP_URL}}/quotations HTTP/1.1
 Authorization: Bearer {{token}}
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -71,9 +75,9 @@ Content-Type: image/png
 --boundary--
 
 ### Get Specific Quotation
-GET {{$dotenv APP_URL}}/agenda/quotation/5 HTTP/1.1
+GET {{$dotenv APP_URL}}/quotations/5 HTTP/1.1
 Authorization: Bearer {{token}}
 
 ### Get Quotations
-GET {{$dotenv APP_URL}}/agenda/quotations?status=pending&page=1&limit=10 HTTP/1.1
+GET {{$dotenv APP_URL}}/quotations?status=pending&page=1&limit=10 HTTP/1.1
 Authorization: Bearer {{token}}

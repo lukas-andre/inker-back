@@ -22,6 +22,7 @@ import { GetQuotationsUseCase } from './usecases/getQuotations.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from './usecases/getWorkEvidenceByArtistId.usecase';
 import { ListEventByViewTypeUseCase } from './usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from './usecases/listEventFromArtistAgenda.usecase';
+import { ListEventsByArtistId } from './usecases/listEventsByArtistId.usecase';
 import { MarkEventAsDoneUseCase } from './usecases/markEventAsDone.usecase';
 import { ProcessArtistActionUseCase } from './usecases/quotation/processArtistAction.usecase';
 import { ProcessCustomerActionUseCase } from './usecases/quotation/processCustomerAction.usecase';
@@ -56,6 +57,7 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     GetQuotationsUseCase,
     ProcessArtistActionUseCase,
     ProcessCustomerActionUseCase,
+    ListEventsByArtistId,
   ],
   controllers: [AgendaController, QuotationController],
 })

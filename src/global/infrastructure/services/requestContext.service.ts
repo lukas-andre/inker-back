@@ -37,6 +37,7 @@ export class RequestContextService {
   }
 
   get userTypeId(): number {
+    console.log('jwt: ', this.cls.get('jwt'));
     return this.cls.get('jwt').userTypeId;
   }
 

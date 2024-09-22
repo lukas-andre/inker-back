@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Logger,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiNotFoundResponse,
@@ -14,6 +15,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 
+import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import {
   NO_ARTISTS_FOUND,
@@ -28,6 +30,7 @@ import { LocationsHandler } from './locations.handler';
 
 @ApiTags('locations')
 @Controller('locations')
+@UseGuards(AuthGuard)
 export class LocationsController {
   private readonly logger = new Logger(LocationsController.name);
   constructor(private readonly locationsHandler: LocationsHandler) {}

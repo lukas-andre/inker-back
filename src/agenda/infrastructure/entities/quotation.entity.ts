@@ -17,6 +17,7 @@ export const CUSTOMER_APPEAL_REASONS = [
   'date_change',
   'price_change',
   'design_change',
+  'other',
 ] as const;
 
 export const CUSTOMER_REJECT_REASONS = [

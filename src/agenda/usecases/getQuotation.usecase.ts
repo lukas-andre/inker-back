@@ -15,7 +15,10 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
   }
 
   async execute(id: number): Promise<Partial<QuotationDto>> {
-    const quotation = await this.quotationProvider.findById(id);
+    const quotation = await this.quotationProvider.findOne({
+      where: { id },
+      relations: ['history'],
+    });
 
     if (!quotation) {
       throw new DomainNotFound('Quotation not found');
