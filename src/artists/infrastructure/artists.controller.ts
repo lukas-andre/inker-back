@@ -9,6 +9,8 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -29,6 +31,7 @@ import { FileFastifyInterceptor } from 'fastify-file-interceptor';
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
+import { ArtistDto } from '../domain/dtos/artist.dto';
 import {
   ARTIST_NOT_FOUND,
   ERROR_UPLOADING_FILE,
@@ -83,7 +86,7 @@ export class ArtistsController {
   @ApiBody({ description: 'Studio photo', type: FileUploadDto })
   @ApiCreatedResponse({
     description: 'Artist studio photo was uploaded',
-    type: UpdateStudioPhotoResponseDto,
+    type: ArtistDto,
   })
   @ApiBadRequestResponse({
     description: errorCodesToOASDescription([
@@ -148,10 +151,23 @@ export class ArtistsController {
   })
   @ApiParam({ name: 'id', required: true, type: Number })
   @Put(':id')
+  @UsePipes(new ValidationPipe({ forbidUnknownValues: false }))
   async updateArtistBasicInfo(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateArtistDto,
   ) {
     return this.artistHandler.handleUpdateArtistBasicInfo(id, body);
+  }
+
+  @ApiOperation({ summary: 'Update Artist Basic by Id' })
+  @ApiOkResponse({
+    description: 'Update artist ok',
+    type: BaseArtistResponse,
+  })
+  @ApiParam({ name: 'id', required: true, type: Number })
+  @Put('/me')
+  @UsePipes(new ValidationPipe({ forbidUnknownValues: false }))
+  async updateMe(@Body() body: UpdateArtistDto) {
+    return this.artistHandler.handleUpdateMe(body);
   }
 }

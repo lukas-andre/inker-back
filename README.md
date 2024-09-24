@@ -76,3 +76,4 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 Nest is [MIT licensed](LICENSE).
 
 ## TODO: Add userTypeInfo in jwtPayload
+## TODO: TODOS LOS SERVICIOS DE ACTUALIZACION DE ARTISTAS DEBEN RESPONDER LO MISMO, SI ACTUALIZO UNA IMAGEN O UN STUDIO O UN SERVICIO ME DEBE RETORNAR EL ARISTA COMPLETO SIEMPRE 

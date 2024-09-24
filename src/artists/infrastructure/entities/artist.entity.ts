@@ -3,6 +3,8 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToOne,
 } from 'typeorm';
 
@@ -12,6 +14,7 @@ import { TagInterface } from '../../../tags/tag.interface';
 import { ArtistType } from '../../domain/artistType';
 
 import { Contact } from './contact.entity';
+import { Service } from './service.entity';
 
 @Entity()
 export class Artist extends BaseEntity implements ArtistType {
@@ -20,6 +23,10 @@ export class Artist extends BaseEntity implements ArtistType {
 
   @Column({ name: 'username' })
   username: string;
+
+  @ManyToMany(() => Service, service => service.artists)
+  @JoinTable()
+  services: Service[];
 
   @Column({ name: 'first_name' })
   firstName: string;
@@ -39,12 +46,6 @@ export class Artist extends BaseEntity implements ArtistType {
   @OneToOne(() => Contact, contact => contact.artist, { cascade: true })
   @JoinColumn({ name: 'contact_id' })
   contact: Contact;
-
-  @Column('jsonb', { nullable: true })
-  tags?: TagInterface[];
-
-  @Column('jsonb', { nullable: true })
-  genres?: GenreInterface[];
 
   // TODO: This should be removed
   @Column({ type: 'float', default: 0.0 })
