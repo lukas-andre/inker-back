@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
+import { ArtistDto } from '../domain/dtos/artist.dto';
 import { CreateArtistUseCase } from '../usecases/createArtist.usecase';
 import { FindArtistsUseCases } from '../usecases/findArtist.usecases';
 import { UpdateArtistBasicInfoUseCase } from '../usecases/updateArtistBasicInfo.usecase';
@@ -39,7 +40,7 @@ export class ArtistsHandler {
   async handleUpdateStudioPhoto(
     id: number,
     file: FileInterface,
-  ): Promise<UpdateStudioPhotoResponseDto> {
+  ): Promise<ArtistDto> {
     return this.updateArtistStudioPhotoUseCase.execute(id, file);
   }
 
@@ -54,6 +55,11 @@ export class ArtistsHandler {
   async me(): Promise<BaseArtistResponse> {
     const { userTypeId } = this.requestContex;
     return this.findArtistsUseCases.findById(userTypeId);
+  }
+
+  async handleUpdateMe(dto: UpdateArtistDto): Promise<BaseArtistResponse> {
+    const { userTypeId } = this.requestContex;
+    return this.updateArtistBasicInfoUseCase.execute(userTypeId, dto);
   }
 
   async handleUpdateArtistBasicInfo(

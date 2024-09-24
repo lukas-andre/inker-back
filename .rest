@@ -40,6 +40,10 @@ Authorization: Bearer {{token}}
 GET {{$dotenv APP_URL}}/artist/1 HTTP/1.1
 Authorization: Bearer {{token}}
 
+### Search Artist By token
+GET {{$dotenv APP_URL}}/artist/me HTTP/1.1
+Authorization: Bearer {{token}}
+
 
 ### Crear Cotización
 POST {{$dotenv APP_URL}}/quotations HTTP/1.1

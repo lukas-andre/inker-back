@@ -100,6 +100,23 @@ export class ArtistProvider extends BaseComponent {
     }
   }
 
+  async findByIdWithJoins(id: number): Promise<Artist> {
+    try {
+      return await this.artistsRepository
+        .createQueryBuilder('artist')
+        .leftJoinAndSelect('artist.contact', 'contact')
+        .leftJoinAndSelect('artist.services', 'services')
+        .where('artist.id = :id', { id })
+        .getOne();
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        'Problems finding artist',
+        error,
+      );
+    }
+  }
+
   async findByIdWithContact(id: number): Promise<Artist> {
     try {
       return await this.artistsRepository.findOne({
@@ -164,26 +181,6 @@ export class ArtistProvider extends BaseComponent {
       throw new DBServiceFindOneException(
         this,
         PROBLEMS_FILTERING_ARTISTS,
-        error,
-      );
-    }
-  }
-
-  async updateStudioPhoto(
-    artistId: number,
-    studioPhoto: string,
-  ): Promise<UpdateResult> {
-    try {
-      return this.artistsRepository
-        .createQueryBuilder()
-        .select('id')
-        .where({ id: artistId })
-        .update({ studioPhoto })
-        .execute();
-    } catch (error) {
-      throw new DBServiceSaveException(
-        this,
-        PROBLEMS_UPDATING_STUDIO_PHOTO,
         error,
       );
     }

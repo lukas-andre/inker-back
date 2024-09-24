@@ -11,12 +11,12 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import {
   MultimediasService,
   UploadToS3Result,
 } from '../../multimedias/services/multimedias.service';
+import { ArtistDto } from '../domain/dtos/artist.dto';
 import {
   ARTIST_NOT_FOUND,
   ERROR_UPLOADING_FILE,
@@ -24,7 +24,6 @@ import {
   NOT_VALID_FILE_TYPE_TO_UPLOAD,
 } from '../domain/errors/codes';
 import { ArtistProvider } from '../infrastructure/database/artist.provider';
-import { UpdateStudioPhotoResponseDto } from '../infrastructure/dtos/updateStudioPhotoResponse.dto';
 
 @Injectable()
 export class UpdateArtistStudioPhotoUseCase
@@ -39,18 +38,12 @@ export class UpdateArtistStudioPhotoUseCase
     super(UpdateArtistStudioPhotoUseCase.name);
   }
 
-  async execute(
-    id: number,
-    file: FileInterface,
-  ): Promise<UpdateStudioPhotoResponseDto> {
+  async execute(id: number, file: FileInterface): Promise<ArtistDto> {
     if (!file) {
       throw new DomainBadRequest(NOT_VALID_FILE_TO_UPLOAD);
     }
 
-    this.logger.log(`id:  ${id}`);
-    console.time('existArtist');
-    const artist = await this.artistProvider.exists(id);
-    console.timeEnd('existArtist');
+    let artist = await this.artistProvider.findById(id);
 
     if (!artist) {
       throw new DomainNotFound(ARTIST_NOT_FOUND);
@@ -62,14 +55,17 @@ export class UpdateArtistStudioPhotoUseCase
       throw new DomainBadRequest(NOT_VALID_FILE_TYPE_TO_UPLOAD);
     }
 
+    const version = (artist.studioPhotoVersion || 0) + 1;
+    artist.studioPhotoVersion = version;
+
     const source = `artist/${id}`;
     console.time('uploadFile');
     let uploadResult: UploadToS3Result[];
     try {
       uploadResult = await Promise.all([
-        this.uploadNormal(file, source, fileExtension),
-        this.uploadSmall(file, source, fileExtension),
-        this.uploadTiny(file, source, fileExtension),
+        this.uploadNormal(file, source, fileExtension, version),
+        this.uploadSmall(file, source, fileExtension, version),
+        this.uploadTiny(file, source, fileExtension, version),
       ]);
     } catch (error) {
       this.logger.error(error);
@@ -77,25 +73,30 @@ export class UpdateArtistStudioPhotoUseCase
     }
     console.timeEnd('uploadFile');
 
-    const cloudFrontUrl = uploadResult[0].cloudFrontUrl;
+    artist.studioPhoto = uploadResult[0].cloudFrontUrl;
 
-    console.time('updateStudioPhoto');
-    await this.artistProvider.updateStudioPhoto(id, cloudFrontUrl);
-    console.timeEnd('updateStudioPhoto');
+    artist = await this.artistProvider.save(artist);
 
-    return {
-      ...DefaultResponse.ok,
-      data: { cloudFrontUrl, id },
-    } as UpdateStudioPhotoResponseDto;
+    return artist;
   }
 
-  async uploadNormal(file: any, source: string, fileExtension: string) {
-    const fileName = `studio_photo.${fileExtension}`;
+  async uploadNormal(
+    file: any,
+    source: string,
+    fileExtension: string,
+    version: number,
+  ) {
+    const fileName = `studio_photo_${version}.${fileExtension}`;
     return this.multimediasService.upload(file, source, fileName);
   }
 
-  async uploadSmall(file: any, source: string, fileExtension: string) {
-    const fileName = `studio_photo_small.${fileExtension}`;
+  async uploadSmall(
+    file: any,
+    source: string,
+    fileExtension: string,
+    version: number,
+  ) {
+    const fileName = `studio_photo_small_${version}.${fileExtension}`;
 
     const data = await sharp(file.buffer)
       .resize({ width: 512 })
@@ -105,8 +106,13 @@ export class UpdateArtistStudioPhotoUseCase
     return this.multimediasService.upload(file, source, fileName);
   }
 
-  async uploadTiny(file: any, source: string, fileExtension: string) {
-    const fileName = `studio_photo_tiny.${fileExtension}`;
+  async uploadTiny(
+    file: any,
+    source: string,
+    fileExtension: string,
+    version: number,
+  ) {
+    const fileName = `studio_photo_tiny_${version}.${fileExtension}`;
 
     const data = await sharp(file.buffer)
       .resize({ width: 50 })
