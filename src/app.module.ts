@@ -31,10 +31,10 @@ import { UsersModule } from './users/users.module';
         port: 6379,
       },
     }),
-    DevtoolsModule.register({
-      http: process.env.NODE_ENV !== 'production',
-      port: 8000,
-    }),
+    // DevtoolsModule.register({
+    //   http: process.env.NODE_ENV !== 'production',
+    //   port: 8000,
+    // }),
     AgendaModule,
     ArtistsModule,
     AuthModule,

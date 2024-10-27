@@ -79,7 +79,7 @@ Content-Type: image/png
 --boundary--
 
 ### Get Specific Quotation
-GET {{$dotenv APP_URL}}/quotations/5 HTTP/1.1
+GET {{$dotenv APP_URL}}/quotations/16 HTTP/1.1
 Authorization: Bearer {{token}}
 
 ### Get Quotations

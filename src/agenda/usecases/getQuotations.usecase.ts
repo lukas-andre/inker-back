@@ -42,6 +42,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
       where,
       skip,
       take: limit,
+      relations: ['history'],
       order: { createdAt: 'DESC' },
     });
 
