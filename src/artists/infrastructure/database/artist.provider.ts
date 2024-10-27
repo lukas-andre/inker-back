@@ -7,7 +7,6 @@ import {
   FindOneOptions,
   In,
   Repository,
-  UpdateResult,
 } from 'typeorm';
 
 import { BaseComponent } from '../../../global/domain/components/base.component';
@@ -19,7 +18,6 @@ import {
 } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { PROBLEMS_FILTERING_ARTISTS } from '../../../locations/domain/codes/codes';
 import { RawFindByArtistIdsResponseDTO } from '../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
-import { PROBLEMS_UPDATING_STUDIO_PHOTO } from '../../domain/errors/codes';
 import { CreateArtistParams } from '../../usecases/interfaces/createArtist.params';
 import { Artist } from '../entities/artist.entity';
 import { Contact } from '../entities/contact.entity';
