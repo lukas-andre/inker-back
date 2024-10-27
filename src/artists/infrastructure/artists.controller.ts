@@ -43,7 +43,6 @@ import { ArtistsHandler } from './artists.handler';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { CreateArtistDto } from './dtos/createArtist.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
-import { UpdateStudioPhotoResponseDto } from './dtos/updateStudioPhotoResponse.dto';
 
 @ApiBearerAuth()
 @ApiTags('artists')

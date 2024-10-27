@@ -1,5 +1,5 @@
 SELECT 'CREATE DATABASE inker-customer'
-WHERE NOT EXISTS (SELECT FROM pg_catalog WHERE datname = 'inker-customer');
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-customer');
 
 SELECT 'CREATE DATABASE inker-artist'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-artist');

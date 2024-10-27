@@ -12,7 +12,7 @@ POSTGRES_USER="root"
 POSTGRES_PASSWORD="root"
 POSTGRES_HOST="localhost"
 POSTGRES_PORT="5432"
-BACKUP_DIR="/Users/noname/Dev/inker-back/database/backup"
+BACKUP_DIR="/Users/lhenry/Development/inker-back/database/backup"
 
 # Encuentra todos los archivos .tar en el directorio de respaldo
 BACKUP_FILES=$(find $BACKUP_DIR -type f -name "*.tar")

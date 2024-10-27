@@ -1,5 +1,3 @@
-// src/artists/usecases/updateArtistBasicInfo.usecase.ts
-
 import { Injectable } from '@nestjs/common';
 
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
@@ -10,9 +8,7 @@ import {
 import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from '../infrastructure/dtos/updateArtist.dto';
-import { Artist } from '../infrastructure/entities/artist.entity';
 
-import { FindArtistByIdResult } from './interfaces/findArtistById.result';
 
 @Injectable()
 export class UpdateArtistBasicInfoUseCase
