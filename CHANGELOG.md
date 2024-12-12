@@ -1,3 +1,22 @@
+# [1.3.0](https://gitlab.com/inker-studio/inker-back/compare/v1.2.0...v1.3.0) (2024-12-12)
+
+
+### Bug Fixes
+
+* **reviews:** add missing provider to reviews modules ([5337a70](https://gitlab.com/inker-studio/inker-back/commit/5337a70db6e539ae90ba04a668eb3b59cef59c1b))
+* **review:** fix bug finding if user rate an event before ([1778eaa](https://gitlab.com/inker-studio/inker-back/commit/1778eaa7ac0f0c8618621ea3b6774ad51716fdc0))
+* **artist:** remove implicit required mime ([75a6f13](https://gitlab.com/inker-studio/inker-back/commit/75a6f133d31d7bdb7b9e3f2c8298b4ab0f2936cc))
+* **location:** update location by artist response ([de304d0](https://gitlab.com/inker-studio/inker-back/commit/de304d05f846c03e9086371dba359418059c27d2))
+
+
+### Features
+
+* **locations:** add followers and isFollowedByUser to findArtistByrange response ([f82422c](https://gitlab.com/inker-studio/inker-back/commit/f82422c5fcb10863382c740407e4f505f7ea9a68))
+* **locations:** add recent works to get artist by range response! ([8b069a5](https://gitlab.com/inker-studio/inker-back/commit/8b069a51fd9d8ab0fc6bb8b16f6ae7315a75d0f7))
+* **location:** add review and reviews property to find artist by range response ([ab2deac](https://gitlab.com/inker-studio/inker-back/commit/ab2deacb0fb8d9980416c73d00a3587bb0acad55))
+* **reviews:** add review transactions ([9254e22](https://gitlab.com/inker-studio/inker-back/commit/9254e2230587d08474afb3718eb762e2ef3b1317))
+* finish review resource ([2ac2e58](https://gitlab.com/inker-studio/inker-back/commit/2ac2e58936b269f5057c884a06fb0ca3aaf02d58))
+
 # [1.2.0](https://gitlab.com/inker-studio/inker-back/compare/v1.1.7...v1.2.0) (2022-11-24)
 
 
