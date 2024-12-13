@@ -17,6 +17,14 @@ export const QuotationJobIdSchema = z.enum([
   'QUOTATION_CANCELED',
 ]);
 export type QuotationJobIdType = z.infer<typeof QuotationJobIdSchema>;
+export type QuotationCustomerActionJobIdType =
+  | 'QUOTATION_ACCEPTED'
+  | 'QUOTATION_REJECTED'
+  | 'QUOTATION_APPEALED'
+  | 'QUOTATION_CANCELED';
+export type QuotationArtistActionJobIdType =
+  | 'QUOTATION_REPLIED'
+  | 'QUOTATION_REJECTED';
 
 const QuotationJobSchema = z.object({
   jobId: QuotationJobIdSchema,
@@ -35,6 +43,18 @@ export type QuotationCreatedJobType = z.infer<typeof QuotationCreatedJobSchema>;
 
 const QuotationRepliedJobSchema = QuotationJobSchema.extend({
   jobId: z.literal(QuotationJobIdSchema.enum.QUOTATION_REPLIED),
+  metadata: z.object({
+    quotationId: z.number(),
+    artistId: z.number(),
+    customerId: z.number(),
+    estimatedCost: z.object({
+      amount: z.number(),
+      currency: z.string(),
+    }).optional(),
+    appointmentDate: z.string().optional(),
+    appointmentDuration: z.number().optional(),
+    additionalDetails: z.string().optional(),
+  }),
 });
 export type QuotationRepliedJobType = z.infer<typeof QuotationRepliedJobSchema>;
 
@@ -47,6 +67,14 @@ export type QuotationAcceptedJobType = z.infer<
 
 const QuotationRejectedJobSchema = QuotationJobSchema.extend({
   jobId: z.literal(QuotationJobIdSchema.enum.QUOTATION_REJECTED),
+  metadata: z.object({
+    by: z.enum(['artist', 'customer', 'system']),
+    quotationId: z.number(),
+    artistId: z.number(),
+    customerId: z.number(),
+    rejectionReason: z.string(),
+    additionalDetails: z.string().optional(),
+  }),
 });
 export type QuotationRejectedJobType = z.infer<
   typeof QuotationRejectedJobSchema
@@ -54,6 +82,13 @@ export type QuotationRejectedJobType = z.infer<
 
 const QuotationAppealedJobSchema = QuotationJobSchema.extend({
   jobId: z.literal(QuotationJobIdSchema.enum.QUOTATION_APPEALED),
+  metadata: z.object({
+    quotationId: z.number(),
+    artistId: z.number(),
+    customerId: z.number(),
+    appealReason: z.string(),
+    additionalDetails: z.string().optional(),
+  }),
 });
 export type QuotationAppealedJobType = z.infer<
   typeof QuotationAppealedJobSchema
@@ -65,19 +100,21 @@ const QuotationCanceledJobSchema = QuotationJobSchema.extend({
     quotationId: z.number(),
     artistId: z.number(),
     customerId: z.number(),
-    canceledBy: z.enum(['artist', 'customer', 'system']),
-    cancelReasonType: CancelReasonTypeSchema,
-    cancelReason: z.union([
-      CustomerCancelReasonSchema,
-      ArtistCancelReasonSchema,
-      SystemCancelReasonSchema,
-    ]),
-    cancelReasonDetails: z.string().optional(),
   }),
 });
 export type QuotationCanceledJobType = z.infer<
   typeof QuotationCanceledJobSchema
 >;
+
+export type QuotationCustomerActionJobType =
+  | QuotationCanceledJobType
+  | QuotationAcceptedJobType
+  | QuotationAppealedJobType
+  | QuotationRejectedJobType;
+
+export type QuotationArtistActionJobType =
+  | QuotationRepliedJobType
+  | QuotationRejectedJobType;
 
 export type QuotationJobType =
   | QuotationCreatedJobType

@@ -5,8 +5,14 @@ import { CustomerProvider } from '../../../../../customers/infrastructure/provid
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { QuotationAcceptedType } from '../../../../../notifications/services/email/schemas/email';
+import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { QuotationAcceptedJobType } from '../../../domain/schemas/quotation';
 import { NotificationJob } from '../notification.job';
+
+const QUOTATION_ACCEPTED_NOTIFICATIONS = {
+  title: 'Cotización aceptada',
+  body: 'Se ha aceptado la cotización'
+} as const;
 
 export class QuotationAcceptedJob implements NotificationJob {
   constructor(
@@ -16,6 +22,7 @@ export class QuotationAcceptedJob implements NotificationJob {
     private readonly customerProvider: CustomerProvider,
     private readonly _2: ArtistLocationProvider,
     private readonly quotationProvider: QuotationProvider,
+    private readonly pushNotificationService: PushNotificationService,
   ) {}
 
   async handle(job: QuotationAcceptedJobType): Promise<void> {
@@ -30,12 +37,27 @@ export class QuotationAcceptedJob implements NotificationJob {
       to: artist.contact.email,
       artistName: artist.username,
       customerName: customer.firstName,
-      estimatedCost: quotation.estimatedCost,
+      estimatedCost: quotation.estimatedCost.toString(),
       appointmentDate: quotation.appointmentDate,
       appointmentDuration: quotation.appointmentDuration,
       mailId: 'QUOTATION_ACCEPTED',
     };
 
-    await this.emailNotificationService.sendEmail(quotationAcceptedEmailData);
+    const notificationMetadata = {
+      type: job.jobId,
+      quotationId: quotationId.toString(),
+      artistName: artist.username,
+      customerName: customer.firstName,
+    };
+
+    await Promise.all([
+      this.pushNotificationService.sendToUser(
+        artist.userId,
+        QUOTATION_ACCEPTED_NOTIFICATIONS,
+        notificationMetadata
+      ),
+      this.emailNotificationService.sendEmail(quotationAcceptedEmailData),
+    ]);
   }
 }
+

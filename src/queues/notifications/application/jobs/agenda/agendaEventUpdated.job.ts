@@ -9,6 +9,7 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { AgendaEventUpdatedType } from '../../../../../notifications/services/email/schemas/email';
 import { AgendaEventUpdatedJobType } from '../../../domain/schemas/agenda';
 import { getGoogleMapsLink } from '../notification.job';
+import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 
 @Injectable()
 export class AgendaEventUpdatedJob {
@@ -19,6 +20,7 @@ export class AgendaEventUpdatedJob {
     private readonly customerProvider: CustomerProvider,
     private readonly locationProvider: ArtistLocationProvider,
     private readonly _: QuotationProvider,
+    private readonly _3: PushNotificationService,
   ) {}
 
   async handle(job: AgendaEventUpdatedJobType): Promise<void> {

@@ -18,6 +18,7 @@ import {
 } from '../../infrastructure/dtos/customerQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
+import { QuotationCustomerActionJobIdType, QuotationCustomerActionJobType, QuotationJobIdType } from '../../../queues/notifications/domain/schemas/quotation';
 
 @Injectable()
 export class ProcessCustomerActionUseCase
@@ -88,7 +89,7 @@ export class ProcessCustomerActionUseCase
           rejectionReason: customerActionDto.rejectionReason,
           appealReason: customerActionDto.appealReason,
           additionalDetails: customerActionDto.additionalDetails,
-          cancelReason: customerActionDto.cancelReason,
+          // cancelReason: customerActionDto.cancelReason,
         },
         newStatus,
       );
@@ -96,18 +97,49 @@ export class ProcessCustomerActionUseCase
       throw new DomainBadRule('Error updating quotation');
     }
 
-    // Uncomment this section when ready to implement notifications
-    // const queueMessage = {
-    //   jobId: 'QUOTATION_CUSTOMER_ACTION',
-    //   metadata: {
-    //     quotationId: quotationId,
-    //     artistId: quotation.artistId,
-    //     customerId: quotation.customerId,
-    //     action: customerActionDto.action,
-    //   },
-    //   notificationTypeId: 'EMAIL',
-    // };
-    // await this.notificationQueue.add(queueMessage);
+    let notificationTypeId: QuotationCustomerActionJobIdType;
+
+    switch (customerActionDto.action) {
+      case CustomerQuotationAction.ACCEPT:
+        notificationTypeId = 'QUOTATION_ACCEPTED';
+        break;
+      case CustomerQuotationAction.REJECT:
+        notificationTypeId = 'QUOTATION_REJECTED';
+        break;
+      case CustomerQuotationAction.APPEAL:
+        notificationTypeId = 'QUOTATION_APPEALED';
+        break;
+      case CustomerQuotationAction.CANCEL:
+        notificationTypeId = 'QUOTATION_CANCELED';
+        break;
+      default:
+        // It's not necessary to throw an error here because the action is already validated
+        // We just are not going to send a notification in this case
+        this.logger.error({
+          message: 'INVALID_ACTION',
+          action: customerActionDto.action,
+        });
+    }
+
+    if (notificationTypeId) {
+      const queueMessage: unknown = {
+        jobId: notificationTypeId,
+        notificationTypeId: 'PUSH' as const,
+        metadata: {
+          ...(customerActionDto.action === CustomerQuotationAction.REJECT && {
+            by: 'customer',
+          }),
+          quotationId,
+          artistId: quotation.artistId,
+          customerId: quotation.customerId,
+          ...(customerActionDto.action === CustomerQuotationAction.REJECT && { rejectionReason: customerActionDto.rejectionReason }),
+          ...(customerActionDto.action === CustomerQuotationAction.APPEAL && { appealReason: customerActionDto.appealReason }),
+          additionalDetails: customerActionDto.additionalDetails,
+        },
+      };
+
+      await this.notificationQueue.add(queueMessage);
+    }
 
     return {
       message: 'Quotation updated successfully',

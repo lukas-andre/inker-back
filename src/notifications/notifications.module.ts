@@ -4,10 +4,23 @@ import { SendGridClient } from './clients/sendGrid.client';
 import { NotificationsController } from './notifications.controller';
 import { EmailNotificationService } from './services/email/email.notification';
 import { TemplateService } from './services/email/templates/template.service';
+import { NotificationsDatabaseModule } from './database/notificactionsDatabase.module';
+import { FirebaseFcmConfig } from './config/firebaseFcm.config';
+import { PushNotificationService } from './services/push/pushNotification.service';
 
 @Module({
-  providers: [EmailNotificationService, SendGridClient, TemplateService],
+  imports: [NotificationsDatabaseModule],
+  providers: [
+    EmailNotificationService,
+    SendGridClient,
+    TemplateService,
+    PushNotificationService
+  ],
   controllers: [NotificationsController],
-  exports: [EmailNotificationService],
+  exports: [EmailNotificationService, PushNotificationService],
 })
-export class NotificationsModule {}
+export class NotificationsModule {
+  constructor() {
+    FirebaseFcmConfig.initialize();
+  }
+}

@@ -5,8 +5,14 @@ import { CustomerProvider } from '../../../../../customers/infrastructure/provid
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { QuotationRepliedType } from '../../../../../notifications/services/email/schemas/email';
+import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { QuotationRepliedJobType } from '../../../domain/schemas/quotation';
 import { NotificationJob } from '../notification.job';
+
+const QUOTATION_REPLIED_NOTIFICATIONS = {
+  title: 'Cotización respondida',
+  body: 'Se ha respondido una cotización'
+} as const;
 
 export class QuotationRepliedJob implements NotificationJob {
   constructor(
@@ -16,6 +22,7 @@ export class QuotationRepliedJob implements NotificationJob {
     private readonly customerProvider: CustomerProvider,
     private readonly _2: ArtistLocationProvider,
     private readonly quotationProvider: QuotationProvider,
+    private readonly pushNotificationService: PushNotificationService,
   ) {}
 
   async handle(job: QuotationRepliedJobType): Promise<void> {
@@ -26,15 +33,26 @@ export class QuotationRepliedJob implements NotificationJob {
       this.customerProvider.findById(customerId),
     ]);
 
-    const quotationRepliedEmailData: QuotationRepliedType = {
-      to: customer.contactEmail,
+    // const quotationRepliedEmailData: QuotationRepliedType = {
+    //   to: customer.contactEmail,
+    //   artistName: artist.username,
+    //   customerName: customer.firstName,
+    //   estimatedCost: quotation.estimatedCost.toString(),
+    //   appointmentDate: quotation.appointmentDate,
+    //   appointmentDuration: quotation.appointmentDuration,
+    //   mailId: 'QUOTATION_REPLIED',
+    // };
+
+    const notificationMetadata = {
+      type: job.jobId,
+      quotationId: quotationId.toString(),
       artistName: artist.username,
       customerName: customer.firstName,
-      estimatedCost: quotation.estimatedCost,
-      appointmentDate: quotation.appointmentDate,
-      appointmentDuration: quotation.appointmentDuration,
-      mailId: 'QUOTATION_REPLIED',
     };
-    await this.emailNotificationService.sendEmail(quotationRepliedEmailData);
+
+    await Promise.all([
+      this.pushNotificationService.sendToUser(customer.userId, QUOTATION_REPLIED_NOTIFICATIONS, notificationMetadata),
+      // this.emailNotificationService.sendEmail(quotationRepliedEmailData),
+    ]);
   }
 }

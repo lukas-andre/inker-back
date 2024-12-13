@@ -5,6 +5,7 @@ import { CustomerHandler } from './infrastructure/customers.handler';
 import { CustomerProviderModule } from './infrastructure/providers/customerProvider.module';
 import { CRCustomerUseCase } from './usecases/CRCustomer.usecase';
 import { FullTextSearchCustomerUseCase } from './usecases/fullTextSearchCustomer.usecase';
+import { UpdateCustomerBasicInfoUseCase } from './usecases/updateCustomerBasicInfo.usecase';
 
 @Module({
   imports: [CustomerProviderModule],
@@ -13,6 +14,7 @@ import { FullTextSearchCustomerUseCase } from './usecases/fullTextSearchCustomer
     CustomerHandler,
     CRCustomerUseCase,
     FullTextSearchCustomerUseCase,
+    UpdateCustomerBasicInfoUseCase
   ],
 })
-export class CustomersModule {}
+export class CustomersModule { }

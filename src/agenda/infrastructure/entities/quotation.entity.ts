@@ -4,6 +4,7 @@ import { BaseEntity } from '../../../global/infrastructure/entities/base.entity'
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 import { QuotationHistory } from './quotationHistory.entity';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 
 export const CUSTOMER_CANCEL_REASONS = [
   'change_of_mind',
@@ -101,8 +102,26 @@ export class Quotation extends BaseEntity {
   })
   status: QuotationStatus;
 
-  @Column({ name: 'estimated_cost', nullable: true })
-  estimatedCost?: number;
+  @Column({
+    name: 'estimated_cost',
+    type: 'jsonb',
+    nullable: true,
+    transformer: {
+      to(value: MoneyEntity): any {
+        if (!value) return null;
+        return {
+          amount: value.amount,
+          currency: value.currency,
+          scale: value.scale
+        };
+      },
+      from(value: any): MoneyEntity {
+        if (!value) return null;
+        return new MoneyEntity(value.amount, value.currency, value.scale);
+      }
+    }
+  })
+  estimatedCost?: MoneyEntity;
 
   @Column({ name: 'response_date', nullable: true })
   responseDate?: Date;

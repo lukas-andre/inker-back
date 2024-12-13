@@ -17,6 +17,7 @@ import { reactionDatabaseConf } from './reaction.config';
 import { ratingDatabaseConf } from './review.config';
 import { tagDatabaseConf } from './tag.config';
 import { userDatabaseConf } from './user.config';
+import { notificationsDatabaseConf } from './notification.config';
 
 type DataBaseTypes = 'postgres';
 
@@ -99,4 +100,5 @@ export const databaseConfigs = [
   locationDatabaseConf,
   customerFeedDatabaseConf,
   oasConfig,
+  notificationsDatabaseConf,
 ];

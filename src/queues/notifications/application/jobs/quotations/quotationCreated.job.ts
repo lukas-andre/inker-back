@@ -5,8 +5,14 @@ import { CustomerProvider } from '../../../../../customers/infrastructure/provid
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { QuotationCreatedType } from '../../../../../notifications/services/email/schemas/email';
+import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { QuotationCreatedJobType } from '../../../domain/schemas/quotation';
 import { NotificationJob } from '../notification.job';
+
+const QUOTATION_NOTIFICATIONS = {
+  title: 'Nueva cotización',
+  body: 'Se ha creado una nueva cotización'
+} as const;
 
 export class QuotationCreatedJob implements NotificationJob {
   constructor(
@@ -16,23 +22,43 @@ export class QuotationCreatedJob implements NotificationJob {
     private readonly customerProvider: CustomerProvider,
     private readonly _2: ArtistLocationProvider,
     private readonly quotationProvider: QuotationProvider,
+    private readonly pushNotificationService: PushNotificationService,
   ) {}
 
   async handle(job: QuotationCreatedJobType): Promise<void> {
-    const { artistId, customerId, quotationId } = job.metadata;
-    const [quotation, artist, customer] = await Promise.all([
-      this.quotationProvider.findById(quotationId),
-      this.artistProvider.findByIdWithContact(artistId),
-      this.customerProvider.findById(customerId),
-    ]);
+    try {
+      const { artistId, customerId, quotationId } = job.metadata;
+      const [quotation, artist, customer] = await Promise.all([
+        this.quotationProvider.findById(quotationId),
+        this.artistProvider.findByIdWithContact(artistId),
+        this.customerProvider.findById(customerId),
+      ]);
 
-    const quotationCreatedEmailData: QuotationCreatedType = {
-      to: artist.contact.email,
-      artistName: artist.username,
-      customerName: customer.firstName,
-      description: quotation.description,
-      mailId: 'QUOTATION_CREATED',
-    };
-    await this.emailNotificationService.sendEmail(quotationCreatedEmailData);
+      const notificationMetadata = {
+        type: job.jobId,
+        quotationId: quotationId.toString(),
+        // artistName: artist.username,
+        customerName: customer.firstName,
+      };
+
+      const quotationCreatedEmailData: QuotationCreatedType = {
+        to: artist.contact.email,
+        artistName: artist.username,
+        customerName: customer.firstName,
+        mailId: 'QUOTATION_CREATED',
+      };
+
+      await Promise.all([
+        this.pushNotificationService.sendToUser(artist.userId, QUOTATION_NOTIFICATIONS, notificationMetadata),
+        // this.emailNotificationService.sendEmail(quotationCreatedEmailData),
+      ]);
+    } catch (error) {
+      console.error('Failed to process quotation creation notifications:', error);
+      throw error;
+    }
   }
+
+
+
+
 }

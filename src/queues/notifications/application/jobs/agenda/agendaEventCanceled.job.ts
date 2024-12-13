@@ -7,7 +7,7 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { AgendaEventCanceledType } from '../../../../../notifications/services/email/schemas/email';
 import { AgendaEventCanceledJobType } from '../../../domain/schemas/agenda';
 import { NotificationJob, getGoogleMapsLink } from '../notification.job';
-
+import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 export class AgendaEventCanceledJob implements NotificationJob {
   constructor(
     private readonly emailNotificationService: EmailNotificationService,
@@ -16,6 +16,7 @@ export class AgendaEventCanceledJob implements NotificationJob {
     private readonly customerProvider: CustomerProvider,
     private readonly locationProvider: ArtistLocationProvider,
     private readonly _: QuotationProvider,
+    private readonly _3: PushNotificationService,
   ) {}
   async handle(job: AgendaEventCanceledJobType): Promise<void> {
     const { artistId, customerId, eventId } = job.metadata;
