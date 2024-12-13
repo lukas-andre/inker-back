@@ -18,6 +18,7 @@ import { queues } from '../../queues/queues';
 import { CreateQuotationReqDto } from '../infrastructure/dtos/createQuotationReq.dto';
 import { QuotationStatus } from '../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../infrastructure/providers/quotation.provider';
+import { QuotationCreatedJobType } from '../../queues/notifications/domain/schemas/quotation';
 
 @Injectable()
 export class CreateQuotationUseCase
@@ -111,14 +112,14 @@ export class CreateQuotationUseCase
         await queryRunner.query(updateQuotationSql, [multimedias, quotationId]);
       }
 
-      const queueMessage = {
+      const queueMessage: QuotationCreatedJobType = {
         jobId: 'QUOTATION_CREATED',
         metadata: {
           quotationId: quotationId,
           artistId: createQuotationDto.artistId,
           customerId: createQuotationDto.customerId,
         },
-        notificationTypeId: 'EMAIL',
+        notificationTypeId: 'EMAIL_AND_PUSH',
       };
 
       await this.notificationQueue.add(queueMessage);
@@ -131,6 +132,8 @@ export class CreateQuotationUseCase
     } finally {
       await queryRunner.release();
     }
+
+
 
     return {
       id: quotationId,

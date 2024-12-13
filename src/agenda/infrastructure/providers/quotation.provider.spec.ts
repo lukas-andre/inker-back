@@ -7,6 +7,7 @@ import { Quotation, QuotationStatus } from '../entities/quotation.entity';
 import { QuotationHistory } from '../entities/quotationHistory.entity';
 
 import { QuotationProvider } from './quotation.provider';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 
 describe('QuotationProvider', () => {
   let quotationProvider: QuotationProvider;
@@ -175,7 +176,7 @@ describe('QuotationProvider', () => {
             'artist',
             {
               action: 'quote',
-              estimatedCost: 200,
+              estimatedCost: MoneyEntity.fromFloat(200),
               appointmentDate: date,
               appointmentDuration: 120,
               additionalDetails: 'Available for the requested date',
@@ -185,8 +186,7 @@ describe('QuotationProvider', () => {
 
         expect(transactionIsOK).toBe(true);
         expect(updatedQuotation.status).toBe('quoted');
-        expect(updatedQuotation.estimatedCost).toBe(200);
-        // expect(updatedQuotation.appointmentDate).toEqual(date);
+        expect(updatedQuotation.estimatedCost).toMatchObject({"amount": 20000, "currency": "USD", "scale": 2});
         expect(updatedQuotation.appointmentDuration).toBe(120);
 
         const history = await quotationProvider.manager.findOne(
@@ -212,7 +212,7 @@ describe('QuotationProvider', () => {
             'artist',
             {
               action: 'quote',
-              estimatedCost: 200,
+              estimatedCost: MoneyEntity.fromFloat(200),
               appointmentDate: new Date('2023-12-01'),
               appointmentDuration: 120,
             },
@@ -318,7 +318,7 @@ describe('QuotationProvider', () => {
             'artist',
             {
               action: 'quote',
-              estimatedCost: 200,
+              estimatedCost: MoneyEntity.fromFloat(200),
               appointmentDate: new Date('2023-12-01'),
               appointmentDuration: 120,
             },
@@ -379,7 +379,7 @@ describe('QuotationProvider', () => {
             'artist',
             {
               action: 'accept_appeal',
-              estimatedCost: 180,
+              estimatedCost: MoneyEntity.fromFloat(180),
               appointmentDate: new Date('2023-12-05'),
               appointmentDuration: 90,
               additionalDetails:
@@ -390,7 +390,7 @@ describe('QuotationProvider', () => {
 
         expect(transactionIsOK).toBe(true);
         expect(updatedQuotation.status).toBe('quoted');
-        expect(updatedQuotation.estimatedCost).toBe(180);
+        expect(updatedQuotation.estimatedCost).toMatchObject({"amount": 18000, "currency": "USD", "scale": 2});
         // expect(updatedQuotation.appointmentDate).toEqual(
         //   new Date('2023-12-05'),
         // );

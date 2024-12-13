@@ -1,7 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 import {
   Quotation,
   QuotationCustomerAppealReason,
@@ -45,21 +44,35 @@ export class QuotationHistory extends BaseEntity {
 
   @Column({
     name: 'previous_estimated_cost',
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
+    type: 'jsonb',
     nullable: true,
+    transformer: {
+      to(value: MoneyEntity): any {
+        if (!value) return null;
+        return value.toJSON();
+      },
+      from(value: any): MoneyEntity {
+        return value ? MoneyEntity.fromJson(value) : null;
+      }
+    }
   })
-  previousEstimatedCost?: number;
+  previousEstimatedCost?: MoneyEntity;
 
   @Column({
     name: 'new_estimated_cost',
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
+    type: 'jsonb',
     nullable: true,
+    transformer: {
+      to(value: MoneyEntity): any {
+        if (!value) return null;
+        return value.toJSON();
+      },
+      from(value: any): MoneyEntity {
+        return value ? MoneyEntity.fromJson(value) : null;
+      }
+    }
   })
-  newEstimatedCost?: number;
+  newEstimatedCost?: MoneyEntity;
 
   @Column({ name: 'previous_appointment_date', nullable: true })
   previousAppointmentDate?: Date;

@@ -46,7 +46,7 @@ export class AgendaHandler {
     private readonly customerQuotationActionUseCase: ProcessCustomerActionUseCase,
     private readonly listEventsbyArtistId: ListEventsByArtistId,
     private readonly rsvpUseCase: RsvpUseCase,
-    private readonly requestContex: RequestContextService,
+    private readonly requestContext: RequestContextService,
   ) {}
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
@@ -69,7 +69,7 @@ export class AgendaHandler {
   }
 
   async handleListEventFromArtistAgenda(): Promise<any> {
-    const { isNotArtist, userTypeId } = this.requestContex;
+    const { isNotArtist, userTypeId } = this.requestContext;
     if (isNotArtist) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
@@ -80,7 +80,7 @@ export class AgendaHandler {
   }
 
   async handleGetEventByEventId(eventId: number): Promise<any> {
-    const { isNotArtist, userTypeId } = this.requestContex;
+    const { isNotArtist, userTypeId } = this.requestContext;
     if (isNotArtist) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
@@ -109,7 +109,7 @@ export class AgendaHandler {
     page: number,
     limit: number,
   ): Promise<GetWorkEvidenceByArtistIdResponseDto> {
-    const { userTypeId } = this.requestContex;
+    const { userTypeId } = this.requestContext;
     return this.getWorkEvidenceByArtistIdUseCase.execute(
       artistId,
       page,
@@ -124,7 +124,7 @@ export class AgendaHandler {
     willAttend: boolean,
   ): Promise<any> {
     // it's suposed to just the customer is able to RSVP
-    const { userTypeId } = this.requestContex;
+    const { userTypeId } = this.requestContext;
     return this.rsvpUseCase.execute(userTypeId, agendaId, eventId, willAttend);
   }
 
@@ -132,7 +132,7 @@ export class AgendaHandler {
     dto: CreateQuotationReqDto,
     referenceImages: FileInterface[],
   ): Promise<any> {
-    const { isNotCustomer, userTypeId } = this.requestContex;
+    const { isNotCustomer, userTypeId } = this.requestContext;
     if (isNotCustomer) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
@@ -153,7 +153,7 @@ export class AgendaHandler {
   }
 
   async getQuotations(query: GetQuotationsQueryDto): Promise<any> {
-    const { userType, userTypeId } = this.requestContex;
+    const { userType, userTypeId } = this.requestContext;
     return this.getQuotationsUseCase.execute(query, userType, userTypeId);
   }
 
@@ -162,7 +162,7 @@ export class AgendaHandler {
     artistQuoteDto: ArtistQuotationActionDto,
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {
-    const { isNotArtist, userId } = this.requestContex;
+    const { isNotArtist, userId } = this.requestContext;
     if (isNotArtist) {
       throw new UnauthorizedException(
         'You do not have permission to send a quotation',
@@ -181,7 +181,7 @@ export class AgendaHandler {
     quotationId: number,
     customerActionDto: CustomerQuotationActionDto,
   ) {
-    const { isNotCustomer, userId } = this.requestContex;
+    const { isNotCustomer, userId } = this.requestContext;
     if (isNotCustomer) {
       throw new UnauthorizedException(
         'You do not have permission to perform this action',

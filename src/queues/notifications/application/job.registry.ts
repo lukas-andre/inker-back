@@ -22,6 +22,7 @@ import { QuotationRepliedJob } from './jobs/quotations/quotationReplied.job';
 import { RsvpAcceptedJob } from './jobs/rsvp/rsvpAccepted.job';
 import { RsvpDeclinedJob } from './jobs/rsvp/rsvpDeclined.job';
 import { RsvpUnschedulableJob } from './jobs/rsvp/rsvpUnschedulable.job';
+import { PushNotificationService } from '../../../notifications/services/push/pushNotification.service';
 
 type NotificationJobConstructor = new (
   emailNotificationService: EmailNotificationService,
@@ -30,6 +31,7 @@ type NotificationJobConstructor = new (
   customerProvider: CustomerProvider,
   locationProvider: ArtistLocationProvider,
   quotationProvider: QuotationProvider,
+  pushNotificationService: PushNotificationService,
 ) => NotificationJob;
 
 @Injectable()

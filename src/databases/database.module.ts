@@ -17,6 +17,8 @@ import {
   GENRE_DB_CONNECTION_NAME,
   LOCATION_DB_CONFIG_NAME,
   LOCATION_DB_CONNECTION_NAME,
+  NOTIFICATIONS_DB_CONFIG_NAME,
+  NOTIFICATIONS_DB_CONNECTION_NAME,
   POST_DB_CONFIG_NAME,
   POST_DB_CONNECTION_NAME,
   REACTION_DB_CONFIG_NAME,
@@ -113,6 +115,13 @@ import {
       name: REVIEW_DB_CONNECTION_NAME,
       useFactory: (configService: ConfigService) =>
         configService.get(REVIEW_DB_CONFIG_NAME),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: NOTIFICATIONS_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(NOTIFICATIONS_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
   ],

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsString } from 'class-validator';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 
 import { LoginType } from '../../domain/enums/loginType.enum';
+import { DeviceType } from '../../../notifications/database/entities/userFcmToken.entity';
 
 export class LoginReqDto {
   @ApiProperty({
@@ -26,4 +27,24 @@ export class LoginReqDto {
   @IsString()
   @IsIn(Object.keys(LoginType))
   readonly loginType: string;
+
+  @ApiProperty({
+    example: 'web',
+    description: 'Device type (android, ios, web)',
+    enum: DeviceType,
+    required: false
+  })
+  @IsString()
+  @IsIn(Object.values(DeviceType))
+  @IsOptional()
+  readonly deviceType?: DeviceType;
+
+  @ApiProperty({
+    example: 'eKj2...Mks9',
+    description: 'FCM device token for push notifications',
+    required: false
+  })
+  @IsString()
+  @IsOptional()
+  readonly fcmToken?: string;
 }

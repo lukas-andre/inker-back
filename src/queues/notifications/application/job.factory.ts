@@ -10,6 +10,7 @@ import { JobType } from '../domain/schemas/job';
 
 import { NotificationJobRegistry } from './job.registry';
 import { NotificationJob } from './jobs/notification.job';
+import { PushNotificationService } from '../../../notifications/services/push/pushNotification.service';
 
 @Injectable()
 export class JobHandlerFactory {
@@ -20,6 +21,7 @@ export class JobHandlerFactory {
     private readonly customerProvider: CustomerProvider,
     private readonly locationProvider: ArtistLocationProvider,
     private readonly quotationProvider: QuotationProvider,
+    private readonly pushNotificationService: PushNotificationService,
     private readonly notificationJobRegistry: NotificationJobRegistry,
   ) {}
 
@@ -37,6 +39,7 @@ export class JobHandlerFactory {
       this.customerProvider,
       this.locationProvider,
       this.quotationProvider,
+      this.pushNotificationService,
     );
   }
 }

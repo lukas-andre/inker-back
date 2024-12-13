@@ -32,7 +32,7 @@ export class CustomerQuotationActionDto {
   @IsOptional()
   additionalDetails?: string;
 
-  @IsOptional()
-  @IsEnum(CUSTOMER_CANCEL_REASONS)
-  cancelReason?: QuotationCustomerCancelReason;
+  // @IsOptional()
+  // @IsEnum(CUSTOMER_CANCEL_REASONS)
+  // cancelReason?: QuotationCustomerCancelReason;
 }

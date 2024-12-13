@@ -5,8 +5,14 @@ import { CustomerProvider } from '../../../../../customers/infrastructure/provid
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { QuotationAppealedType } from '../../../../../notifications/services/email/schemas/email';
+import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { QuotationAppealedJobType } from '../../../domain/schemas/quotation';
 import { NotificationJob } from '../notification.job';
+
+const QUOTATION_APPEALED_NOTIFICATIONS = {
+  title: 'Cotización apelada',
+  body: 'Se ha apelado una cotización'
+} as const;
 
 export class QuotationAppealedJob implements NotificationJob {
   constructor(
@@ -16,6 +22,7 @@ export class QuotationAppealedJob implements NotificationJob {
     private readonly customerProvider: CustomerProvider,
     private readonly _2: ArtistLocationProvider,
     private readonly quotationProvider: QuotationProvider,
+    private readonly pushNotificationService: PushNotificationService,
   ) {}
 
   async handle(job: QuotationAppealedJobType): Promise<void> {
@@ -33,6 +40,17 @@ export class QuotationAppealedJob implements NotificationJob {
       appealReason: quotation.appealedReason,
       mailId: 'QUOTATION_APPEALED',
     };
-    await this.emailNotificationService.sendEmail(quotationAppealedEmailData);
+
+    const notificationMetadata = {
+      type: job.jobId,
+      quotationId: quotationId.toString(),
+      artistName: artist.username,
+      customerName: customer.firstName,
+    };
+
+    await Promise.all([
+      this.pushNotificationService.sendToUser(artist.userId, QUOTATION_APPEALED_NOTIFICATIONS, notificationMetadata),
+      this.emailNotificationService.sendEmail(quotationAppealedEmailData),
+    ]);
   }
 }

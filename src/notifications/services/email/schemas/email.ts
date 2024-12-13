@@ -113,7 +113,7 @@ const QuotationRepliedSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.QUOTATION_REPLIED),
   customerName: z.string(),
   artistName: z.string(),
-  estimatedCost: z.number(),
+  estimatedCost: z.string(),
   appointmentDate: z.date().optional(),
   appointmentDuration: z.number().optional(),
 });
@@ -123,7 +123,7 @@ const QuotationAcceptedSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.QUOTATION_ACCEPTED),
   customerName: z.string(),
   artistName: z.string(),
-  estimatedCost: z.number(),
+  estimatedCost: z.string(),
   appointmentDate: z.date().optional(),
   appointmentDuration: z.number().optional(),
 });

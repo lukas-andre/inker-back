@@ -21,6 +21,7 @@ import {
 } from '../../infrastructure/dtos/artistQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
+import { QuotationArtistActionJobIdType, QuotationArtistActionJobType } from '../../../queues/notifications/domain/schemas/quotation';
 
 @Injectable()
 export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
@@ -81,7 +82,7 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
     }
 
     let multimedias: MultimediasMetadataInterface;
-    if (proposedDesigns && proposedDesigns.length) {
+    if (proposedDesigns && proposedDesigns.length > 0) {
       multimedias = await this.multimediasService.uploadProposedDesigns(
         proposedDesigns,
         quotationId,
@@ -110,18 +111,46 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule('Error updating quotation');
     }
 
-    // const queueMessage = {
-    //   jobId: 'QUOTATION_ARTIST_ACTION',
-    //   metadata: {
-    //     quotationId: quotationId,
-    //     artistId: quotation.artistId,
-    //     customerId: quotation.customerId,
-    //     action: artistQuoteDto.action,
-    //   },
-    //   notificationTypeId: 'EMAIL',
-    // };
+    let notificationTypeId: QuotationArtistActionJobIdType;
 
-    // await this.notificationQueue.add(queueMessage);
+    switch (artistQuoteDto.action) {
+      case ArtistQuoteAction.QUOTE:
+        notificationTypeId = 'QUOTATION_REPLIED';
+        break;
+      case ArtistQuoteAction.REJECT:
+      case ArtistQuoteAction.REJECT_APPEAL:
+        notificationTypeId = 'QUOTATION_REJECTED';
+        break;
+      default:
+        this.logger.error({
+          message: 'INVALID_ACTION',
+          action: artistQuoteDto.action,
+        });
+    }
+
+    if (notificationTypeId) {
+      const queueMessage: unknown = {
+        jobId: notificationTypeId,
+        notificationTypeId: 'PUSH' as const,
+        metadata: {
+          ...(artistQuoteDto.action === ArtistQuoteAction.REJECT && { 
+            by: 'artist',
+          }),
+          quotationId,
+          artistId: quotation.artistId,
+          customerId: quotation.customerId,
+          ...(artistQuoteDto.action === ArtistQuoteAction.REJECT && { 
+            rejectionReason: artistQuoteDto.rejectionReason 
+          }),
+          estimatedCost: artistQuoteDto.estimatedCost,
+          appointmentDate: artistQuoteDto.appointmentDate,
+          appointmentDuration: artistQuoteDto.appointmentDuration,
+          additionalDetails: artistQuoteDto.additionalDetails,
+        },
+      };
+
+      await this.notificationQueue.add(queueMessage);
+    }
 
     return {
       message: 'Quotation updated successfully',

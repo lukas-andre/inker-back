@@ -2,6 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { QuotationCustomerAppealReason } from '../entities/quotation.entity';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
+import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
+import { LocationDto } from '../../../global/infrastructure/dtos/geometry.dto';
 
 export class QuotationDto {
   @ApiProperty()
@@ -34,7 +38,7 @@ export class QuotationDto {
     | 'canceled';
 
   @ApiProperty({ required: false })
-  estimatedCost?: number;
+  estimatedCost?: MoneyEntity;
 
   @ApiProperty({ required: false })
   responseDate?: Date;
@@ -68,4 +72,14 @@ export class QuotationDto {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty()
+  artist: ArtistDto;
+
+  @ApiProperty()
+  customer: CustomerDto;
+
+  @ApiProperty()
+  location: LocationDto;
 }
+

@@ -1,16 +1,18 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
   IsEnum,
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 
 import {
   ARTIST_REJECT_REASONS,
   QuotationArtistRejectReason,
 } from '../entities/quotation.entity';
+import { MoneyDto } from '../../../global/domain/dtos/money.dto';
 
 export enum ArtistQuoteAction {
   QUOTE = 'quote',
@@ -23,12 +25,14 @@ export class ArtistQuotationActionDto {
   @IsEnum(ArtistQuoteAction)
   action: ArtistQuoteAction;
 
-  @IsNumber()
   @IsOptional()
-  estimatedCost?: number;
+  @ValidateNested()
+  @Type(() => MoneyDto)
+  estimatedCost?: MoneyDto;
 
   @IsDate()
   @Type(() => Date)
+  // @Transform(({ value }) => new Date(value))
   @IsOptional()
   appointmentDate?: Date;
 
