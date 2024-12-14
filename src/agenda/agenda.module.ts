@@ -28,6 +28,7 @@ import { ProcessArtistActionUseCase } from './usecases/quotation/processArtistAc
 import { ProcessCustomerActionUseCase } from './usecases/quotation/processCustomerAction.usecase';
 import { RsvpUseCase } from './usecases/rsvp.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
+import { MarkQuotationAsReadUseCase } from './usecases/quotation/markQuotationAsRead.usecase';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
     GetQuotationsUseCase,
     ProcessArtistActionUseCase,
     ProcessCustomerActionUseCase,
+    MarkQuotationAsReadUseCase,
     ListEventsByArtistId,
   ],
   controllers: [AgendaController, QuotationController],

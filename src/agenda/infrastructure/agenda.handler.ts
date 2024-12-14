@@ -27,9 +27,11 @@ import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
+import { MarkQuotationAsReadUseCase } from '../usecases/quotation/markQuotationAsRead.usecase';
 
 @Injectable()
 export class AgendaHandler {
+
   constructor(
     private readonly addEventUseCase: AddEventUseCase,
     private readonly updateEventUseCase: UpdateEventUseCase,
@@ -47,6 +49,7 @@ export class AgendaHandler {
     private readonly listEventsbyArtistId: ListEventsByArtistId,
     private readonly rsvpUseCase: RsvpUseCase,
     private readonly requestContext: RequestContextService,
+    private readonly markQuotationAsReadUseCase: MarkQuotationAsReadUseCase,
   ) {}
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
@@ -197,5 +200,10 @@ export class AgendaHandler {
 
   async handleListEventsByAgendaId(artistId: number) {
     return await this.listEventsbyArtistId.execute(artistId);
+  }
+
+  async markQuotationAsRead(id: number) {
+    const { userType } = this.requestContext;
+    return this.markQuotationAsReadUseCase.execute(id, userType);
   }
 }
