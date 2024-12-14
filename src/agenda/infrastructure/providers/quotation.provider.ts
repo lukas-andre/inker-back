@@ -31,6 +31,7 @@ import {
   QuotationSystemCancelReason,
   QuotationUserType,
 } from '../entities/quotation.entity';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
 type ActionType = 'artist' | 'customer' | 'system';
 
@@ -122,7 +123,7 @@ export class QuotationProvider extends BaseComponent {
     dto: UpdateQuotationDto,
     newStatus: QuotationStatus,
     proposedDesigns?: MultimediasMetadataInterface,
-): Promise<{ transactionIsOK: boolean; updatedQuotation: Quotation }> {
+  ): Promise<{ transactionIsOK: boolean; updatedQuotation: Quotation }> {
     let transactionIsOK = false;
     let updatedQuotation: Quotation = null;
 
@@ -131,7 +132,7 @@ export class QuotationProvider extends BaseComponent {
     await queryRunner.startTransaction();
 
     try {
-      // Primero obtenemos el currentQuotation
+      // First we get the currentQuotation
       const [{ quotation: currentQuotation }] = await queryRunner.query(
         `
         SELECT json_build_object(
@@ -172,11 +173,15 @@ export class QuotationProvider extends BaseComponent {
         throw new Error(`Quotation with id ${quotationId} not found`);
       }
 
-      // Luego hacemos el UPDATE
+      const unreadFields = actionType === 'artist' 
+      ? 'read_by_artist = false, artist_read_at = NULL, customer_read_at = NULL, read_by_customer = false'
+      : 'read_by_customer = false, customer_read_at = NULL, read_by_artist = false, artist_read_at = NULL';
+      // Then we make the UPDATE
       const [quotation] = await queryRunner.query(
         `
         UPDATE quotation
         SET status = $1::quotation_status, 
+            ${unreadFields},
             estimated_cost = CASE 
               WHEN $2::text IS NOT NULL 
               THEN ($2::text)::jsonb
@@ -186,24 +191,20 @@ export class QuotationProvider extends BaseComponent {
             appointment_duration = COALESCE($4, appointment_duration),
             response_date = NOW(),
             proposed_designs = COALESCE($5, proposed_designs),
-            ${
-              actionType === 'artist'
-                ? 'artist_reject_reason'
-                : 'customer_reject_reason'
-            } = $6::${
-          actionType === 'artist'
-            ? 'quotation_artist_reject_reason'
-            : 'quotation_customer_reject_reason'
+            ${actionType === 'artist'
+          ? 'artist_reject_reason'
+          : 'customer_reject_reason'
+        } = $6::${actionType === 'artist'
+          ? 'quotation_artist_reject_reason'
+          : 'quotation_customer_reject_reason'
         },
             appealed_reason = $7::quotation_appealed_reason,
-            ${
-              actionType === 'customer'
-                ? 'customer_cancel_reason'
-                : 'system_cancel_reason'
-            } = $8::${
-          actionType === 'customer'
-            ? 'quotation_customer_cancel_reason'
-            : 'quotation_system_cancel_reason'
+            ${actionType === 'customer'
+          ? 'customer_cancel_reason'
+          : 'system_cancel_reason'
+        } = $8::${actionType === 'customer'
+          ? 'quotation_customer_cancel_reason'
+          : 'quotation_system_cancel_reason'
         },
             cancel_reason_details = CASE WHEN $1::quotation_status = 'canceled' THEN $9 ELSE cancel_reason_details END,
             canceled_by = CASE 
@@ -269,7 +270,7 @@ export class QuotationProvider extends BaseComponent {
 
       updatedQuotation = quotation[0]?.quotation;
 
-      // Finalmente insertamos el historial
+      // Finally we insert the history
       await queryRunner.query(
         `
         INSERT INTO quotation_history (
@@ -307,8 +308,7 @@ export class QuotationProvider extends BaseComponent {
       transactionIsOK = true;
     } catch (error) {
       this.logger.error(
-        `Error in update quotation state transaction: ${
-          (error as any)?.message
+        `Error in update quotation state transaction: ${(error as any)?.message
         }`,
         (error as any)?.stack,
       );
@@ -318,7 +318,33 @@ export class QuotationProvider extends BaseComponent {
     }
 
     return { transactionIsOK, updatedQuotation };
-}
+  }
+
+  async markAsRead(
+    quotationId: number,
+    userType: UserType,
+  ): Promise<boolean> {
+    try {
+      const result = await this.quotationRepository.query(
+        `
+      UPDATE quotation 
+      SET 
+        ${userType === UserType.ARTIST ? 'read_by_artist' : 'read_by_customer'} = true,
+        ${userType === UserType.ARTIST ? 'artist_read_at' : 'customer_read_at'} = NOW(),
+        updated_at = NOW()
+      WHERE id = $1
+      `,
+        [quotationId],
+      );
+      return result[1] === 1;
+    } catch (error) {
+      this.logger.error(
+        `Error marking quotation ${quotationId} as read by ${userType}:`,
+        error,
+      );
+      return false;
+    }
+  }
 }
 
 const transformEstimatedCost = (estimatedCost: MoneyEntity | null): string | null => {

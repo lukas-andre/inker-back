@@ -51,7 +51,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
       skip,
       take: limit,
       relations: ['history'],
-      order: { createdAt: 'DESC' },
+      order: { updatedAt: 'DESC' },
     });
 
     // Get unique IDs for customers and artists

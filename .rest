@@ -27,10 +27,10 @@ POST {{$dotenv APP_URL}}/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "identifier": "paula@gmail.com",
+  "identifier": "lucas.henryd@icloud.com",
   "password": "admin1",
   "loginType": "EMAIL",
-  "fcmToken": "token",
+  "fcmToken": "eU5V3RHCR4SV285tllZkmO:APA91bHIpSvCE8Ao_LrA8NMdjhOENfmaFCclSQB8MtCm4ayT_gl5ghSMBej64RH0StfAlrG3BS9DNcZ70DDQ1yv_emV_0ZdJ8U7Om5rjn0dempCaAuRl-n4",
   "deviceType": "android"
 }
 
@@ -98,3 +98,12 @@ Authorization: Bearer {{token}}
 ### Get Quotations
 GET {{$dotenv APP_URL}}/quotations?status=quoted&page=1&limit=10 HTTP/1.1
 Authorization: Bearer {{token}}
+
+### Get Quotations
+GET {{$dotenv APP_URL}}/quotations?status=rejected,canceled&page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get Quotations
+GET {{$dotenv APP_URL}}/quotations?status=rejected,canceled&page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{token}}
+

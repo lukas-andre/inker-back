@@ -226,6 +226,34 @@ export class Quotation extends BaseEntity {
   })
   lastUpdatedByUserType?: QuotationUserType;
 
+  @Column({
+    name: 'read_by_artist',
+    type: 'boolean',
+    default: false,
+  })
+  readByArtist: boolean;
+
+  @Column({
+    name: 'read_by_customer',
+    type: 'boolean',
+    default: false,
+  })
+  readByCustomer: boolean;
+
+  @Column({
+    name: 'artist_read_at',
+    type: 'timestamp',
+    nullable: true,
+  })
+  artistReadAt?: Date;
+
+  @Column({
+    name: 'customer_read_at',
+    type: 'timestamp',
+    nullable: true,
+  })
+  customerReadAt?: Date;
+
   @OneToMany(() => QuotationHistory, history => history.quotation)
   history?: QuotationHistory[];
 }

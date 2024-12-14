@@ -11,6 +11,7 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -113,5 +114,18 @@ export class QuotationController {
     @Body() dto: CustomerQuotationActionDto,
   ): Promise<void> {
     await this.quotationHandler.processCustomerAction(id, dto);
+  }
+
+  @Post(':id/mark-as-read')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Mark quotation as read' })
+  @ApiResponse({
+    status: 204,
+    description: 'Quotation marked as read successfully',
+  })
+  async markAsRead(
+    @Param('id') id: number,
+  ): Promise<void> {
+    await this.quotationHandler.markQuotationAsRead(id);
   }
 }
