@@ -28,6 +28,10 @@ export class ReviewAvgProvider extends BaseComponent {
     return this.repository;
   }
 
+  async findByArtistId(artistId: number) {
+    return await this.repo.findOne({ where: { artistId } });
+  }
+
   async findAll(params: number) {
     return params;
   }

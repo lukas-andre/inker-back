@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -43,13 +44,14 @@ import { ArtistsHandler } from './artists.handler';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { CreateArtistDto } from './dtos/createArtist.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
+import { SearchArtistDto } from './dtos/searchArtist.dto';
 
 @ApiBearerAuth()
 @ApiTags('artists')
 @Controller('artist')
 @UseGuards(AuthGuard)
 export class ArtistsController {
-  constructor(private readonly artistHandler: ArtistsHandler) {}
+  constructor(private readonly artistHandler: ArtistsHandler) { }
 
   @ApiOperation({ summary: 'Create Artist' })
   @ApiCreatedResponse({
@@ -168,5 +170,17 @@ export class ArtistsController {
   @UsePipes(new ValidationPipe({ forbidUnknownValues: false }))
   async updateMe(@Body() body: UpdateArtistDto) {
     return this.artistHandler.handleUpdateMe(body);
+  }
+
+  @ApiOperation({ summary: 'Search Artists' })
+  @ApiOkResponse({
+    description: 'Search artists results',
+    type: BaseArtistResponse,
+    isArray: true
+  })
+  @Get('search')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async searchArtists(@Query() searchParams: SearchArtistDto) {
+    return this.artistHandler.handleSearchArtists(searchParams);
   }
 }

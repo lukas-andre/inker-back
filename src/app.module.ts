@@ -23,6 +23,7 @@ import { ReactionsModule } from './reactions/reactions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { TagsModule } from './tags/tags.module';
 import { UsersModule } from './users/users.module';
+import { SyncQueueModule } from './queues/sync/sync.queue.module';
 @Module({
   imports: [
     BullModule.forRoot({
@@ -52,6 +53,7 @@ import { UsersModule } from './users/users.module';
     TagsModule,
     UsersModule,
     NotificationQueueModule,
+    SyncQueueModule,
   ],
   providers: [ChatGateway, AlertGateway, ModulesContainer],
 })

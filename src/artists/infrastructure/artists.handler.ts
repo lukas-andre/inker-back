@@ -15,6 +15,8 @@ import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { CreateArtistDto } from './dtos/createArtist.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { UpdateStudioPhotoResponseDto } from './dtos/updateStudioPhotoResponse.dto';
+import { SearchArtistDto } from './dtos/searchArtist.dto';
+import { FindArtistsUsecase } from '../usecases/findArtists.usecase';
 @Injectable()
 export class ArtistsHandler {
   constructor(
@@ -23,6 +25,7 @@ export class ArtistsHandler {
     private readonly updateArtistProfilePictureUseCase: UpdateArtistProfilePictureUseCase,
     private readonly updateArtistStudioPhotoUseCase: UpdateArtistStudioPhotoUseCase,
     private readonly updateArtistBasicInfoUseCase: UpdateArtistBasicInfoUseCase,
+    private readonly findArtistsUsecase: FindArtistsUsecase,
     private readonly requestContex: RequestContextService,
   ) {}
 
@@ -67,5 +70,9 @@ export class ArtistsHandler {
     dto: UpdateArtistDto,
   ): Promise<BaseArtistResponse> {
     return this.updateArtistBasicInfoUseCase.execute(id, dto);
+  }
+
+  async handleSearchArtists(dto: SearchArtistDto) {
+    return this.findArtistsUsecase.execute(dto);
   }
 }
