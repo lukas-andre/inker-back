@@ -15,4 +15,10 @@ export const queues = {
     hostId: 'deadLetter',
     port: 6379,
   },
+  sync: {
+    name: 'sync',
+    hostId: 'sync',
+    attempts: 3,
+    port: 6379,
+  },
 };

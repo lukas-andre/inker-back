@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import {
+  DataSource,
   DeepPartial,
   DeleteResult,
+  EntityManager,
   FindManyOptions,
   FindOneOptions,
   In,
@@ -21,14 +23,29 @@ import { RawFindByArtistIdsResponseDTO } from '../../../locations/infrastructure
 import { CreateArtistParams } from '../../usecases/interfaces/createArtist.params';
 import { Artist } from '../entities/artist.entity';
 import { Contact } from '../entities/contact.entity';
+import { SearchArtistDto } from '../dtos/searchArtist.dto';
+import { ARTIST_DB_CONNECTION_NAME } from '../../../databases/constants';
 
 @Injectable()
 export class ArtistProvider extends BaseComponent {
   constructor(
     @InjectRepository(Artist, 'artist-db')
     private readonly artistsRepository: Repository<Artist>,
+    @InjectDataSource(ARTIST_DB_CONNECTION_NAME)
+    private readonly dataSource: DataSource,
+    @InjectEntityManager(ARTIST_DB_CONNECTION_NAME)
+    private readonly entityManager: EntityManager,
+    
   ) {
     super(ArtistProvider.name);
+  }
+
+  get source(): DataSource {
+    return this.dataSource;
+  }
+
+  get manager(): EntityManager {
+    return this.entityManager;
   }
 
   repo() {
@@ -206,5 +223,55 @@ export class ArtistProvider extends BaseComponent {
 
   async delete(id: number): Promise<DeleteResult> {
     return this.artistsRepository.delete(id);
+  }
+
+  async searchArtists(searchParams: SearchArtistDto) {
+    const { query, page = 1, limit = 10, minRating = 0 } = searchParams;
+    
+    try {
+      const queryBuilder = this.artistsRepository
+        .createQueryBuilder('artist')
+        .leftJoinAndSelect('artist.contact', 'contact')
+        .where('artist.deletedAt IS NULL');
+  
+      // Búsqueda por nombre, username o descripción
+      if (query) {
+        queryBuilder.andWhere(
+          '(LOWER(artist.firstName) LIKE LOWER(:query) OR ' +
+          'LOWER(artist.lastName) LIKE LOWER(:query) OR ' +
+          'LOWER(artist.username) LIKE LOWER(:query) OR ' +
+          'LOWER(artist.shortDescription) LIKE LOWER(:query))',
+          { query: `%${query}%` }
+        );
+      }
+  
+      // Filtrar por rating mínimo
+      if (minRating > 0) {
+        queryBuilder.andWhere('artist.rating >= :minRating', { minRating });
+      }
+  
+      // Agregar paginación
+      const [artists, total] = await queryBuilder
+        .orderBy('artist.rating', 'DESC')
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+  
+      return {
+        artists,
+        metadata: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit)
+        }
+      };
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        'Problems searching artists',
+        error,
+      );
+    }
   }
 }

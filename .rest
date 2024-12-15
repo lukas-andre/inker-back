@@ -107,3 +107,30 @@ Authorization: Bearer {{token}}
 GET {{$dotenv APP_URL}}/quotations?status=rejected,canceled&page=1&limit=10 HTTP/1.1
 Authorization: Bearer {{token}}
 
+
+### Search Artists
+# @name searchArtists
+GET {{$dotenv APP_URL}}/artist/search?query=&page=1&limit=10&minRating=0 HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Search Artists with different parameters
+# @name searchArtistsFiltered
+GET {{$dotenv APP_URL}}/artist/search?query=loco&page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Search Artists without query (get all with pagination)
+# @name searchArtistsAll
+GET {{$dotenv APP_URL}}/artist/search?page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Review Artist
+POST {{$dotenv APP_URL}}/reviews/artists/1/events/1/reviewers/4 HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "rating": 5,
+    "comment": "This artist is awesome",
+    "displayName": "John Doe",
+    "header": "Great experience!"
+}
