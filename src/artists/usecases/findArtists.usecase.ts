@@ -31,7 +31,7 @@ export class FindArtistsUsecase {
 
     return {
       artists: artistsWithFollowersAndFollowings,
-      meta: result.metadata,
+      meta: result.meta,
     };
   }
 }
