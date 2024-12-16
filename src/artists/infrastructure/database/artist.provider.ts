@@ -35,7 +35,7 @@ export class ArtistProvider extends BaseComponent {
     private readonly dataSource: DataSource,
     @InjectEntityManager(ARTIST_DB_CONNECTION_NAME)
     private readonly entityManager: EntityManager,
-    
+
   ) {
     super(ArtistProvider.name);
   }
@@ -227,39 +227,59 @@ export class ArtistProvider extends BaseComponent {
 
   async searchArtists(searchParams: SearchArtistDto) {
     const { query, page = 1, limit = 10, minRating = 0 } = searchParams;
-    
+
     try {
       const queryBuilder = this.artistsRepository
         .createQueryBuilder('artist')
-        .leftJoinAndSelect('artist.contact', 'contact')
+        .select([
+          'artist.id',
+          'artist.username',
+          'artist.firstName',
+          'artist.lastName',
+          'artist.shortDescription',
+          'artist.profileThumbnail',
+          'artist.rating',
+          'artist.studioPhoto',
+          'contact.email',
+          'contact.phone',
+          'contact.phoneDialCode',
+          'contact.phoneCountryIsoCode'
+        ])
+        .leftJoin('artist.contact', 'contact')
         .where('artist.deletedAt IS NULL');
-  
-      // Búsqueda por nombre, username o descripción
+
+      // Búsqueda optimizada usando índices
       if (query) {
+        const searchTerm = query.toLowerCase();
         queryBuilder.andWhere(
-          '(LOWER(artist.firstName) LIKE LOWER(:query) OR ' +
-          'LOWER(artist.lastName) LIKE LOWER(:query) OR ' +
-          'LOWER(artist.username) LIKE LOWER(:query) OR ' +
-          'LOWER(artist.shortDescription) LIKE LOWER(:query))',
-          { query: `%${query}%` }
+          `(
+            LOWER(artist.firstName) LIKE :searchTerm OR
+            LOWER(artist.lastName) LIKE :searchTerm OR
+            LOWER(artist.username) LIKE :searchTerm OR
+            LOWER(artist.shortDescription) LIKE :searchTerm
+          )`,
+          { searchTerm: `%${searchTerm}%` }
         );
       }
-  
-      // Filtrar por rating mínimo
+
+      // Usar índice de rating
       if (minRating > 0) {
         queryBuilder.andWhere('artist.rating >= :minRating', { minRating });
       }
-  
-      // Agregar paginación
-      const [artists, total] = await queryBuilder
+
+      // Obtener el total antes de la paginación
+      const total = await queryBuilder.getCount();
+
+      // Aplicar ordenamiento y paginación
+      const artists = await queryBuilder
         .orderBy('artist.rating', 'DESC')
-        .skip((page - 1) * limit)
-        .take(limit)
-        .getManyAndCount();
-  
+        .offset((page - 1) * limit)
+        .limit(limit)
+        .getMany();
+
       return {
         artists,
-        metadata: {
+        meta: {
           total,
           page,
           limit,

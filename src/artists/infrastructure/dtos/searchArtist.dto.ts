@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsInt, Min, Max } from 'class-validator';
+import { IsOptional, IsString, IsInt, Min, Max, IsNumber } from 'class-validator';
 
 export class SearchArtistDto {
   @ApiPropertyOptional({ description: 'Search query for name or description' })
@@ -22,7 +22,7 @@ export class SearchArtistDto {
 
   @ApiPropertyOptional({ description: 'Minimum rating filter', default: 0 })
   @IsOptional()
-  @IsInt()
+  @IsNumber()
   @Min(0)
   @Max(5)
   minRating?: number;
