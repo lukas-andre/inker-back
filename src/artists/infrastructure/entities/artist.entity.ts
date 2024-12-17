@@ -16,21 +16,21 @@ import { Contact } from './contact.entity';
 
 
 @Entity()
-@Index(['firstName', 'lastName', 'username']) // Índice compuesto para búsquedas por nombre
-@Index(['rating']) // Índice para ordenamiento y filtrado por rating
-@Index(['deletedAt']) // Índice para el soft delete
+@Index(['firstName', 'lastName', 'username']) 
+@Index(['rating']) 
+@Index(['deletedAt']) 
 export class Artist extends BaseEntity implements ArtistType {
   @Column({ name: 'user_id' })
-  @Index() // Índice para búsquedas por userId
+  @Index() 
   userId: number;
 
   @Column({ name: 'username' })
-  @Index() // Índice individual para búsquedas por username
+  @Index() 
   username: string;
 
   @ManyToMany(() => Service, service => service.artists)
   @JoinTable({
-    name: 'artist_services', // Nombre explícito para la tabla de relación
+    name: 'artist_services', 
     joinColumn: {
       name: 'artist_id',
       referencedColumnName: 'id'
@@ -59,11 +59,11 @@ export class Artist extends BaseEntity implements ArtistType {
 
   @OneToOne(() => Contact, contact => contact.artist, {
     cascade: true,
-    eager: true // Cargar automáticamente el contacto
+    eager: true 
   })
   @JoinColumn({
     name: 'contact_id',
-    foreignKeyConstraintName: 'fk_artist_contact' // Nombre explícito para la FK
+    foreignKeyConstraintName: 'fk_artist_contact' 
   })
   contact: Contact;
 
