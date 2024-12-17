@@ -26,6 +26,11 @@ import { UpdateUserEmailUseCase } from './usecases/user/updateUserEmail.usecase'
 import { UpdateUserPasswordUseCase } from './usecases/user/updateUserPassword.usecase';
 import { UpdateUserUsernameUseCase } from './usecases/user/updateUserUsername.usecase';
 import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/validateSMSAccountVerificationCode.usecase';
+import { SettingsHandler } from './infrastructure/handlers/settings.handler';
+import { GetSettingsUseCase } from './usecases/settings/getSettings.usecase';
+import { UpdateLocationServicesUseCase } from './usecases/settings/updateLocationService.usecase';
+import { UpdateNotificationsUseCase } from './usecases/settings/updateNotifications.usecase';
+import { SettingsController } from './infrastructure/controllers/settings.controller';
 
 @Module({
   imports: [
@@ -39,6 +44,7 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
     UsersHandler,
     RolesHandler,
     PermissionsHandler,
+    SettingsHandler,
     InitRolesUseCase,
     InitPermissionsUseCase,
     CreateUserByTypeUseCase,
@@ -53,7 +59,11 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
     UpdateUserPasswordUseCase,
     UpdateUserUsernameUseCase,
     ValidateSMSAccountVerificationCodeUseCase,
+    GetSettingsUseCase,
+    UpdateNotificationsUseCase,
+    UpdateLocationServicesUseCase,
+    SettingsHandler
   ],
-  controllers: [UsersController, PermissionsController, RolesController],
+  controllers: [UsersController, PermissionsController, RolesController, SettingsController],
 })
 export class UsersModule {}
