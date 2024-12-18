@@ -33,7 +33,7 @@ export class RsvpAcceptedJob implements NotificationJob {
       customerName: customer.firstName,
       eventLocation: location.formattedAddress,
       googleMapsLink: getGoogleMapsLink(location.lat, location.lng),
-      eventDate: agendaEvent.start,
+      eventDate: agendaEvent.startDate,
       eventName: agendaEvent.title,
       mailId: 'RSVP_ACCEPTED',
     };

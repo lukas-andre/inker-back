@@ -29,6 +29,7 @@ import { ProcessCustomerActionUseCase } from './usecases/quotation/processCustom
 import { RsvpUseCase } from './usecases/rsvp.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 import { MarkQuotationAsReadUseCase } from './usecases/quotation/markQuotationAsRead.usecase';
+import { SyncQueueModule } from '../queues/sync/sync.queue.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { MarkQuotationAsReadUseCase } from './usecases/quotation/markQuotationAs
     MultimediasModule,
     NotificationQueueModule,
     LocationProviderModule,
+    SyncQueueModule
   ],
   providers: [
     QuotationStateMachine,

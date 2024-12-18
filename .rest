@@ -134,3 +134,7 @@ Content-Type: application/json
     "displayName": "John Doe",
     "header": "Great experience!"
 }
+
+### List Events from Artist Agenda
+GET {{$dotenv APP_URL}}/agenda/event/3 HTTP/1.1
+Authorization: Bearer {{token}}

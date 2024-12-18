@@ -4,6 +4,7 @@ import { queues } from "../queues";
 import { SyncProcessor } from "./sync.processor";
 import { ArtistsProviderModule } from "../../artists/infrastructure/database/artistProvider.module";
 import { ReviewProviderModule } from "../../reviews/database/reviewProvider.module";
+import { AgendaProviderModule } from "../../agenda/infrastructure/providers/agendaProvider.module";
 
 @Module({
     imports: [
@@ -18,7 +19,8 @@ import { ReviewProviderModule } from "../../reviews/database/reviewProvider.modu
         name: queues.deadLetter.name,
       }),
       ArtistsProviderModule,
-      ReviewProviderModule
+      ReviewProviderModule,
+      AgendaProviderModule,
     ],
     providers: [SyncProcessor],
     exports: [BullModule],

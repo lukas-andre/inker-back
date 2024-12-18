@@ -46,8 +46,8 @@ export class AgendaEventUpdatedJob {
       customerName: customer.firstName,
       eventLocation: location.formattedAddress,
       googleMapsLink: getGoogleMapsLink(location.lat, location.lng),
-      eventDate: event.start,
-      eventOldDate: history ? history.start : undefined,
+      eventDate: event.startDate,
+      eventOldDate: history ? history.startDate : undefined,
       eventName: event.title,
       mailId: 'EVENT_UPDATED',
     };

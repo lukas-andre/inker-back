@@ -68,8 +68,8 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
     event.title = updateEventReqDto.title || event.title;
     event.info = updateEventReqDto.info || event.info;
     event.color = updateEventReqDto.color || event.color;
-    event.end = new Date(updateEventReqDto.end) || event.end;
-    event.start = new Date(updateEventReqDto.start) || event.start;
+    event.endDate = new Date(updateEventReqDto.end) || event.endDate;
+    event.startDate = new Date(updateEventReqDto.start) || event.startDate;
     event.notification =
       typeof updateEventReqDto.notification === 'boolean'
         ? updateEventReqDto.notification

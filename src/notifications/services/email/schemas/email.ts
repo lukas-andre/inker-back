@@ -14,6 +14,7 @@ export const MailIdSchema = z.enum([
   'QUOTATION_REJECTED',
   'QUOTATION_APPEALED',
   'QUOTATION_CANCELED',
+  'ACCOUNT_VERIFICATION_CODE',
 ]);
 export type MailIdType = z.infer<typeof MailIdSchema>;
 
@@ -155,6 +156,15 @@ const QuotationCanceledSchema = BaseEmailSchema.extend({
 
 export type QuotationCanceledType = z.infer<typeof QuotationCanceledSchema>;
 
+const AccountVerificationCodeSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.ACCOUNT_VERIFICATION_CODE),
+  verificationCode: z.string(),
+  expirationTime: z.number(),
+});
+export type AccountVerificationCodeType = z.infer<
+  typeof AccountVerificationCodeSchema
+>;
+
 export const EmailSchema = z.union([
   AgendaEventCreatedSchema,
   AgendaEventCanceledSchema,
@@ -169,6 +179,7 @@ export const EmailSchema = z.union([
   QuotationRejectedSchema,
   QuotationAppealedSchema,
   QuotationCanceledSchema,
+  AccountVerificationCodeSchema,
 ]);
 
 export type EmailType = z.infer<typeof EmailSchema>;
@@ -187,4 +198,5 @@ export {
   QuotationRejectedSchema,
   QuotationAppealedSchema,
   QuotationCanceledSchema,
+  AccountVerificationCodeSchema,
 };

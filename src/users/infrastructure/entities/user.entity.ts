@@ -29,4 +29,7 @@ export class User extends BaseEntity implements UserInterface {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
+
+  @Column({ name: 'phone_number', nullable: true })
+  phoneNumber: string;
 }

@@ -7,6 +7,7 @@ import {
   RsvpDeclinedJobSchema,
   RsvpUnschedulableJobSchema,
 } from './schemas/agenda';
+import { SendVerificationCodeJobSchema } from './schemas/codes';
 import {
   QuotationAcceptedJobSchema,
   QuotationAppealedJobSchema,
@@ -30,6 +31,7 @@ export const JobTypeSchemaRegistry = {
   QUOTATION_REJECTED: QuotationRejectedJobSchema,
   QUOTATION_APPEALED: QuotationAppealedJobSchema,
   QUOTATION_CANCELED: QuotationCanceledJobSchema,
+  ACCOUNT_VERIFICATION_CODE: SendVerificationCodeJobSchema,
 };
 
 // export jobtype keys

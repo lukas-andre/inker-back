@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Logger,
@@ -33,6 +34,8 @@ import {
   UpdateUserEmailDoc,
   ValidateAccountVerificationCodeDoc,
 } from './docs/users.doc';
+import { DeleteUserDoc } from './docs/deleteUser.doc';
+import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -120,6 +123,19 @@ export class UsersController {
     );
   }
 
+  @SendAccountVerificationCodeDoc()
+  @HttpCode(200)
+  @Post('send-account-verification-code')
+  async sendAccountValidationCodeWithPhoneNumberOrEmail(
+    @Query()
+    sendAccountVerificationCodeQueryDto: SendAccountVerificationCodeQueryDto,
+  ) {
+    this.logger.log({ sendAccountVerificationCodeQueryDto });
+    return this.usersHandler.handleSendAccountValidationCodeWithPhoneNumberOrEmail(
+      sendAccountVerificationCodeQueryDto,
+    );
+  }
+
   @ValidateAccountVerificationCodeDoc()
   @HttpCode(200)
   @Post(':userId/validate-account-verification-code/:code')
@@ -134,5 +150,13 @@ export class UsersController {
       code,
       notificationType,
     );
+  }
+
+  @DeleteUserDoc()
+  @HttpCode(200)
+  @Delete('me')
+  @UseGuards(AuthGuard)
+  async deleteMe(@Body() deleteUserReqDto: DeleteUserReqDto) {
+    return this.usersHandler.handleDeleteMe(deleteUserReqDto);
   }
 }

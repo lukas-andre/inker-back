@@ -1,5 +1,6 @@
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { DeviceType } from '../../../notifications/database/entities/userFcmToken.entity';
+import { LoginType } from '../../domain/enums/loginType.enum';
 
 export class LoginParams {
   @IsString()
@@ -8,7 +9,7 @@ export class LoginParams {
   @IsString()
   readonly password: string;
 
-  @IsString() readonly loginType: string;
+  @IsEnum(LoginType) readonly loginType: LoginType;
 
   @IsString() readonly fcmToken?: string;
 

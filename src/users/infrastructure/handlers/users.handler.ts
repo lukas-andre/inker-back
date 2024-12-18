@@ -19,6 +19,11 @@ import { UpdateUserPasswordQueryDto } from '../dtos/updateUserPasswordQuery.dto'
 import { UpdateUserPasswordReqDto } from '../dtos/updateUserPasswordReq.dto';
 import { UpdateUserUsernameReqDto } from '../dtos/updateUserUsernameReq.dto';
 import { NotificationType } from '../entities/verificationHash.entity';
+import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { DeleteUserUseCase } from '../../usecases/user/deleteUser.usecase';
+import { SendSMSVerificationCodeUseCase } from '../../usecases/user/verification-code/sendSmsVerificationCode.usecase';
+import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verification-code/sendEmailVerificationCode.usecase';
 
 @Injectable()
 export class UsersHandler extends BaseHandler {
@@ -30,8 +35,12 @@ export class UsersHandler extends BaseHandler {
     private readonly updateUserEmailUseCase: UpdateUserEmailUseCase,
     private readonly updateUserUsernameUseCase: UpdateUserUsernameUseCase,
     private readonly updateUserPasswordUseCase: UpdateUserPasswordUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
+    private readonly sendSMSVerificationCodeUseCase: SendSMSVerificationCodeUseCase,
+    private readonly sendEmailVerificationCodeUseCase: SendEmailVerificationCodeUseCase,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly requestContext: RequestContextService,
   ) {
     super(jwtService);
   }
@@ -100,6 +109,22 @@ export class UsersHandler extends BaseHandler {
     }
   }
 
+  public async handleSendAccountValidationCodeWithPhoneNumberOrEmail(
+    query: SendAccountVerificationCodeQueryDto,
+  ) {
+    switch (query.notificationType) {
+      case NotificationType.SMS:
+        return this.sendSMSVerificationCodeUseCase.execute(
+          query.phoneNumber,
+        );
+      case NotificationType.EMAIL:
+        return this.sendEmailVerificationCodeUseCase.execute(
+          query.email,
+        );
+    }
+  }
+
+
   public async handleValidateAccountVerificationCode(
     userId: number,
     code: string,
@@ -115,5 +140,10 @@ export class UsersHandler extends BaseHandler {
           code,
         );
     }
+  }
+
+  public async handleDeleteMe(dto: DeleteUserReqDto) {
+    const { userId } = this.requestContext
+    return this.deleteUserUseCase.execute(userId, dto.password);
   }
 }

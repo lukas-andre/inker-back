@@ -126,9 +126,12 @@ export class Quotation extends BaseEntity {
   @Column({ name: 'response_date', nullable: true })
   responseDate?: Date;
 
+
+  // Eg: 2024-09-15 01:53:00.000
   @Column({ name: 'appointment_date', nullable: true })
   appointmentDate?: Date;
 
+  // in minutes
   @Column({ name: 'appointment_duration', nullable: true })
   appointmentDuration?: number;
 

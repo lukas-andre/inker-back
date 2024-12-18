@@ -25,8 +25,8 @@ export class LoginReqDto {
     enum: LoginType,
   })
   @IsString()
-  @IsIn(Object.keys(LoginType))
-  readonly loginType: string;
+  @IsIn(Object.values(LoginType))
+  readonly loginType: LoginType;
 
   @ApiProperty({
     example: 'web',
