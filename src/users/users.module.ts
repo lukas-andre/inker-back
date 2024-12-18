@@ -31,6 +31,10 @@ import { GetSettingsUseCase } from './usecases/settings/getSettings.usecase';
 import { UpdateLocationServicesUseCase } from './usecases/settings/updateLocationService.usecase';
 import { UpdateNotificationsUseCase } from './usecases/settings/updateNotifications.usecase';
 import { SettingsController } from './infrastructure/controllers/settings.controller';
+import { DeleteUserUseCase } from './usecases/user/deleteUser.usecase';
+import { SendSMSVerificationCodeUseCase } from './usecases/user/verification-code/sendSmsVerificationCode.usecase';
+import { SendEmailVerificationCodeUseCase } from './usecases/user/verification-code/sendEmailVerificationCode.usecase';
+import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
 
 @Module({
   imports: [
@@ -39,6 +43,7 @@ import { SettingsController } from './infrastructure/controllers/settings.contro
     CustomerProviderModule,
     LocationProviderModule,
     UserProviderModule,
+    NotificationQueueModule
   ],
   providers: [
     UsersHandler,
@@ -62,7 +67,10 @@ import { SettingsController } from './infrastructure/controllers/settings.contro
     GetSettingsUseCase,
     UpdateNotificationsUseCase,
     UpdateLocationServicesUseCase,
-    SettingsHandler
+    SettingsHandler,
+    DeleteUserUseCase,
+    SendSMSVerificationCodeUseCase,
+    SendEmailVerificationCodeUseCase,
   ],
   controllers: [UsersController, PermissionsController, RolesController, SettingsController],
 })

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+    <!-- Header Part -->
+    {{> header message="Código de Verificación"}}
+
+    <!-- Main Content -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff;">
+        <tr>
+            <td align="center">
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="margin: 0 auto;">
+                    <tr>
+                        <td style="padding: 20px; font-family: Arial, sans-serif;">
+                            <h2 style="color: #292929; font-size: 20px; line-height: 24px; text-align: center; margin-top: 0; margin-bottom: 20px;">
+                                Hola {{username}},
+                            </h2>
+                            <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
+                                Has solicitado un código de verificación. Aquí está tu código:
+                            </p>
+                            
+                            <!-- Verification Code Box -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 300px; margin: 30px auto;">
+                                <tr>
+                                    <td align="center" style="background-color: #f8f6ff; padding: 20px; border-radius: 10px;">
+                                        <p style="font-family: 'Courier New', monospace; font-size: 32px; font-weight: bold; color: #3e2d9c; margin: 0; letter-spacing: 5px;">
+                                            {{verificationCode}}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center;">
+                                Este código expirará en {{expirationTime}} minutos.
+                            </p>
+                            
+                            <p style="color: #666666; font-size: 14px; line-height: 20px; text-align: center; margin-top: 30px;">
+                                Si no has solicitado este código, puedes ignorar este correo electrónico.
+                                Por razones de seguridad, no compartas este código con nadie.
+                            </p>
+                            
+                            <p style="color: #101112; font-size: 16px; line-height: 20px; text-align: center; margin-top: 30px;">
+                                ¿Necesitas ayuda? 
+                                <a href="mailto:support@example.com" style="color: #3e2d9c; text-decoration: underline;">Contáctanos</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Footer Part -->
+    {{> footer}}
+</body>
+</html>

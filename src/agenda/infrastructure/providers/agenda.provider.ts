@@ -222,7 +222,7 @@ export class AgendaProvider extends BaseComponent {
 
     try {
       const createEventSql = `
-        INSERT INTO agenda_event (agenda_id, title, info, color, "end", start, notification, customer_id, done, created_at, updated_at)
+        INSERT INTO agenda_event (agenda_id, title, info, color, "end_date", "start_date", notification, customer_id, done, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, false, NOW(), NOW())
         RETURNING id;
       `;

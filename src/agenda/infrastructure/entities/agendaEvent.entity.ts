@@ -17,24 +17,27 @@ import { AgendaEventHistory } from './agendaEventHistory.entity';
 import { AgendaInvitation } from './agendaInvitation.entity';
 
 @Entity()
-@Index(['start', 'end'])
+@Index(['startDate', 'endDate'])
 @Index('idx_agenda_id', ['agenda'])
 export class AgendaEvent extends BaseEntity {
   @ManyToOne(() => Agenda, agenda => agenda.agendaEvent)
   @JoinColumn({ name: 'agenda_id' })
   agenda: Agenda;
 
+  @Index()
   @Column({ name: 'customer_id', nullable: true })
   customerId: number;
 
   @Column()
   title: string;
 
-  @Column()
-  start: Date;
+  @Index()
+  @Column({ name: 'start_date' })
+  startDate: Date;
 
-  @Column()
-  end: Date;
+  @Index()
+  @Column({ name: 'end_date' })
+  endDate: Date;
 
   @Column()
   color: string;

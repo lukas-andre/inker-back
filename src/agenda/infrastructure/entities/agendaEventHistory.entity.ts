@@ -21,11 +21,11 @@ export class AgendaEventHistory {
   @Column()
   title: string;
 
-  @Column()
-  start: Date;
+  @Column({ name: 'start_date' })
+  startDate: Date;
 
-  @Column()
-  end: Date;
+  @Column({ name: 'end_date' })
+  endDate: Date;
 
   @Column()
   color: string;

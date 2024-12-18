@@ -1,6 +1,7 @@
 import path from 'path';
 
 import {
+  AccountVerificationCodeSchema,
   AgendaEventCanceledSchema,
   AgendaEventCreatedSchema,
   AgendaEventReminderSchema,
@@ -87,5 +88,10 @@ export const TemplateRegistry: Record<
     schema: QuotationCreatedSchema,
     path: path.join(__dirname, './quotationCreated.hbs'),
     subject: '💈 :artistName tienes una nueva cotización de :customerName',
+  },
+  ACCOUNT_VERIFICATION_CODE: {
+    schema: AccountVerificationCodeSchema,
+    path: path.join(__dirname, './verificationCode.hbs'),
+    subject: '💈 Tu código de verificación',
   },
 };

@@ -19,6 +19,7 @@ import {
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
 import { QuotationCustomerActionJobIdType, QuotationCustomerActionJobType, QuotationJobIdType } from '../../../queues/notifications/domain/schemas/quotation';
+import { CreateAgendaEventJobType } from '../../../queues/sync/jobs';
 
 @Injectable()
 export class ProcessCustomerActionUseCase
@@ -30,6 +31,8 @@ export class ProcessCustomerActionUseCase
     private readonly quotationStateMachine: QuotationStateMachine,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
+    @InjectQueue(queues.sync.name)
+    private readonly syncQueue: Queue,
   ) {
     super(ProcessCustomerActionUseCase.name);
   }
@@ -140,6 +143,16 @@ export class ProcessCustomerActionUseCase
 
       await this.notificationQueue.add(queueMessage);
     }
+
+    await this.syncQueue.add({
+      jobId: 'CREATE_AGENDA_EVENT',
+      metadata: {
+        artistId: quotation.artistId,
+        quotationId: quotation.id,
+      },
+    } as CreateAgendaEventJobType);
+
+
 
     return {
       message: 'Quotation updated successfully',

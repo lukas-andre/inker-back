@@ -2,9 +2,11 @@ import { Processor, InjectQueue, Process } from "@nestjs/bull";
 import { Queue, Job } from "bull";
 import { BaseComponent } from "../../global/domain/components/base.component";
 import { queues } from "../queues";
-import { SyncArtistRatingsJobType, SyncJobIdSchema, SyncJobType } from "./jobs";
+import { CreateAgendaEventJobType, SyncArtistRatingsJobType, SyncJobIdSchema, SyncJobType } from "./jobs";
 import { ArtistProvider } from "../../artists/infrastructure/database/artist.provider";
 import { ReviewAvgProvider } from "../../reviews/database/providers/reviewAvg.provider";
+import { AgendaProvider } from "../../agenda/infrastructure/providers/agenda.provider";
+import { QuotationProvider } from "../../agenda/infrastructure/providers/quotation.provider";
 
 @Processor(queues.sync.name)
 export class SyncProcessor extends BaseComponent {
@@ -13,6 +15,8 @@ export class SyncProcessor extends BaseComponent {
         private readonly deadLetterQueue: Queue,
         private readonly artistProvider: ArtistProvider,
         private readonly reviewAvgProvider: ReviewAvgProvider,
+        private readonly agendaProvider: AgendaProvider,
+        private readonly quotationProvider: QuotationProvider,
     ) {
         super(SyncProcessor.name);
         this.logger.log('Sync processor initialized');
@@ -25,11 +29,104 @@ export class SyncProcessor extends BaseComponent {
             return;
         }
 
-        if (job.data.jobId === SyncJobIdSchema.enum.SYNC_ARTIST_RATINGS) {
-            await this.syncArtistRating(job.data);
-            this.logger.log(`Sync job ${job.id} processed successfully`);
-        } else {
-            this.logger.error(`Invalid job ID: ${job.data.jobId}`);
+        switch (job.data.jobId) {
+            case SyncJobIdSchema.enum.SYNC_ARTIST_RATINGS:
+                await this.syncArtistRating(job.data as SyncArtistRatingsJobType);
+                break;
+            case SyncJobIdSchema.enum.CREATE_AGENDA_EVENT:
+                await this.createAgendaEvent(job.data as CreateAgendaEventJobType);
+                break;
+        }
+
+        this.logger.log(`Sync job ${job.id} processed successfully`);
+    }
+
+    private async createAgendaEvent(data: CreateAgendaEventJobType): Promise<void> {
+        const agenda = await this.agendaProvider.findOne({
+            where: {
+                artistId: data.metadata.artistId,
+            },
+        });
+        if (!agenda) {
+            this.logger.error(`Agenda not found for id ${data.metadata.artistId}`);
+            return;
+        }
+
+        const quotation = await this.quotationProvider.findById(data.metadata.quotationId);
+        if (!quotation) {
+            this.logger.error(`Quotation not found for id ${data.metadata.quotationId}`);
+            return;
+        }
+
+        // Validate quotation status and required fields
+        if (quotation.status !== 'accepted') {
+            this.logger.error(`Cannot create agenda event for non-accepted quotation ${quotation.id}`);
+            return;
+        }
+
+        if (!quotation.appointmentDate || !quotation.appointmentDuration) {
+            this.logger.error(`Quotation ${quotation.id} missing appointment details`);
+            return;
+        }
+
+        const queryRunner = this.agendaProvider.source.createQueryRunner();
+
+        try {
+            await queryRunner.connect();
+            await queryRunner.startTransaction();
+
+            const now = new Date();
+
+            // Check for existing event to prevent duplicates
+            const existingEvent = await queryRunner.query(
+                `SELECT id FROM agenda_event WHERE quotation_id = $1`,
+                [quotation.id]
+            );
+
+            if (existingEvent?.length) {
+                this.logger.warn(`Agenda event already exists for quotation ${quotation.id}`);
+                await queryRunner.rollbackTransaction();
+                return;
+            }
+
+            await queryRunner.query(
+                `INSERT INTO agenda_event (
+                    agenda_id, 
+                    quotation_id,
+                    created_at,
+                    updated_at,
+                    start_date,
+                    end_date,
+                    title,
+                    info,
+                    color,
+                    notification,
+                    customer_id
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+                [
+                    agenda.id,
+                    quotation.id,
+                    now,
+                    now,
+                    quotation.appointmentDate,
+                    new Date(quotation.appointmentDate.getTime() + quotation.appointmentDuration * 60 * 1000),
+                    'Agenda Event Title', // TODO: get this somewhere, maybe IA
+                    'Agenda Event Info', // TODO: get this somewhere
+                    '#000000', // TODO: get this somewhere
+                    false,
+                    quotation.customerId
+                ]
+            );
+
+            await queryRunner.commitTransaction();
+            this.logger.log(`Created agenda event for quotation ${quotation.id}`);
+        } catch (error: unknown) {
+            await queryRunner.rollbackTransaction();
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error(`Failed to create agenda event: ${message}`);
+            throw error;
+        } finally {
+            await queryRunner.release();
         }
     }
 
