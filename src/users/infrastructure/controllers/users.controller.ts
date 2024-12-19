@@ -36,6 +36,7 @@ import {
 } from './docs/users.doc';
 import { DeleteUserDoc } from './docs/deleteUser.doc';
 import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
+import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -107,6 +108,15 @@ export class UsersController {
     );
   }
 
+  @GetForgotPasswordCode()
+  @HttpCode(200)
+  @Post('send-forgot-password-code')
+  async sendForgotPasswordCode(
+    @Query() sendForgotPasswordCodeReqDto: SendForgotPasswordCodeReqDto,
+  ) {
+    return this.usersHandler.handleSendAccountForgotPasswordCode(sendForgotPasswordCodeReqDto);
+  }
+
   // TODO: move this to notification module
   @SendAccountVerificationCodeDoc()
   @HttpCode(200)
@@ -149,6 +159,22 @@ export class UsersController {
       userId,
       code,
       notificationType,
+    );
+  }
+
+
+  @ValidateAccountVerificationCodeDoc()
+  @HttpCode(200)
+  @Post('forgot-password/:code')
+  async validateForgotPasswordCode(
+    @Param('code') code: string,
+    @Body() updateUserPasswordReqDto: UpdateUserPasswordReqDto,
+  ) {
+    return this.usersHandler.updatePasswordWithCode(
+      code,
+      updateUserPasswordReqDto.password,
+      updateUserPasswordReqDto.repeatedPassword,
+      updateUserPasswordReqDto.email,
     );
   }
 

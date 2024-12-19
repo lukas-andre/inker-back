@@ -30,8 +30,8 @@ export class VerificationCodeSentJob implements NotificationJob {
       expirationTime: job.metadata.expirationTime,
     };
 
-
-    await this.emailNotificationService.sendEmail(verificationCodeEmailData);
-
+    if (job.notificationTypeId === 'EMAIL') {
+      await this.emailNotificationService.sendEmail(verificationCodeEmailData);
+    }
   }
 }

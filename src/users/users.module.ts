@@ -35,6 +35,8 @@ import { DeleteUserUseCase } from './usecases/user/deleteUser.usecase';
 import { SendSMSVerificationCodeUseCase } from './usecases/user/verification-code/sendSmsVerificationCode.usecase';
 import { SendEmailVerificationCodeUseCase } from './usecases/user/verification-code/sendEmailVerificationCode.usecase';
 import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
+import { SendForgotPasswordCodeUseCase } from './usecases/user/sendForgotPasswordCode.usecase';
+import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPasswordWithCode.usecase';
 
 @Module({
   imports: [
@@ -71,6 +73,8 @@ import { NotificationQueueModule } from '../queues/notifications/notification.qu
     DeleteUserUseCase,
     SendSMSVerificationCodeUseCase,
     SendEmailVerificationCodeUseCase,
+    SendForgotPasswordCodeUseCase,
+    UpdateUserPasswordWithCodeUseCase
   ],
   controllers: [UsersController, PermissionsController, RolesController, SettingsController],
 })
