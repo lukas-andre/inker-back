@@ -138,3 +138,13 @@ Content-Type: application/json
 ### List Events from Artist Agenda
 GET {{$dotenv APP_URL}}/agenda/event/3 HTTP/1.1
 Authorization: Bearer {{token}}
+
+### Send Forgot Password Code
+POST {{$dotenv APP_URL}}/users/send-forgot-password-code HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "lucas.henrydz@gmail.com",
+  "notificationType": "EMAIL"
+}

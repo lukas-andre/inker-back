@@ -24,9 +24,14 @@ import { RequestContextService } from '../../../global/infrastructure/services/r
 import { DeleteUserUseCase } from '../../usecases/user/deleteUser.usecase';
 import { SendSMSVerificationCodeUseCase } from '../../usecases/user/verification-code/sendSmsVerificationCode.usecase';
 import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verification-code/sendEmailVerificationCode.usecase';
+import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
+import { SendForgotPasswordCodeUseCase } from '../../usecases/user/sendForgotPasswordCode.usecase';
+import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
 
 @Injectable()
 export class UsersHandler extends BaseHandler {
+
+
   constructor(
     private readonly createUserByTypeUseCase: CreateUserByTypeUseCase,
     private readonly sendSMSAccountVerificationCodeUseCase: SendSMSAccountVerificationCodeUseCase,
@@ -38,6 +43,8 @@ export class UsersHandler extends BaseHandler {
     private readonly deleteUserUseCase: DeleteUserUseCase,
     private readonly sendSMSVerificationCodeUseCase: SendSMSVerificationCodeUseCase,
     private readonly sendEmailVerificationCodeUseCase: SendEmailVerificationCodeUseCase,
+    private readonly sendForgotPasswordCodeUseCase: SendForgotPasswordCodeUseCase,
+    private readonly updateUserPasswordWithCodeUseCase: UpdateUserPasswordWithCodeUseCase,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly requestContext: RequestContextService,
@@ -141,6 +148,17 @@ export class UsersHandler extends BaseHandler {
         );
     }
   }
+
+  public async handleSendAccountForgotPasswordCode(dto: SendForgotPasswordCodeReqDto) {
+    return this.sendForgotPasswordCodeUseCase.execute(
+      dto
+    );
+  }
+
+  public async updatePasswordWithCode(code: string, password: string, newPassword: string, email?: string) {
+    return this.updateUserPasswordWithCodeUseCase.execute(code, email, password, newPassword);
+  }
+
 
   public async handleDeleteMe(dto: DeleteUserReqDto) {
     const { userId } = this.requestContext

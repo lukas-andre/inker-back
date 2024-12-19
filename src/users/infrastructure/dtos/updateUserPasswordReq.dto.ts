@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 import { Match } from '../../../global/domain/validators/match.validator';
 
@@ -8,14 +8,15 @@ export class UpdateUserPasswordReqDto {
     example: '1qaz2wsx',
     description: 'New Password',
     required: true,
-    pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})',
+    // pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})',
   })
   @IsString()
   @MinLength(6)
   @MaxLength(20)
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'password too weak',
-  })
+  // TODO: IN THE FUTURE WE WILL NEED TO IMPLEMENT THIS VALIDATION
+  // @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+  //   message: 'password too weak',
+  // })
   readonly password: string;
 
   @IsString()
@@ -23,4 +24,7 @@ export class UpdateUserPasswordReqDto {
   @MaxLength(20)
   @Match('password')
   readonly repeatedPassword: string;
+
+  @IsEmail()
+  readonly email?: string;
 }

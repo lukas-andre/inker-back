@@ -48,7 +48,7 @@ export class SendSMSForgotPasswordCodeUseCase
     phoneNumber: string,
   ): Promise<DefaultResponseDto> {
     const verificationCode =
-      this.verificationHashProvider.generateVerificationCode();
+      this.verificationHashProvider.generateForgotPasswordCode();
 
     this.logger.log({ verificationCode });
 
