@@ -11,7 +11,7 @@ import { NotificationJob } from '../notification.job';
 
 const QUOTATION_APPEALED_NOTIFICATIONS = {
   title: 'Cotización apelada',
-  body: 'Se ha apelado una cotización'
+  body: 'Se ha apelado una cotización',
 } as const;
 
 export class QuotationAppealedJob implements NotificationJob {
@@ -49,7 +49,11 @@ export class QuotationAppealedJob implements NotificationJob {
     };
 
     await Promise.all([
-      this.pushNotificationService.sendToUser(artist.userId, QUOTATION_APPEALED_NOTIFICATIONS, notificationMetadata),
+      this.pushNotificationService.sendToUser(
+        artist.userId,
+        QUOTATION_APPEALED_NOTIFICATIONS,
+        notificationMetadata,
+      ),
       this.emailNotificationService.sendEmail(quotationAppealedEmailData),
     ]);
   }

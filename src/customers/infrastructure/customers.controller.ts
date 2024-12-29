@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -21,7 +33,7 @@ import { UpdateCustomerDto } from './dtos/updateCustomerReq.dto';
 @Controller('customers')
 @UseGuards(AuthGuard)
 export class CustomersController {
-  constructor(private readonly customerHandler: CustomerHandler) { }
+  constructor(private readonly customerHandler: CustomerHandler) {}
 
   @ApiOperation({ summary: 'Create Customer' })
   @ApiCreatedResponse({

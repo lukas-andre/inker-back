@@ -8,7 +8,7 @@ export class GetSettingsUseCase {
 
   async execute(userId: number): Promise<Settings> {
     const settings = await this.settingsProvider.findByUserId(userId);
-    
+
     if (!settings) {
       // Return default settings if none exist
       return this.settingsProvider.upsert({

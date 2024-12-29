@@ -53,8 +53,8 @@ export class QuotationHistory extends BaseEntity {
       },
       from(value: any): MoneyEntity {
         return value ? MoneyEntity.fromJson(value) : null;
-      }
-    }
+      },
+    },
   })
   previousEstimatedCost?: MoneyEntity;
 
@@ -69,8 +69,8 @@ export class QuotationHistory extends BaseEntity {
       },
       from(value: any): MoneyEntity {
         return value ? MoneyEntity.fromJson(value) : null;
-      }
-    }
+      },
+    },
   })
   newEstimatedCost?: MoneyEntity;
 

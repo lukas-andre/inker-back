@@ -32,7 +32,7 @@ export class LoginReqDto {
     example: 'web',
     description: 'Device type (android, ios, web)',
     enum: DeviceType,
-    required: false
+    required: false,
   })
   @IsString()
   @IsIn(Object.values(DeviceType))
@@ -42,7 +42,7 @@ export class LoginReqDto {
   @ApiProperty({
     example: 'eKj2...Mks9',
     description: 'FCM device token for push notifications',
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()

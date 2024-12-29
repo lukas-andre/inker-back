@@ -114,7 +114,9 @@ export class UsersController {
   async sendForgotPasswordCode(
     @Query() sendForgotPasswordCodeReqDto: SendForgotPasswordCodeReqDto,
   ) {
-    return this.usersHandler.handleSendAccountForgotPasswordCode(sendForgotPasswordCodeReqDto);
+    return this.usersHandler.handleSendAccountForgotPasswordCode(
+      sendForgotPasswordCodeReqDto,
+    );
   }
 
   // TODO: move this to notification module
@@ -161,7 +163,6 @@ export class UsersController {
       notificationType,
     );
   }
-
 
   @ValidateAccountVerificationCodeDoc()
   @HttpCode(200)

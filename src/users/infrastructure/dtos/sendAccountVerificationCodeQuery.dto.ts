@@ -10,7 +10,7 @@ export class SendAccountVerificationCodeQueryDto {
   readonly phoneNumber: string;
 
   @IsString()
-  @IsOptional()  
+  @IsOptional()
   readonly email: string;
 
   @IsEnum(NotificationType)

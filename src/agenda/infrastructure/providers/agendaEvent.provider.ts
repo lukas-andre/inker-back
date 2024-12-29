@@ -131,22 +131,25 @@ export class AgendaEventProvider extends BaseComponent {
     const qb = this.agendaEventRepository
       .createQueryBuilder('agenda_event')
       .select('COUNT(agenda_event.id)')
-      .where(`(:start > agenda_event.start_date AND :start < agenda_event.end_date)`, {
-        start: startDate,
-      })
-        .orWhere(
-          `(:end > agenda_event.start_date AND :end < agenda_event.end_date)`,
-          {
-            end: endDate,
-          },
-        )
-        .orWhere(
-          `(:start = agenda_event.start_date AND :end = agenda_event.end_date)`,
-          {
-            start: startDate,
-            end: endDate,
-          },
-        )
+      .where(
+        `(:start > agenda_event.start_date AND :start < agenda_event.end_date)`,
+        {
+          start: startDate,
+        },
+      )
+      .orWhere(
+        `(:end > agenda_event.start_date AND :end < agenda_event.end_date)`,
+        {
+          end: endDate,
+        },
+      )
+      .orWhere(
+        `(:start = agenda_event.start_date AND :end = agenda_event.end_date)`,
+        {
+          start: startDate,
+          end: endDate,
+        },
+      )
       .andWhere('agenda_event.agenda_id = :agendaId', { agendaId });
 
     if (eventId) {

@@ -45,7 +45,7 @@ import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPas
     CustomerProviderModule,
     LocationProviderModule,
     UserProviderModule,
-    NotificationQueueModule
+    NotificationQueueModule,
   ],
   providers: [
     UsersHandler,
@@ -74,8 +74,13 @@ import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPas
     SendSMSVerificationCodeUseCase,
     SendEmailVerificationCodeUseCase,
     SendForgotPasswordCodeUseCase,
-    UpdateUserPasswordWithCodeUseCase
+    UpdateUserPasswordWithCodeUseCase,
   ],
-  controllers: [UsersController, PermissionsController, RolesController, SettingsController],
+  controllers: [
+    UsersController,
+    PermissionsController,
+    RolesController,
+    SettingsController,
+  ],
 })
 export class UsersModule {}

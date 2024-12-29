@@ -112,20 +112,19 @@ export class Quotation extends BaseEntity {
         return {
           amount: value.amount,
           currency: value.currency,
-          scale: value.scale
+          scale: value.scale,
         };
       },
       from(value: any): MoneyEntity {
         if (!value) return null;
         return new MoneyEntity(value.amount, value.currency, value.scale);
-      }
-    }
+      },
+    },
   })
   estimatedCost?: MoneyEntity;
 
   @Column({ name: 'response_date', nullable: true })
   responseDate?: Date;
-
 
   // Eg: 2024-09-15 01:53:00.000
   @Column({ name: 'appointment_date', nullable: true })

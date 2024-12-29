@@ -18,7 +18,11 @@ import {
 } from '../../infrastructure/dtos/customerQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
-import { QuotationCustomerActionJobIdType, QuotationCustomerActionJobType, QuotationJobIdType } from '../../../queues/notifications/domain/schemas/quotation';
+import {
+  QuotationCustomerActionJobIdType,
+  QuotationCustomerActionJobType,
+  QuotationJobIdType,
+} from '../../../queues/notifications/domain/schemas/quotation';
 import { CreateAgendaEventJobType } from '../../../queues/sync/jobs';
 
 @Injectable()
@@ -135,8 +139,12 @@ export class ProcessCustomerActionUseCase
           quotationId,
           artistId: quotation.artistId,
           customerId: quotation.customerId,
-          ...(customerActionDto.action === CustomerQuotationAction.REJECT && { rejectionReason: customerActionDto.rejectionReason }),
-          ...(customerActionDto.action === CustomerQuotationAction.APPEAL && { appealReason: customerActionDto.appealReason }),
+          ...(customerActionDto.action === CustomerQuotationAction.REJECT && {
+            rejectionReason: customerActionDto.rejectionReason,
+          }),
+          ...(customerActionDto.action === CustomerQuotationAction.APPEAL && {
+            appealReason: customerActionDto.appealReason,
+          }),
           additionalDetails: customerActionDto.additionalDetails,
         },
       };
@@ -151,8 +159,6 @@ export class ProcessCustomerActionUseCase
         quotationId: quotation.id,
       },
     } as CreateAgendaEventJobType);
-
-
 
     return {
       message: 'Quotation updated successfully',

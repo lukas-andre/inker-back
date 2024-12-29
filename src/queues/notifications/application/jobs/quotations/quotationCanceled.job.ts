@@ -10,7 +10,7 @@ import { NotificationJob } from '../notification.job';
 
 const QUOTATION_CANCELED_NOTIFICATIONS = {
   title: 'Cotización cancelada',
-  body: 'Se ha cancelado una cotización'
+  body: 'Se ha cancelado una cotización',
 } as const;
 
 export class QuotationCanceledJob implements NotificationJob {
@@ -25,11 +25,7 @@ export class QuotationCanceledJob implements NotificationJob {
   ) {}
 
   async handle(job: QuotationCanceledJobType): Promise<void> {
-    const {
-      artistId,
-      customerId,
-      quotationId,
-    } = job.metadata;
+    const { artistId, customerId, quotationId } = job.metadata;
 
     const [quotation, artist, customer] = await Promise.all([
       this.quotationProvider.findById(quotationId),
@@ -56,7 +52,11 @@ export class QuotationCanceledJob implements NotificationJob {
     };
 
     await Promise.all([
-      this.pushNotificationService.sendToUser(artist.userId, QUOTATION_CANCELED_NOTIFICATIONS, notificationMetadata),
+      this.pushNotificationService.sendToUser(
+        artist.userId,
+        QUOTATION_CANCELED_NOTIFICATIONS,
+        notificationMetadata,
+      ),
       // this.emailNotificationService.sendEmail(quotationCanceledEmailData),
     ]);
   }

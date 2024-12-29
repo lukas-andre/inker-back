@@ -4,13 +4,12 @@ import { UpdateNotificationsUseCase } from '../../usecases/settings/updateNotifi
 import { UpdateLocationServicesUseCase } from '../../usecases/settings/updateLocationService.usecase';
 
 @Injectable()
-export class SettingsHandler  {
+export class SettingsHandler {
   constructor(
     private readonly getSettingsUseCase: GetSettingsUseCase,
     private readonly updateNotificationsUseCase: UpdateNotificationsUseCase,
     private readonly updateLocationServicesUseCase: UpdateLocationServicesUseCase,
-  ) {
-  }
+  ) {}
 
   async handleGetSettings(userId: number) {
     return this.getSettingsUseCase.execute(userId);

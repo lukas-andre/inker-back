@@ -14,7 +14,7 @@ import { PushNotificationService } from './services/push/pushNotification.servic
     EmailNotificationService,
     SendGridClient,
     TemplateService,
-    PushNotificationService
+    PushNotificationService,
   ],
   controllers: [NotificationsController],
   exports: [EmailNotificationService, PushNotificationService],

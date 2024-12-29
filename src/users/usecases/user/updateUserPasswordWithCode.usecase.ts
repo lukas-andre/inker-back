@@ -14,7 +14,10 @@ import { UsersProvider } from '../../infrastructure/providers/users.provider';
 import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
 
 @Injectable()
-export class UpdateUserPasswordWithCodeUseCase extends BaseUseCase implements UseCase {
+export class UpdateUserPasswordWithCodeUseCase
+  extends BaseUseCase
+  implements UseCase
+{
   constructor(
     private readonly usersProvider: UsersProvider,
     private readonly verificationHashProvider: VerificationHashProvider,
@@ -34,7 +37,7 @@ export class UpdateUserPasswordWithCodeUseCase extends BaseUseCase implements Us
 
     const userHash = await this.verificationHashProvider.findOne({
       where: {
-        email
+        email,
       },
     });
 

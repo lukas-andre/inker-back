@@ -1,6 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const SyncJobIdSchema = z.enum(['SYNC_ARTIST_RATINGS', "CREATE_AGENDA_EVENT"]);
+export const SyncJobIdSchema = z.enum([
+  'SYNC_ARTIST_RATINGS',
+  'CREATE_AGENDA_EVENT',
+]);
 export type SyncJobIdType = z.infer<typeof SyncJobIdSchema>;
 
 const SyncJobSchema = z.object({
@@ -25,6 +28,8 @@ const CreateAgendaEventJobSchema = SyncJobSchema.extend({
     quotationId: z.number(),
   }),
 });
-export type CreateAgendaEventJobType = z.infer<typeof CreateAgendaEventJobSchema>;
+export type CreateAgendaEventJobType = z.infer<
+  typeof CreateAgendaEventJobSchema
+>;
 
 export { SyncArtistRatingsJobSchema, CreateAgendaEventJobSchema };

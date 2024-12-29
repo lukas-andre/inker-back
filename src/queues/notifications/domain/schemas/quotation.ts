@@ -47,10 +47,12 @@ const QuotationRepliedJobSchema = QuotationJobSchema.extend({
     quotationId: z.number(),
     artistId: z.number(),
     customerId: z.number(),
-    estimatedCost: z.object({
-      amount: z.number(),
-      currency: z.string(),
-    }).optional(),
+    estimatedCost: z
+      .object({
+        amount: z.number(),
+        currency: z.string(),
+      })
+      .optional(),
     appointmentDate: z.string().optional(),
     appointmentDuration: z.number().optional(),
     additionalDetails: z.string().optional(),

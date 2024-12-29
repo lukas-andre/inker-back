@@ -11,7 +11,7 @@ import { NotificationJob } from '../notification.job';
 
 const QUOTATION_ACCEPTED_NOTIFICATIONS = {
   title: 'Cotización aceptada',
-  body: 'Se ha aceptado la cotización'
+  body: 'Se ha aceptado la cotización',
 } as const;
 
 export class QuotationAcceptedJob implements NotificationJob {
@@ -54,10 +54,9 @@ export class QuotationAcceptedJob implements NotificationJob {
       this.pushNotificationService.sendToUser(
         artist.userId,
         QUOTATION_ACCEPTED_NOTIFICATIONS,
-        notificationMetadata
+        notificationMetadata,
       ),
       this.emailNotificationService.sendEmail(quotationAcceptedEmailData),
     ]);
   }
 }
-

@@ -11,7 +11,7 @@ import { NotificationJob } from '../notification.job';
 
 const QUOTATION_NOTIFICATIONS = {
   title: 'Nueva cotización',
-  body: 'Se ha creado una nueva cotización'
+  body: 'Se ha creado una nueva cotización',
 } as const;
 
 export class QuotationCreatedJob implements NotificationJob {
@@ -49,16 +49,19 @@ export class QuotationCreatedJob implements NotificationJob {
       };
 
       await Promise.all([
-        this.pushNotificationService.sendToUser(artist.userId, QUOTATION_NOTIFICATIONS, notificationMetadata),
+        this.pushNotificationService.sendToUser(
+          artist.userId,
+          QUOTATION_NOTIFICATIONS,
+          notificationMetadata,
+        ),
         // this.emailNotificationService.sendEmail(quotationCreatedEmailData),
       ]);
     } catch (error) {
-      console.error('Failed to process quotation creation notifications:', error);
+      console.error(
+        'Failed to process quotation creation notifications:',
+        error,
+      );
       throw error;
     }
   }
-
-
-
-
 }

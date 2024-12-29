@@ -186,7 +186,11 @@ describe('QuotationProvider', () => {
 
         expect(transactionIsOK).toBe(true);
         expect(updatedQuotation.status).toBe('quoted');
-        expect(updatedQuotation.estimatedCost).toMatchObject({"amount": 20000, "currency": "USD", "scale": 2});
+        expect(updatedQuotation.estimatedCost).toMatchObject({
+          amount: 20000,
+          currency: 'USD',
+          scale: 2,
+        });
         expect(updatedQuotation.appointmentDuration).toBe(120);
 
         const history = await quotationProvider.manager.findOne(
@@ -390,7 +394,11 @@ describe('QuotationProvider', () => {
 
         expect(transactionIsOK).toBe(true);
         expect(updatedQuotation.status).toBe('quoted');
-        expect(updatedQuotation.estimatedCost).toMatchObject({"amount": 18000, "currency": "USD", "scale": 2});
+        expect(updatedQuotation.estimatedCost).toMatchObject({
+          amount: 18000,
+          currency: 'USD',
+          scale: 2,
+        });
         // expect(updatedQuotation.appointmentDate).toEqual(
         //   new Date('2023-12-05'),
         // );

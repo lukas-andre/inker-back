@@ -21,7 +21,10 @@ import {
 } from '../../infrastructure/dtos/artistQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
-import { QuotationArtistActionJobIdType, QuotationArtistActionJobType } from '../../../queues/notifications/domain/schemas/quotation';
+import {
+  QuotationArtistActionJobIdType,
+  QuotationArtistActionJobType,
+} from '../../../queues/notifications/domain/schemas/quotation';
 
 @Injectable()
 export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
@@ -133,14 +136,14 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
         jobId: notificationTypeId,
         notificationTypeId: 'PUSH' as const,
         metadata: {
-          ...(artistQuoteDto.action === ArtistQuoteAction.REJECT && { 
+          ...(artistQuoteDto.action === ArtistQuoteAction.REJECT && {
             by: 'artist',
           }),
           quotationId,
           artistId: quotation.artistId,
           customerId: quotation.customerId,
-          ...(artistQuoteDto.action === ArtistQuoteAction.REJECT && { 
-            rejectionReason: artistQuoteDto.rejectionReason 
+          ...(artistQuoteDto.action === ArtistQuoteAction.REJECT && {
+            rejectionReason: artistQuoteDto.rejectionReason,
           }),
           estimatedCost: artistQuoteDto.estimatedCost,
           appointmentDate: artistQuoteDto.appointmentDate,

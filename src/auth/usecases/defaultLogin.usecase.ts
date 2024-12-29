@@ -53,7 +53,11 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
 
     // TODO: do this async, a message queue or something like that
     if (loginParams.fcmToken && loginParams.deviceType) {
-      await this.pushNotificationService.saveToken(user.id, loginParams.fcmToken, loginParams.deviceType);
+      await this.pushNotificationService.saveToken(
+        user.id,
+        loginParams.fcmToken,
+        loginParams.deviceType,
+      );
     }
 
     return loginResult;

@@ -9,7 +9,6 @@ import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from '../infrastructure/dtos/updateArtist.dto';
 
-
 @Injectable()
 export class UpdateArtistBasicInfoUseCase
   extends BaseUseCase

@@ -13,32 +13,30 @@ import { ArtistType } from '../../domain/artistType';
 import { Service } from './service.entity';
 import { Contact } from './contact.entity';
 
-
-
 @Entity()
-@Index(['firstName', 'lastName', 'username']) 
-@Index(['rating']) 
-@Index(['deletedAt']) 
+@Index(['firstName', 'lastName', 'username'])
+@Index(['rating'])
+@Index(['deletedAt'])
 export class Artist extends BaseEntity implements ArtistType {
   @Column({ name: 'user_id' })
-  @Index() 
+  @Index()
   userId: number;
 
   @Column({ name: 'username' })
-  @Index() 
+  @Index()
   username: string;
 
   @ManyToMany(() => Service, service => service.artists)
   @JoinTable({
-    name: 'artist_services', 
+    name: 'artist_services',
     joinColumn: {
       name: 'artist_id',
-      referencedColumnName: 'id'
+      referencedColumnName: 'id',
     },
     inverseJoinColumn: {
       name: 'service_id',
-      referencedColumnName: 'id'
-    }
+      referencedColumnName: 'id',
+    },
   })
   services: Service[];
 
@@ -59,11 +57,11 @@ export class Artist extends BaseEntity implements ArtistType {
 
   @OneToOne(() => Contact, contact => contact.artist, {
     cascade: true,
-    eager: true 
+    eager: true,
   })
   @JoinColumn({
     name: 'contact_id',
-    foreignKeyConstraintName: 'fk_artist_contact' 
+    foreignKeyConstraintName: 'fk_artist_contact',
   })
   contact: Contact;
 
@@ -72,7 +70,7 @@ export class Artist extends BaseEntity implements ArtistType {
     precision: 3,
     scale: 1,
     default: 0.0,
-    comment: 'Artist rating from 0.0 to 5.0'
+    comment: 'Artist rating from 0.0 to 5.0',
   })
   rating: number;
 

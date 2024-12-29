@@ -4,12 +4,13 @@ import { ArtistProvider } from '../../../../../artists/infrastructure/database/a
 import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
-import { AccountVerificationCodeType, MailIdSchema } from '../../../../../notifications/services/email/schemas/email';
+import {
+  AccountVerificationCodeType,
+  MailIdSchema,
+} from '../../../../../notifications/services/email/schemas/email';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { SendVerificationCodeJobType } from '../../../domain/schemas/codes';
 import { NotificationJob } from '../notification.job';
-
-
 
 export class VerificationCodeSentJob implements NotificationJob {
   constructor(
