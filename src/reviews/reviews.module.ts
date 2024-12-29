@@ -18,8 +18,7 @@ import { SyncQueueModule } from '../queues/sync/sync.queue.module';
     ReviewProviderModule,
     ArtistsProviderModule,
     UserProviderModule,
-    SyncQueueModule
-    ,
+    SyncQueueModule,
   ],
   controllers: [ReviewsController],
   providers: [

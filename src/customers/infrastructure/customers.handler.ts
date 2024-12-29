@@ -17,7 +17,7 @@ export class CustomerHandler {
     private readonly fullTextSearchCustomerUseCase: FullTextSearchCustomerUseCase,
     private readonly updateCustomerBasicInfoUseCase: UpdateCustomerBasicInfoUseCase,
     private readonly requestContext: RequestContextService,
-  ) { }
+  ) {}
 
   async handleCreate(createCustomerDto: CreateCustomerReqDto) {
     return this.cRCustomerUseCase.create(createCustomerDto);

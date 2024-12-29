@@ -30,8 +30,6 @@ import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUse
 
 @Injectable()
 export class UsersHandler extends BaseHandler {
-
-
   constructor(
     private readonly createUserByTypeUseCase: CreateUserByTypeUseCase,
     private readonly sendSMSAccountVerificationCodeUseCase: SendSMSAccountVerificationCodeUseCase,
@@ -111,9 +109,7 @@ export class UsersHandler extends BaseHandler {
           query.phoneNumber,
         );
       case NotificationType.EMAIL:
-        return this.sendEmailVerificationCodeUseCase.execute(
-          query.email,
-        );
+        return this.sendEmailVerificationCodeUseCase.execute(query.email);
     }
   }
 
@@ -122,16 +118,11 @@ export class UsersHandler extends BaseHandler {
   ) {
     switch (query.notificationType) {
       case NotificationType.SMS:
-        return this.sendSMSVerificationCodeUseCase.execute(
-          query.phoneNumber,
-        );
+        return this.sendSMSVerificationCodeUseCase.execute(query.phoneNumber);
       case NotificationType.EMAIL:
-        return this.sendEmailVerificationCodeUseCase.execute(
-          query.email,
-        );
+        return this.sendEmailVerificationCodeUseCase.execute(query.email);
     }
   }
-
 
   public async handleValidateAccountVerificationCode(
     userId: number,
@@ -150,19 +141,28 @@ export class UsersHandler extends BaseHandler {
     }
   }
 
-  public async handleSendAccountForgotPasswordCode(dto: SendForgotPasswordCodeReqDto) {
-    return this.sendForgotPasswordCodeUseCase.execute(
-      dto
+  public async handleSendAccountForgotPasswordCode(
+    dto: SendForgotPasswordCodeReqDto,
+  ) {
+    return this.sendForgotPasswordCodeUseCase.execute(dto);
+  }
+
+  public async updatePasswordWithCode(
+    code: string,
+    password: string,
+    newPassword: string,
+    email?: string,
+  ) {
+    return this.updateUserPasswordWithCodeUseCase.execute(
+      code,
+      email,
+      password,
+      newPassword,
     );
   }
 
-  public async updatePasswordWithCode(code: string, password: string, newPassword: string, email?: string) {
-    return this.updateUserPasswordWithCodeUseCase.execute(code, email, password, newPassword);
-  }
-
-
   public async handleDeleteMe(dto: DeleteUserReqDto) {
-    const { userId } = this.requestContext
+    const { userId } = this.requestContext;
     return this.deleteUserUseCase.execute(userId, dto.password);
   }
 }

@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import {
+  InjectDataSource,
+  InjectEntityManager,
+  InjectRepository,
+} from '@nestjs/typeorm';
 import {
   DataSource,
   DeepPartial,
@@ -35,7 +39,6 @@ export class ArtistProvider extends BaseComponent {
     private readonly dataSource: DataSource,
     @InjectEntityManager(ARTIST_DB_CONNECTION_NAME)
     private readonly entityManager: EntityManager,
-
   ) {
     super(ArtistProvider.name);
   }
@@ -243,7 +246,7 @@ export class ArtistProvider extends BaseComponent {
           'contact.email',
           'contact.phone',
           'contact.phoneDialCode',
-          'contact.phoneCountryIsoCode'
+          'contact.phoneCountryIsoCode',
         ])
         .leftJoin('artist.contact', 'contact')
         .where('artist.deletedAt IS NULL');
@@ -258,7 +261,7 @@ export class ArtistProvider extends BaseComponent {
             LOWER(artist.username) LIKE :searchTerm OR
             LOWER(artist.shortDescription) LIKE :searchTerm
           )`,
-          { searchTerm: `%${searchTerm}%` }
+          { searchTerm: `%${searchTerm}%` },
         );
       }
 
@@ -283,8 +286,8 @@ export class ArtistProvider extends BaseComponent {
           total,
           page,
           limit,
-          totalPages: Math.ceil(total / limit)
-        }
+          totalPages: Math.ceil(total / limit),
+        },
       };
     } catch (error) {
       throw new DBServiceFindOneException(

@@ -17,7 +17,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     UserProviderModule,
     ArtistsModule,
     CustomerProviderModule,
-    NotificationsModule
+    NotificationsModule,
   ],
   controllers: [AuthController],
   providers: [AuthHandler, AuthService, DefaultLoginUseCase],

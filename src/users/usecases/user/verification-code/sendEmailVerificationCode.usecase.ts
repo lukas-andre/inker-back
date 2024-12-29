@@ -13,9 +13,11 @@ import { UseCase } from '../../../../global/domain/usecases/base.usecase';
 import { SendVerificationCodeJobType } from '../../../../queues/notifications/domain/schemas/codes';
 import { User } from '../../../infrastructure/entities/user.entity';
 
-
 @Injectable()
-export class SendEmailVerificationCodeUseCase extends BaseSendVerificationUseCase implements UseCase, OnModuleInit {
+export class SendEmailVerificationCodeUseCase
+  extends BaseSendVerificationUseCase
+  implements UseCase, OnModuleInit
+{
   protected notificationType = NotificationType.EMAIL;
 
   constructor(
@@ -25,11 +27,17 @@ export class SendEmailVerificationCodeUseCase extends BaseSendVerificationUseCas
     @InjectQueue(queues.notification.name)
     private readonly notificationsQueue: Queue,
   ) {
-    super(verificationHashProvider, usersProvider, SendEmailVerificationCodeUseCase.name);
+    super(
+      verificationHashProvider,
+      usersProvider,
+      SendEmailVerificationCodeUseCase.name,
+    );
   }
 
   onModuleInit() {
-    this.maxTries = this.configService.get('verificationHash.accountVerification.email.maxTries');
+    this.maxTries = this.configService.get(
+      'verificationHash.accountVerification.email.maxTries',
+    );
     this.logger.log(`Max email verification attempts: ${this.maxTries}`);
   }
 
@@ -37,7 +45,8 @@ export class SendEmailVerificationCodeUseCase extends BaseSendVerificationUseCas
     const user = await this.findUser(email, 'email');
     this.validateUserStatus(user);
 
-    const verificationCode = this.verificationHashProvider.generateVerificationCode();
+    const verificationCode =
+      this.verificationHashProvider.generateVerificationCode();
     this.logger.log({ verificationCode });
 
     await this.handleVerificationHash(user.id, verificationCode);
@@ -46,7 +55,10 @@ export class SendEmailVerificationCodeUseCase extends BaseSendVerificationUseCas
     return { ...DefaultResponse.ok, data: { userId: user.id } };
   }
 
-  private async sendEmailNotification(user: User, verificationCode: string): Promise<void> {
+  private async sendEmailNotification(
+    user: User,
+    verificationCode: string,
+  ): Promise<void> {
     const emailData: SendVerificationCodeJobType = {
       jobId: 'ACCOUNT_VERIFICATION_CODE',
       notificationTypeId: 'EMAIL',

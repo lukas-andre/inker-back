@@ -114,9 +114,8 @@ export const userQueries = {
     ) as user
     FROM public.user u
     WHERE u.id = $1
-  `
+  `,
 };
-
 
 @Injectable()
 export class UsersProvider extends BaseComponent {

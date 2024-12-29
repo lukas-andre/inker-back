@@ -123,9 +123,7 @@ export class QuotationController {
     status: 204,
     description: 'Quotation marked as read successfully',
   })
-  async markAsRead(
-    @Param('id') id: number,
-  ): Promise<void> {
+  async markAsRead(@Param('id') id: number): Promise<void> {
     await this.quotationHandler.markQuotationAsRead(id);
   }
 }

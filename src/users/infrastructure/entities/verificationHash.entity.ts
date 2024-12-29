@@ -14,17 +14,20 @@ export enum VerificationType {
 @Entity()
 export class VerificationHash extends BaseEntity {
   @Index()
-  @Column({ name: 'user_id' }) userId: number;
+  @Column({ name: 'user_id' })
+  userId: number;
 
   @Column() hash: string;
 
   @Column({ nullable: false }) tries: number;
 
   @Index()
-  @Column({ name: 'email', nullable: true }) email?: string;
+  @Column({ name: 'email', nullable: true })
+  email?: string;
 
   @Index()
-  @Column({ name: 'phone', nullable: true }) phone?: string;
+  @Column({ name: 'phone', nullable: true })
+  phone?: string;
 
   @Column({ name: 'notification_type', enum: NotificationType })
   notificationType: NotificationType;

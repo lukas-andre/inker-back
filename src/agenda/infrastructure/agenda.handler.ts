@@ -31,7 +31,6 @@ import { MarkQuotationAsReadUseCase } from '../usecases/quotation/markQuotationA
 
 @Injectable()
 export class AgendaHandler {
-
   constructor(
     private readonly addEventUseCase: AddEventUseCase,
     private readonly updateEventUseCase: UpdateEventUseCase,

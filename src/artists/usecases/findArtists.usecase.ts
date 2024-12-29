@@ -16,18 +16,20 @@ export class FindArtistsUsecase {
   async execute(searchParams: SearchArtistDto) {
     const result = await this.artistProvider.searchArtists(searchParams);
 
-    const artistsWithFollowersAndFollowings = await Promise.all(result.artists.map(async (artist) => {
-      const [followers, follows] = await Promise.all([
-        this.followedsProvider.countFollowers(artist.userId),
-        this.followingProvider.countFollows(artist.userId),
-      ]);
+    const artistsWithFollowersAndFollowings = await Promise.all(
+      result.artists.map(async artist => {
+        const [followers, follows] = await Promise.all([
+          this.followedsProvider.countFollowers(artist.userId),
+          this.followingProvider.countFollows(artist.userId),
+        ]);
 
-      return {
-        ...artist,
-        followers,
-        follows,
-      };
-    }));
+        return {
+          ...artist,
+          followers,
+          follows,
+        };
+      }),
+    );
 
     return {
       artists: artistsWithFollowersAndFollowings,

@@ -1,5 +1,13 @@
-import { Column, Entity, CreateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { JobTypeKey, JobTypeSchemaRegistry } from '../../../queues/notifications/domain/jobSchema.registry';
+import {
+  Column,
+  Entity,
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import {
+  JobTypeKey,
+  JobTypeSchemaRegistry,
+} from '../../../queues/notifications/domain/jobSchema.registry';
 
 @Entity('notifications')
 export class Notification {
@@ -18,7 +26,7 @@ export class Notification {
   @Column({
     type: 'enum',
     enum: Object.keys(JobTypeSchemaRegistry),
-    enumName: 'job_type_key'
+    enumName: 'job_type_key',
   })
   type: JobTypeKey;
 

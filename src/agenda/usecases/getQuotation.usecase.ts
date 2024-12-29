@@ -13,11 +13,11 @@ import { ArtistLocationProvider } from '../../locations/infrastructure/database/
 
 @Injectable()
 export class GetQuotationUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly quotationProvider: QuotationProvider,
+  constructor(
+    private readonly quotationProvider: QuotationProvider,
     private readonly customerProvider: CustomerProvider,
     private readonly artistProvider: ArtistProvider,
     private readonly artistLocationProvider: ArtistLocationProvider,
-
   ) {
     super(GetQuotationUseCase.name);
   }
@@ -35,15 +35,16 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
     const [customer, artist, location] = await Promise.all([
       this.customerProvider.findOne({ where: { id: quotation.customerId } }),
       this.artistProvider.findOne({ where: { id: quotation.artistId } }),
-      this.artistLocationProvider.findOne({ where: { artistId: quotation.artistId } }),
+      this.artistLocationProvider.findOne({
+        where: { artistId: quotation.artistId },
+      }),
     ]);
-
 
     return {
       ...quotation,
       customer,
       artist,
-      location
+      location,
     };
   }
 }

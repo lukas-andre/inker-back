@@ -8,7 +8,7 @@ export class UpdateNotificationsUseCase {
 
   async execute(userId: number, enabled: boolean): Promise<Settings> {
     const settings = await this.settingsProvider.findByUserId(userId);
-    
+
     if (!settings) {
       // Create new settings if none exist
       return this.settingsProvider.upsert({

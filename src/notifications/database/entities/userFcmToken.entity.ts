@@ -1,13 +1,20 @@
-import { Column, Entity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, Index } from 'typeorm';
+import {
+  Column,
+  Entity,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  Index,
+} from 'typeorm';
 
 export enum DeviceType {
   ANDROID = 'android',
   IOS = 'ios',
-  WEB = 'web'
+  WEB = 'web',
 }
 
 @Entity('user_fcm_tokens')
-@Index(['userId', 'token'], { unique: true }) 
+@Index(['userId', 'token'], { unique: true })
 export class UserFcmToken {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -21,22 +28,22 @@ export class UserFcmToken {
   @Column({
     name: 'device_type',
     type: 'enum',
-    enum: DeviceType
+    enum: DeviceType,
   })
   deviceType: DeviceType;
 
-  @Column({ 
+  @Column({
     name: 'is_active',
-    default: true 
+    default: true,
   })
   isActive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({ 
+  @Column({
     name: 'last_used_at',
-    nullable: true
+    nullable: true,
   })
   lastUsedAt: Date;
 }

@@ -41,7 +41,7 @@ import { SyncQueueModule } from '../queues/sync/sync.queue.module';
     MultimediasModule,
     NotificationQueueModule,
     LocationProviderModule,
-    SyncQueueModule
+    SyncQueueModule,
   ],
   providers: [
     QuotationStateMachine,

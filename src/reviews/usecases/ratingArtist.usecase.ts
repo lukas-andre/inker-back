@@ -21,7 +21,10 @@ import { ReviewArtistRequestDto } from '../dtos/reviewArtistRequest.dto';
 import { queues } from '../../queues/queues';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { SyncArtistRatingsJobType, SyncJobIdSchema } from '../../queues/sync/jobs';
+import {
+  SyncArtistRatingsJobType,
+  SyncJobIdSchema,
+} from '../../queues/sync/jobs';
 
 @Injectable()
 export class RatingArtistUsecase extends BaseUseCase implements UseCase {

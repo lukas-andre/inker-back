@@ -12,7 +12,7 @@ import { NotificationJob } from '../notification.job';
 
 const QUOTATION_REJECTED_NOTIFICATIONS = {
   title: 'Cotización rechazada',
-  body: 'Se ha rechazado una cotización'
+  body: 'Se ha rechazado una cotización',
 } as const;
 
 export class QuotationRejectedJob implements NotificationJob {
@@ -49,20 +49,28 @@ export class QuotationRejectedJob implements NotificationJob {
 
     let promise: Promise<BatchResponse>;
     if (by === 'customer') {
-      promise = this.pushNotificationService.sendToUser(artist.userId, QUOTATION_REJECTED_NOTIFICATIONS, {
-        ...notificationMetadata,
-        customerName: customer.firstName,
-      });
+      promise = this.pushNotificationService.sendToUser(
+        artist.userId,
+        QUOTATION_REJECTED_NOTIFICATIONS,
+        {
+          ...notificationMetadata,
+          customerName: customer.firstName,
+        },
+      );
     } else {
-      promise = this.pushNotificationService.sendToUser(customer.userId, QUOTATION_REJECTED_NOTIFICATIONS, {
-        ...notificationMetadata,
-        artistName: artist.username,
-      });
+      promise = this.pushNotificationService.sendToUser(
+        customer.userId,
+        QUOTATION_REJECTED_NOTIFICATIONS,
+        {
+          ...notificationMetadata,
+          artistName: artist.username,
+        },
+      );
     }
 
     await Promise.all([
       promise,
       this.emailNotificationService.sendEmail(quotationRejectedEmailData),
-    ]); 
+    ]);
   }
 }

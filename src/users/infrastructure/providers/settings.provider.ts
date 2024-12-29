@@ -1,5 +1,3 @@
-
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -31,7 +29,10 @@ export class SettingsProvider extends BaseComponent {
     return this.settingsRepository.save(settings);
   }
 
-  async updateNotifications(userId: number, enabled: boolean): Promise<Settings> {
+  async updateNotifications(
+    userId: number,
+    enabled: boolean,
+  ): Promise<Settings> {
     const settings = await this.findByUserId(userId);
     return this.settingsRepository.save({
       ...settings,
@@ -39,7 +40,10 @@ export class SettingsProvider extends BaseComponent {
     });
   }
 
-  async updateLocationServices(userId: number, enabled: boolean): Promise<Settings> {
+  async updateLocationServices(
+    userId: number,
+    enabled: boolean,
+  ): Promise<Settings> {
     const settings = await this.findByUserId(userId);
     return this.settingsRepository.save({
       ...settings,

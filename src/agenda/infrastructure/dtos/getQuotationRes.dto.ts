@@ -82,4 +82,3 @@ export class QuotationDto {
   @ApiProperty()
   location: LocationDto;
 }
-

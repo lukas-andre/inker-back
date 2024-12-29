@@ -51,7 +51,7 @@ import { SearchArtistDto } from './dtos/searchArtist.dto';
 @Controller('artist')
 @UseGuards(AuthGuard)
 export class ArtistsController {
-  constructor(private readonly artistHandler: ArtistsHandler) { }
+  constructor(private readonly artistHandler: ArtistsHandler) {}
 
   @ApiOperation({ summary: 'Create Artist' })
   @ApiCreatedResponse({
@@ -176,7 +176,7 @@ export class ArtistsController {
   @ApiOkResponse({
     description: 'Search artists results',
     type: BaseArtistResponse,
-    isArray: true
+    isArray: true,
   })
   @Get('search')
   @UsePipes(new ValidationPipe({ transform: true }))

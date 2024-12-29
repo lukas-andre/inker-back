@@ -32,7 +32,9 @@ export class AuthService {
       userType: UserType[userType],
       userTypeId: entity.id,
       profileThumbnail: entity.profileThumbnail,
-      permission: (user as User & { permissions: Permission[] }).permissions.map(permission => ({
+      permission: (
+        user as User & { permissions: Permission[] }
+      ).permissions.map(permission => ({
         c: permission.controller,
         a: permission.action,
       })),

@@ -14,7 +14,7 @@ import { UpdateCustomerBasicInfoUseCase } from './usecases/updateCustomerBasicIn
     CustomerHandler,
     CRCustomerUseCase,
     FullTextSearchCustomerUseCase,
-    UpdateCustomerBasicInfoUseCase
+    UpdateCustomerBasicInfoUseCase,
   ],
 })
-export class CustomersModule { }
+export class CustomersModule {}

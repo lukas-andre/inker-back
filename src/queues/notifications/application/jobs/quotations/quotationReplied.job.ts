@@ -11,7 +11,7 @@ import { NotificationJob } from '../notification.job';
 
 const QUOTATION_REPLIED_NOTIFICATIONS = {
   title: 'Cotización respondida',
-  body: 'Se ha respondido una cotización'
+  body: 'Se ha respondido una cotización',
 } as const;
 
 export class QuotationRepliedJob implements NotificationJob {
@@ -51,7 +51,11 @@ export class QuotationRepliedJob implements NotificationJob {
     };
 
     await Promise.all([
-      this.pushNotificationService.sendToUser(customer.userId, QUOTATION_REPLIED_NOTIFICATIONS, notificationMetadata),
+      this.pushNotificationService.sendToUser(
+        customer.userId,
+        QUOTATION_REPLIED_NOTIFICATIONS,
+        notificationMetadata,
+      ),
       // this.emailNotificationService.sendEmail(quotationRepliedEmailData),
     ]);
   }
