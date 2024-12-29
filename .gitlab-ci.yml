@@ -8,6 +8,10 @@ stages:
   - release
   - deploy
 
+default:
+  tags:
+    - inker
+
 # Stage: Setup
 Install Dependencies:
   stage: setup
