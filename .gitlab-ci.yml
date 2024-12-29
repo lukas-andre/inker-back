@@ -1,6 +1,9 @@
 include:
   - local: .gitlab/templates.yml
 
+tags:
+  - inker
+
 stages:
   - setup
   - verify
