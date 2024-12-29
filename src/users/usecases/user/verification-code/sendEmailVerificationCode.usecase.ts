@@ -4,7 +4,6 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../../global/infrastructure/helpers/defaultResponse.helper';
-import { AccountVerificationCodeType, MailIdSchema } from '../../../../notifications/services/email/schemas/email';
 import { queues } from '../../../../queues/queues';
 import { NotificationType } from '../../../infrastructure/entities/verificationHash.entity';
 import { UsersProvider } from '../../../infrastructure/providers/users.provider';
