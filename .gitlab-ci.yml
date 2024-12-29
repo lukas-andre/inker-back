@@ -2,148 +2,81 @@ include:
   - local: .gitlab/templates.yml
 
 variables:
-  DOCKER_HOST: tcp://docker:2376
-  DOCKER_TLS_CERTDIR: '/certs'
-  # These are usually specified by the entrypoint, however the
-  # Kubernetes executor doesn't run entrypoints
-  # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4125
-  DOCKER_TLS_VERIFY: 1
-  DOCKER_CERT_PATH: '$DOCKER_TLS_CERTDIR/client'
-  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+  CONTAINER_TEST_IMAGE: $REGISTRY_URL/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
+  CONTAINER_RELEASE_IMAGE: $REGISTRY_URL/$CI_PROJECT_PATH:latest
 
 stages:
   - setup
-  - main
-  # - build
-  - package
+  - verify
+  - build
   - release
+  - deploy
 
-Install Dependencies (Merge Pipeline):
+# Stage: Setup
+Install Dependencies:
   stage: setup
   extends: [.setup-job]
   rules:
-    - !reference [.mr-job, rules]
+    - !reference [.mr-rules, rules]
+    - !reference [.master-rules, rules]
 
-Lint, Test & Build (Merge Pipeline):
-  stage: main
+# Stage: Verify
+Verify:
+  stage: verify
   extends: [.verify-job]
-  only: !reference [.mr-job, only]
+  needs: ["Install Dependencies"]
+  rules:
+    - !reference [.mr-rules, rules]
+    - !reference [.master-rules, rules]
 
-# TODO: Add review  apps job for Merge Pipeline test
-
-Install Dependencies (Hotfix Pipeline):
-  stage: setup
-  extends: [.setup-job]
-  rules: !reference [.hotfix-job, rules]
-
-Lint, Test & Build (Hotfix Pipeline):
-  stage: main
-  extends: [.verify-job]
-  only: !reference [.hotfix-job, only]
-
-Setup Package (Master/Main Pipeline):
-  extends: [.pre-release-job]
-  stage: package
-  before_script:
-    - !reference [.pre-release-job, before_script]
-    - npm install @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/changelog
+# Stage: Build
+Build Image:
+  stage: build
+  extends: [.docker-job]
+  needs: ["Verify"]
   script:
-    - npx semantic-release
+    - docker pull $CONTAINER_TEST_IMAGE || true
+    - |
+      docker build \
+        --cache-from $CONTAINER_TEST_IMAGE \
+        --build-arg NODE_ENV=production \
+        --label "org.opencontainers.image.title=$CI_PROJECT_TITLE" \
+        --label "org.opencontainers.image.url=$CI_PROJECT_URL" \
+        --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT" \
+        --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" \
+        --label "org.opencontainers.image.version=$CI_COMMIT_REF_NAME" \
+        --tag $CONTAINER_TEST_IMAGE \
+        .
+    - docker push $CONTAINER_TEST_IMAGE
+  rules:
+    - !reference [.mr-rules, rules]
+    - !reference [.master-rules, rules]
 
-Release (Tag Pipeline):
-  extends: [.release-job]
+# Stage: Release
+Create Release:
   stage: release
+  extends: [.release-job]
+  needs: ["Build Image"]
+  rules:
+    - !reference [.master-rules, rules]
+
+Push Release Image:
+  stage: release
+  extends: [.docker-job]
+  needs: ["Create Release"]
   script:
-    - echo "Deploying to production"
-# build:
-#   dependencies:
-#     - main
-#   stage: build
-#   image: docker:20.10.12-dind
-#   services:
-#     - docker:20.10.12-dind
-#   before_script:
-#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-#   script:
-#     # fetches the latest image (not failing if image is not found)
-#     - docker pull $CONTAINER_TEST_IMAGE || true
-#     # builds the project, using OCI labels, notice the cache-from, which is going
-#     # to use the image we just pulled locally the built image is tagged locally with
-#     # the commit SHA, and then pushed to the GitLab registry
-#     - >
-#       docker build
-#       --cache-from $CONTAINER_TEST_IMAGE
-#       --label "org.opencontainers.image.title=$CI_PROJECT_TITLE"
-#       --label "org.opencontainers.image.url=$CI_PROJECT_URL"
-#       --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT"
-#       --label "org.opencontainers.image.revision=$CI_COMMIT_SHA"
-#       --label "org.opencontainers.image.version=$CI_COMMIT_REF_NAME"
-#       --progress auto
-#       --tag $CONTAINER_TEST_IMAGE
-#       .
-#     - docker push $CONTAINER_TEST_IMAGE
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
+    - docker push $CONTAINER_RELEASE_IMAGE
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_MESSAGE =~ $RELEASE_COMMIT_PATTERN
 
-# TODO: Add build for release
-# TODO: Add release image only for master
-# release-image:
-#   image: docker:20.10.12-dind
-#   stage: release
-#   when: manual
-#   services:
-#     - docker:20.10.12-dind
-#   before_script:
-#     - echo "Releasing..."
-#     - echo $CONTAINER_RELEASE_IMAGE:$CI_COMMIT_SHA
-#     - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-#   script:
-#     - docker pull $CI_REGISTRY_IMAGE:latest
-#     - docker tag $CI_REGISTRY_IMAGE:$latest $CONTAINER_RELEASE_IMAGE:$CI_COMMIT_SHA
-#     - docker push $CONTAINER_RELEASE_IMAGE:latest
-#   needs:
-#     - build
-#   only:
-#     - main
-
-# deploy:
-#   stage: deploy
-#   image:
-#     name: dtzar/helm-kubectl:3.8.2
-#     entrypoint: ['']
-#   variables:
-#     IMAGE_CONFIG: --set-string imageCredentials.username=$DEPLOY_USER
-#       --set-string imageCredentials.password=$DEPLOY_TOKEN
-#       --set-string imageCredentials.registry=$CI_REGISTRY
-#       --set-string image.tag=$CI_COMMIT_REF_SLUG
-#       --set-string image.repository=$CI_REGISTRY_IMAGE
-#     ENV_CONFIG: --set-string env.normal.PORT=$PORT
-#       --set-string env.normal.AWS_REGION=$AWS_REGION
-#       --set-string env.normal.AWS_ARTISTS_BUCKET=$AWS_ARTISTS_BUCKET
-#       --set-string env.normal.CLOUD_FRONT_URL=$CLOUD_FRONT_URL
-#       --set-string env.secret.JWT_ISSUER=$JWT_ISSUER
-#       --set-string env.secret.JWT_SECRET_KEY=$JWT_SECRET_KEY
-#       --set-string env.secret.JWT_EXPIRATION=$JWT_EXPIRATION
-#       --set-string env.secret.AWS_ACCESS_KEY=$AWS_ACCESS_KEY
-#       --set-string env.secret.AWS_ACCESS_SECRET=$AWS_ACCESS_SECRET
-#       --set-string env.secret.SMS_AWS_ACCESS_KEY=$SMS_AWS_ACCESS_KEY
-#       --set-string env.secret.SMS_AWS_ACCESS_SECRET=$SMS_AWS_ACCESS_SECRET
-#       --set-string env.secret.DB_HOST=$DB_HOST
-#       --set-string env.secret.DB_PASSWORD=$DB_PASSWORD
-#       --set-string env.secret.DB_USERNAME=$DB_USERNAME
-#       --set-string env.secret.DB_PORT=$DB_PORT
-#       --set-string env.secret.TYPEORM_SYNC=$TYPEORM_SYNC
-#     NAMESPACE: development
-#     VALUES_PATH: ./deploy/values.yaml
-#     CHART_NAME: $CI_PROJECT_TITLE
-#   before_script:
-#     - kubectl config get-contexts
-#     - kubectl config use-context inker-studio/inker-terraform-gke:gke-agent
-#   script:
-#     - helm upgrade $CHART_NAME ./deploy --install
-#       $IMAGE_CONFIG $ENV_CONFIG
-#       --namespace $NAMESPACE
-#       --values $VALUES_PATH
-#       --cleanup-on-fail
-#       --timeout 5m
-#       --wait
+# Stage: Deploy
+Deploy to Production:
+  stage: deploy
+  image: alpine:3.19
+  script:
+    - echo "Deploying version $CI_COMMIT_TAG"
+    # Aquí irían los comandos de despliegue
+  rules:
+    - !reference [.release-rules, rules]

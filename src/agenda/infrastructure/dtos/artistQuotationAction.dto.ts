@@ -22,7 +22,7 @@ export enum ArtistQuoteAction {
 }
 
 export class ArtistQuotationActionDto {
-  @IsEnum(ArtistQuoteAction)
+  // @IsEnum(ArtistQuoteAction)
   action: ArtistQuoteAction;
 
   @IsOptional()

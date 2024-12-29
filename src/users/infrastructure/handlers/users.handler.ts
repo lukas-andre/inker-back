@@ -111,8 +111,9 @@ export class UsersHandler extends BaseHandler {
           query.phoneNumber,
         );
       case NotificationType.EMAIL:
-        // TODO: IMPLEMENT EMAIL VERIFICATION TOKEN USE CASE
-        break;
+        return this.sendEmailVerificationCodeUseCase.execute(
+          query.email,
+        );
     }
   }
 
