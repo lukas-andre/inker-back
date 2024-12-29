@@ -1,36 +1,54 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
+  InjectDataSource,
+  InjectEntityManager,
+  InjectRepository,
+} from '@nestjs/typeorm';
+import {
+  DataSource,
   DeepPartial,
   DeleteResult,
+  EntityManager,
   FindManyOptions,
   FindOneOptions,
   In,
   Repository,
-  UpdateResult,
 } from 'typeorm';
 
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
-  DbServiceBadRule,
   DBServiceFindOneException,
   DBServiceSaveException,
+  DbServiceBadRule,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { PROBLEMS_FILTERING_ARTISTS } from '../../../locations/domain/codes/codes';
 import { RawFindByArtistIdsResponseDTO } from '../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
-import { PROBLEMS_UPDATING_STUDIO_PHOTO } from '../../domain/errors/codes';
 import { CreateArtistParams } from '../../usecases/interfaces/createArtist.params';
 import { Artist } from '../entities/artist.entity';
 import { Contact } from '../entities/contact.entity';
+import { SearchArtistDto } from '../dtos/searchArtist.dto';
+import { ARTIST_DB_CONNECTION_NAME } from '../../../databases/constants';
 
 @Injectable()
 export class ArtistProvider extends BaseComponent {
   constructor(
     @InjectRepository(Artist, 'artist-db')
     private readonly artistsRepository: Repository<Artist>,
+    @InjectDataSource(ARTIST_DB_CONNECTION_NAME)
+    private readonly dataSource: DataSource,
+    @InjectEntityManager(ARTIST_DB_CONNECTION_NAME)
+    private readonly entityManager: EntityManager,
   ) {
     super(ArtistProvider.name);
+  }
+
+  get source(): DataSource {
+    return this.dataSource;
+  }
+
+  get manager(): EntityManager {
+    return this.entityManager;
   }
 
   repo() {
@@ -100,6 +118,38 @@ export class ArtistProvider extends BaseComponent {
     }
   }
 
+  async findByIdWithJoins(id: number): Promise<Artist> {
+    try {
+      return await this.artistsRepository
+        .createQueryBuilder('artist')
+        .leftJoinAndSelect('artist.contact', 'contact')
+        .leftJoinAndSelect('artist.services', 'services')
+        .where('artist.id = :id', { id })
+        .getOne();
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        'Problems finding artist',
+        error,
+      );
+    }
+  }
+
+  async findByIdWithContact(id: number): Promise<Artist> {
+    try {
+      return await this.artistsRepository.findOne({
+        where: { id },
+        relations: ['contact'],
+      });
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        'Problems finding artist',
+        error,
+      );
+    }
+  }
+
   async findByIds(ids: number[]) {
     try {
       return await this.artistsRepository.find({
@@ -154,26 +204,6 @@ export class ArtistProvider extends BaseComponent {
     }
   }
 
-  async updateStudioPhoto(
-    artistId: number,
-    studioPhoto: string,
-  ): Promise<UpdateResult> {
-    try {
-      return this.artistsRepository
-        .createQueryBuilder()
-        .select('id')
-        .where({ id: artistId })
-        .update({ studioPhoto })
-        .execute();
-    } catch (error) {
-      throw new DBServiceSaveException(
-        this,
-        PROBLEMS_UPDATING_STUDIO_PHOTO,
-        error,
-      );
-    }
-  }
-
   async find(options: FindManyOptions<Artist>) {
     return this.artistsRepository.find(options);
   }
@@ -196,5 +226,75 @@ export class ArtistProvider extends BaseComponent {
 
   async delete(id: number): Promise<DeleteResult> {
     return this.artistsRepository.delete(id);
+  }
+
+  async searchArtists(searchParams: SearchArtistDto) {
+    const { query, page = 1, limit = 10, minRating = 0 } = searchParams;
+
+    try {
+      const queryBuilder = this.artistsRepository
+        .createQueryBuilder('artist')
+        .select([
+          'artist.id',
+          'artist.username',
+          'artist.firstName',
+          'artist.lastName',
+          'artist.shortDescription',
+          'artist.profileThumbnail',
+          'artist.rating',
+          'artist.studioPhoto',
+          'contact.email',
+          'contact.phone',
+          'contact.phoneDialCode',
+          'contact.phoneCountryIsoCode',
+        ])
+        .leftJoin('artist.contact', 'contact')
+        .where('artist.deletedAt IS NULL');
+
+      // Búsqueda optimizada usando índices
+      if (query) {
+        const searchTerm = query.toLowerCase();
+        queryBuilder.andWhere(
+          `(
+            LOWER(artist.firstName) LIKE :searchTerm OR
+            LOWER(artist.lastName) LIKE :searchTerm OR
+            LOWER(artist.username) LIKE :searchTerm OR
+            LOWER(artist.shortDescription) LIKE :searchTerm
+          )`,
+          { searchTerm: `%${searchTerm}%` },
+        );
+      }
+
+      // Usar índice de rating
+      if (minRating > 0) {
+        queryBuilder.andWhere('artist.rating >= :minRating', { minRating });
+      }
+
+      // Obtener el total antes de la paginación
+      const total = await queryBuilder.getCount();
+
+      // Aplicar ordenamiento y paginación
+      const artists = await queryBuilder
+        .orderBy('artist.rating', 'DESC')
+        .offset((page - 1) * limit)
+        .limit(limit)
+        .getMany();
+
+      return {
+        artists,
+        meta: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    } catch (error) {
+      throw new DBServiceFindOneException(
+        this,
+        'Problems searching artists',
+        error,
+      );
+    }
   }
 }

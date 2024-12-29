@@ -19,6 +19,14 @@ import { UpdateUserPasswordQueryDto } from '../dtos/updateUserPasswordQuery.dto'
 import { UpdateUserPasswordReqDto } from '../dtos/updateUserPasswordReq.dto';
 import { UpdateUserUsernameReqDto } from '../dtos/updateUserUsernameReq.dto';
 import { NotificationType } from '../entities/verificationHash.entity';
+import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { DeleteUserUseCase } from '../../usecases/user/deleteUser.usecase';
+import { SendSMSVerificationCodeUseCase } from '../../usecases/user/verification-code/sendSmsVerificationCode.usecase';
+import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verification-code/sendEmailVerificationCode.usecase';
+import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
+import { SendForgotPasswordCodeUseCase } from '../../usecases/user/sendForgotPasswordCode.usecase';
+import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
 
 @Injectable()
 export class UsersHandler extends BaseHandler {
@@ -30,8 +38,14 @@ export class UsersHandler extends BaseHandler {
     private readonly updateUserEmailUseCase: UpdateUserEmailUseCase,
     private readonly updateUserUsernameUseCase: UpdateUserUsernameUseCase,
     private readonly updateUserPasswordUseCase: UpdateUserPasswordUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
+    private readonly sendSMSVerificationCodeUseCase: SendSMSVerificationCodeUseCase,
+    private readonly sendEmailVerificationCodeUseCase: SendEmailVerificationCodeUseCase,
+    private readonly sendForgotPasswordCodeUseCase: SendForgotPasswordCodeUseCase,
+    private readonly updateUserPasswordWithCodeUseCase: UpdateUserPasswordWithCodeUseCase,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly requestContext: RequestContextService,
   ) {
     super(jwtService);
   }
@@ -95,8 +109,18 @@ export class UsersHandler extends BaseHandler {
           query.phoneNumber,
         );
       case NotificationType.EMAIL:
-        // TODO: IMPLEMENT EMAIL VERIFICATION TOKEN USE CASE
-        break;
+        return this.sendEmailVerificationCodeUseCase.execute(query.email);
+    }
+  }
+
+  public async handleSendAccountValidationCodeWithPhoneNumberOrEmail(
+    query: SendAccountVerificationCodeQueryDto,
+  ) {
+    switch (query.notificationType) {
+      case NotificationType.SMS:
+        return this.sendSMSVerificationCodeUseCase.execute(query.phoneNumber);
+      case NotificationType.EMAIL:
+        return this.sendEmailVerificationCodeUseCase.execute(query.email);
     }
   }
 
@@ -115,5 +139,30 @@ export class UsersHandler extends BaseHandler {
           code,
         );
     }
+  }
+
+  public async handleSendAccountForgotPasswordCode(
+    dto: SendForgotPasswordCodeReqDto,
+  ) {
+    return this.sendForgotPasswordCodeUseCase.execute(dto);
+  }
+
+  public async updatePasswordWithCode(
+    code: string,
+    password: string,
+    newPassword: string,
+    email?: string,
+  ) {
+    return this.updateUserPasswordWithCodeUseCase.execute(
+      code,
+      email,
+      password,
+      newPassword,
+    );
+  }
+
+  public async handleDeleteMe(dto: DeleteUserReqDto) {
+    const { userId } = this.requestContext;
+    return this.deleteUserUseCase.execute(userId, dto.password);
   }
 }

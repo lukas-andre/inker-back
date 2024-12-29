@@ -6,8 +6,12 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -25,8 +29,10 @@ import {
 } from '@nestjs/swagger';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
 
+import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
+import { ArtistDto } from '../domain/dtos/artist.dto';
 import {
   ARTIST_NOT_FOUND,
   ERROR_UPLOADING_FILE,
@@ -38,12 +44,12 @@ import { ArtistsHandler } from './artists.handler';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { CreateArtistDto } from './dtos/createArtist.dto';
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
-import { UpdateStudioPhotoResponseDto } from './dtos/updateStudioPhotoResponse.dto';
+import { SearchArtistDto } from './dtos/searchArtist.dto';
 
 @ApiBearerAuth()
 @ApiTags('artists')
 @Controller('artist')
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class ArtistsController {
   constructor(private readonly artistHandler: ArtistsHandler) {}
 
@@ -81,7 +87,7 @@ export class ArtistsController {
   @ApiBody({ description: 'Studio photo', type: FileUploadDto })
   @ApiCreatedResponse({
     description: 'Artist studio photo was uploaded',
-    type: UpdateStudioPhotoResponseDto,
+    type: ArtistDto,
   })
   @ApiBadRequestResponse({
     description: errorCodesToOASDescription([
@@ -129,6 +135,16 @@ export class ArtistsController {
     return this.artistHandler.handleFindById(id);
   }
 
+  @ApiOperation({ summary: 'Find Artist by auth token for profile page' })
+  @ApiOkResponse({
+    description: 'Find artist ok',
+    type: BaseArtistResponse,
+  })
+  @Get('me')
+  async me() {
+    return this.artistHandler.me();
+  }
+
   @ApiOperation({ summary: 'Update Artist Basic by Id' })
   @ApiOkResponse({
     description: 'Update artist ok',
@@ -136,10 +152,35 @@ export class ArtistsController {
   })
   @ApiParam({ name: 'id', required: true, type: Number })
   @Put(':id')
+  @UsePipes(new ValidationPipe({ forbidUnknownValues: false }))
   async updateArtistBasicInfo(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateArtistDto,
   ) {
     return this.artistHandler.handleUpdateArtistBasicInfo(id, body);
+  }
+
+  @ApiOperation({ summary: 'Update Artist Basic by Id' })
+  @ApiOkResponse({
+    description: 'Update artist ok',
+    type: BaseArtistResponse,
+  })
+  @ApiParam({ name: 'id', required: true, type: Number })
+  @Put('/me')
+  @UsePipes(new ValidationPipe({ forbidUnknownValues: false }))
+  async updateMe(@Body() body: UpdateArtistDto) {
+    return this.artistHandler.handleUpdateMe(body);
+  }
+
+  @ApiOperation({ summary: 'Search Artists' })
+  @ApiOkResponse({
+    description: 'Search artists results',
+    type: BaseArtistResponse,
+    isArray: true,
+  })
+  @Get('search')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async searchArtists(@Query() searchParams: SearchArtistDto) {
+    return this.artistHandler.handleSearchArtists(searchParams);
   }
 }

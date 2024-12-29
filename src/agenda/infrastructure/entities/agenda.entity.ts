@@ -6,7 +6,6 @@ import { AgendaEvent } from './agendaEvent.entity';
 
 @Entity()
 export class Agenda extends BaseEntity {
-  @Index()
   @Column({ name: 'user_id' })
   userId: number;
 
@@ -28,7 +27,7 @@ export class Agenda extends BaseEntity {
   open: boolean;
 
   @OneToMany(() => AgendaEvent, agendaEvent => agendaEvent.agenda)
-  agendaEvent: AgendaEvent;
+  agendaEvent: AgendaEvent[];
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;

@@ -8,6 +8,7 @@ import {
   DomainBadRule,
   DomainConflict,
   DomainNotFound,
+  DomainUnauthorized,
 } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
@@ -20,6 +21,8 @@ import { AuthService } from '../domain/auth.service';
 
 import { LoginParams } from './interfaces/defaultLogin.params';
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
+import { PushNotificationService } from '../../notifications/services/push/pushNotification.service';
+
 @Injectable()
 export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   constructor(
@@ -27,24 +30,37 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
     private usersProvider: UsersProvider,
     private artistProvider: ArtistProvider,
     private customerProvider: CustomerProvider,
+    private pushNotificationService: PushNotificationService,
   ) {
     super(DefaultLoginUseCase.name);
   }
 
   async execute(loginParams: LoginParams): Promise<DefaultLoginResult> {
     this.logger.log({ loginParams });
-    const user = await this.usersProvider.findByType(
+    const result = await this.usersProvider.findByLoginType(
       loginParams.loginType,
       loginParams.identifier,
     );
 
-    this.logger.log({ user });
+    this.logger.log({ result });
 
+    const { user } = (result as Array<{ user: User }>)[0];
     if (!user) {
       throw new DomainConflict('Invalid credentials');
     }
 
-    return this.defaultLogin(user, loginParams);
+    const loginResult = await this.defaultLogin(user, loginParams);
+
+    // TODO: do this async, a message queue or something like that
+    if (loginParams.fcmToken && loginParams.deviceType) {
+      await this.pushNotificationService.saveToken(
+        user.id,
+        loginParams.fcmToken,
+        loginParams.deviceType,
+      );
+    }
+
+    return loginResult;
   }
 
   private async defaultLogin(
@@ -57,11 +73,11 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
     );
 
     if (!result) {
-      throw new DomainConflict('Invalid credentials');
+      throw new DomainBadRule('Invalid credentials');
     }
 
     if (!user.active) {
-      throw new DomainBadRule('User is not active');
+      throw new DomainConflict('User is not active');
     }
 
     const entity = await this.findUserEntityByType(user.userType, user.id);

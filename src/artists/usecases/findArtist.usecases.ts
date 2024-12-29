@@ -22,17 +22,17 @@ export class FindArtistsUseCases extends BaseUseCase {
 
   async findById(id: number): Promise<FindArtistByIdResult> {
     const artist: Partial<FindArtistByIdResult> =
-      await this.artistProvider.findById(id);
+      await this.artistProvider.findByIdWithJoins(id);
 
     if (!artist) {
       throw new DomainNotFound('Artist not found');
     }
 
     // TODO: ESTO PUEDE SER EN PARALELO
-    artist.followers = await this.followedsProvider.countFollowers(
-      artist.userId,
-    );
-    artist.follows = await this.followingProvider.countFollows(artist.userId);
+    [artist.followers, artist.follows] = await Promise.all([
+      this.followedsProvider.countFollowers(artist.userId),
+      this.followingProvider.countFollows(artist.userId),
+    ]);
 
     return artist as FindArtistByIdResult;
   }

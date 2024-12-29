@@ -1,18 +1,18 @@
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing/test';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { ModuleMocker } from 'jest-mock';
 
+import { RequestService } from '../global/infrastructure/services/requestContext.service';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 
 import { ReviewProvider } from './database/providers/review.provider';
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { ReviewHandler } from './reviews.handler';
+import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
 import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
 import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
-import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { RequestService } from '../global/infrastructure/services/request.service';
 
 const moduleMocker = new ModuleMocker(global);
 describe('ReviewHandler', () => {
@@ -20,13 +20,14 @@ describe('ReviewHandler', () => {
   let ratingArtistUseCase: DeepMocked<RatingArtistUsecase>;
   let reactToReviewUseCase: DeepMocked<ReactToReviewUsecase>;
   let getReviewsFromArtistUsecase: DeepMocked<GetReviewsFromArtistUsecase>;
-  let requestService: DeepMocked<RequestService>
-  let jwtService: DeepMocked<JwtService>
-  let reviewProvider: DeepMocked<ReviewProvider>
+  let requestService: DeepMocked<RequestService>;
+  let jwtService: DeepMocked<JwtService>;
+  let reviewProvider: DeepMocked<ReviewProvider>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ReviewHandler,
+      providers: [
+        ReviewHandler,
         {
           provide: RatingArtistUsecase,
           useValue: createMock<RatingArtistUsecase>(),
@@ -51,14 +52,12 @@ describe('ReviewHandler', () => {
           provide: JwtService,
           useValue: createMock<JwtService>(),
         },
-        
       ],
     }).compile();
 
     handler = module.get<ReviewHandler>(ReviewHandler);
     ratingArtistUseCase = module.get(RatingArtistUsecase);
-    reactToReviewUseCase =
-      module.get(ReactToReviewUsecase);
+    reactToReviewUseCase = module.get(ReactToReviewUsecase);
   });
 
   it('ReviewHandler should be defined', () => {

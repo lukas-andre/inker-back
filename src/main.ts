@@ -24,6 +24,7 @@ async function bootstrap() {
   await configure(app);
 
   const appConf: ConfigType<typeof appConfig> = app.get(appConfig.KEY);
+  console.log(appConf);
   await app.listen(appConf.port, appConf.host);
 
   const appUrl = await app.getUrl();

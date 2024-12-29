@@ -1,0 +1,10 @@
+database:
+  - name: ""
+    host: "localhost"
+    port: 5432
+    db: "postgres"
+    user: "root"
+    password: "root"
+    driver: "postgres"
+    schema: "public"
+    limit: 100

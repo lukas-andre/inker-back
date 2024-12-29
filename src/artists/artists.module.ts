@@ -12,6 +12,7 @@ import { FindArtistsUseCases } from './usecases/findArtist.usecases';
 import { UpdateArtistBasicInfoUseCase } from './usecases/updateArtistBasicInfo.usecase';
 import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfilePicture.usecase';
 import { UpdateArtistStudioPhotoUseCase } from './usecases/updateArtistStudioPhoto.usecase';
+import { FindArtistsUsecase } from './usecases/findArtists.usecase';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UpdateArtistStudioPhotoUseCase } from './usecases/updateArtistStudioPho
     UpdateArtistProfilePictureUseCase,
     UpdateArtistBasicInfoUseCase,
     UpdateArtistStudioPhotoUseCase,
+    FindArtistsUsecase,
   ],
   controllers: [ArtistsController],
 })
