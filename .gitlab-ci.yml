@@ -121,6 +121,10 @@ Create Release:
   stage: release
   extends: .release-job
   needs: ["Build Image"]
+  script:
+    - apk add --no-cache git openssh-client
+    - npm install -g semantic-release @semantic-release/gitlab @semantic-release/git @semantic-release/changelog
+    - npx semantic-release  # Agregamos el comando que realmente ejecuta semantic-release
   rules:
     - !reference [.release-branch, rules]
 
