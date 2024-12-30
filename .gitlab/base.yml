@@ -16,12 +16,9 @@
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
 
 .release-job:
-  image: !reference [.node-job, image]
+  extends: .node-job
   variables:
     GIT_AUTHOR_NAME: "GitLab CI"
     GIT_AUTHOR_EMAIL: "gitlab-ci@inker.studio"
     GIT_COMMITTER_NAME: "GitLab CI"
     GIT_COMMITTER_EMAIL: "gitlab-ci@inker.studio"
-  before_script:
-    - apk add --no-cache git openssh-client  # Copiar directamente en lugar de usar !reference
-    - npm install -g semantic-release @semantic-release/gitlab @semantic-release/git @semantic-release/changelog
