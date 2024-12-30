@@ -77,7 +77,6 @@ Build Image:
   dependencies:
     - Verify
   script:
-    - docker buildx prune --force
     - docker buildx create --use
     - |
       docker buildx build \
@@ -95,9 +94,6 @@ Build Image:
         --label "org.opencontainers.image.source=$CI_PROJECT_URL" \
         --tag $CONTAINER_TEST_IMAGE \
         .
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker image ls --format "{{.Repository}}:{{.Tag}} - {{.Size}}" | grep $CONTAINER_TEST_IMAGE
-    - docker history $CONTAINER_TEST_IMAGE --human --no-trunc
   rules:
     - !reference [.changes-docker, rules]
 

@@ -14,8 +14,6 @@
     DOCKER_DRIVER: overlay2
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
-    - docker system prune -af
-    - docker buildx create --use
 
 .release-job:
   extends: .node-job
