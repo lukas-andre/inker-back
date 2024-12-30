@@ -1,3 +1,4 @@
+# Build stage
 FROM node:21.7.3-alpine AS builder
 
 # Build arguments
@@ -15,6 +16,11 @@ WORKDIR /app
 
 # Copy built files from CI
 COPY dist/ ./dist/
+COPY package*.json ./
+
+# Install only production dependencies and clean npm cache
+RUN npm ci --only=production --ignore-scripts && \
+    npm cache clean --force
 
 # Production stage
 FROM node:21.7.3-alpine
@@ -24,10 +30,7 @@ WORKDIR /app
 
 # Copy only necessary files from builder
 COPY --from=builder /app/dist ./dist
-
-# Install only production dependencies
-COPY package*.json ./
-RUN npm ci --only=production --ignore-scripts
+COPY --from=builder /app/node_modules ./node_modules
 
 # Set user
 USER node
