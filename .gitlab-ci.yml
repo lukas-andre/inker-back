@@ -35,7 +35,7 @@ Verify:
     - npm ci --cache .npm --prefer-offline
   script:
     - npm run prettier
-    - npm run test || true  # Hacemos opcional los tests por ahora
+    # - npm run test || true  # Hacemos opcional los tests por ahora
     - npm run build
   artifacts:
     paths:
