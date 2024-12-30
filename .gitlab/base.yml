@@ -16,7 +16,7 @@
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
 
 .release-job:
-  extends: .node-job
+  image: !reference [.node-job, image]
   variables:
     GIT_AUTHOR_NAME: "GitLab CI"
     GIT_AUTHOR_EMAIL: "gitlab-ci@inker.studio"
