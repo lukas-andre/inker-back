@@ -55,7 +55,6 @@ Install Dependencies:
   cache:
     policy: pull
 
-# Stage: Verify
 Verify:
   stage: verify
   extends: 
@@ -64,22 +63,10 @@ Verify:
   needs: ["Install Dependencies"]
   dependencies:
     - Install Dependencies
-  parallel:
-    matrix:
-      - TASK: [lint, test, build]
   script:
-       - |
-      case $TASK in
-        lint)
-          npm run lint
-          ;;
-        test)
-          npm run test -- --ci --coverage || true
-          ;;
-        build)
-          npm run build --configuration production
-          ;;
-      esac
+    - npm run lint
+    - npm run test -- --ci --coverage || true
+    - npm run build --configuration production
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
     reports:
