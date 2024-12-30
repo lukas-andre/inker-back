@@ -73,9 +73,9 @@ Verify:
 Build Image:
   stage: build
   extends: .docker-job
-  needs: ["Build"]
+  needs: ["Verify"]
   dependencies:
-    - Build
+    - Verify
   script:
     - docker buildx create --use
     - |
