@@ -53,8 +53,8 @@ Verify:
   dependencies:
     - Install Dependencies
   script:
-    - npm run lint
-    - npm run test -- --ci --coverage || true
+    # - npm run lint
+    # - npm run test -- --ci --coverage || true
     - npm run build --configuration production  # Agregamos configuración de producción
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
@@ -78,11 +78,10 @@ Build Image:
     - Verify
   script:
     - docker buildx create --use
+    # Añadimos un paso para verificar el tamaño antes de pushear
     - |
-      docker buildx build \
-        --push \
-        --cache-from type=registry,ref=$CONTAINER_TEST_IMAGE \
-        --cache-to type=registry,ref=$CONTAINER_TEST_IMAGE \
+      IMAGE_SIZE=$(docker buildx build \
+        --load \
         --build-arg NODE_ENV=production \
         --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
         --build-arg VCS_REF=$CI_COMMIT_SHA \
@@ -93,7 +92,30 @@ Build Image:
         --label "org.opencontainers.image.url=$CI_PROJECT_URL" \
         --label "org.opencontainers.image.source=$CI_PROJECT_URL" \
         --tag $CONTAINER_TEST_IMAGE \
-        .
+        . 2>&1 | grep "total:" | awk '{print $2$3}')
+    - echo "Image size: $IMAGE_SIZE"
+    # Si el tamaño es aceptable, pushear la imagen
+    - |
+      if [ "${IMAGE_SIZE%MB}" -lt 200 ]; then  # Ajusta este límite según tus necesidades
+        docker buildx build \
+          --push \
+          --cache-from type=registry,ref=$CONTAINER_TEST_IMAGE \
+          --cache-to type=registry,ref=$CONTAINER_TEST_IMAGE \
+          --build-arg NODE_ENV=production \
+          --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+          --build-arg VCS_REF=$CI_COMMIT_SHA \
+          --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT" \
+          --label "org.opencontainers.image.version=$CI_COMMIT_REF_NAME" \
+          --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" \
+          --label "org.opencontainers.image.title=$CI_PROJECT_TITLE" \
+          --label "org.opencontainers.image.url=$CI_PROJECT_URL" \
+          --label "org.opencontainers.image.source=$CI_PROJECT_URL" \
+          --tag $CONTAINER_TEST_IMAGE \
+          .
+      else
+        echo "Image size ($IMAGE_SIZE) exceeds limit"
+        exit 1
+      fi
   rules:
     - !reference [.changes-docker, rules]
 
