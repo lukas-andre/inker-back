@@ -1,54 +1,43 @@
-###################
-# BUILD FOR LOCAL DEVELOPMENT
-###################
+FROM node:21.7.3-alpine AS builder
 
-FROM node:21.7.3-alpine AS development
+# Build arguments
+ARG NODE_ENV=production
+ARG BUILD_DATE
+ARG VCS_REF
 
-WORKDIR /usr/src/app
+# Labels
+LABEL org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.revision=$VCS_REF \
+      org.opencontainers.image.licenses="MIT"
 
-# Instala las dependencias de desarrollo
+# Set working directory
+WORKDIR /app
+
+# Copy built files from CI
+COPY dist/ ./dist/
+
+# Production stage
+FROM node:21.7.3-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy only necessary files from builder
+COPY --from=builder /app/dist ./dist
+
+# Install only production dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --only=production --ignore-scripts
 
-# Copia el código fuente
-COPY . .
-
+# Set user
 USER node
 
-###################
-# BUILD FOR PRODUCTION
-###################
+# Set environment variables
+ENV NODE_ENV=production \
+    PORT=3000
 
-FROM node:21.7.3-alpine AS build
-
-WORKDIR /usr/src/app
-
-# Copia las dependencias y el código fuente desde la etapa de desarrollo
-COPY --from=development /usr/src/app /usr/src/app
-
-# Construye la aplicación
-RUN npm run build
-
-# Elimina node_modules y reinstala solo las dependencias de producción
-RUN rm -rf node_modules
-RUN npm ci --only=production
-
-###################
-# PRODUCTION
-###################
-
-FROM node:21.7.3-alpine AS production
-
-WORKDIR /usr/src/app
-
-ENV NODE_ENV=production
-
-# Copia las dependencias de producción y la aplicación construida
-COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
-
-USER node
-
+# Expose port
 EXPOSE 3000
 
+# Start application
 CMD ["node", "dist/main.js"]

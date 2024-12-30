@@ -1,0 +1,27 @@
+.node-job:
+  image: node:21.7.3-alpine
+  before_script:
+    - apk add --no-cache git openssh-client
+
+.docker-job:
+  image: docker:24.0.7
+  services:
+    - docker:24.0.7-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
+
+.release-job:
+  extends: .node-job
+  variables:
+    GIT_AUTHOR_NAME: "GitLab CI"
+    GIT_AUTHOR_EMAIL: "gitlab-ci@inker.studio"
+    GIT_COMMITTER_NAME: "GitLab CI"
+    GIT_COMMITTER_EMAIL: "gitlab-ci@inker.studio"
+  before_script:
+    - !reference [.node-job, before_script]
+    - npm install -g semantic-release @semantic-release/gitlab @semantic-release/git @semantic-release/changelog
+
