@@ -117,23 +117,23 @@ Build Image:
     - !reference [.changes-docker, rules]
 
 # Stage: Release
-Create Release:
-  stage: release
-  extends: .release-job
-  needs: ["Build Image"]
-  rules:
-    - !reference [.release-branch, rules]
+# Create Release:
+#   stage: release
+#   extends: .release-job
+#   needs: ["Build Image"]
+#   rules:
+#     - !reference [.release-branch, rules]
 
-Push Release Image:
-  stage: release
-  extends: .docker-job
-  needs: ["Create Release"]
-  script:
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
-    - docker push $CONTAINER_RELEASE_IMAGE
-  rules:
-    - !reference [.release-tag, rules]
+# Push Release Image:
+#   stage: release
+#   extends: .docker-job
+#   needs: ["Create Release"]
+#   script:
+#     - docker pull $CONTAINER_TEST_IMAGE
+#     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
+#     - docker push $CONTAINER_RELEASE_IMAGE
+#   rules:
+#     - !reference [.release-tag, rules]
 
 # Stage: Deploy
 Deploy to Production:
