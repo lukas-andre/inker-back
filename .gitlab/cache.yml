@@ -21,3 +21,9 @@
   cache:
     key:
       prefix: ${CI_COMMIT_REF_SLUG}-${CI_PROJECT_NAME}-${CI_JOB_NAME}
+      files:
+        - package-lock.json
+        - .eslintrc.*
+        - .prettierrc.*
+        - tsconfig.json
+
