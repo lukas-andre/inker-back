@@ -24,4 +24,3 @@
   before_script:
     - !reference [.node-job, before_script]
     - npm install -g semantic-release @semantic-release/gitlab @semantic-release/git @semantic-release/changelog
-
