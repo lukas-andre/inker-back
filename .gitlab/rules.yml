@@ -1,3 +1,4 @@
+# rules.yml
 .changes-package:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
