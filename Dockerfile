@@ -44,3 +44,6 @@ EXPOSE 3000
 
 # Start application
 CMD ["node", "dist/main.js"]
+
+# Show image size
+RUN du -sh /app
