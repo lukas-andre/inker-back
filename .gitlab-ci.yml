@@ -44,7 +44,7 @@ Install Dependencies:
     - !reference [.changes-package, rules]
 
 # Stage: Verify
-.verify-base:
+Verify:
   stage: verify
   extends: 
     - .node-job
@@ -52,20 +52,10 @@ Install Dependencies:
   needs: ["Install Dependencies"]
   dependencies:
     - Install Dependencies
-  cache:
-    policy: pull
-
-Lint:
-  extends: .verify-base
   script:
     - npm run lint
-  rules:
-    - !reference [.changes-src, rules]
-
-Test:
-  extends: .verify-base
-  script:
     - npm run test -- --ci --coverage || true
+    - npm run build --configuration production  # Agregamos configuración de producción
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
     reports:
@@ -73,17 +63,8 @@ Test:
         coverage_format: cobertura
         path: coverage/cobertura-coverage.xml
     paths:
+      - dist/     # Solo guardamos los archivos necesarios para producción
       - coverage/
-  rules:
-    - !reference [.changes-src, rules]
-
-Build:
-  extends: .verify-base
-  script:
-    - npm run build
-  artifacts:
-    paths:
-      - dist/
     expire_in: 1 day
   rules:
     - !reference [.changes-src, rules]
