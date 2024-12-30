@@ -55,6 +55,7 @@ Install Dependencies:
   cache:
     policy: pull
 
+# Stage: Verify
 Verify:
   stage: verify
   extends: 
