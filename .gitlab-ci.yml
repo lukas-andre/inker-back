@@ -77,6 +77,7 @@ Build Image:
   dependencies:
     - Verify
   script:
+    - docker buildx prune --force
     - docker buildx create --use
     - |
       docker buildx build \
