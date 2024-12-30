@@ -53,7 +53,9 @@ Verify:
   dependencies:
     - Install Dependencies
   script:
-    - npm run build --configuration production 
+    - npm run lint
+    - npm run test -- --ci --coverage || true
+    - npm run build --configuration production  # Agregamos configuración de producción
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
     reports:
