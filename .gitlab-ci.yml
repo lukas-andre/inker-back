@@ -97,6 +97,28 @@ Build Image:
   rules:
     - !reference [.changes-docker, rules]
 
+Deploy to Production:
+  stage: deploy
+  image: docker:24.0.7
+  services:
+    - docker:24.0.7-dind
+  variables:
+    # Use the same network as the runner
+    DOCKER_HOST: tcp://gitlab-dind:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:    
+    # Create deployment directory if it doesn't exist
+    - mkdir -p /deploy/api
+    
+    # Navigate to the api directory
+    - cd /apps/api
+    
+    # Deploy using docker compose
+    - TAG=$CI_COMMIT_TAG REGISTRY_URL=$REGISTRY_URL docker compose pull
+    - TAG=$CI_COMMIT_TAG REGISTRY_URL=$REGISTRY_URL docker compose up -d
+  rules:
+    - !reference [.changes-docker, rules]
+
 # Stage: Release
 Create Release:
   stage: release
