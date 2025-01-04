@@ -77,23 +77,16 @@ Build Image:
   dependencies:
     - Verify
   script:
-    - docker buildx create --use
-    - |
-      docker buildx build \
-        --push \
-        --cache-from type=registry,ref=$CONTAINER_TEST_IMAGE \
-        --cache-to type=registry,ref=$CONTAINER_TEST_IMAGE \
-        --build-arg NODE_ENV=production \
-        --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
-        --build-arg VCS_REF=$CI_COMMIT_SHA \
-        --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT" \
-        --label "org.opencontainers.image.version=$CI_COMMIT_REF_NAME" \
-        --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" \
-        --label "org.opencontainers.image.title=$CI_PROJECT_TITLE" \
-        --label "org.opencontainers.image.url=$CI_PROJECT_URL" \
-        --label "org.opencontainers.image.source=$CI_PROJECT_URL" \
-        --tag $CONTAINER_TEST_IMAGE \
-        .
+    - echo $BRANCH_TAG
+    - echo $SHA_TAG
+    - echo $REGISTRY_URL
+    - echo $CI_COMMIT_REF_SLUG
+    - echo $CI_COMMIT_SHA
+    - echo $CI_COMMIT_TAG
+    - echo $CI_COMMIT_REF_NAME
+    - docker build -t $BRANCH_TAG -t $SHA_TAG .
+    - docker push $BRANCH_TAG
+    - docker push $SHA_TAG
   rules:
     - !reference [.changes-docker, rules]
 
@@ -102,20 +95,42 @@ Deploy to Production:
   image: docker:24.0.7
   services:
     - docker:24.0.7-dind
+  dependencies:
+    - Build Image
   variables:
-    # Use the same network as the runner
+    # Docker configuration
     DOCKER_HOST: tcp://gitlab-dind:2375
     DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+    # Application configuration
+    PORT: 3000
+    DB_HOST: ${DB_HOST}
+    DB_PASSWORD: ${DB_PASSWORD}
+    DB_USERNAME: ${DB_USERNAME}
+    DB_PORT: ${DB_PORT}
+    TYPEORM_SYNC: ${TYPEORM_SYNC}
+    AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+    AWS_ACCESS_SECRET: ${AWS_ACCESS_SECRET}
+    SMS_AWS_ACCESS_KEY: ${SMS_AWS_ACCESS_KEY}
+    SMS_AWS_ACCESS_SECRET: ${SMS_AWS_ACCESS_SECRET}
+    AWS_REGION: ${AWS_REGION}
+    AWS_ARTISTS_BUCKET: ${AWS_ARTISTS_BUCKET}
+    CLOUD_FRONT_URL: ${CLOUD_FRONT_URL}
+    JWT_ISSUER: ${JWT_ISSUER}
+    JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    JWT_EXPIRATION: ${JWT_EXPIRATION}
+    TZ: "America/Santiago"
+    VERIFICATION_HASH_SALT_LEN: ${VERIFICATION_HASH_SALT_LEN}
+    ACCOUNT_VERIFICATION_MAX_SMS_TRIES: ${ACCOUNT_VERIFICATION_MAX_SMS_TRIES}
+    FORGOT_PASSWORD_VERIFICATION_MAX_SMS_TRIES: ${FORGOT_PASSWORD_VERIFICATION_MAX_SMS_TRIES}
+    GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
   script:    
-    # Create deployment directory if it doesn't exist
-    - mkdir -p /deploy/api
-    
-    # Navigate to the api directory
     - cd /apps/api
-    
-    # Deploy using docker compose
-    - TAG=$CI_COMMIT_TAG REGISTRY_URL=$REGISTRY_URL docker compose pull
-    - TAG=$CI_COMMIT_TAG REGISTRY_URL=$REGISTRY_URL docker compose up -d
+
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
+    # Use the CI-specific compose file
+    - TAG=$CI_COMMIT_TAG REGISTRY_URL=$REGISTRY_URL docker compose -f docker-compose.yml pull
+    - TAG=$CI_COMMIT_TAG REGISTRY_URL=$REGISTRY_URL docker compose -f docker-compose.yml up -d
   rules:
     - !reference [.changes-docker, rules]
 
@@ -142,12 +157,3 @@ Push Release Image:
   rules:
     - !reference [.release-tag, rules]
 
-# Stage: Deploy
-Deploy to Production:
-  stage: deploy
-  image: alpine:3.19
-  script:
-    - echo "Deploying version $CI_COMMIT_TAG"
-    # Add your deployment commands here
-  rules:
-    - !reference [.release-tag, rules]
