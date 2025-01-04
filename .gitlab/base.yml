@@ -12,8 +12,12 @@
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://gitlab-dind:2375
     DOCKER_DRIVER: overlay2
+    REGISTRY_URL: registry.inker.studio
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
+    - export IMAGE_NAME=$REGISTRY_URL/inker-studio/inker-back
+    - export BRANCH_TAG=$IMAGE_NAME:$CI_COMMIT_REF_SLUG
+    - export SHA_TAG=$IMAGE_NAME:$CI_COMMIT_SHA
 
 .release-job:
   extends: .node-job
