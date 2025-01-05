@@ -92,7 +92,7 @@ Deploy to Production:
     - Build Image
   variables:
     # Docker configuration
-    DOCKER_HOST: tcp://gitlab-dind:2375
+    DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     # Application configuration
