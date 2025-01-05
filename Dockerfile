@@ -11,6 +11,9 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.revision=$VCS_REF \
       org.opencontainers.image.licenses="MIT"
 
+# Instalar dependencias necesarias para sharp
+RUN apk add --no-cache python3 make g++ vips-dev
+
 # Set working directory
 WORKDIR /app
 
@@ -18,12 +21,16 @@ WORKDIR /app
 COPY dist/ ./dist/
 COPY package*.json ./
 
-# Install only production dependencies and clean npm cache
-RUN npm ci --only=production --ignore-scripts && \
+# Install dependencies including sharp
+RUN npm install sharp@0.32.6 --platform=linuxmusl --arch=x64 && \
+    npm ci --only=production && \
     npm cache clean --force
 
 # Production stage
 FROM node:21.7.3-alpine
+
+# Instalar solo las dependencias de runtime necesarias para sharp
+RUN apk add --no-cache vips-dev
 
 # Set working directory
 WORKDIR /app
@@ -44,6 +51,3 @@ EXPOSE 3000
 
 # Start application
 CMD ["node", "dist/main.js"]
-
-# Show image size
-RUN du -sh /app
