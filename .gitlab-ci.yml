@@ -77,13 +77,6 @@ Build Image:
   dependencies:
     - Verify
   script:
-    - echo $BRANCH_TAG
-    - echo $SHA_TAG
-    - echo $REGISTRY_URL
-    - echo $CI_COMMIT_REF_SLUG
-    - echo $CI_COMMIT_SHA
-    - echo $CI_COMMIT_TAG
-    - echo $CI_COMMIT_REF_NAME
     - docker build -t $BRANCH_TAG -t $SHA_TAG .
     - docker push $BRANCH_TAG
     - docker push $SHA_TAG
@@ -126,11 +119,30 @@ Deploy to Production:
     GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
   script:    
     - cd /apps/api
-
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
-    # Use the CI-specific compose file
-    - TAG=$CI_COMMIT_TAG REGISTRY_URL=$REGISTRY_URL docker compose -f docker-compose.yml pull
-    - TAG=$CI_COMMIT_TAG REGISTRY_URL=$REGISTRY_URL docker compose -f docker-compose.yml up -d
+    - |
+      PORT=${PORT} \
+      DB_HOST=${DB_HOST} \
+      DB_PASSWORD=${DB_PASSWORD} \
+      DB_USERNAME=${DB_USERNAME} \
+      DB_PORT=${DB_PORT} \
+      TYPEORM_SYNC=${TYPEORM_SYNC} \
+      AWS_ACCESS_KEY=${AWS_ACCESS_KEY} \
+      AWS_ACCESS_SECRET=${AWS_ACCESS_SECRET} \
+      SMS_AWS_ACCESS_KEY=${SMS_AWS_ACCESS_KEY} \
+      SMS_AWS_ACCESS_SECRET=${SMS_AWS_ACCESS_SECRET} \
+      AWS_REGION=${AWS_REGION} \
+      AWS_ARTISTS_BUCKET=${AWS_ARTISTS_BUCKET} \
+      CLOUD_FRONT_URL=${CLOUD_FRONT_URL} \
+      JWT_ISSUER=${JWT_ISSUER} \
+      JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+      JWT_EXPIRATION=${JWT_EXPIRATION} \
+      TZ=${TZ} \
+      VERIFICATION_HASH_SALT_LEN=${VERIFICATION_HASH_SALT_LEN} \
+      ACCOUNT_VERIFICATION_MAX_SMS_TRIES=${ACCOUNT_VERIFICATION_MAX_SMS_TRIES} \
+      FORGOT_PASSWORD_VERIFICATION_MAX_SMS_TRIES=${FORGOT_PASSWORD_VERIFICATION_MAX_SMS_TRIES} \
+      CI_COMMIT_SHA=${CI_COMMIT_SHA} \
+      docker compose -f docker-compose.yml up -d
   rules:
     - !reference [.changes-docker, rules]
 
