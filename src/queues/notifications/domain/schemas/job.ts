@@ -4,6 +4,7 @@ import {
   AgendaEventCanceledJobSchema,
   AgendaEventCreatedJobSchema,
   AgendaEventReminderJobSchema,
+  AgendaEventStatusChangedJobSchema,
   AgendaEventUpdatedJobSchema,
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,
@@ -26,6 +27,7 @@ export const JobSchema = z.union([
   AgendaEventCanceledJobSchema,
   AgendaEventReminderJobSchema,
   AgendaEventUpdatedJobSchema,
+  AgendaEventStatusChangedJobSchema,
   // Rsvp
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,

@@ -11,6 +11,7 @@ import { JobTypeKey } from '../domain/jobSchema.registry';
 import { AgendaEventCanceledJob } from './jobs/agenda/agendaEventCanceled.job';
 import { AgendaEventCreatedJob } from './jobs/agenda/agendaEventCreated.job';
 import { AgendaEventReminderJob } from './jobs/agenda/agendaEventReminder.job';
+import { AgendaEventStatusChangedJob } from './jobs/agenda/agendaEventStatusChanged.job';
 import { AgendaEventUpdatedJob } from './jobs/agenda/agendaEventUpdated.job';
 import { NotificationJob } from './jobs/notification.job';
 import { QuotationAcceptedJob } from './jobs/quotations/quotationAccepeted.job';
@@ -44,6 +45,7 @@ export class NotificationJobRegistry {
     this.jobMap.set('EVENT_CANCELED', AgendaEventCanceledJob);
     this.jobMap.set('EVENT_REMINDER', AgendaEventReminderJob);
     this.jobMap.set('EVENT_UPDATED', AgendaEventUpdatedJob);
+    this.jobMap.set('EVENT_STATUS_CHANGED', AgendaEventStatusChangedJob);
     this.jobMap.set('RSVP_ACCEPTED', RsvpAcceptedJob);
     this.jobMap.set('RSVP_DECLINED', RsvpDeclinedJob);
     this.jobMap.set('RSVP_UNSCHEDULABLE', RsvpUnschedulableJob);

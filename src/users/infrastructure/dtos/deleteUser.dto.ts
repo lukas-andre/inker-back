@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class DeleteUserReqDto {
   @ApiProperty({
-    example: '1qaz2wsx',
-    description: 'Current password to confirm deletion',
-    required: true,
+    description: 'User password for confirmation',
+    example: 'mySecurePassword123',
   })
   @IsString()
-  @MinLength(6)
-  readonly password: string;
+  @IsNotEmpty()
+  password: string;
 }

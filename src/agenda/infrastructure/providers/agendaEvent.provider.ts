@@ -26,6 +26,7 @@ import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/mu
 import { AddEventReqDto } from '../dtos/addEventReq.dto';
 import { Agenda } from '../entities/agenda.entity';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 class FindAgendaEventForMarkAsDoneQueryResult {
   @Expose()
   @IsNumber()
@@ -240,7 +241,11 @@ export class AgendaEventProvider extends BaseComponent {
       await this.agendaEventRepository
         .createQueryBuilder()
         .update()
-        .set({ done: true, workEvidence })
+        .set({
+          done: true,
+          workEvidence,
+          status: AgendaEventStatus.WAITING_FOR_REVIEW,
+        })
         .where('id = :id', { id: eventId })
         .andWhere('agenda_id = :agendaId', { agendaId })
         .execute();
@@ -248,6 +253,28 @@ export class AgendaEventProvider extends BaseComponent {
       throw new DBServiceUpdateException(
         this,
         'Trouble marking event as done',
+        error,
+      );
+    }
+  }
+  
+  async updateEventStatus(
+    eventId: number,
+    agendaId: number,
+    status: AgendaEventStatus,
+  ): Promise<void> {
+    try {
+      await this.agendaEventRepository
+        .createQueryBuilder()
+        .update()
+        .set({ status })
+        .where('id = :id', { id: eventId })
+        .andWhere('agenda_id = :agendaId', { agendaId })
+        .execute();
+    } catch (error) {
+      throw new DBServiceUpdateException(
+        this,
+        'Trouble updating event status',
         error,
       );
     }

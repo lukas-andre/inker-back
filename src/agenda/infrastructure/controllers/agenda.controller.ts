@@ -46,11 +46,13 @@ import {
 } from '../../domain/errors/codes';
 import { AgendaHandler } from '../agenda.handler';
 import { AddEventReqDto } from '../dtos/addEventReq.dto';
+import { ChangeEventStatusReqDto } from '../dtos/changeEventStatusReq.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from '../dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from '../dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from '../dtos/updateEventReq.dto';
 import { AgendaEventIdPipe } from '../pipes/agendaEventId.pipe';
 import { AgendaIdPipe } from '../pipes/agendaId.pipe';
+import { ReviewArtistRequestDto } from '../../../reviews/dtos/reviewArtistRequest.dto';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -244,7 +246,41 @@ export class AgendaController {
     return this.agendaHandler.handleRsvp(agendaId, eventId, willAttend);
   }
 
-  // TODO: HACER UN CONTROLADO ESPECIFICO PARAEVENTOS,
-  // TODO: GET EVENT BY ID
-  // TODO: REAGENDAMIENTO ?
+  @ApiOperation({ summary: 'Change event status' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Event status changed successfully.', type: undefined })
+  @ApiConflictResponse({ description: 'Invalid status transition.' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
+  @Put(':agendaId/event/:eventId/status')
+  async changeEventStatus(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Body() changeEventStatusReqDto: ChangeEventStatusReqDto,
+  ): Promise<any> {
+    return this.agendaHandler.handleChangeEventStatus(
+      agendaId,
+      eventId,
+      changeEventStatusReqDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Review an event' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Event reviewed successfully.', type: undefined })
+  @ApiConflictResponse({ description: 'Event not ready for review.' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
+  @Post(':agendaId/event/:eventId/review')
+  async reviewEvent(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Body() reviewArtistReqDto: ReviewArtistRequestDto,
+  ): Promise<any> {
+    return this.agendaHandler.handleReviewEvent(
+      agendaId,
+      eventId,
+      reviewArtistReqDto,
+    );
+  }
 }

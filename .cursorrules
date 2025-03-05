@@ -1,0 +1,105 @@
+You are a senior TypeScript developer working on a NestJS project with Fastify as the HTTP provider. The project uses TypeORM for database management and follows a clean architecture pattern.
+
+PROJECT OVERVIEW
+- This is a backend service built with NestJS v9
+- Uses Fastify instead of Express for better performance
+- Implements WebSocket functionality with Socket.io
+- Uses Bull for queue management
+- Integrates with AWS services
+- Uses Firebase Admin for notifications
+- Implements real-time features
+- Uses TypeORM for database operations
+- Includes comprehensive testing with Jest
+
+ARCHITECTURAL PATTERNS
+- Follow clean architecture principles with a clear separation of:
+  * Domain layer (business rules)
+  * Infrastructure layer (frameworks, tools, delivery mechanisms)
+  * Use cases (application specific business rules)
+- Each module should be self-contained with its own domain, infrastructure, and use cases
+- Use dependency injection as provided by NestJS
+- Implement proper error handling and domain exceptions
+
+CODE STYLE
+- Use TypeScript strict mode
+- Prefer functional programming patterns where appropriate
+- Use async/await over pure promises
+- Use proper dependency injection
+- Implement proper validation using class-validator
+- Use swagger decorators for API documentation
+- Follow SOLID principles
+
+TESTING APPROACH
+- Write unit tests for all use cases
+- Write integration tests for infrastructure components
+- Write e2e tests for API endpoints
+- Use jest-mock for mocking
+- Use ts-mockito for complex mocking scenarios
+- Follow AAA (Arrange-Act-Assert) pattern in tests
+
+FILE ORGANIZATION
+- Keep related files close together
+- Organize by feature rather than type
+- Use proper barrel exports
+- Keep index files clean and simple
+
+NAMING CONVENTIONS
+- Use PascalCase for classes and interfaces
+- Use camelCase for methods and properties
+- Use kebab-case for file names
+- Use descriptive names that reflect business domain
+- Prefix interfaces with 'I'
+- Suffix implementations with appropriate types (Controller, Service, etc.)
+
+VALIDATION AND ERROR HANDLING
+- Use class-validator decorators for DTO validation
+- Implement custom validators when needed
+- Use proper exception filters
+- Implement proper error handling middleware
+- Use proper HTTP status codes
+
+API DESIGN
+- Follow RESTful principles
+- Use proper HTTP methods
+- Implement proper request/response DTOs
+- Use proper status codes
+- Document with Swagger/OpenAPI
+- Implement proper rate limiting
+- Use proper security headers
+
+SECURITY PRACTICES
+- Implement proper authentication using JWT
+- Use proper authorization guards
+- Implement proper input validation
+- Use proper security headers
+- Implement proper rate limiting
+- Handle sensitive data properly
+
+DATABASE PRACTICES
+- Use TypeORM repositories
+- Implement proper migrations
+- Use proper indexes
+- Implement proper relationships
+- Use proper cascading
+- Implement proper data validation
+
+QUEUE MANAGEMENT
+- Use Bull for queue management
+- Implement proper job handlers
+- Implement proper error handling
+- Use proper retry strategies
+- Implement proper monitoring
+
+REAL-TIME FEATURES
+- Use Socket.io for real-time features
+- Implement proper event handling
+- Use proper room management
+- Implement proper error handling
+- Use proper authentication
+
+DEPLOYMENT CONSIDERATIONS
+- Use proper environment variables
+- Implement proper logging
+- Use proper health checks
+- Implement proper monitoring
+- Use proper CI/CD practices

@@ -2,13 +2,16 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
+import { ReviewArtistRequestDto } from '../../reviews/dtos/reviewArtistRequest.dto';
 import { AddEventUseCase } from '../usecases/addEvent.usecase';
 import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
+import { ChangeEventStatusUsecase } from '../usecases/changeEventStatus.usecase';
 import { CreateQuotationUseCase } from '../usecases/createQuotation.usecase';
 import { FindEventFromArtistByEventIdUseCase } from '../usecases/findEventFromArtistByEventId.usecase';
 import { GetQuotationUseCase } from '../usecases/getQuotation.usecase';
 import { GetQuotationsUseCase } from '../usecases/getQuotations.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
+import { EventReviewIntegrationUsecase } from '../usecases/integrations/eventReviewIntegration.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda.usecase';
 import { ListEventsByArtistId } from '../usecases/listEventsByArtistId.usecase';
@@ -20,6 +23,7 @@ import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
 
 import { AddEventReqDto } from './dtos/addEventReq.dto';
 import { ArtistQuotationActionDto } from './dtos/artistQuotationAction.dto';
+import { ChangeEventStatusReqDto } from './dtos/changeEventStatusReq.dto';
 import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
 import { CustomerQuotationActionDto } from './dtos/customerQuotationAction.dto';
 import { QuotationDto } from './dtos/getQuotationRes.dto';
@@ -49,6 +53,8 @@ export class AgendaHandler {
     private readonly rsvpUseCase: RsvpUseCase,
     private readonly requestContext: RequestContextService,
     private readonly markQuotationAsReadUseCase: MarkQuotationAsReadUseCase,
+    private readonly changeEventStatusUsecase: ChangeEventStatusUsecase,
+    private readonly eventReviewIntegrationUsecase: EventReviewIntegrationUsecase,
   ) {}
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
@@ -204,5 +210,21 @@ export class AgendaHandler {
   async markQuotationAsRead(id: number) {
     const { userType } = this.requestContext;
     return this.markQuotationAsReadUseCase.execute(id, userType);
+  }
+
+  async handleChangeEventStatus(
+    agendaId: number,
+    eventId: number,
+    dto: ChangeEventStatusReqDto,
+  ): Promise<void> {
+    return this.changeEventStatusUsecase.execute(agendaId, eventId, dto);
+  }
+
+  async handleReviewEvent(
+    agendaId: number,
+    eventId: number,
+    reviewData: ReviewArtistRequestDto,
+  ): Promise<any> {
+    return this.eventReviewIntegrationUsecase.execute(agendaId, eventId, reviewData);
   }
 }

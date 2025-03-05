@@ -29,6 +29,8 @@ import { ProcessCustomerActionUseCase } from './usecases/quotation/processCustom
 import { RsvpUseCase } from './usecases/rsvp.usecase';
 import { UpdateEventUseCase } from './usecases/updateEvent.usecase';
 import { MarkQuotationAsReadUseCase } from './usecases/quotation/markQuotationAsRead.usecase';
+import { ChangeEventStatusUsecase } from './usecases/changeEventStatus.usecase';
+import { EventReviewIntegrationUsecase } from './usecases/integrations/eventReviewIntegration.usecase';
 import { SyncQueueModule } from '../queues/sync/sync.queue.module';
 
 @Module({
@@ -62,6 +64,8 @@ import { SyncQueueModule } from '../queues/sync/sync.queue.module';
     ProcessCustomerActionUseCase,
     MarkQuotationAsReadUseCase,
     ListEventsByArtistId,
+    ChangeEventStatusUsecase,
+    EventReviewIntegrationUsecase,
   ],
   controllers: [AgendaController, QuotationController],
 })

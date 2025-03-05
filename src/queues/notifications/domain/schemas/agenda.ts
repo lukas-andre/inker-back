@@ -7,6 +7,7 @@ export const AgendaJobIdSchema = z.enum([
   'EVENT_CANCELED',
   'EVENT_REMINDER',
   'EVENT_UPDATED',
+  'EVENT_STATUS_CHANGED',
   'RSVP_ACCEPTED',
   'RSVP_DECLINED',
   'RSVP_UNSCHEDULABLE',
@@ -75,11 +76,26 @@ export type RsvpJobType =
   | RsvpDeclinedJobType
   | RsvpUnschedulableJobType;
 
+const AgendaEventStatusChangedJobSchema = AgendaJobSchema.extend({
+  jobId: z.literal(AgendaJobIdSchema.enum.EVENT_STATUS_CHANGED),
+  metadata: z.object({
+    customerId: z.number(),
+    eventId: z.number(),
+    artistId: z.number(),
+    status: z.string(),
+    message: z.string(),
+  }),
+});
+export type AgendaEventStatusChangedJobType = z.infer<
+  typeof AgendaEventStatusChangedJobSchema
+>;
+
 export {
   AgendaEventCreatedJobSchema,
   AgendaEventCanceledJobSchema,
   AgendaEventReminderJobSchema,
   AgendaEventUpdatedJobSchema,
+  AgendaEventStatusChangedJobSchema,
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,
   RsvpUnschedulableJobSchema,
