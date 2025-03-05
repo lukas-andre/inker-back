@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { AgendaEvent } from './agendaEvent.entity';
 
 @Entity()
@@ -38,6 +39,12 @@ export class AgendaEventHistory {
 
   @Column({ default: false })
   done: boolean;
+
+  @Column({
+    type: 'varchar',
+    nullable: true
+  })
+  status: AgendaEventStatus;
 
   @Column({ nullable: true })
   cancelationReason: string;

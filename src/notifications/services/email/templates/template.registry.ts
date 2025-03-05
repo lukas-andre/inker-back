@@ -5,6 +5,7 @@ import {
   AgendaEventCanceledSchema,
   AgendaEventCreatedSchema,
   AgendaEventReminderSchema,
+  AgendaEventStatusChangedSchema,
   AgendaEventUpdatedSchema,
   MailIdType,
   QuotationAcceptedSchema,
@@ -43,6 +44,11 @@ export const TemplateRegistry: Record<
     schema: AgendaEventUpdatedSchema,
     path: path.join(__dirname, './agendaEventUpdated.hbs'),
     subject: '💈 :customerName Tu cita con :artistName ha sido actualizada',
+  },
+  EVENT_STATUS_CHANGED: {
+    schema: AgendaEventStatusChangedSchema,
+    path: path.join(__dirname, './agendaEventStatusChanged.hbs'),
+    subject: '💈 :customerName Estado de tu cita con :artistName actualizado',
   },
   RSVP_ACCEPTED: {
     schema: RsvpAcceptedSchema,

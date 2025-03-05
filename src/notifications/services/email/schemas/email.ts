@@ -5,6 +5,7 @@ export const MailIdSchema = z.enum([
   'EVENT_CANCELED',
   'EVENT_REMINDER',
   'EVENT_UPDATED',
+  'EVENT_STATUS_CHANGED',
   'RSVP_ACCEPTED',
   'RSVP_DECLINED',
   'RSVP_UNSCHEDULABLE',
@@ -165,11 +166,22 @@ export type AccountVerificationCodeType = z.infer<
   typeof AccountVerificationCodeSchema
 >;
 
+const AgendaEventStatusChangedSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.EVENT_STATUS_CHANGED),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  eventStatus: z.string(),
+});
+export type AgendaEventStatusChangedType = z.infer<typeof AgendaEventStatusChangedSchema>;
+
 export const EmailSchema = z.union([
   AgendaEventCreatedSchema,
   AgendaEventCanceledSchema,
   AgendaEventReminderSchema,
   AgendaEventUpdatedSchema,
+  AgendaEventStatusChangedSchema,
   RsvpAcceptedSchema,
   RsvpDeclinedSchema,
   RsvpUnschedulableSchema,
@@ -189,6 +201,7 @@ export {
   AgendaEventCanceledSchema,
   AgendaEventReminderSchema,
   AgendaEventUpdatedSchema,
+  AgendaEventStatusChangedSchema,
   RsvpAcceptedSchema,
   RsvpDeclinedSchema,
   RsvpUnschedulableSchema,

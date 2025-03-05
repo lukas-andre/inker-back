@@ -11,6 +11,7 @@ import {
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 
 import { Agenda } from './agenda.entity';
 import { AgendaEventHistory } from './agendaEventHistory.entity';
@@ -50,6 +51,12 @@ export class AgendaEvent extends BaseEntity {
 
   @Column({ default: false })
   done: boolean;
+
+  @Column({
+    type: 'varchar',
+    default: AgendaEventStatus.SCHEDULED,
+  })
+  status: AgendaEventStatus;
 
   @Column('jsonb', { nullable: true, name: 'work_evidence' })
   workEvidence: MultimediasMetadataInterface;

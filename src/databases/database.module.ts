@@ -9,8 +9,8 @@ import {
   ARTIST_DB_CONNECTION_NAME,
   CUSTOMER_DB_CONFIG_NAME,
   CUSTOMER_DB_CONNECTION_NAME,
-  CUSTOMER_FEED_DB_CONFIG_NAME,
-  CUSTOMER_FEED_DB_CONNECTION_NAME,
+  // CUSTOMER_FEED_DB_CONFIG_NAME,
+  // CUSTOMER_FEED_DB_CONNECTION_NAME,
   FOLLOW_DB_CONFIG_NAME,
   FOLLOW_DB_CONNECTION_NAME,
   GENRE_DB_CONFIG_NAME,
@@ -103,13 +103,13 @@ import {
         configService.get(LOCATION_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      name: CUSTOMER_FEED_DB_CONNECTION_NAME,
-      useFactory: (configService: ConfigService) =>
-        configService.get(CUSTOMER_FEED_DB_CONFIG_NAME),
-      inject: [ConfigService],
-    }),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   name: CUSTOMER_FEED_DB_CONNECTION_NAME,
+    //   useFactory: (configService: ConfigService) =>
+    //     configService.get(CUSTOMER_FEED_DB_CONFIG_NAME),
+    //   inject: [ConfigService],
+    // }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       name: REVIEW_DB_CONNECTION_NAME,

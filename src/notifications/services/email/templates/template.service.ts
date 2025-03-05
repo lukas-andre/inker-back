@@ -40,6 +40,21 @@ export class TemplateService extends BaseComponent implements OnModuleInit {
     });
 
     Handlebars.registerHelper('eq', (a, b) => a === b);
+    
+    Handlebars.registerHelper('formatStatus', status => {
+      const statusMap = {
+        scheduled: 'Programada',
+        in_progress: 'En Progreso',
+        completed: 'Completada',
+        rescheduled: 'Reprogramada',
+        waiting_for_photos: 'Esperando Fotos',
+        waiting_for_review: 'Lista para Evaluar',
+        reviewed: 'Evaluada',
+        canceled: 'Cancelada',
+      };
+      
+      return statusMap[status] || status;
+    });
   }
 
   private async registerPartials(dir: string): Promise<void> {

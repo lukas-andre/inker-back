@@ -34,8 +34,8 @@ export class HealthController {
     private agendaDbDataSource: DataSource,
     @InjectDataSource('location-db')
     private locationDbDataSource: DataSource,
-    @InjectDataSource('customer-feed-db')
-    private customerFeedDbDataSource: DataSource,
+    // @InjectDataSource('customer-feed-db')
+    // private customerFeedDbDataSource: DataSource,
   ) {}
 
   @Get()
@@ -93,11 +93,11 @@ export class HealthController {
           connection: this.locationDbDataSource,
           timeout: 1500,
         }),
-      () =>
-        this.db.pingCheck('inker-customer-feed', {
-          connection: this.customerFeedDbDataSource,
-          timeout: 1500,
-        }),
+      // () =>
+      //   this.db.pingCheck('inker-customer-feed', {
+      //     connection: this.customerFeedDbDataSource,
+      //     timeout: 1500,
+      //   }),
     ]);
   }
 }

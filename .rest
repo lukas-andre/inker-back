@@ -148,3 +148,7 @@ Content-Type: application/json
   "email": "lucas.henrydz@gmail.com",
   "notificationType": "EMAIL"
 }
+
+### Get Work Evidence for Artist
+GET {{$dotenv APP_URL}}/agenda/artists/8/work-evidence?page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{token}}
