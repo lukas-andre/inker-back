@@ -5,6 +5,7 @@ import { CustomerProvider } from '../../../../../customers/infrastructure/provid
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { QuotationRepliedType } from '../../../../../notifications/services/email/schemas/email';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { QuotationRepliedJobType } from '../../../domain/schemas/quotation';
 import { NotificationJob } from '../notification.job';
@@ -14,16 +15,28 @@ const QUOTATION_REPLIED_NOTIFICATIONS = {
   body: 'Se ha respondido una cotización',
 } as const;
 
-export class QuotationRepliedJob implements NotificationJob {
+export class QuotationRepliedJob extends NotificationJob {
   constructor(
-    private readonly emailNotificationService: EmailNotificationService,
-    private readonly _1: AgendaEventProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly _2: ArtistLocationProvider,
-    private readonly quotationProvider: QuotationProvider,
-    private readonly pushNotificationService: PushNotificationService,
-  ) {}
+    emailNotificationService: EmailNotificationService,
+    agendaEventProvider: AgendaEventProvider,
+    artistProvider: ArtistProvider,
+    customerProvider: CustomerProvider,
+    locationProvider: ArtistLocationProvider,
+    quotationProvider: QuotationProvider,
+    pushNotificationService: PushNotificationService,
+    notificationStorageService: NotificationStorageService,
+  ) {
+    super(
+      emailNotificationService,
+      agendaEventProvider,
+      artistProvider,
+      customerProvider,
+      locationProvider,
+      quotationProvider,
+      pushNotificationService,
+      notificationStorageService
+    );
+  }
 
   async handle(job: QuotationRepliedJobType): Promise<void> {
     const { artistId, customerId, quotationId } = job.metadata;

@@ -8,19 +8,21 @@ import {
   AccountVerificationCodeType,
   MailIdSchema,
 } from '../../../../../notifications/services/email/schemas/email';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { SendVerificationCodeJobType } from '../../../domain/schemas/codes';
 import { NotificationJob } from '../notification.job';
 
 export class VerificationCodeSentJob implements NotificationJob {
   constructor(
-    private readonly emailNotificationService: EmailNotificationService,
-    private readonly _1: AgendaEventProvider,
-    private readonly _2: ArtistProvider,
-    private readonly _3: CustomerProvider,
-    private readonly _4: ArtistLocationProvider,
-    private readonly _5: QuotationProvider,
-    private readonly _6: PushNotificationService,
+    readonly emailNotificationService: EmailNotificationService,
+    readonly agendaEventProvider: AgendaEventProvider,
+    readonly artistProvider: ArtistProvider,
+    readonly customerProvider: CustomerProvider,
+    readonly locationProvider: ArtistLocationProvider,
+    readonly quotationProvider: QuotationProvider,
+    readonly pushNotificationService: PushNotificationService,
+    readonly notificationStorageService: NotificationStorageService,
   ) {}
 
   async handle(job: SendVerificationCodeJobType): Promise<void> {

@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing/test';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { ModuleMocker } from 'jest-mock';
 
-import { RequestService } from '../global/infrastructure/services/requestContext.service';
+import { RequestContextService } from '../global/infrastructure/services/requestContext.service';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 
 import { ReviewProvider } from './database/providers/review.provider';
@@ -20,7 +20,7 @@ describe('ReviewHandler', () => {
   let ratingArtistUseCase: DeepMocked<RatingArtistUsecase>;
   let reactToReviewUseCase: DeepMocked<ReactToReviewUsecase>;
   let getReviewsFromArtistUsecase: DeepMocked<GetReviewsFromArtistUsecase>;
-  let requestService: DeepMocked<RequestService>;
+  let requestContextService: DeepMocked<RequestContextService>;
   let jwtService: DeepMocked<JwtService>;
   let reviewProvider: DeepMocked<ReviewProvider>;
 
@@ -41,8 +41,8 @@ describe('ReviewHandler', () => {
           useValue: createMock<GetReviewsFromArtistUsecase>(),
         },
         {
-          provide: RequestService,
-          useValue: createMock<RequestService>(),
+          provide: RequestContextService,
+          useValue: createMock<RequestContextService>(),
         },
         {
           provide: ReviewProvider,

@@ -7,6 +7,7 @@ import { CustomerProviderModule } from '../../customers/infrastructure/providers
 import { LocationProviderModule } from '../../locations/infrastructure/database/locationProvider.module';
 import { LocationsModule } from '../../locations/locations.module';
 import { NotificationsModule } from '../../notifications/notifications.module';
+import { NotificationStorageService } from '../../notifications/services/notification.storage';
 import { DeadLetterProcessor } from '../deadletter/deadletter.processor';
 import { queues } from '../queues';
 
