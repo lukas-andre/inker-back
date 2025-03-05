@@ -9,6 +9,7 @@ import { QuotationRejectedType } from '../../../../../notifications/services/ema
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { QuotationRejectedJobType } from '../../../domain/schemas/quotation';
 import { NotificationJob } from '../notification.job';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 
 const QUOTATION_REJECTED_NOTIFICATIONS = {
   title: 'Cotización rechazada',
@@ -17,13 +18,14 @@ const QUOTATION_REJECTED_NOTIFICATIONS = {
 
 export class QuotationRejectedJob implements NotificationJob {
   constructor(
-    private readonly emailNotificationService: EmailNotificationService,
-    private readonly _1: AgendaEventProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly _2: ArtistLocationProvider,
-    private readonly quotationProvider: QuotationProvider,
-    private readonly pushNotificationService: PushNotificationService,
+    readonly emailNotificationService: EmailNotificationService,
+    readonly agendaEventProvider: AgendaEventProvider,
+    readonly artistProvider: ArtistProvider,
+    readonly customerProvider: CustomerProvider,
+    readonly locationProvider: ArtistLocationProvider,
+    readonly quotationProvider: QuotationProvider,
+    readonly pushNotificationService: PushNotificationService,
+    readonly notificationStorageService: NotificationStorageService,
   ) {}
 
   async handle(job: QuotationRejectedJobType): Promise<void> {

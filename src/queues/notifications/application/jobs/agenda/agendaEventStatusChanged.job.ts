@@ -5,20 +5,33 @@ import { CustomerProvider } from '../../../../../customers/infrastructure/provid
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { AgendaEventStatusChangedType } from '../../../../../notifications/services/email/schemas/email';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { AgendaEventStatusChangedJobType } from '../../../domain/schemas/agenda';
 import { NotificationJob } from '../notification.job';
 
-export class AgendaEventStatusChangedJob implements NotificationJob {
+export class AgendaEventStatusChangedJob extends NotificationJob {
   constructor(
-    private readonly emailNotificationService: EmailNotificationService,
-    private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly locationProvider: ArtistLocationProvider,
-    private readonly _: QuotationProvider,
-    private readonly pushNotificationService: PushNotificationService,
-  ) {}
+    emailNotificationService: EmailNotificationService,
+    agendaEventProvider: AgendaEventProvider,
+    artistProvider: ArtistProvider,
+    customerProvider: CustomerProvider,
+    locationProvider: ArtistLocationProvider,
+    quotationProvider: QuotationProvider,
+    pushNotificationService: PushNotificationService,
+    notificationStorageService: NotificationStorageService,
+  ) {
+    super(
+      emailNotificationService,
+      agendaEventProvider,
+      artistProvider,
+      customerProvider,
+      locationProvider,
+      quotationProvider,
+      pushNotificationService,
+      notificationStorageService
+    );
+  }
 
   async handle(job: AgendaEventStatusChangedJobType): Promise<void> {
     const { artistId, customerId, eventId, status, message } = job.metadata;
@@ -35,6 +48,36 @@ export class AgendaEventStatusChangedJob implements NotificationJob {
         Event: ${!!event}, Artist: ${!!artist}, Customer: ${!!customer}`);
       return;
     }
+
+    // Build notification title and message
+    const title = `Appointment Status: ${this.getStatusDisplayName(status)}`;
+    const notificationMessage = message || `Your appointment status is now ${this.getStatusDisplayName(status)}`;
+    
+    // Store notification for customer in database
+    await this.notificationStorageService.storeNotification(
+      customerId,
+      title,
+      notificationMessage,
+      'EVENT_STATUS_CHANGED',
+      {
+        eventId,
+        artistId,
+        status,
+      },
+    );
+
+    // Store notification for artist in database
+    await this.notificationStorageService.storeNotification(
+      artistId,
+      `Appointment Status Updated`,
+      `Appointment with ${customer.firstName} is now ${this.getStatusDisplayName(status)}`,
+      'EVENT_STATUS_CHANGED',
+      {
+        eventId,
+        customerId,
+        status,
+      },
+    );
 
     // Email notification
     const emailData: AgendaEventStatusChangedType = {
@@ -53,8 +96,8 @@ export class AgendaEventStatusChangedJob implements NotificationJob {
       await this.pushNotificationService.sendToUser(
         customerId,
         {
-          title: `Appointment Status: ${this.getStatusDisplayName(status)}`,
-          body: message,
+          title,
+          body: notificationMessage,
         },
         {
           eventId,

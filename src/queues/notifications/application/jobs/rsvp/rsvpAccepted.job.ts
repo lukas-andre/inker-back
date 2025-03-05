@@ -7,15 +7,19 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { RsvpAcceptedType } from '../../../../../notifications/services/email/schemas/email';
 import { RsvpAcceptedJobType } from '../../../domain/schemas/agenda';
 import { NotificationJob, getGoogleMapsLink } from '../notification.job';
+import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 
 export class RsvpAcceptedJob implements NotificationJob {
   constructor(
-    private readonly emailNotificationService: EmailNotificationService,
-    private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly locationProvider: ArtistLocationProvider,
-    private readonly _: QuotationProvider,
+    readonly emailNotificationService: EmailNotificationService,
+    readonly agendaEventProvider: AgendaEventProvider,
+    readonly artistProvider: ArtistProvider,
+    readonly customerProvider: CustomerProvider,
+    readonly locationProvider: ArtistLocationProvider,
+    readonly quotationProvider: QuotationProvider,
+    readonly pushNotificationService: PushNotificationService,
+    readonly notificationStorageService: NotificationStorageService,
   ) {}
 
   async handle(job: RsvpAcceptedJobType): Promise<void> {

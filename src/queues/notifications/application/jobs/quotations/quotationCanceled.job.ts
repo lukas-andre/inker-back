@@ -4,6 +4,7 @@ import { ArtistProvider } from '../../../../../artists/infrastructure/database/a
 import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { QuotationCanceledJobType } from '../../../domain/schemas/quotation';
 import { NotificationJob } from '../notification.job';
@@ -15,13 +16,14 @@ const QUOTATION_CANCELED_NOTIFICATIONS = {
 
 export class QuotationCanceledJob implements NotificationJob {
   constructor(
-    private readonly emailNotificationService: EmailNotificationService,
-    private readonly _1: AgendaEventProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly _2: ArtistLocationProvider,
-    private readonly quotationProvider: QuotationProvider,
-    private readonly pushNotificationService: PushNotificationService,
+    readonly emailNotificationService: EmailNotificationService,
+    readonly agendaEventProvider: AgendaEventProvider,
+    readonly artistProvider: ArtistProvider,
+    readonly customerProvider: CustomerProvider,
+    readonly locationProvider: ArtistLocationProvider,
+    readonly quotationProvider: QuotationProvider,
+    readonly pushNotificationService: PushNotificationService,
+    readonly notificationStorageService: NotificationStorageService,
   ) {}
 
   async handle(job: QuotationCanceledJobType): Promise<void> {

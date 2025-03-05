@@ -6,6 +6,7 @@ import { ArtistProvider } from '../../../artists/infrastructure/database/artist.
 import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
 import { ArtistLocationProvider } from '../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../notifications/services/email/email.notification';
+import { NotificationStorageService } from '../../../notifications/services/notification.storage';
 import { JobType } from '../domain/schemas/job';
 
 import { NotificationJobRegistry } from './job.registry';
@@ -22,6 +23,7 @@ export class JobHandlerFactory {
     private readonly locationProvider: ArtistLocationProvider,
     private readonly quotationProvider: QuotationProvider,
     private readonly pushNotificationService: PushNotificationService,
+    private readonly notificationStorageService: NotificationStorageService,
     private readonly notificationJobRegistry: NotificationJobRegistry,
   ) {}
 
@@ -40,6 +42,7 @@ export class JobHandlerFactory {
       this.locationProvider,
       this.quotationProvider,
       this.pushNotificationService,
+      this.notificationStorageService,
     );
   }
 }

@@ -31,11 +31,32 @@ export class NotificationRepository {
     return await this.notificationRepository.findOne({ where: { id } });
   }
 
-  async findNotificationsByUserId(userId: number): Promise<Notification[]> {
-    return await this.notificationRepository.find({
+  async findNotificationsByUserId(
+    userId: number,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<[Notification[], number]> {
+    return await this.notificationRepository.findAndCount({
       where: { userId },
       order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
     });
+  }
+  
+  async countUnreadNotificationsByUserId(userId: number): Promise<number> {
+    return await this.notificationRepository.count({
+      where: { userId, read: false },
+    });
+  }
+  
+  async markAllNotificationsAsRead(userId: number): Promise<void> {
+    await this.notificationRepository
+      .createQueryBuilder()
+      .update()
+      .set({ read: true })
+      .where("user_id = :userId", { userId })
+      .execute();
   }
 
   async markNotificationAsRead(id: string): Promise<void> {

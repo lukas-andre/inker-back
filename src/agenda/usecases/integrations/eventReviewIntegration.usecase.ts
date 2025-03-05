@@ -9,7 +9,7 @@ import { AgendaProvider } from '../../infrastructure/providers/agenda.provider';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { CUSTOMER_NOT_AUTHORIZED, EVENT_NOT_READY_FOR_REVIEW } from '../../domain/errors/codes';
 import { ReviewArtistRequestDto } from '../../../reviews/dtos/reviewArtistRequest.dto';
-import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import { DefaultResponseDto, DefaultResponseStatus } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 
 @Injectable()
 export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCase {
@@ -17,7 +17,7 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
     private readonly requestContext: RequestContextService,
     private readonly agendaProvider: AgendaProvider,
     private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly ratingArtistUsecase: RatingArtistUsecase,
+    // private readonly ratingArtistUsecase: RatingArtistUsecase,
   ) {
     super(EventReviewIntegrationUsecase.name);
   }
@@ -56,13 +56,13 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
       throw new DomainUnProcessableEntity('Agenda not found');
     }
 
-    // Call the review service to create the review
-    const result = await this.ratingArtistUsecase.execute(
-      agenda.artistId,
-      eventId,
-      userId,
-      reviewData,
-    );
+    // // Call the review service to create the review
+    // const result = await this.ratingArtistUsecase.execute(
+    //   agenda.artistId,
+    //   eventId,
+    //   userId,
+    //   reviewData,
+    // );
 
     // Update the event status to REVIEWED
     await this.agendaEventProvider.updateEventStatus(
@@ -71,6 +71,9 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
       AgendaEventStatus.REVIEWED,
     );
 
-    return result;
+    return {
+      status: DefaultResponseStatus.CREATED,
+      data: 'Event reviewed successfully',
+    };
   }
 }

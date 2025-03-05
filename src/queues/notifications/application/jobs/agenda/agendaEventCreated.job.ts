@@ -5,19 +5,21 @@ import { CustomerProvider } from '../../../../../customers/infrastructure/provid
 import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { AgendaEventCreatedType } from '../../../../../notifications/services/email/schemas/email';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { AgendaEventcreatedJobType } from '../../../domain/schemas/agenda';
 import { NotificationJob, getGoogleMapsLink } from '../notification.job';
 
 export class AgendaEventCreatedJob implements NotificationJob {
   constructor(
-    private readonly emailNotificationService: EmailNotificationService,
-    private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly locationProvider: ArtistLocationProvider,
-    private readonly _: QuotationProvider,
-    private readonly pushNotificationService: PushNotificationService,
+    readonly emailNotificationService: EmailNotificationService,
+    readonly agendaEventProvider: AgendaEventProvider,
+    readonly artistProvider: ArtistProvider,
+    readonly customerProvider: CustomerProvider,
+    readonly locationProvider: ArtistLocationProvider,
+    readonly quotationProvider: QuotationProvider,
+    readonly pushNotificationService: PushNotificationService,
+    readonly notificationStorageService: NotificationStorageService,
   ) {}
   async handle(job: AgendaEventcreatedJobType): Promise<void> {
     const { artistId, customerId, eventId } = job.metadata;
