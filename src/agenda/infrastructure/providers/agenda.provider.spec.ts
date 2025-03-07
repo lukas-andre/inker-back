@@ -204,8 +204,8 @@ describe('AgendaProvider', () => {
     expect(createdEvent.title).toBe('test');
     expect(createdEvent.info).toBe('test');
     expect(createdEvent.color).toBe('test');
-    expect(createdEvent.end).toBeDefined();
-    expect(createdEvent.start).toBeDefined();
+    expect(createdEvent.startDate).toBeDefined();
+    expect(createdEvent.endDate).toBeDefined();
     expect(createdEvent.notification).toBe(true);
     expect(createdEvent.customerId).toBe(customerId);
     expect(createdEvent.createdAt).toBeDefined();

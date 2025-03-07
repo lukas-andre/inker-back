@@ -77,14 +77,9 @@ export class AgendaHandler {
   }
 
   async handleListEventFromArtistAgenda(): Promise<any> {
-    const { isNotArtist, userTypeId } = this.requestContext;
-    if (isNotArtist) {
-      throw new UnauthorizedException(
-        'You dont have permission to access this resource',
-      );
-    }
+    const { userType, userTypeId } = this.requestContext;
 
-    return this.listEventFromArtistAgenda.execute(userTypeId);
+    return this.listEventFromArtistAgenda.execute(userTypeId, userType);
   }
 
   async handleGetEventByEventId(eventId: number): Promise<any> {
@@ -95,6 +90,19 @@ export class AgendaHandler {
       );
     }
     return this.findEventByAgendaIdAndEventIdUseCase.execute(
+      userTypeId,
+      eventId,
+    );
+  }
+  
+  async handleGetCustomerEventByEventId(eventId: number): Promise<any> {
+    const { isNotCustomer, userTypeId } = this.requestContext;
+    if (isNotCustomer) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+    return this.findEventByAgendaIdAndEventIdUseCase.executeForCustomer(
       userTypeId,
       eventId,
     );
