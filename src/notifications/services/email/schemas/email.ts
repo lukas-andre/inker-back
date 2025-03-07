@@ -57,6 +57,7 @@ const AgendaEventReminderSchema = BaseEmailSchema.extend({
   eventDate: z.date(),
   eventLocation: z.string(),
   googleMapsLink: z.string(),
+  timeDescription: z.string().optional(),
 });
 export type AgendaEventReminderType = z.infer<typeof AgendaEventReminderSchema>;
 
