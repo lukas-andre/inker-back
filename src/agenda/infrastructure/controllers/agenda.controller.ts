@@ -116,7 +116,7 @@ export class AgendaController {
   }
 
   @ApiOperation({
-    summary: 'get all events from artist agenda',
+    summary: 'get all events from artist agenda or customer events',
   })
   @HttpCode(200)
   @ApiOkResponse({ description: 'Event list successful.', type: undefined })
@@ -126,9 +126,17 @@ export class AgendaController {
     description: 'Bearer token',
     required: true,
   })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter events by status (scheduled, canceled, etc.)',
+    type: String,
+  })
   @Get()
-  async listEventFromArtistAgenda(): Promise<any> {
-    return this.agendaHandler.handleListEventFromArtistAgenda();
+  async listEventFromArtistAgenda(
+    @Query('status') status?: string,
+  ): Promise<any> {
+    return this.agendaHandler.handleListEventFromArtistAgenda(status);
   }
 
   @ApiOperation({

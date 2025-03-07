@@ -76,10 +76,10 @@ export class AgendaHandler {
     return this.listEventByViewTypeUseCase.execute(agendaId, query);
   }
 
-  async handleListEventFromArtistAgenda(): Promise<any> {
+  async handleListEventFromArtistAgenda(status?: string): Promise<any> {
     const { userType, userTypeId } = this.requestContext;
 
-    return this.listEventFromArtistAgenda.execute(userTypeId, userType);
+    return this.listEventFromArtistAgenda.execute(userTypeId, userType, status);
   }
 
   async handleGetEventByEventId(eventId: number): Promise<any> {
