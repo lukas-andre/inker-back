@@ -42,6 +42,12 @@ export type AgendaEventCanceledJobType = z.infer<
 
 const AgendaEventReminderJobSchema = AgendaJobSchema.extend({
   jobId: z.literal(AgendaJobIdSchema.enum.EVENT_REMINDER),
+  metadata: z.object({
+    customerId: z.number(),
+    eventId: z.number(),
+    artistId: z.number(),
+    reminderType: z.string().optional(),
+  }),
 });
 export type AgendaEventReminderJobType = z.infer<
   typeof AgendaEventReminderJobSchema
