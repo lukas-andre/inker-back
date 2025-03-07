@@ -1,8 +1,6 @@
 import { BullModule } from '@nestjs/bull';
 import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
-import { DevtoolsModule } from '@nestjs/devtools-integration';
-
 import { AgendaModule } from './agenda/agenda.module';
 import { AlertGateway } from './alert/alert.gateway';
 import { ArtistsModule } from './artists/artists.module';
@@ -17,13 +15,13 @@ import { HealthModule } from './health/health.module';
 import { LocationsModule } from './locations/locations.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { PostsModule } from './posts/posts.module';
-import { DeadLetterQueueModule } from './queues/deadletter/deadletter.queue.module';
 import { NotificationQueueModule } from './queues/notifications/notification.queue.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { TagsModule } from './tags/tags.module';
 import { UsersModule } from './users/users.module';
 import { SyncQueueModule } from './queues/sync/sync.queue.module';
+import { FastifyMulterModule } from '@nest-lab/fastify-multer';
 @Module({
   imports: [
     BullModule.forRoot({

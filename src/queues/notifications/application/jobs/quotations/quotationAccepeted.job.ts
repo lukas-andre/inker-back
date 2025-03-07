@@ -28,37 +28,69 @@ export class QuotationAcceptedJob implements NotificationJob {
   ) {}
 
   async handle(job: QuotationAcceptedJobType): Promise<void> {
-    const { artistId, customerId, quotationId } = job.metadata;
-    const [quotation, artist, customer] = await Promise.all([
-      this.quotationProvider.findById(quotationId),
-      this.artistProvider.findByIdWithContact(artistId),
-      this.customerProvider.findById(customerId),
-    ]);
+    try {
+      const { artistId, customerId, quotationId } = job.metadata;
+      const [quotation, artist, customer] = await Promise.all([
+        this.quotationProvider.findById(quotationId),
+        this.artistProvider.findByIdWithContact(artistId),
+        this.customerProvider.findById(customerId),
+      ]);
 
-    const quotationAcceptedEmailData: QuotationAcceptedType = {
-      to: artist.contact.email,
-      artistName: artist.username,
-      customerName: customer.firstName,
-      estimatedCost: quotation.estimatedCost.toString(),
-      appointmentDate: quotation.appointmentDate,
-      appointmentDuration: quotation.appointmentDuration,
-      mailId: 'QUOTATION_ACCEPTED',
-    };
+      if (!quotation || !artist || !customer) {
+        console.error(`Missing data for quotation accepted notification: 
+          Quotation: ${!!quotation}, Artist: ${!!artist}, Customer: ${!!customer}`);
+        return;
+      }
 
-    const notificationMetadata = {
-      type: job.jobId,
-      quotationId: quotationId.toString(),
-      artistName: artist.username,
-      customerName: customer.firstName,
-    };
+      // Build notification title and message
+      const title = 'Quotation Accepted';
+      const message = `${customer.firstName} has accepted your quotation.`;
 
-    await Promise.all([
-      this.pushNotificationService.sendToUser(
+      // Store notification for artist
+      await this.notificationStorageService.storeNotification(
         artist.userId,
-        QUOTATION_ACCEPTED_NOTIFICATIONS,
-        notificationMetadata,
-      ),
-      this.emailNotificationService.sendEmail(quotationAcceptedEmailData),
-    ]);
+        title,
+        message,
+        'QUOTATION_ACCEPTED',
+        {
+          quotationId: quotationId.toString(),
+          customerId,
+          customerName: customer.firstName,
+          cost: quotation.estimatedCost?.toString(),
+          date: quotation.appointmentDate,
+        },
+      );
+
+      const quotationAcceptedEmailData: QuotationAcceptedType = {
+        to: artist.contact.email,
+        artistName: artist.username,
+        customerName: customer.firstName,
+        estimatedCost: quotation.estimatedCost?.toString() || "N/A",
+        appointmentDate: quotation.appointmentDate,
+        appointmentDuration: quotation.appointmentDuration,
+        mailId: 'QUOTATION_ACCEPTED',
+      };
+
+      const notificationMetadata = {
+        type: 'QUOTATION_ACCEPTED',
+        quotationId: quotationId.toString(),
+        artistName: artist.username,
+        customerName: customer.firstName,
+      };
+
+      await Promise.all([
+        this.pushNotificationService.sendToUser(
+          artist.userId,
+          {
+            title: title,
+            body: message,
+          },
+          notificationMetadata,
+        ),
+        this.emailNotificationService.sendEmail(quotationAcceptedEmailData),
+      ]);
+    } catch (error) {
+      console.error('Failed to process quotation accepted notification:', error);
+    }
   }
 }

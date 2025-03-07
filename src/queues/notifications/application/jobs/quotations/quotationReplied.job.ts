@@ -39,37 +39,71 @@ export class QuotationRepliedJob extends NotificationJob {
   }
 
   async handle(job: QuotationRepliedJobType): Promise<void> {
-    const { artistId, customerId, quotationId } = job.metadata;
-    const [quotation, artist, customer] = await Promise.all([
-      this.quotationProvider.findById(quotationId),
-      this.artistProvider.findById(artistId),
-      this.customerProvider.findById(customerId),
-    ]);
+    try {
+      const { artistId, customerId, quotationId } = job.metadata;
+      const [quotation, artist, customer] = await Promise.all([
+        this.quotationProvider.findById(quotationId),
+        this.artistProvider.findById(artistId),
+        this.customerProvider.findById(customerId),
+      ]);
 
-    // const quotationRepliedEmailData: QuotationRepliedType = {
-    //   to: customer.contactEmail,
-    //   artistName: artist.username,
-    //   customerName: customer.firstName,
-    //   estimatedCost: quotation.estimatedCost.toString(),
-    //   appointmentDate: quotation.appointmentDate,
-    //   appointmentDuration: quotation.appointmentDuration,
-    //   mailId: 'QUOTATION_REPLIED',
-    // };
+      if (!quotation || !artist || !customer) {
+        console.error(`Missing data for quotation replied notification: 
+          Quotation: ${!!quotation}, Artist: ${!!artist}, Customer: ${!!customer}`);
+        return;
+      }
 
-    const notificationMetadata = {
-      type: job.jobId,
-      quotationId: quotationId.toString(),
-      artistName: artist.username,
-      customerName: customer.firstName,
-    };
+      // Build notification title and message
+      const title = 'Quotation Replied';
+      const message = `${artist.username} has replied to your quotation request.`;
 
-    await Promise.all([
-      this.pushNotificationService.sendToUser(
+      // Store notification for customer
+      await this.notificationStorageService.storeNotification(
         customer.userId,
-        QUOTATION_REPLIED_NOTIFICATIONS,
-        notificationMetadata,
-      ),
-      // this.emailNotificationService.sendEmail(quotationRepliedEmailData),
-    ]);
+        title,
+        message,
+        'QUOTATION_REPLIED',
+        {
+          quotationId: quotationId.toString(),
+          artistUserId: artist.userId,
+          artistId: artist.id,
+          artistName: artist.username,
+          cost: quotation.estimatedCost?.toString(),
+          date: quotation.appointmentDate,
+        },
+      );
+
+      // Build email notification data
+      const quotationRepliedEmailData: QuotationRepliedType = {
+        to: customer.contactEmail,
+        artistName: artist.username,
+        customerName: customer.firstName,
+        estimatedCost: quotation.estimatedCost?.toString() || "N/A",
+        appointmentDate: quotation.appointmentDate,
+        appointmentDuration: quotation.appointmentDuration,
+        mailId: 'QUOTATION_REPLIED',
+      };
+
+      const notificationMetadata = {
+        type: 'QUOTATION_REPLIED',
+        quotationId: quotationId.toString(),
+        artistName: artist.username,
+        customerName: customer.firstName,
+      };
+
+      await Promise.all([
+        this.pushNotificationService.sendToUser(
+          customer.userId,
+          {
+            title: title,
+            body: message,
+          },
+          notificationMetadata,
+        ),
+        this.emailNotificationService.sendEmail(quotationRepliedEmailData),
+      ]);
+    } catch (error) {
+      console.error('Failed to process quotation replied notification:', error);
+    }
   }
 }

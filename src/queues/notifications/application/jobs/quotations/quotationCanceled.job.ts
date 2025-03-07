@@ -27,39 +27,60 @@ export class QuotationCanceledJob implements NotificationJob {
   ) {}
 
   async handle(job: QuotationCanceledJobType): Promise<void> {
-    const { artistId, customerId, quotationId } = job.metadata;
+    try {
+      const { artistId, customerId, quotationId } = job.metadata;
 
-    const [quotation, artist, customer] = await Promise.all([
-      this.quotationProvider.findById(quotationId),
-      this.artistProvider.findById(artistId),
-      this.customerProvider.findById(customerId),
-    ]);
+      const [quotation, artist, customer] = await Promise.all([
+        this.quotationProvider.findById(quotationId),
+        this.artistProvider.findById(artistId),
+        this.customerProvider.findById(customerId),
+      ]);
 
-    if (!quotation || !artist || !customer) {
-      throw new Error('Required data not found');
-    }
+      if (!quotation || !artist || !customer) {
+        console.error(`Missing data for quotation canceled notification: 
+          Quotation: ${!!quotation}, Artist: ${!!artist}, Customer: ${!!customer}`);
+        return;
+      }
 
-    // const quotationCanceledEmailData: QuotationCanceledType = {
-    //   to: artist.contact.email,
-    //   artistName: artist.username,
-    //   customerName: customer.firstName,
-    //   mailId: 'QUOTATION_CANCELED',
-    // };
+      // Since only customers can cancel, we can hardcode the notification flow
+      const title = 'Quotation Canceled by Customer';
+      const message = `${customer.firstName} has canceled the quotation request.`;
 
-    const notificationMetadata = {
-      type: job.jobId,
-      quotationId: quotationId.toString(),
-      artistName: artist.username,
-      customerName: customer.firstName,
-    };
-
-    await Promise.all([
-      this.pushNotificationService.sendToUser(
+      // Store notification for artist
+      await this.notificationStorageService.storeNotification(
         artist.userId,
-        QUOTATION_CANCELED_NOTIFICATIONS,
+        title,
+        message,
+        'QUOTATION_CANCELED',
+        {
+          quotationId: quotationId.toString(),
+          customerId,
+          customerName: customer.firstName,
+        },
+      );
+
+      // Build notification metadata
+      const notificationMetadata = {
+        type: 'QUOTATION_CANCELED',
+        quotationId: quotationId.toString(),
+        artistName: artist.username,
+        customerName: customer.firstName,
+      };
+
+      // Send push notification to artist
+      await this.pushNotificationService.sendToUser(
+        artist.userId,
+        {
+          title,
+          body: message,
+        },
         notificationMetadata,
-      ),
-      // this.emailNotificationService.sendEmail(quotationCanceledEmailData),
-    ]);
+      );
+
+      // Removed system cancellation logic since that should be handled in a separate job
+      // if needed, and artist cancellations are handled in rejection jobs
+    } catch (error) {
+      console.error('Failed to process quotation canceled notification:', error);
+    }
   }
 }
