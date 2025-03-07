@@ -353,6 +353,13 @@ export class AgendaEventProvider extends BaseComponent {
       .getMany();
   }
 
+  async findByCustomerId(customerId: number): Promise<AgendaEvent[]> {
+    return this.agendaEventRepository
+      .createQueryBuilder('agenda_event')
+      .where('customer_id = :customerId', { customerId })
+      .getMany();
+  }
+
   async findEventByAgendaIdAndEventId(
     agendaId: number,
     eventId: number,

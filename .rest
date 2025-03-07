@@ -153,6 +153,10 @@ Content-Type: application/json
 GET {{$dotenv APP_URL}}/agenda/artists/8/work-evidence?page=1&limit=10 HTTP/1.1
 Authorization: Bearer {{token}}
 
+### List Agenda Events
+GET {{$dotenv APP_URL}}/agenda?page=1&limit=10 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZW1haWwiOiJwYXVsYUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6InBhdWxhLTQzMDkxIiwiZnVsbG5hbWUiOiJQYXVsYSBDYXJyYXNjbyIsInVzZXJUeXBlIjoiQ1VTVE9NRVIiLCJ1c2VyVHlwZUlkIjozLCJwcm9maWxlVGh1bWJuYWlsIjpudWxsLCJwZXJtaXNzaW9uIjpbeyJjIjoiQXJ0aXN0c0NvbnRyb2xsZXIiLCJhIjoiKiJ9LHsiYyI6IkN1c3RvbWVyc0NvbnRyb2xsZXIiLCJhIjoiKiJ9LHsiYyI6IlBvc3RzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiVXNlcnNDb250cm9sbGVyIiwiYSI6IioifV0sImlhdCI6MTc0MTIyMjM2NywiZXhwIjoxNzQxMzk1MTY3LCJpc3MiOiJJbmtlciJ9.2NjZ3JoVfyidoM02Ke1-e6jd-KcU67HJKYshSyG1n70
+
 
 ### Artist Quote Action (Accept with Quote)
 POST {{$dotenv APP_URL}}/quotations/16/artist-actions HTTP/1.1

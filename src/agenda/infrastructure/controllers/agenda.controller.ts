@@ -160,6 +160,18 @@ export class AgendaController {
   ): Promise<any> {
     return this.agendaHandler.handleGetEventByEventId(eventId);
   }
+  
+  @ApiOperation({ summary: 'Get customer event by id' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Get Customer Event successful.', type: undefined })
+  @ApiConflictResponse({ description: 'Trouble finding event.' })
+  @ApiParam({ name: 'eventId', required: true, type: Number })
+  @Get('/customer/event/:eventId')
+  async getCustomerEventByEventId(
+    @Param('eventId', ParseIntPipe) eventId: number,
+  ): Promise<any> {
+    return this.agendaHandler.handleGetCustomerEventByEventId(eventId);
+  }
 
   // TODO: VALIDATE IF THE ARTIST IS THE OWNER OF THE AGENDA, DO THIS WITH A GUARD OR VALIDATE THE TOKEN
   @ApiOperation({ summary: 'Mark event as done' })

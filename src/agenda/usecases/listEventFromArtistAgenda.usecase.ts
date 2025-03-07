@@ -8,6 +8,7 @@ import {
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
 import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { UserType } from '../../users/domain/enums/userType.enum';
 
 @Injectable()
 export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
@@ -18,8 +19,17 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
     super(ListEventFromArtistAgenda.name);
   }
 
-  async execute(artistId: number): Promise<AgendaEvent[]> {
+  async execute(id: number, type: UserType): Promise<AgendaEvent[]> {
     console.time('ListEventFromArtistAgenda');
+    
+    if (type === UserType.ARTIST) {
+      return this.getArtistEvents(id);
+    } else {
+      return this.getCustomerEvents(id);
+    }
+  }
+
+  private async getArtistEvents(artistId: number): Promise<AgendaEvent[]> {
     const existsAgenda = await this.agendaProvider.findOne({
       where: {
         artistId,
@@ -34,6 +44,17 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
 
     if (!result.length) {
       throw new DomainNotFound('No events found');
+    }
+
+    console.timeEnd('ListEventFromArtistAgenda');
+    return result;
+  }
+
+  private async getCustomerEvents(customerId: number): Promise<AgendaEvent[]> {
+    const result = await this.agendaEventProvider.findByCustomerId(customerId);
+
+    if (!result.length) {
+      throw new DomainNotFound('No events found for customer');
     }
 
     console.timeEnd('ListEventFromArtistAgenda');
