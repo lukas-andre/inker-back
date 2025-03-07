@@ -29,50 +29,107 @@ export class QuotationRejectedJob implements NotificationJob {
   ) {}
 
   async handle(job: QuotationRejectedJobType): Promise<void> {
-    const { artistId, customerId, quotationId, by } = job.metadata;
-    const [quotation, artist, customer] = await Promise.all([
-      this.quotationProvider.findById(quotationId),
-      this.artistProvider.findByIdWithContact(artistId),
-      this.customerProvider.findById(customerId),
-    ]);
+    try {
+      const { artistId, customerId, quotationId, by } = job.metadata;
+      const [quotation, artist, customer] = await Promise.all([
+        this.quotationProvider.findById(quotationId),
+        this.artistProvider.findByIdWithContact(artistId),
+        this.customerProvider.findById(customerId),
+      ]);
 
-    const quotationRejectedEmailData: QuotationRejectedType = {
-      to: artist.contact.email,
-      artistName: artist.username,
-      customerName: customer.firstName,
-      rejectionReason: quotation.rejectReasonDetails,
-      mailId: 'QUOTATION_REJECTED',
-    };
+      if (!quotation || !artist || !customer) {
+        console.error(`Missing data for quotation rejected notification: 
+          Quotation: ${!!quotation}, Artist: ${!!artist}, Customer: ${!!customer}`);
+        return;
+      }
 
-    const notificationMetadata = {
-      type: job.jobId,
-      quotationId: quotationId.toString(),
-    };
+      // Build notification data based on who rejected
+      let title, message;
+      
+      if (by === 'customer') {
+        // Customer rejected artist's quotation
+        title = 'Quotation Rejected by Customer';
+        message = `${customer.firstName} has rejected your quotation. Reason: ${quotation.rejectReasonDetails || 'No reason provided'}`;
+        
+        // Store notification for artist
+        await this.notificationStorageService.storeNotification(
+          artist.userId,
+          title,
+          message,
+          'QUOTATION_REJECTED',
+          {
+            quotationId: quotationId.toString(),
+            customerId,
+            customerName: customer.firstName,
+            reason: quotation.rejectReasonDetails,
+          },
+        );
+      } else {
+        // Artist rejected customer's quotation
+        title = 'Quotation Rejected by Artist';
+        message = `${artist.username} has rejected your quotation. Reason: ${quotation.rejectReasonDetails || 'No reason provided'}`;
+        
+        // Store notification for customer
+        await this.notificationStorageService.storeNotification(
+          customer.userId,
+          title,
+          message,
+          'QUOTATION_REJECTED',
+          {
+            quotationId: quotationId.toString(),
+            artistId,
+            artistName: artist.username,
+            reason: quotation.rejectReasonDetails,
+          },
+        );
+      }
 
-    let promise: Promise<BatchResponse>;
-    if (by === 'customer') {
-      promise = this.pushNotificationService.sendToUser(
-        artist.userId,
-        QUOTATION_REJECTED_NOTIFICATIONS,
-        {
-          ...notificationMetadata,
-          customerName: customer.firstName,
-        },
-      );
-    } else {
-      promise = this.pushNotificationService.sendToUser(
-        customer.userId,
-        QUOTATION_REJECTED_NOTIFICATIONS,
-        {
-          ...notificationMetadata,
-          artistName: artist.username,
-        },
-      );
+      const quotationRejectedEmailData: QuotationRejectedType = {
+        to: by === 'customer' ? artist.contact.email : customer.contactEmail,
+        artistName: artist.username,
+        customerName: customer.firstName,
+        rejectionReason: quotation.rejectReasonDetails || 'No reason provided',
+        mailId: 'QUOTATION_REJECTED',
+      };
+
+      const notificationMetadata = {
+        type: 'QUOTATION_REJECTED',
+        quotationId: quotationId.toString(),
+      };
+
+      let pushPromise: Promise<BatchResponse>;
+      if (by === 'customer') {
+        pushPromise = this.pushNotificationService.sendToUser(
+          artist.userId,
+          {
+            title,
+            body: message,
+          },
+          {
+            ...notificationMetadata,
+            customerName: customer.firstName,
+          },
+        );
+      } else {
+        pushPromise = this.pushNotificationService.sendToUser(
+          customer.userId,
+          {
+            title,
+            body: message,
+          },
+          {
+            ...notificationMetadata,
+            artistName: artist.username,
+          },
+        );
+      }
+
+      await Promise.all([
+        pushPromise,
+        this.emailNotificationService.sendEmail(quotationRejectedEmailData),
+      ]);
+    } catch (error) {
+      console.error('Failed to process quotation rejected notification:', error);
     }
-
-    await Promise.all([
-      promise,
-      this.emailNotificationService.sendEmail(quotationRejectedEmailData),
-    ]);
   }
 }

@@ -31,6 +31,30 @@ export class RsvpAcceptedJob implements NotificationJob {
       this.locationProvider.findOne({ where: { artistId } }),
     ]);
 
+    if (!agendaEvent || !artist || !customer || !location) {
+      console.error(`Missing data for RSVP accepted notification: 
+        Event: ${!!agendaEvent}, Artist: ${!!artist}, Customer: ${!!customer}, Location: ${!!location}`);
+      return;
+    }
+
+    // Build notification title and message
+    const title = `Appointment Invitation Accepted`;
+    const message = `${customer.firstName} has accepted the invitation for "${agendaEvent.title}" on ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
+
+    // Store notification for artist
+    await this.notificationStorageService.storeNotification(
+      artistId,
+      title,
+      message,
+      'RSVP_ACCEPTED',
+      {
+        eventId,
+        customerId,
+        customerName: customer.firstName,
+      },
+    );
+
+    // Email notification
     const rsvpAcceptedEmailData: RsvpAcceptedType = {
       to: artist.contact.email,
       artistName: artist.username,
@@ -42,5 +66,24 @@ export class RsvpAcceptedJob implements NotificationJob {
       mailId: 'RSVP_ACCEPTED',
     };
     await this.emailNotificationService.sendEmail(rsvpAcceptedEmailData);
+
+    // Push notification to artist
+    try {
+      await this.pushNotificationService.sendToUser(
+        artistId,
+        {
+          title,
+          body: message,
+        },
+        {
+          eventId,
+          customerId,
+          type: 'RSVP_ACCEPTED',
+        },
+      );
+    } catch (error) {
+      console.error('Failed to send push notification to artist', error);
+      // Continue execution even if push notification fails
+    }
   }
 }

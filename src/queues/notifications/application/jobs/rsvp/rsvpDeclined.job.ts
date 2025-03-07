@@ -31,6 +31,30 @@ export class RsvpDeclinedJob implements NotificationJob {
       this.locationProvider.findOne({ where: { artistId } }),
     ]);
 
+    if (!agendaEvent || !artist || !customer || !location) {
+      console.error(`Missing data for RSVP declined notification: 
+        Event: ${!!agendaEvent}, Artist: ${!!artist}, Customer: ${!!customer}, Location: ${!!location}`);
+      return;
+    }
+
+    // Build notification title and message
+    const title = `Appointment Invitation Declined`;
+    const message = `${customer.firstName} has declined the invitation for "${agendaEvent.title}" on ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
+
+    // Store notification for artist
+    await this.notificationStorageService.storeNotification(
+      artistId,
+      title,
+      message,
+      'RSVP_DECLINED',
+      {
+        eventId,
+        customerId,
+        customerName: customer.firstName,
+      },
+    );
+
+    // Email notification
     const rsvpDeclinedEmailData: RsvpDeclinedType = {
       to: artist.contact.email,
       artistName: artist.username,
@@ -42,5 +66,24 @@ export class RsvpDeclinedJob implements NotificationJob {
       mailId: 'RSVP_DECLINED',
     };
     await this.emailNotificationService.sendEmail(rsvpDeclinedEmailData);
+
+    // Push notification to artist
+    try {
+      await this.pushNotificationService.sendToUser(
+        artistId,
+        {
+          title,
+          body: message,
+        },
+        {
+          eventId,
+          customerId,
+          type: 'RSVP_DECLINED',
+        },
+      );
+    } catch (error) {
+      console.error('Failed to send push notification to artist', error);
+      // Continue execution even if push notification fails
+    }
   }
 }

@@ -7,7 +7,8 @@ import {
   Query, 
   UseGuards,
   HttpCode,
-  ParseUUIDPipe
+  ParseUUIDPipe,
+  Put
 } from '@nestjs/common';
 import { 
   ApiTags, 
@@ -59,7 +60,7 @@ export class NotificationsController {
   })
   @ApiNoContentResponse({ description: 'Notification marked as read' })
   @HttpCode(204)
-  @Patch(':id/read')
+  @Put(':id/read')
   async markAsRead(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.notificationsHandler.markNotificationAsRead(id);
   }
@@ -72,7 +73,7 @@ export class NotificationsController {
   })
   @ApiNoContentResponse({ description: 'All notifications marked as read' })
   @HttpCode(204)
-  @Patch('read-all')
+  @Put('read-all')
   async markAllAsRead(): Promise<void> {
     await this.notificationsHandler.markAllNotificationsAsRead();
   }

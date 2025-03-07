@@ -28,35 +28,66 @@ export class QuotationAppealedJob implements NotificationJob {
   ) {}
 
   async handle(job: QuotationAppealedJobType): Promise<void> {
-    const { artistId, customerId, quotationId } = job.metadata;
-    const [quotation, artist, customer] = await Promise.all([
-      this.quotationProvider.findById(quotationId),
-      this.artistProvider.findByIdWithContact(artistId),
-      this.customerProvider.findById(customerId),
-    ]);
+    try {
+      const { artistId, customerId, quotationId } = job.metadata;
+      const [quotation, artist, customer] = await Promise.all([
+        this.quotationProvider.findById(quotationId),
+        this.artistProvider.findByIdWithContact(artistId),
+        this.customerProvider.findById(customerId),
+      ]);
 
-    const quotationAppealedEmailData: QuotationAppealedType = {
-      to: artist.contact.email,
-      artistName: artist.username,
-      customerName: customer.firstName,
-      appealReason: quotation.appealedReason,
-      mailId: 'QUOTATION_APPEALED',
-    };
+      if (!quotation || !artist || !customer) {
+        console.error(`Missing data for quotation appealed notification: 
+          Quotation: ${!!quotation}, Artist: ${!!artist}, Customer: ${!!customer}`);
+        return;
+      }
 
-    const notificationMetadata = {
-      type: job.jobId,
-      quotationId: quotationId.toString(),
-      artistName: artist.username,
-      customerName: customer.firstName,
-    };
+      // Build notification title and message
+      const title = 'Quotation Appeal Received';
+      const message = `${customer.firstName} has appealed your quotation decision. Reason: ${quotation.appealedReason || 'No reason provided'}`;
 
-    await Promise.all([
-      this.pushNotificationService.sendToUser(
+      // Store notification for artist
+      await this.notificationStorageService.storeNotification(
         artist.userId,
-        QUOTATION_APPEALED_NOTIFICATIONS,
-        notificationMetadata,
-      ),
-      this.emailNotificationService.sendEmail(quotationAppealedEmailData),
-    ]);
+        title,
+        message,
+        'QUOTATION_APPEALED',
+        {
+          quotationId: quotationId.toString(),
+          customerId,
+          customerName: customer.firstName,
+          reason: quotation.appealedReason,
+        },
+      );
+
+      const quotationAppealedEmailData: QuotationAppealedType = {
+        to: artist.contact.email,
+        artistName: artist.username,
+        customerName: customer.firstName,
+        appealReason: quotation.appealedReason || 'No reason provided',
+        mailId: 'QUOTATION_APPEALED',
+      };
+
+      const notificationMetadata = {
+        type: 'QUOTATION_APPEALED',
+        quotationId: quotationId.toString(),
+        artistName: artist.username,
+        customerName: customer.firstName,
+      };
+
+      await Promise.all([
+        this.pushNotificationService.sendToUser(
+          artist.userId,
+          {
+            title,
+            body: message,
+          },
+          notificationMetadata,
+        ),
+        this.emailNotificationService.sendEmail(quotationAppealedEmailData),
+      ]);
+    } catch (error) {
+      console.error('Failed to process quotation appealed notification:', error);
+    }
   }
 }

@@ -36,10 +36,32 @@ export class QuotationCreatedJob implements NotificationJob {
         this.customerProvider.findById(customerId),
       ]);
 
+      if (!quotation || !artist || !customer) {
+        console.error(`Missing data for quotation created notification: 
+          Quotation: ${!!quotation}, Artist: ${!!artist}, Customer: ${!!customer}`);
+        return;
+      }
+
+      // Build notification titles and messages
+      const artistTitle = 'New Quotation Request';
+      const artistMessage = `${customer.firstName} has sent you a new quotation request.`;
+
+      // Store notification for artist
+      await this.notificationStorageService.storeNotification(
+        artist.userId,
+        artistTitle,
+        artistMessage,
+        'QUOTATION_CREATED',
+        {
+          quotationId: quotationId.toString(),
+          customerId,
+          customerName: customer.firstName,
+        },
+      );
+
       const notificationMetadata = {
-        type: job.jobId,
+        type: 'QUOTATION_CREATED',
         quotationId: quotationId.toString(),
-        // artistName: artist.username,
         customerName: customer.firstName,
       };
 
@@ -48,15 +70,20 @@ export class QuotationCreatedJob implements NotificationJob {
         artistName: artist.username,
         customerName: customer.firstName,
         mailId: 'QUOTATION_CREATED',
+        description: quotation.description || 'No description provided',
+        // referenceImages: quotation.referenceImages.metadata.map(image => image.url) || [],
       };
 
       await Promise.all([
         this.pushNotificationService.sendToUser(
           artist.userId,
-          QUOTATION_NOTIFICATIONS,
+          {
+            title: artistTitle,
+            body: artistMessage,
+          },
           notificationMetadata,
         ),
-        // this.emailNotificationService.sendEmail(quotationCreatedEmailData),
+        this.emailNotificationService.sendEmail(quotationCreatedEmailData),
       ]);
     } catch (error) {
       console.error(

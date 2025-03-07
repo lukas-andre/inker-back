@@ -55,7 +55,7 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
     
     // Store notification for customer in database
     await this.notificationStorageService.storeNotification(
-      customerId,
+      customer.userId,
       title,
       notificationMessage,
       'EVENT_STATUS_CHANGED',
@@ -68,7 +68,7 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
 
     // Store notification for artist in database
     await this.notificationStorageService.storeNotification(
-      artistId,
+      artist.userId,
       `Appointment Status Updated`,
       `Appointment with ${customer.firstName} is now ${this.getStatusDisplayName(status)}`,
       'EVENT_STATUS_CHANGED',
@@ -94,7 +94,7 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
     // Push notification
     try {
       await this.pushNotificationService.sendToUser(
-        customerId,
+        customer.userId,
         {
           title,
           body: notificationMessage,
