@@ -59,6 +59,7 @@ import { RescheduleEventReqDto } from '../dtos/rescheduleEventReq.dto';
 import { UpdateEventNotesReqDto } from '../dtos/updateEventNotesReq.dto';
 import { ArtistAvailabilityQueryDto } from '../dtos/artistAvailabilityQuery.dto';
 import { UpdateAgendaSettingsReqDto } from '../dtos/updateAgendaSettingsReq.dto';
+import { GetAgendaSettingsResDto } from '../dtos/getAgendaSettingsRes.dto';
 import { AgendaUnavailableTime } from '../entities/agendaUnavailableTime.entity';
 import { AvailabilityCalendar, TimeSlot } from '../../services/scheduling.service';
 
@@ -405,6 +406,20 @@ export class AgendaController {
     return this.agendaHandler.handleGetArtistAvailability(artistId, query);
   }
   
+  @ApiOperation({ summary: 'Get agenda settings including working hours and visibility' })
+  @HttpCode(200)
+  @ApiOkResponse({ 
+    description: 'Agenda settings retrieved successfully',
+    type: GetAgendaSettingsResDto
+  })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @Get(':agendaId/settings')
+  async getAgendaSettings(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+  ): Promise<GetAgendaSettingsResDto> {
+    return this.agendaHandler.handleGetAgendaSettings(agendaId);
+  }
+
   @ApiOperation({ summary: 'Update agenda visibility and open/closed status' })
   @HttpCode(200)
   @ApiOkResponse({ description: 'Agenda settings updated successfully' })

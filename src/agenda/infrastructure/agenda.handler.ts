@@ -52,6 +52,8 @@ import { RescheduleEventReqDto } from './dtos/rescheduleEventReq.dto';
 import { UpdateEventNotesReqDto } from './dtos/updateEventNotesReq.dto';
 import { ArtistAvailabilityQueryDto } from './dtos/artistAvailabilityQuery.dto';
 import { UpdateAgendaSettingsReqDto } from './dtos/updateAgendaSettingsReq.dto';
+import { GetAgendaSettingsResDto } from './dtos/getAgendaSettingsRes.dto';
+import { GetAgendaSettingsUseCase } from '../usecases/getAgendaSettings.usecase';
 
 @Injectable()
 export class AgendaHandler {
@@ -85,6 +87,7 @@ export class AgendaHandler {
     private readonly getArtistAvailabilityUseCase: GetArtistAvailabilityUseCase,
     private readonly getSuggestedTimeSlotsUseCase: GetSuggestedTimeSlotsUseCase,
     private readonly updateAgendaSettingsUseCase: UpdateAgendaSettingsUseCase,
+    private readonly getAgendaSettingsUseCase: GetAgendaSettingsUseCase,
   ) {}
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
@@ -316,6 +319,10 @@ export class AgendaHandler {
 
   async handleGetSuggestedTimeSlots(quotationId: number): Promise<TimeSlot[]> {
     return this.getSuggestedTimeSlotsUseCase.execute(quotationId);
+  }
+
+  async handleGetAgendaSettings(agendaId: number): Promise<GetAgendaSettingsResDto> {
+    return this.getAgendaSettingsUseCase.execute(agendaId);
   }
 
   async handleUpdateAgendaSettings(

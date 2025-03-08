@@ -49,6 +49,7 @@ import { AgendaUnavailableTime } from './infrastructure/entities/agendaUnavailab
 import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
 import { AgendaUnavailableTimeProvider } from './infrastructure/providers/agendaUnavailableTime.provider';
 import { UpdateAgendaSettingsUseCase } from './usecases/updateAgendaSettings.usecase';
+import { GetAgendaSettingsUseCase } from './usecases/getAgendaSettings.usecase';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { UpdateAgendaSettingsUseCase } from './usecases/updateAgendaSettings.use
     GetArtistAvailabilityUseCase,
     GetSuggestedTimeSlotsUseCase,
     UpdateAgendaSettingsUseCase,
+    GetAgendaSettingsUseCase,
     AgendaUnavailableTimeProvider,
   ],
   controllers: [AgendaController, QuotationController],
