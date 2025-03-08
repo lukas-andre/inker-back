@@ -33,6 +33,23 @@ import { ChangeEventStatusUsecase } from './usecases/changeEventStatus.usecase';
 import { EventReviewIntegrationUsecase } from './usecases/integrations/eventReviewIntegration.usecase';
 import { SyncQueueModule } from '../queues/sync/sync.queue.module';
 
+// New imports for Artist Workflow Improvements
+import { AgendaSettingsService } from './services/agendaSettings.service';
+import { SchedulingService } from './services/scheduling.service';
+import { SetWorkingHoursUseCase } from './usecases/setWorkingHours.usecase';
+import { CreateUnavailableTimeUseCase } from './usecases/createUnavailableTime.usecase';
+import { GetUnavailableTimesUseCase } from './usecases/getUnavailableTimes.usecase';
+import { DeleteUnavailableTimeUseCase } from './usecases/deleteUnavailableTime.usecase';
+import { RescheduleEventUseCase } from './usecases/rescheduleEvent.usecase';
+import { UpdateEventNotesUseCase } from './usecases/updateEventNotes.usecase';
+import { GetArtistAvailabilityUseCase } from './usecases/getArtistAvailability.usecase';
+import { GetSuggestedTimeSlotsUseCase } from './usecases/getSuggestedTimeSlots.usecase';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AgendaUnavailableTime } from './infrastructure/entities/agendaUnavailableTime.entity';
+import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
+import { AgendaUnavailableTimeProvider } from './infrastructure/providers/agendaUnavailableTime.provider';
+import { UpdateAgendaSettingsUseCase } from './usecases/updateAgendaSettings.usecase';
+
 @Module({
   imports: [
     AgendaProviderModule,
@@ -44,6 +61,7 @@ import { SyncQueueModule } from '../queues/sync/sync.queue.module';
     NotificationQueueModule,
     LocationProviderModule,
     SyncQueueModule,
+    TypeOrmModule.forFeature([AgendaUnavailableTime], AGENDA_DB_CONNECTION_NAME),
   ],
   providers: [
     QuotationStateMachine,
@@ -66,6 +84,19 @@ import { SyncQueueModule } from '../queues/sync/sync.queue.module';
     ListEventsByArtistId,
     ChangeEventStatusUsecase,
     EventReviewIntegrationUsecase,
+    // New services and use cases for Artist Workflow Improvements
+    AgendaSettingsService,
+    SchedulingService,
+    SetWorkingHoursUseCase,
+    CreateUnavailableTimeUseCase,
+    GetUnavailableTimesUseCase,
+    DeleteUnavailableTimeUseCase,
+    RescheduleEventUseCase,
+    UpdateEventNotesUseCase,
+    GetArtistAvailabilityUseCase,
+    GetSuggestedTimeSlotsUseCase,
+    UpdateAgendaSettingsUseCase,
+    AgendaUnavailableTimeProvider,
   ],
   controllers: [AgendaController, QuotationController],
 })

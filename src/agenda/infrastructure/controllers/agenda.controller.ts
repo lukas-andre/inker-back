@@ -53,6 +53,14 @@ import { UpdateEventReqDto } from '../dtos/updateEventReq.dto';
 import { AgendaEventIdPipe } from '../pipes/agendaEventId.pipe';
 import { AgendaIdPipe } from '../pipes/agendaId.pipe';
 import { ReviewArtistRequestDto } from '../../../reviews/dtos/reviewArtistRequest.dto';
+import { SetWorkingHoursReqDto } from '../dtos/setWorkingHoursReq.dto';
+import { CreateUnavailableTimeReqDto } from '../dtos/createUnavailableTimeReq.dto';
+import { RescheduleEventReqDto } from '../dtos/rescheduleEventReq.dto';
+import { UpdateEventNotesReqDto } from '../dtos/updateEventNotesReq.dto';
+import { ArtistAvailabilityQueryDto } from '../dtos/artistAvailabilityQuery.dto';
+import { UpdateAgendaSettingsReqDto } from '../dtos/updateAgendaSettingsReq.dto';
+import { AgendaUnavailableTime } from '../entities/agendaUnavailableTime.entity';
+import { AvailabilityCalendar, TimeSlot } from '../../services/scheduling.service';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -302,5 +310,110 @@ export class AgendaController {
       eventId,
       reviewArtistReqDto,
     );
+  }
+
+  // New endpoints for Artist Workflow Improvements
+
+  @ApiOperation({ summary: 'Set working hours and days' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Working hours set successfully', type: undefined })
+  @ApiConflictResponse({ description: 'Invalid working hours' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @Put(':agendaId/working-hours')
+  async setWorkingHours(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Body() setWorkingHoursReqDto: SetWorkingHoursReqDto,
+  ): Promise<void> {
+    return this.agendaHandler.handleSetWorkingHours(agendaId, setWorkingHoursReqDto);
+  }
+
+  @ApiOperation({ summary: 'Create unavailable time block' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Unavailable time created successfully', type: AgendaUnavailableTime })
+  @ApiConflictResponse({ description: 'Invalid time block' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @Post(':agendaId/unavailable-time')
+  async createUnavailableTime(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Body() createUnavailableTimeReqDto: CreateUnavailableTimeReqDto,
+  ): Promise<AgendaUnavailableTime> {
+    return this.agendaHandler.handleCreateUnavailableTime(agendaId, createUnavailableTimeReqDto);
+  }
+
+  @ApiOperation({ summary: 'Get unavailable time blocks' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Unavailable times retrieved successfully', type: [AgendaUnavailableTime] })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @Get(':agendaId/unavailable-time')
+  async getUnavailableTimes(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+  ): Promise<AgendaUnavailableTime[]> {
+    return this.agendaHandler.handleGetUnavailableTimes(agendaId);
+  }
+
+  @ApiOperation({ summary: 'Delete unavailable time block' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Unavailable time deleted successfully' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @ApiParam({ name: 'id', required: true, type: Number, example: 1 })
+  @Delete(':agendaId/unavailable-time/:id')
+  async deleteUnavailableTime(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<void> {
+    return this.agendaHandler.handleDeleteUnavailableTime(agendaId, id);
+  }
+
+  @ApiOperation({ summary: 'Reschedule an event' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Event rescheduled successfully' })
+  @ApiConflictResponse({ description: 'Invalid reschedule request' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
+  @Put(':agendaId/event/:eventId/reschedule')
+  async rescheduleEvent(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Body() rescheduleEventReqDto: RescheduleEventReqDto,
+  ): Promise<void> {
+    return this.agendaHandler.handleRescheduleEvent(agendaId, eventId, rescheduleEventReqDto);
+  }
+
+  @ApiOperation({ summary: 'Update event notes' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Event notes updated successfully' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
+  @Put(':agendaId/event/:eventId/notes')
+  async updateEventNotes(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Body() updateEventNotesReqDto: UpdateEventNotesReqDto,
+  ): Promise<void> {
+    return this.agendaHandler.handleUpdateEventNotes(agendaId, eventId, updateEventNotesReqDto);
+  }
+
+  @ApiOperation({ summary: 'Get artist availability' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Artist availability retrieved successfully' })
+  @ApiParam({ name: 'artistId', required: true, type: Number, example: 1 })
+  @Get('/artists/:artistId/availability')
+  async getArtistAvailability(
+    @Param('artistId', ParseIntPipe) artistId: number,
+    @Query() query: ArtistAvailabilityQueryDto,
+  ): Promise<AvailabilityCalendar[]> {
+    return this.agendaHandler.handleGetArtistAvailability(artistId, query);
+  }
+  
+  @ApiOperation({ summary: 'Update agenda visibility and open/closed status' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Agenda settings updated successfully' })
+  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
+  @Put(':agendaId/settings')
+  async updateAgendaSettings(
+    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Body() updateAgendaSettingsReqDto: UpdateAgendaSettingsReqDto,
+  ): Promise<void> {
+    return this.agendaHandler.handleUpdateAgendaSettings(agendaId, updateAgendaSettingsReqDto);
   }
 }

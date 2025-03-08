@@ -67,6 +67,24 @@ export class AgendaEvent extends BaseEntity {
   @Column({ name: 'cancelation_reason', nullable: true })
   cancelationReason: string;
 
+  @Column({ name: 'reschedule_reason', nullable: true })
+  rescheduleReason: string;
+
+  @Column({ name: 'notes', type: 'text', nullable: true })
+  notes: string;
+
+  @Column({ name: 'preparation_time', type: 'integer', nullable: true })
+  preparationTime: number;
+
+  @Column({ name: 'cleanup_time', type: 'integer', nullable: true })
+  cleanupTime: number;
+
+  @Column({ name: 'last_status_change', nullable: true })
+  lastStatusChange: Date;
+
+  @Column({ name: 'customer_notified', default: false })
+  customerNotified: boolean;
+
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
 

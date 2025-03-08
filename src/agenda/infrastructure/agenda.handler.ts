@@ -20,7 +20,22 @@ import { ProcessArtistActionUseCase } from '../usecases/quotation/processArtistA
 import { ProcessCustomerActionUseCase } from '../usecases/quotation/processCustomerAction.usecase';
 import { RsvpUseCase } from '../usecases/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
+import { MarkQuotationAsReadUseCase } from '../usecases/quotation/markQuotationAsRead.usecase';
 
+// New imports for Artist Workflow Improvements
+import { UpdateAgendaSettingsUseCase } from '../usecases/updateAgendaSettings.usecase';
+import { SetWorkingHoursUseCase } from '../usecases/setWorkingHours.usecase';
+import { CreateUnavailableTimeUseCase } from '../usecases/createUnavailableTime.usecase';
+import { GetUnavailableTimesUseCase } from '../usecases/getUnavailableTimes.usecase';
+import { DeleteUnavailableTimeUseCase } from '../usecases/deleteUnavailableTime.usecase';
+import { RescheduleEventUseCase } from '../usecases/rescheduleEvent.usecase';
+import { UpdateEventNotesUseCase } from '../usecases/updateEventNotes.usecase';
+import { GetArtistAvailabilityUseCase } from '../usecases/getArtistAvailability.usecase';
+import { GetSuggestedTimeSlotsUseCase } from '../usecases/getSuggestedTimeSlots.usecase';
+import { SchedulingService, AvailabilityCalendar, TimeSlot } from '../services/scheduling.service';
+import { AgendaUnavailableTime } from './entities/agendaUnavailableTime.entity';
+
+// DTOs
 import { AddEventReqDto } from './dtos/addEventReq.dto';
 import { ArtistQuotationActionDto } from './dtos/artistQuotationAction.dto';
 import { ChangeEventStatusReqDto } from './dtos/changeEventStatusReq.dto';
@@ -31,7 +46,12 @@ import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from './dtos/updateEventReq.dto';
-import { MarkQuotationAsReadUseCase } from '../usecases/quotation/markQuotationAsRead.usecase';
+import { SetWorkingHoursReqDto } from './dtos/setWorkingHoursReq.dto';
+import { CreateUnavailableTimeReqDto } from './dtos/createUnavailableTimeReq.dto';
+import { RescheduleEventReqDto } from './dtos/rescheduleEventReq.dto';
+import { UpdateEventNotesReqDto } from './dtos/updateEventNotesReq.dto';
+import { ArtistAvailabilityQueryDto } from './dtos/artistAvailabilityQuery.dto';
+import { UpdateAgendaSettingsReqDto } from './dtos/updateAgendaSettingsReq.dto';
 
 @Injectable()
 export class AgendaHandler {
@@ -55,6 +75,16 @@ export class AgendaHandler {
     private readonly markQuotationAsReadUseCase: MarkQuotationAsReadUseCase,
     private readonly changeEventStatusUsecase: ChangeEventStatusUsecase,
     private readonly eventReviewIntegrationUsecase: EventReviewIntegrationUsecase,
+    // New dependencies for Artist Workflow Improvements
+    private readonly setWorkingHoursUseCase: SetWorkingHoursUseCase,
+    private readonly createUnavailableTimeUseCase: CreateUnavailableTimeUseCase,
+    private readonly getUnavailableTimesUseCase: GetUnavailableTimesUseCase,
+    private readonly deleteUnavailableTimeUseCase: DeleteUnavailableTimeUseCase,
+    private readonly rescheduleEventUseCase: RescheduleEventUseCase,
+    private readonly updateEventNotesUseCase: UpdateEventNotesUseCase,
+    private readonly getArtistAvailabilityUseCase: GetArtistAvailabilityUseCase,
+    private readonly getSuggestedTimeSlotsUseCase: GetSuggestedTimeSlotsUseCase,
+    private readonly updateAgendaSettingsUseCase: UpdateAgendaSettingsUseCase,
   ) {}
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
@@ -234,5 +264,64 @@ export class AgendaHandler {
     reviewData: ReviewArtistRequestDto,
   ): Promise<any> {
     return this.eventReviewIntegrationUsecase.execute(agendaId, eventId, reviewData);
+  }
+
+  // New methods for Artist Workflow Improvements
+
+  async handleSetWorkingHours(
+    agendaId: number,
+    dto: SetWorkingHoursReqDto,
+  ): Promise<void> {
+    return this.setWorkingHoursUseCase.execute(agendaId, dto);
+  }
+
+  async handleCreateUnavailableTime(
+    agendaId: number,
+    dto: CreateUnavailableTimeReqDto,
+  ): Promise<AgendaUnavailableTime> {
+    return this.createUnavailableTimeUseCase.execute(agendaId, dto);
+  }
+
+  async handleGetUnavailableTimes(agendaId: number): Promise<AgendaUnavailableTime[]> {
+    return this.getUnavailableTimesUseCase.execute(agendaId);
+  }
+
+  async handleDeleteUnavailableTime(agendaId: number, id: number): Promise<void> {
+    return this.deleteUnavailableTimeUseCase.execute(agendaId, id);
+  }
+
+  async handleRescheduleEvent(
+    agendaId: number,
+    eventId: number,
+    dto: RescheduleEventReqDto,
+  ): Promise<void> {
+    const { userId } = this.requestContext;
+    return this.rescheduleEventUseCase.execute(agendaId, eventId, dto, userId);
+  }
+
+  async handleUpdateEventNotes(
+    agendaId: number,
+    eventId: number,
+    dto: UpdateEventNotesReqDto,
+  ): Promise<void> {
+    return this.updateEventNotesUseCase.execute(agendaId, eventId, dto);
+  }
+
+  async handleGetArtistAvailability(
+    artistId: number,
+    query: ArtistAvailabilityQueryDto,
+  ): Promise<AvailabilityCalendar[]> {
+    return this.getArtistAvailabilityUseCase.execute(artistId, query);
+  }
+
+  async handleGetSuggestedTimeSlots(quotationId: number): Promise<TimeSlot[]> {
+    return this.getSuggestedTimeSlotsUseCase.execute(quotationId);
+  }
+
+  async handleUpdateAgendaSettings(
+    agendaId: number,
+    dto: UpdateAgendaSettingsReqDto,
+  ): Promise<void> {
+    return this.updateAgendaSettingsUseCase.execute(agendaId, dto);
   }
 }
