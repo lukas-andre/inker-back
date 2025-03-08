@@ -32,6 +32,7 @@ import { CreateQuotationReqDto } from '../dtos/createQuotationReq.dto';
 import { CustomerQuotationActionDto } from '../dtos/customerQuotationAction.dto';
 import { QuotationDto } from '../dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from '../dtos/getQuotationsQuery.dto';
+import { TimeSlot } from '../../services/scheduling.service';
 
 @ApiTags('quotations')
 @Controller('quotations')
@@ -125,5 +126,18 @@ export class QuotationController {
   })
   async markAsRead(@Param('id') id: number): Promise<void> {
     await this.quotationHandler.markQuotationAsRead(id);
+  }
+
+  // New endpoint for Automated Scheduling
+  @ApiOperation({ summary: 'Get suggested appointment slots for a quotation' })
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Suggested time slots retrieved successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Quotation not found' })
+  @Get(':id/available-slots')
+  async getSuggestedTimeSlots(@Param('id') id: number): Promise<TimeSlot[]> {
+    return this.quotationHandler.handleGetSuggestedTimeSlots(id);
   }
 }

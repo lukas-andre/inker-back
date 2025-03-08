@@ -370,4 +370,8 @@ export class AgendaEventProvider extends BaseComponent {
       .andWhere('id = :eventId', { eventId })
       .getOne();
   }
+
+  async update(id: number, agendaEvent: DeepPartial<AgendaEvent>){
+    return this.agendaEventRepository.update(id, agendaEvent);
+  }
 }

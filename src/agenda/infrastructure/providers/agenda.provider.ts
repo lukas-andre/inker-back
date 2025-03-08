@@ -160,6 +160,10 @@ export class AgendaProvider extends BaseComponent {
     }
   }
 
+  async update(id: number, agenda: DeepPartial<Agenda>){
+    return this.agendaRepository.update(id, agenda);
+  }
+
   async delete(id: number): Promise<DeleteResult> {
     return this.agendaRepository.delete(id);
   }
