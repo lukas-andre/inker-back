@@ -11,12 +11,12 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { AgendaEventCreatedType } from '../../notifications/services/email/schemas/email';
 import { AgendaEventcreatedJobType } from '../../queues/notifications/domain/schemas/agenda';
 import { queues } from '../../queues/queues';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
 import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
 import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { CreateAgendaEventService } from './common/createAgendaEvent.service';
 
 @Injectable()
 export class AddEventUseCase
@@ -27,6 +27,7 @@ export class AddEventUseCase
     private readonly agendaProvider: AgendaProvider,
     private readonly agendaEventProvider: AgendaEventProvider,
     private readonly customerProvider: CustomerProvider,
+    private readonly createAgendaEventService: CreateAgendaEventService,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
@@ -65,26 +66,28 @@ export class AddEventUseCase
       throw new DomainBadRule('Already exists event in current date range');
     }
 
-    const transactionResult =
-      await this.agendaProvider.createEventAndInvitationTransaction({
-        agendaId: existsAgenda.id,
-        customerId: existsCustomer.id,
-        start: addEventDto.start,
-        end: addEventDto.end,
-        color: addEventDto.color,
-        info: addEventDto.info,
-        notification: addEventDto.notification,
-        title: addEventDto.title,
-      });
+    // Use the centralized event creation service
+    const result = await this.createAgendaEventService.createEventWithHistory({
+      agendaId: existsAgenda.id,
+      title: addEventDto.title,
+      info: addEventDto.info,
+      color: addEventDto.color,
+      startDate: addEventDto.start,
+      endDate: addEventDto.end,
+      notification: addEventDto.notification,
+      customerId: existsCustomer.id,
+      createdBy: existsAgenda.artistId, // Using artist ID as creator
+    });
 
-    if (!transactionResult) {
+    if (!result.transactionIsOK || !result.eventId) {
       throw new DomainBadRule('Error creating event');
     }
-
+    
+    // Send notification
     const queueMessage: AgendaEventcreatedJobType = {
       jobId: 'EVENT_CREATED',
       metadata: {
-        eventId: transactionResult.eventId,
+        eventId: result.eventId,
         artistId: existsAgenda.artistId,
         customerId: existsCustomer.id,
       },

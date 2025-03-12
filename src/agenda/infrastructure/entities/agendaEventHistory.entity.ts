@@ -46,7 +46,7 @@ export class AgendaEventHistory {
   })
   status: AgendaEventStatus;
 
-  @Column({ nullable: true })
+  @Column({ name: 'cancelation_reason', nullable: true })
   cancelationReason: string;
 
   @CreateDateColumn({ name: 'recorded_at' })

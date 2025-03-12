@@ -94,7 +94,7 @@ export class QuotationController {
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ description: 'Artist Action', type: ArtistQuotationActionDto })
-  @UseInterceptors(FilesFastifyInterceptor('proposedDesigns', 10))
+  @UseInterceptors(FilesFastifyInterceptor('proposedDesigns[]', 10))
   async processArtistAction(
     @Param('id') id: number,
     @Body() dto: ArtistQuotationActionDto,
