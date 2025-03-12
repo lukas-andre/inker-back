@@ -116,17 +116,21 @@ export class SchedulingService {
 
   /**
    * Suggest best appointment times based on schedule density
+   * Prioritizes times in the near future and with better spacing
    */
   async suggestOptimalTimes(
     artistId: number,
     durationMinutes: number,
-    numberOfSuggestions = 3,
+    numberOfSuggestions = 8,
   ): Promise<TimeSlot[]> {
-    // Default to 30 days
+    // Look ahead 14 days for suggested times
     const startDate = new Date();
     const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 30);
+    endDate.setDate(endDate.getDate() + 14);
 
+    this.logger.log(`Looking for optimal slots from ${startDate.toISOString()} to ${endDate.toISOString()}`);
+
+    // Get available slots in the date range
     const allAvailability = await this.findAvailableSlots(
       artistId,
       durationMinutes,
@@ -137,6 +141,7 @@ export class SchedulingService {
     // Flatten all slots and calculate density score
     let allSlots: TimeSlot[] = [];
     for (const day of allAvailability) {
+      this.logger.log(`Processing slots for day ${day.date}`);
       const slotsWithDensity = await this.calculateDensityScores(
         artistId,
         day.slots,
@@ -144,11 +149,93 @@ export class SchedulingService {
       allSlots = [...allSlots, ...slotsWithDensity];
     }
 
-    // Sort by density (ascending - lower is better)
+    // If we don't have enough slots, extend the search
+    if (allSlots.length < numberOfSuggestions) {
+      this.logger.log(`Not enough slots found (${allSlots.length}), extending search range`);
+      
+      // Extend to 30 days
+      endDate.setDate(startDate.getDate() + 30);
+      
+      const extendedAvailability = await this.findAvailableSlots(
+        artistId,
+        durationMinutes,
+        startDate,
+        endDate,
+      );
+      
+      // Add more slots from extended range
+      for (const day of extendedAvailability) {
+        // Skip days we already processed
+        if (allAvailability.some(a => a.date === day.date)) {
+          continue;
+        }
+        
+        const additionalSlots = await this.calculateDensityScores(
+          artistId,
+          day.slots,
+        );
+        allSlots = [...allSlots, ...additionalSlots];
+      }
+    }
+
+    // Calculate proximity bonus - favor slots in the next 3 days
+    const threeDaysFromNow = new Date();
+    threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+    
+    allSlots = allSlots.map(slot => {
+      const slotDate = new Date(slot.startTime);
+      
+      // Apply a proximity bonus to slots in the next 3 days
+      if (slotDate < threeDaysFromNow) {
+        // Reduce density (lower is better) for near-term slots
+        const daysDiff = Math.round((slotDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const proximityBonus = 0.5 * (3 - daysDiff); // 0.5-1.5 bonus for closer days
+        return {
+          ...slot,
+          density: (slot.density || 0) - proximityBonus,
+        };
+      }
+      return slot;
+    });
+
+    // Sort by improved density score (ascending - lower is better)
     allSlots.sort((a, b) => (a.density || 0) - (b.density || 0));
 
-    // Return top suggestions
-    return allSlots.slice(0, numberOfSuggestions);
+    // Ensure some diversity in days
+    const result: TimeSlot[] = [];
+    const selectedDates = new Set<string>();
+    
+    // First pass: take top 3 slots regardless of day
+    const topSlots = allSlots.slice(0, 3);
+    for (const slot of topSlots) {
+      result.push(slot);
+      const dateStr = new Date(slot.startTime).toDateString();
+      selectedDates.add(dateStr);
+    }
+    
+    // Second pass: add slots from different days to ensure variety
+    for (const slot of allSlots) {
+      if (result.length >= numberOfSuggestions) break;
+      
+      const dateStr = new Date(slot.startTime).toDateString();
+      if (!selectedDates.has(dateStr)) {
+        result.push(slot);
+        selectedDates.add(dateStr);
+      }
+    }
+    
+    // Third pass: fill remaining slots with best options
+    for (const slot of allSlots) {
+      if (result.length >= numberOfSuggestions) break;
+      
+      // Skip slots we've already added
+      if (!result.includes(slot)) {
+        result.push(slot);
+      }
+    }
+
+    this.logger.log(`Returning ${result.length} optimal time slots`);
+    return result;
   }
 
   /**
