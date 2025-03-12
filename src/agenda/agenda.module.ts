@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule, forwardRef } from '@nestjs/common';
 
 import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
 import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
@@ -50,9 +50,11 @@ import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
 import { AgendaUnavailableTimeProvider } from './infrastructure/providers/agendaUnavailableTime.provider';
 import { UpdateAgendaSettingsUseCase } from './usecases/updateAgendaSettings.usecase';
 import { GetAgendaSettingsUseCase } from './usecases/getAgendaSettings.usecase';
+import { CreateAgendaEventService } from './usecases/common/createAgendaEvent.service';
 
 @Module({
   imports: [
+    CacheModule.register(),
     AgendaProviderModule,
     ArtistsProviderModule,
     UserProviderModule,
@@ -61,7 +63,7 @@ import { GetAgendaSettingsUseCase } from './usecases/getAgendaSettings.usecase';
     MultimediasModule,
     NotificationQueueModule,
     LocationProviderModule,
-    SyncQueueModule,
+    forwardRef(() => SyncQueueModule),
     TypeOrmModule.forFeature([AgendaUnavailableTime], AGENDA_DB_CONNECTION_NAME),
   ],
   providers: [
@@ -85,6 +87,8 @@ import { GetAgendaSettingsUseCase } from './usecases/getAgendaSettings.usecase';
     ListEventsByArtistId,
     ChangeEventStatusUsecase,
     EventReviewIntegrationUsecase,
+    // Shared services
+    CreateAgendaEventService,
     // New services and use cases for Artist Workflow Improvements
     AgendaSettingsService,
     SchedulingService,
@@ -101,5 +105,8 @@ import { GetAgendaSettingsUseCase } from './usecases/getAgendaSettings.usecase';
     AgendaUnavailableTimeProvider,
   ],
   controllers: [AgendaController, QuotationController],
+  exports: [
+    CreateAgendaEventService, // Export for use in other modules
+  ]
 })
 export class AgendaModule {}

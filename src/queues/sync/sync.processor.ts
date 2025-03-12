@@ -12,6 +12,7 @@ import { ArtistProvider } from '../../artists/infrastructure/database/artist.pro
 import { ReviewAvgProvider } from '../../reviews/database/providers/reviewAvg.provider';
 import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
 import { QuotationProvider } from '../../agenda/infrastructure/providers/quotation.provider';
+import { CreateAgendaEventService } from '../../agenda/usecases/common/createAgendaEvent.service';
 
 @Processor(queues.sync.name)
 export class SyncProcessor extends BaseComponent {
@@ -22,6 +23,7 @@ export class SyncProcessor extends BaseComponent {
     private readonly reviewAvgProvider: ReviewAvgProvider,
     private readonly agendaProvider: AgendaProvider,
     private readonly quotationProvider: QuotationProvider,
+    private readonly createAgendaEventService: CreateAgendaEventService,
   ) {
     super(SyncProcessor.name);
     this.logger.log('Sync processor initialized');
@@ -84,70 +86,44 @@ export class SyncProcessor extends BaseComponent {
       return;
     }
 
-    const queryRunner = this.agendaProvider.source.createQueryRunner();
+    // Check for existing event to prevent duplicates (do this before using the service)
+    const existingEvent = await this.agendaProvider.source.query(
+      `SELECT id FROM agenda_event WHERE quotation_id = $1`,
+      [quotation.id],
+    );
 
-    try {
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-
-      const now = new Date();
-
-      // Check for existing event to prevent duplicates
-      const existingEvent = await queryRunner.query(
-        `SELECT id FROM agenda_event WHERE quotation_id = $1`,
-        [quotation.id],
+    if (existingEvent?.length) {
+      this.logger.warn(
+        `Agenda event already exists for quotation ${quotation.id}`,
       );
-
-      if (existingEvent?.length) {
-        this.logger.warn(
-          `Agenda event already exists for quotation ${quotation.id}`,
-        );
-        await queryRunner.rollbackTransaction();
-        return;
-      }
-
-      await queryRunner.query(
-        `INSERT INTO agenda_event (
-                    agenda_id, 
-                    quotation_id,
-                    created_at,
-                    updated_at,
-                    start_date,
-                    end_date,
-                    title,
-                    info,
-                    color,
-                    notification,
-                    customer_id
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-        [
-          agenda.id,
-          quotation.id,
-          now,
-          now,
-          quotation.appointmentDate,
-          new Date(
-            quotation.appointmentDate.getTime() +
-              quotation.appointmentDuration * 60 * 1000,
-          ),
-          'Agenda Event Title', // TODO: get this somewhere, maybe IA
-          'Agenda Event Info', // TODO: get this somewhere
-          '#000000', // TODO: get this somewhere
-          false,
-          quotation.customerId,
-        ],
-      );
-
-      await queryRunner.commitTransaction();
-      this.logger.log(`Created agenda event for quotation ${quotation.id}`);
-    } catch (error: unknown) {
-      await queryRunner.rollbackTransaction();
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to create agenda event: ${message}`);
-      throw error;
-    } finally {
-      await queryRunner.release();
+      return;
     }
+
+    // Calculate end date based on appointment duration
+    const endDate = new Date(
+      quotation.appointmentDate.getTime() +
+        quotation.appointmentDuration * 60 * 1000,
+    );
+
+    // Use our common event creation service to create the event with history
+    const result = await this.createAgendaEventService.createEventFromQuotation(
+      agenda.id,
+      quotation.id,
+      quotation.customerId,
+      'Appointment from Quotation', // Title
+      quotation.description || 'Appointment details', // Info
+      '#000000', // Color
+      quotation.appointmentDate,
+      endDate,
+      quotation.lastUpdatedBy, // Using whoever last updated the quotation as the creator
+    );
+
+    if (!result.transactionIsOK) {
+      this.logger.error(`Failed to create agenda event for quotation ${quotation.id}`);
+      return;
+    }
+
+    this.logger.log(`Created agenda event (ID: ${result.eventId}) for quotation ${quotation.id}`);
   }
 
   private async syncArtistRating(
