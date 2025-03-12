@@ -1,5 +1,7 @@
 import {
   Body,
+  CacheKey,
+  CacheTTL,
   Controller,
   DefaultValuePipe,
   Delete,
@@ -61,7 +63,7 @@ import { ArtistAvailabilityQueryDto } from '../dtos/artistAvailabilityQuery.dto'
 import { UpdateAgendaSettingsReqDto } from '../dtos/updateAgendaSettingsReq.dto';
 import { GetAgendaSettingsResDto } from '../dtos/getAgendaSettingsRes.dto';
 import { AgendaUnavailableTime } from '../entities/agendaUnavailableTime.entity';
-import { AvailabilityCalendar, TimeSlot } from '../../services/scheduling.service';
+import { AvailabilityCalendar, SchedulingService, TimeSlot } from '../../services/scheduling.service';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -171,6 +173,7 @@ export class AgendaController {
   @ApiOkResponse({ description: 'Get Event successful.', type: undefined })
   @ApiConflictResponse({ description: 'Trouble finding event.' })
   @ApiParam({ name: 'eventId', required: true, type: Number })
+  @CacheTTL(20) // Cache for 20 seconds
   @Get('/event/:eventId')
   async getEventByEventId(
     @Param('eventId', ParseIntPipe) eventId: number,
@@ -399,11 +402,55 @@ export class AgendaController {
   @ApiOkResponse({ description: 'Artist availability retrieved successfully' })
   @ApiParam({ name: 'artistId', required: true, type: Number, example: 1 })
   @Get('/artists/:artistId/availability')
+  @CacheTTL(20) // Cache for 20 seconds
   async getArtistAvailability(
     @Param('artistId', ParseIntPipe) artistId: number,
     @Query() query: ArtistAvailabilityQueryDto,
   ): Promise<AvailabilityCalendar[]> {
     return this.agendaHandler.handleGetArtistAvailability(artistId, query);
+  }
+  
+  @ApiOperation({ summary: 'Get artist available time slots' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Artist available time slots retrieved successfully' })
+  @ApiParam({ name: 'artistId', required: true, type: Number, example: 1 })
+  @Get('/artists/:artistId/available-slots')
+  async getArtistAvailableSlots(
+    @Param('artistId', ParseIntPipe) artistId: number,
+    @Query('date') date: string,
+    @Query('duration', new DefaultValuePipe(60), ParseIntPipe) duration = 60,
+    @Query('suggestionsCount', new DefaultValuePipe(8), ParseIntPipe) suggestionsCount = 8,
+  ): Promise<TimeSlot[]> {
+    // Use the scheduling service directly for better suggestions
+    const schedulingService = this.agendaHandler['schedulingService'] as SchedulingService;
+    
+    if (schedulingService) {
+      // Get optimal time slots in the next 7 days
+      return schedulingService.suggestOptimalTimes(artistId, duration, suggestionsCount);
+    } else {
+      // Fallback logic if the scheduling service isn't accessible
+      // Uses date if provided, otherwise looks for slots starting today
+      const fromDate = date ? new Date(date) : new Date();
+      const toDate = new Date(fromDate);
+      toDate.setDate(toDate.getDate() + 7); // Look ahead 7 days
+      
+      const availabilityCalendar = await this.agendaHandler.handleGetArtistAvailability(
+        artistId, 
+        { fromDate: fromDate, toDate: toDate, duration }
+      );
+      
+      // Flatten all slots from all days into a single array
+      let allSlots: TimeSlot[] = [];
+      for (const day of availabilityCalendar) {
+        allSlots = [...allSlots, ...day.slots];
+      }
+      
+      // Sort by date (earlier slots first)
+      allSlots.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+      
+      // Return the first 'suggestionsCount' slots or all if less than that
+      return allSlots.slice(0, suggestionsCount);
+    }
   }
   
   @ApiOperation({ summary: 'Get agenda settings including working hours and visibility' })
@@ -414,6 +461,7 @@ export class AgendaController {
   })
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Get(':agendaId/settings')
+  @CacheTTL(20) // Cache for 20 seconds
   async getAgendaSettings(
     @Param('agendaId', AgendaIdPipe) agendaId: number,
   ): Promise<GetAgendaSettingsResDto> {
