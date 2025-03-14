@@ -2,11 +2,8 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { User } from '../../../users/infrastructure/entities/user.entity';
 import { InteractionType } from '../../domain/interactionType';
 
 @Entity('interactions')
