@@ -24,7 +24,6 @@ import { RequestContextService } from '../../../global/infrastructure/services/r
 export class ArtistStylesController {
   constructor(
     private readonly artistsHandler: ArtistsHandler,
-    private readonly requestContext: RequestContextService
   ) {}
 
   @Get('artist/:artistId')
@@ -38,7 +37,8 @@ export class ArtistStylesController {
   async getArtistStyles(
     @Param('artistId') artistId: number,
   ): Promise<ArtistStyleDto[]> {
-    return this.artistsHandler.getArtistStyles(Number(artistId));
+    const styles = await this.artistsHandler.getArtistStyles();
+    return styles;
   }
 
   @Post()
@@ -52,13 +52,7 @@ export class ArtistStylesController {
   async addArtistStyle(
     @Body() createArtistStyleDto: CreateArtistStyleDto,
   ): Promise<ArtistStyleDto> {
-    const userId = this.requestContext.userId;
-    const artist = await this.artistsHandler.getArtistByUserId(userId);
-    if (!artist) {
-      throw new Error('Artist profile not found for current user');
-    }
-    
-    return this.artistsHandler.addArtistStyle(artist.id, createArtistStyleDto);
+    return this.artistsHandler.addArtistStyle(createArtistStyleDto);
   }
 
   @Put(':styleName')
@@ -74,13 +68,7 @@ export class ArtistStylesController {
     @Param('styleName') styleName: string,
     @Body() updateArtistStyleDto: UpdateArtistStyleDto,
   ): Promise<ArtistStyleDto> {
-    const userId = this.requestContext.userId;
-    const artist = await this.artistsHandler.getArtistByUserId(userId);
-    if (!artist) {
-      throw new Error('Artist profile not found for current user');
-    }
-    
-    return this.artistsHandler.updateArtistStyle(artist.id, styleName, updateArtistStyleDto);
+    return this.artistsHandler.updateArtistStyle(styleName, updateArtistStyleDto);
   }
 
   @Delete(':styleName')
@@ -94,12 +82,6 @@ export class ArtistStylesController {
   async removeArtistStyle(
     @Param('styleName') styleName: string,
   ): Promise<void> {
-    const userId = this.requestContext.userId;
-    const artist = await this.artistsHandler.getArtistByUserId(userId);
-    if (!artist) {
-      throw new Error('Artist profile not found for current user');
-    }
-    
-    return this.artistsHandler.removeArtistStyle(artist.id, styleName);
+    return this.artistsHandler.removeArtistStyle(styleName);
   }
 }

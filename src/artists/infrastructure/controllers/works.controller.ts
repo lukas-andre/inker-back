@@ -10,6 +10,8 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -26,35 +28,32 @@ import { RequestContextService } from '../../../global/infrastructure/services/r
 import { FileInterceptor } from '@nest-lab/fastify-multer';
 import { MultimediasService } from '../../../multimedias/services/multimedias.service';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import { WorkQueryDto } from '../../domain/dtos/work-query.dto';
+import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
 
 @ApiTags('Works')
 @Controller('works')
 export class WorksController {
   constructor(
     private readonly artistsHandler: ArtistsHandler,
-    private readonly requestContext: RequestContextService,
     private readonly multimediasService: MultimediasService
   ) {}
 
+
   @Get('artist/:artistId')
-  @ApiOperation({ summary: 'Get works by artist ID' })
+  @ApiOperation({ summary: 'Get paginated works by artist ID' })
   @ApiResponse({
     status: 200,
-    description: 'Works retrieved successfully',
-    type: [WorkDto],
+    description: 'Paginated works retrieved successfully',
+    type: PaginatedWorkResponseDto,
   })
   @ApiParam({ name: 'artistId', description: 'Artist ID' })
-  @ApiQuery({
-    name: 'featured',
-    description: 'Filter to show only featured works',
-    required: false,
-    type: Boolean,
-  })
-  async getWorksByArtistId(
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async getWorksByArtistIdPaginated(
     @Param('artistId') artistId: number,
-    @Query('featured') featured?: boolean,
-  ): Promise<WorkDto[]> {
-    return this.artistsHandler.getWorks(Number(artistId), featured === true);
+    @Query() query: WorkQueryDto,
+  ): Promise<PaginatedWorkResponseDto> {
+    return this.artistsHandler.getWorksPaginated(Number(artistId), query);
   }
 
   @Get(':id')
@@ -77,40 +76,15 @@ export class WorksController {
     description: 'Work created successfully',
     type: WorkDto,
   })
-  async createWork(
-    @Body() createWorkDto: CreateWorkDto,
-  ): Promise<WorkDto> {
-    const userId = this.requestContext.userId;
-    const artist = await this.artistsHandler.getArtistByUserId(userId);
-    if (!artist) {
-      throw new Error('Artist profile not found for current user');
-    }
-    
-    return this.artistsHandler.createWork(artist, createWorkDto);
-  }
-  
-  @Post('upload-image')
-  @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'Upload work image' })
-  async uploadWorkImage(
+  async createWork(
+    @Body() createWorkDto: CreateWorkDto,
     @UploadedFile() file: FileInterface
-  ) {
-    const userId = this.requestContext.userId;
-    const artist = await this.artistsHandler.getArtistByUserId(userId);
-    if (!artist) {
-      throw new Error('Artist profile not found for current user');
-    }
-    
-    const source = `artist/works/${artist.id}`;
-    const fileName = `work_${Date.now()}`;
-    
-    const { cloudFrontUrl } = await this.multimediasService.upload(file, source, fileName);
-    
-    return { imageUrl: cloudFrontUrl };
+  ): Promise<WorkDto> {
+    return this.artistsHandler.createWork(createWorkDto, file);
   }
-
+  
   @Put(':id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a work' })
@@ -124,13 +98,7 @@ export class WorksController {
     @Param('id') id: number,
     @Body() updateWorkDto: UpdateWorkDto,
   ): Promise<WorkDto> {
-    const userId = this.requestContext.userId;
-    const artist = await this.artistsHandler.getArtistByUserId(userId);
-    if (!artist) {
-      throw new Error('Artist profile not found for current user');
-    }
-    
-    return this.artistsHandler.updateWork(Number(id), artist.id, updateWorkDto);
+    return this.artistsHandler.updateWork(Number(id), updateWorkDto);
   }
 
   @Delete(':id')
@@ -143,13 +111,7 @@ export class WorksController {
   @ApiParam({ name: 'id', description: 'Work ID' })
   async deleteWork(
     @Param('id') id: number,
-  ): Promise<void> {
-    const userId = this.requestContext.userId;
-    const artist = await this.artistsHandler.getArtistByUserId(userId);
-    if (!artist) {
-      throw new Error('Artist profile not found for current user');
-    }
-    
-    return this.artistsHandler.deleteWork(Number(id), artist.id);
+  ): Promise<void> {    
+    return this.artistsHandler.deleteWork(Number(id));
   }
 }

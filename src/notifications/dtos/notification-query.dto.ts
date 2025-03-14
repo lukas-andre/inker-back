@@ -20,7 +20,7 @@ export class NotificationQueryDto {
 
   @ApiProperty({ 
     required: false, 
-    enum: JobTypeSchemaRegistry,
+    enum: ['EVENT_CREATED', 'EVENT_UPDATED', 'EVENT_CANCELED', 'EVENT_STATUS_CHANGED'],
     example: 'EVENT_STATUS_CHANGED'
   })
   @IsEnum(JobTypeSchemaRegistry, { each: true })
