@@ -63,6 +63,9 @@ export class Stencil extends BaseEntity implements StencilType {
   })
   tags: Tag[];
 
+  @Column({ type: 'tsvector', nullable: false, select: false })
+  tsv: string;
+
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
 }
