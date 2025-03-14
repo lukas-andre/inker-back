@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { WorkSource } from '../workType';
 
 export class WorkSearchQueryDto {
   @ApiPropertyOptional({ 
@@ -26,6 +27,14 @@ export class WorkSearchQueryDto {
   @IsOptional()
   @Type(() => Boolean)
   onlyFeatured?: boolean;
+
+  @ApiPropertyOptional({ 
+    description: 'Filtrar por origen del trabajo (APP o EXTERNAL)',
+    enum: WorkSource
+  })
+  @IsOptional()
+  @IsEnum(WorkSource)
+  source?: WorkSource;
 
   @ApiPropertyOptional({ 
     description: `Ordenar por: 

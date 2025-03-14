@@ -24,12 +24,12 @@ import {
 } from '@nestjs/swagger';
 import { ArtistsHandler } from '../artists.handler';
 import { CreateWorkDto, UpdateWorkDto, WorkDto } from '../../domain/dtos/work.dto';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 import { FileInterceptor } from '@nest-lab/fastify-multer';
 import { MultimediasService } from '../../../multimedias/services/multimedias.service';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { WorkQueryDto } from '../../domain/dtos/work-query.dto';
 import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
+import { WorkSource } from '../../domain/workType';
 
 @ApiTags('Works')
 @Controller('works')
@@ -48,6 +48,13 @@ export class WorksController {
     type: PaginatedWorkResponseDto,
   })
   @ApiParam({ name: 'artistId', description: 'Artist ID' })
+  @ApiQuery({ name: 'isFeatured', required: false, description: 'Filter by featured status' })
+  @ApiQuery({ 
+    name: 'source', 
+    required: false, 
+    description: 'Filter by work source (APP or EXTERNAL)', 
+    enum: WorkSource 
+  })
   @UsePipes(new ValidationPipe({ transform: true }))
   async getWorksByArtistIdPaginated(
     @Param('artistId') artistId: number,

@@ -92,7 +92,8 @@ export class WorkProvider extends BaseComponent {
     artistId: number,
     page: number = 1,
     limit: number = 10,
-    isFeatured?: boolean
+    isFeatured?: boolean,
+    source?: string
   ): Promise<[Work[], number]> {
     const queryBuilder = this.workRepository
       .createQueryBuilder('work')
@@ -102,6 +103,10 @@ export class WorkProvider extends BaseComponent {
     
     if (isFeatured !== undefined) {
       queryBuilder.andWhere('work.isFeatured = :isFeatured', { isFeatured });
+    }
+    
+    if (source !== undefined) {
+      queryBuilder.andWhere('work.source = :source', { source });
     }
     
     queryBuilder.orderBy('work.orderPosition', 'ASC')
@@ -126,6 +131,7 @@ export class WorkProvider extends BaseComponent {
       tagIds, 
       artistId, 
       onlyFeatured, 
+      source,
       sortBy = 'relevance', 
       page = 1, 
       limit = 10 
@@ -193,6 +199,11 @@ export class WorkProvider extends BaseComponent {
     // Filtrar por destacado si se especifica
     if (onlyFeatured !== undefined) {
       queryBuilder.andWhere('work.isFeatured = :onlyFeatured', { onlyFeatured });
+    }
+
+    // Filtrar por origen si se especifica
+    if (source !== undefined) {
+      queryBuilder.andWhere('work.source = :source', { source });
     }
 
     // Aplicar orden según el parámetro sortBy

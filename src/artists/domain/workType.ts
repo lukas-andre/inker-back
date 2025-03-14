@@ -1,5 +1,10 @@
+export enum WorkSource {
+  APP = 'APP',
+  EXTERNAL = 'EXTERNAL',
+}
+
 export interface WorkType {
-  id: number;
+  id?: number;
   artistId: number;
   title: string;
   description?: string;
@@ -9,7 +14,8 @@ export interface WorkType {
   thumbnailVersion: number;
   isFeatured: boolean;
   orderPosition: number;
-  createdAt: Date;
-  updatedAt: Date;
+  source?: WorkSource;
+  createdAt?: Date;
+  updatedAt?: Date;
   deletedAt?: Date;
 }

@@ -1,13 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
-import { WorkType } from '../workType';
+import { WorkSource, WorkType } from '../workType';
 import { TagDto } from '../../../tags/tag.dto';
 
 export class WorkDto implements WorkType {
@@ -54,6 +55,14 @@ export class WorkDto implements WorkType {
   @ApiProperty({ description: 'Display order position', default: 0 })
   @IsInt()
   orderPosition: number;
+
+  @ApiProperty({ 
+    description: 'Source of the work (APP or EXTERNAL)', 
+    enum: WorkSource,
+    default: WorkSource.EXTERNAL
+  })
+  @IsEnum(WorkSource)
+  source: WorkSource;
 
   @ApiProperty({ description: 'Creation timestamp' })
   createdAt: Date;
@@ -109,6 +118,15 @@ export class CreateWorkDto {
   @IsOptional()
   orderPosition?: number;
 
+  @ApiProperty({ 
+    description: 'Source of the work (APP or EXTERNAL)', 
+    enum: WorkSource,
+    default: WorkSource.EXTERNAL
+  })
+  @IsEnum(WorkSource)
+  @IsOptional()
+  source?: WorkSource;
+
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })
   @IsOptional()
@@ -145,6 +163,14 @@ export class UpdateWorkDto {
   @IsInt()
   @IsOptional()
   orderPosition?: number;
+
+  @ApiPropertyOptional({ 
+    description: 'Source of the work (APP or EXTERNAL)', 
+    enum: WorkSource
+  })
+  @IsEnum(WorkSource)
+  @IsOptional()
+  source?: WorkSource;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })
