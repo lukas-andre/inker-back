@@ -1,16 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { StencilStatus } from '../stencilType';
 
 export class StencilQueryDto {
-  @ApiPropertyOptional({ description: 'Page number', default: 1 })
+  @ApiPropertyOptional({ description: 'Página', default: 1 })
   @IsOptional()
   @IsInt()
   @Min(1)
   @Type(() => Number)
   page?: number = 1;
 
-  @ApiPropertyOptional({ description: 'Results per page', default: 10 })
+  @ApiPropertyOptional({ description: 'Resultados por página', default: 10 })
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -18,9 +19,19 @@ export class StencilQueryDto {
   @Type(() => Number)
   limit?: number = 10;
 
-  @ApiPropertyOptional({ description: 'Filter to show only available stencils' })
+  @ApiPropertyOptional({ 
+    description: 'Filtrar por estado del estencil',
+    enum: StencilStatus
+  })
   @IsOptional()
-  @IsBoolean()
+  @IsEnum(StencilStatus)
+  status?: StencilStatus;
+
+  @ApiPropertyOptional({ 
+    description: 'Incluir estenciles ocultos en los resultados',
+    default: false
+  })
+  @IsOptional()
   @Type(() => Boolean)
-  available?: boolean;
+  includeHidden?: boolean;
 } 

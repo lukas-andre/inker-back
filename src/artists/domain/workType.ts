@@ -15,6 +15,7 @@ export interface WorkType {
   isFeatured: boolean;
   orderPosition: number;
   source?: WorkSource;
+  isHidden?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

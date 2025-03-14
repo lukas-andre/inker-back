@@ -16,14 +16,15 @@ export class GetWorksPaginatedUseCase extends BaseUseCase {
     query: WorkQueryDto 
   }): Promise<PaginatedWorkResponseDto> {
     const { artistId, query } = params;
-    const { page = 1, limit = 10, isFeatured, source } = query;
+    const { page = 1, limit = 10, isFeatured, source, includeHidden = false } = query;
     
     const [works, total] = await this.workProvider.findWorksByArtistIdWithPagination(
       artistId,
       page,
       limit,
       isFeatured,
-      source
+      source,
+      includeHidden
     );
     
     return {

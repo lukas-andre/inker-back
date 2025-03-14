@@ -1,10 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { StencilStatus } from '../stencilType';
 
 export class StencilSearchQueryDto {
   @ApiPropertyOptional({ 
-    description: 'Término de búsqueda en texto libre. Se utilizará para buscar coincidencias en títulos, descripciones y etiquetas. Para búsquedas más precisas, utilice comillas ("") alrededor de frases exactas.' 
+    description: 'Término de búsqueda en texto libre. Se utilizará para buscar coincidencias en títulos, descripciones y etiquetas.' 
   })
   @IsOptional()
   @IsString()
@@ -22,24 +23,30 @@ export class StencilSearchQueryDto {
   @Type(() => Number)
   artistId?: number;
 
-  @ApiPropertyOptional({ description: 'Mostrar solo estenciles disponibles', default: false })
+  @ApiPropertyOptional({ 
+    description: 'Filtrar por estado del estencil',
+    enum: StencilStatus
+  })
   @IsOptional()
-  @Type(() => Boolean)
-  onlyAvailable?: boolean;
+  @IsEnum(StencilStatus)
+  status?: StencilStatus;
 
   @ApiPropertyOptional({ 
-    description: `Ordenar por: 
-    - relevance: Utiliza un algoritmo inteligente que considera coincidencias en título, descripción, popularidad, disponibilidad y fecha de creación.
-    - newest: Ordena por fecha de creación más reciente.
-    - oldest: Ordena por fecha de creación más antigua.
-    - popularity: Ordena por número de visualizaciones.
-    Para más información sobre cómo funciona el algoritmo de relevancia, consulte el endpoint /stencil-search/ranking-info.`, 
-    enum: ['relevance', 'newest', 'oldest', 'popularity'],
+    description: 'Incluir estenciles ocultos en los resultados',
+    default: false
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  includeHidden?: boolean;
+
+  @ApiPropertyOptional({ 
+    description: 'Ordenar por', 
+    enum: ['relevance', 'newest', 'oldest', 'price_low', 'price_high'],
     default: 'relevance'
   })
   @IsOptional()
   @IsString()
-  sortBy?: 'relevance' | 'newest' | 'oldest' | 'popularity' = 'relevance';
+  sortBy?: 'relevance' | 'newest' | 'oldest' | 'price_low' | 'price_high' | 'relevance';
 
   @ApiPropertyOptional({ description: 'Página', default: 1 })
   @IsOptional()

@@ -37,6 +37,14 @@ export class WorkSearchQueryDto {
   source?: WorkSource;
 
   @ApiPropertyOptional({ 
+    description: 'Incluir trabajos ocultos en los resultados',
+    default: false
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  includeHidden?: boolean;
+
+  @ApiPropertyOptional({ 
     description: `Ordenar por: 
     - relevance: Utiliza un algoritmo inteligente que considera coincidencias en título, descripción, popularidad y fecha de creación.
     - newest: Ordena por fecha de creación más reciente.
@@ -91,4 +99,4 @@ export class WorkTagSuggestionResponseDto {
 
   @ApiPropertyOptional({ description: 'Número de trabajos con esta etiqueta' })
   count?: number;
-} 
+}
