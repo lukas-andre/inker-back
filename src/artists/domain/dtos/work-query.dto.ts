@@ -1,16 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { WorkSource } from '../workType';
 
 export class WorkQueryDto {
-  @ApiPropertyOptional({ description: 'Page number', default: 1 })
+  @ApiPropertyOptional({ description: 'Página', default: 1 })
   @IsOptional()
   @IsInt()
   @Min(1)
   @Type(() => Number)
   page?: number = 1;
 
-  @ApiPropertyOptional({ description: 'Results per page', default: 10 })
+  @ApiPropertyOptional({ description: 'Resultados por página', default: 10 })
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -18,9 +19,17 @@ export class WorkQueryDto {
   @Type(() => Number)
   limit?: number = 10;
 
-  @ApiPropertyOptional({ description: 'Filter to show only featured works' })
+  @ApiPropertyOptional({ description: 'Mostrar solo trabajos destacados', default: undefined })
   @IsOptional()
   @IsBoolean()
   @Type(() => Boolean)
-  featured?: boolean;
+  isFeatured?: boolean;
+
+  @ApiPropertyOptional({ 
+    description: 'Filtrar por origen del trabajo (APP o EXTERNAL)',
+    enum: WorkSource
+  })
+  @IsOptional()
+  @IsEnum(WorkSource)
+  source?: WorkSource;
 } 

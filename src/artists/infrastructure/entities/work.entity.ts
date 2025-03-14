@@ -11,11 +11,12 @@ import {
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { Artist } from './artist.entity';
 import { Tag } from '../../../tags/tag.entity';
-import { WorkType } from '../../domain/workType';
+import { WorkSource, WorkType } from '../../domain/workType';
 
 @Entity('works')
 @Index(['isFeatured'])
 @Index(['deletedAt'])
+@Index(['source'])
 export class Work extends BaseEntity implements WorkType {
   @Column({ name: 'artist_id' })
   @Index()
@@ -48,6 +49,14 @@ export class Work extends BaseEntity implements WorkType {
 
   @Column({ name: 'order_position', default: 0 })
   orderPosition: number;
+
+  @Column({ 
+    name: 'source', 
+    type: 'enum', 
+    enum: WorkSource, 
+    default: WorkSource.EXTERNAL 
+  })
+  source: WorkSource;
 
   @ManyToMany(() => Tag, { eager: false })
   @JoinTable({

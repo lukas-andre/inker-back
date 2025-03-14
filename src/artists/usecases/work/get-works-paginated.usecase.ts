@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { WorkProvider } from '../../infrastructure/database/work.provider';
+import { WorkDto } from '../../domain/dtos/work.dto';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { WorkQueryDto } from '../../domain/dtos/work-query.dto';
 import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
@@ -10,26 +11,29 @@ export class GetWorksPaginatedUseCase extends BaseUseCase {
     super(GetWorksPaginatedUseCase.name);
   }
 
-  async execute(params: { artistId: number; query: WorkQueryDto }): Promise<PaginatedWorkResponseDto> {
+  async execute(params: { 
+    artistId: number; 
+    query: WorkQueryDto 
+  }): Promise<PaginatedWorkResponseDto> {
     const { artistId, query } = params;
-    const { page = 1, limit = 10, featured } = query;
+    const { page = 1, limit = 10, isFeatured, source } = query;
     
     const [works, total] = await this.workProvider.findWorksByArtistIdWithPagination(
       artistId,
       page,
       limit,
-      featured
+      isFeatured,
+      source
     );
     
-    // Calculate total pages
-    const pages = Math.ceil(total / limit);
-    
     return {
-      items: works,
-      page,
-      limit,
-      total,
-      pages,
+      data: works,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      }
     };
   }
 } 
