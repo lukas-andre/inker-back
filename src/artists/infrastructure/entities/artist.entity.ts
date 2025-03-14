@@ -6,12 +6,17 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { ArtistType } from '../../domain/artistType';
 import { Service } from './service.entity';
 import { Contact } from './contact.entity';
+import { Work } from './work.entity';
+import { Stencil } from './stencil.entity';
+import { ArtistStyle } from './artistStyle.entity';
+import { Tag } from '../../../tags/tag.entity';
 
 @Entity()
 @Index(['firstName', 'lastName', 'username'])
@@ -82,4 +87,27 @@ export class Artist extends BaseEntity implements ArtistType {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
+
+  @OneToMany(() => Work, work => work.artist)
+  works: Work[];
+
+  @OneToMany(() => Stencil, stencil => stencil.artist)
+  stencils: Stencil[];
+
+  @OneToMany(() => ArtistStyle, artistStyle => artistStyle.artist)
+  styles: ArtistStyle[];
+
+  @ManyToMany(() => Tag, { eager: false })
+  @JoinTable({
+    name: 'artist_tags',
+    joinColumn: {
+      name: 'artist_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'tag_id',
+      referencedColumnName: 'id',
+    },
+  })
+  tags: Tag[];
 }

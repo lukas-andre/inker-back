@@ -12,6 +12,7 @@ import { FollowsModule } from './follows/follows.module';
 import { GenresModule } from './genres/genres.module';
 import { GlobalModule } from './global/global.module';
 import { HealthModule } from './health/health.module';
+import { InteractionsModule } from './interactions/interactions.module';
 import { LocationsModule } from './locations/locations.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { PostsModule } from './posts/posts.module';
@@ -44,6 +45,7 @@ import { FastifyMulterModule } from '@nest-lab/fastify-multer';
     GenresModule,
     GlobalModule,
     HealthModule,
+    InteractionsModule,
     LocationsModule,
     MultimediasModule,
     PostsModule,
