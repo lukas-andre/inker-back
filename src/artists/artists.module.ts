@@ -33,6 +33,11 @@ import { FindArtistsUseCases } from './usecases/findArtist.usecases';
 import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
 import { FollowProviderModule } from '../follows/infrastructure/database/followProvider.module';
 import { TagsModule } from '../tags/tags.module';
+import { SearchStencilsUseCase } from './usecases/stencil/search-stencils.usecase';
+import { GetTagSuggestionsUseCase } from './usecases/stencil/get-tag-suggestions.usecase';
+import { StencilSearchController } from './infrastructure/controllers/stencil-search.controller';
+import { InteractionsModule } from '../interactions/interactions.module';
+import { InteractionProviderModule } from '../interactions/infrastructure/database/interactionProvider.module';
 
 const useCases = [
   CreateArtistUseCase,
@@ -54,6 +59,9 @@ const useCases = [
   GetStencilByIdUseCase,
   UpdateStencilUseCase,
   DeleteStencilUseCase,
+  // Stencil search use cases
+  SearchStencilsUseCase,
+  GetTagSuggestionsUseCase,
   // Artist Style use cases
   GetArtistStylesUseCase,
   AddArtistStyleUseCase,
@@ -72,12 +80,14 @@ const useCases = [
     MultimediasModule,
     FollowsModule,
     TagsModule,
+    InteractionProviderModule,
   ],
   controllers: [
     ArtistsController,
     WorksController,
     StencilsController,
     ArtistStylesController,
+    StencilSearchController,
   ],
   providers: [ArtistsHandler, ...useCases],
   exports: [ArtistsHandler],

@@ -33,6 +33,9 @@ import { UserType } from '../../users/domain/enums/userType.enum';
 import { DomainBadRequest } from '../../global/domain/exceptions/domain.exception';
 import { StencilQueryDto } from '../domain/dtos/stencil-query.dto';
 import { PaginatedStencilResponseDto } from '../domain/dtos/paginated-stencil-response.dto';
+import { StencilSearchQueryDto, TagSuggestionQueryDto, TagSuggestionResponseDto } from '../domain/dtos/stencil-search.dto';
+import { SearchStencilsUseCase } from '../usecases/stencil/search-stencils.usecase';
+import { GetTagSuggestionsUseCase } from '../usecases/stencil/get-tag-suggestions.usecase';
 
 @Injectable()
 export class ArtistsHandler extends BaseComponent {
@@ -58,6 +61,8 @@ export class ArtistsHandler extends BaseComponent {
     private readonly updateArtistStudioPhotoUseCase: UpdateArtistStudioPhotoUseCase,
     private readonly findArtistsUseCase: FindArtistsUsecase,
     private readonly requestContext: RequestContextService,
+    private readonly searchStencilsUseCase: SearchStencilsUseCase,
+    private readonly getTagSuggestionsUseCase: GetTagSuggestionsUseCase,
   ) {
     super(ArtistsHandler.name);
   }
@@ -155,6 +160,18 @@ export class ArtistsHandler extends BaseComponent {
     }
     this.logger.log(`Deleting stencil ${id} for artist: ${userTypeId}`);
     return this.deleteStencilUseCase.execute({ id, artistId: userTypeId });
+  }
+
+  // Métodos de búsqueda de estenciles
+  searchStencils(searchParams: StencilSearchQueryDto): Promise<PaginatedStencilResponseDto> {
+    this.logger.log(`Searching stencils with params: ${JSON.stringify(searchParams)}`);
+    return this.searchStencilsUseCase.execute(searchParams);
+  }
+
+  // Métodos de sugerencias de etiquetas
+  getTagSuggestions(queryParams: TagSuggestionQueryDto): Promise<TagSuggestionResponseDto[]> {
+    this.logger.log(`Getting tag suggestions with prefix: ${queryParams.prefix}`);
+    return this.getTagSuggestionsUseCase.execute(queryParams);
   }
 
   // Artist basic info methods
