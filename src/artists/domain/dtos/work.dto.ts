@@ -89,6 +89,16 @@ export class CreateWorkDto {
   @IsOptional()
   thumbnailUrl?: string;
 
+  @ApiProperty({ description: 'Image version', default: 0 })
+  @IsInt()
+  @IsOptional()
+  imageVersion?: number;
+
+  @ApiProperty({ description: 'Thumbnail version', default: 0 })
+  @IsInt()
+  @IsOptional()
+  thumbnailVersion?: number;
+
   @ApiProperty({ description: 'Is featured item', default: false })
   @IsBoolean()
   @IsOptional()

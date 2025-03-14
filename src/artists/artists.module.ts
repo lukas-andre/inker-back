@@ -38,6 +38,10 @@ import { GetTagSuggestionsUseCase } from './usecases/stencil/get-tag-suggestions
 import { StencilSearchController } from './infrastructure/controllers/stencil-search.controller';
 import { InteractionsModule } from '../interactions/interactions.module';
 import { InteractionProviderModule } from '../interactions/infrastructure/database/interactionProvider.module';
+import { SearchWorksUseCase } from './usecases/work/search-works.usecase';
+import { GetWorkTagSuggestionsUseCase } from './usecases/work/get-tag-suggestions.usecase';
+import { WorkSearchController } from './infrastructure/controllers/work-search.controller';
+import { GetWorksPaginatedUseCase } from './usecases/work/get-works-paginated.usecase';
 
 const useCases = [
   CreateArtistUseCase,
@@ -53,6 +57,7 @@ const useCases = [
   GetWorkByIdUseCase,
   UpdateWorkUseCase,
   DeleteWorkUseCase,
+  GetWorksPaginatedUseCase,
   // Stencil use cases
   GetStencilsUseCase,
   CreateStencilUseCase,
@@ -67,6 +72,9 @@ const useCases = [
   AddArtistStyleUseCase,
   UpdateArtistStyleUseCase,
   RemoveArtistStyleUseCase,
+  // Work search use cases
+  SearchWorksUseCase,
+  GetWorkTagSuggestionsUseCase,
 ];
 
 @Module({
@@ -88,6 +96,7 @@ const useCases = [
     StencilsController,
     ArtistStylesController,
     StencilSearchController,
+    WorkSearchController,
   ],
   providers: [ArtistsHandler, ...useCases],
   exports: [ArtistsHandler],
