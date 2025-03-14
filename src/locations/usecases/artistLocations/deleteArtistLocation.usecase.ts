@@ -31,6 +31,12 @@ export class DeleteArtistLocationUseCase extends BaseUseCase {
         throw new ForbiddenException('You do not have permission to delete this location');
       }
 
+      // Check if this is the last location for the artist
+      const locationCount = await this.artistLocationProvider.countByArtistId(params.artistId);
+      if (locationCount <= 1) {
+        throw new BadRequestException('Cannot delete the last location. Artists must have at least one location.');
+      }
+
       // Delete the artist location
       const result = await this.artistLocationProvider.delete(params.id);
       return result && result.affected > 0;
