@@ -17,6 +17,7 @@ import { WorkSource, WorkType } from '../../domain/workType';
 @Index(['isFeatured'])
 @Index(['deletedAt'])
 @Index(['source'])
+@Index(['isHidden'])
 export class Work extends BaseEntity implements WorkType {
   @Column({ name: 'artist_id' })
   @Index()
@@ -57,6 +58,9 @@ export class Work extends BaseEntity implements WorkType {
     default: WorkSource.EXTERNAL 
   })
   source: WorkSource;
+
+  @Column({ name: 'is_hidden', default: false })
+  isHidden: boolean;
 
   @ManyToMany(() => Tag, { eager: false })
   @JoinTable({

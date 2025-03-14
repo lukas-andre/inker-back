@@ -18,17 +18,29 @@ export class WorkProvider extends BaseComponent {
     super(WorkProvider.name);
   }
 
-  async findWorksByArtistId(artistId: number): Promise<Work[]> {
+  async findWorksByArtistId(artistId: number, includeHidden: boolean = false): Promise<Work[]> {
+    const query: any = { artistId, deletedAt: null };
+    
+    if (!includeHidden) {
+      query.isHidden = false;
+    }
+    
     return this.workRepository.find({
-      where: { artistId, deletedAt: null },
+      where: query,
       relations: ['tags'],
       order: { orderPosition: 'ASC', createdAt: 'DESC' },
     });
   }
 
-  async findFeaturedWorksByArtistId(artistId: number): Promise<Work[]> {
+  async findFeaturedWorksByArtistId(artistId: number, includeHidden: boolean = false): Promise<Work[]> {
+    const query: any = { artistId, isFeatured: true, deletedAt: null };
+    
+    if (!includeHidden) {
+      query.isHidden = false;
+    }
+    
     return this.workRepository.find({
-      where: { artistId, isFeatured: true, deletedAt: null },
+      where: query,
       relations: ['tags'],
       order: { orderPosition: 'ASC', createdAt: 'DESC' },
     });
@@ -93,7 +105,8 @@ export class WorkProvider extends BaseComponent {
     page: number = 1,
     limit: number = 10,
     isFeatured?: boolean,
-    source?: string
+    source?: string,
+    includeHidden: boolean = false
   ): Promise<[Work[], number]> {
     const queryBuilder = this.workRepository
       .createQueryBuilder('work')
@@ -107,6 +120,10 @@ export class WorkProvider extends BaseComponent {
     
     if (source !== undefined) {
       queryBuilder.andWhere('work.source = :source', { source });
+    }
+    
+    if (!includeHidden) {
+      queryBuilder.andWhere('work.isHidden = :isHidden', { isHidden: false });
     }
     
     queryBuilder.orderBy('work.orderPosition', 'ASC')
@@ -132,6 +149,7 @@ export class WorkProvider extends BaseComponent {
       artistId, 
       onlyFeatured, 
       source,
+      includeHidden = false,
       sortBy = 'relevance', 
       page = 1, 
       limit = 10 
@@ -204,6 +222,11 @@ export class WorkProvider extends BaseComponent {
     // Filtrar por origen si se especifica
     if (source !== undefined) {
       queryBuilder.andWhere('work.source = :source', { source });
+    }
+
+    // Filtrar elementos ocultos a menos que se solicite incluirlos
+    if (!includeHidden) {
+      queryBuilder.andWhere('work.isHidden = :isHidden', { isHidden: false });
     }
 
     // Aplicar orden según el parámetro sortBy

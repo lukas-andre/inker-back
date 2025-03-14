@@ -29,7 +29,7 @@ export class StencilProvider extends BaseComponent {
 
   async findAvailableStencilsByArtistId(artistId: number): Promise<Stencil[]> {
     return this.stencilRepository.find({
-      where: { artistId, isAvailable: true, deletedAt: null },
+      where: { artistId, isHidden: false, deletedAt: null },
       relations: ['tags'],
       order: { createdAt: 'DESC' },
     });
@@ -125,7 +125,7 @@ export class StencilProvider extends BaseComponent {
       query, 
       tagIds, 
       artistId, 
-      onlyAvailable, 
+      includeHidden, 
       sortBy = 'relevance', 
       page = 1, 
       limit = 10 
@@ -191,8 +191,8 @@ export class StencilProvider extends BaseComponent {
     }
 
     // Filtrar por disponibilidad si se especifica
-    if (onlyAvailable !== undefined) {
-      queryBuilder.andWhere('stencil.isAvailable = :onlyAvailable', { onlyAvailable });
+    if (includeHidden !== undefined) {
+      queryBuilder.andWhere('stencil.isHidden = :includeHidden', { includeHidden });
     }
 
     // Aplicar orden según el parámetro sortBy
@@ -209,11 +209,6 @@ export class StencilProvider extends BaseComponent {
         break;
       case 'oldest':
         queryBuilder.orderBy('stencil.createdAt', 'ASC');
-        break;
-      case 'popularity':
-        // Para ordenar por popularidad, necesitaríamos una relación con interacciones o visualizaciones
-        // Como simplificación, podríamos usar el precio como indicador de popularidad
-        queryBuilder.orderBy('stencil.price', 'DESC', 'NULLS LAST');
         break;
       default:
         queryBuilder.orderBy('stencil.createdAt', 'DESC');

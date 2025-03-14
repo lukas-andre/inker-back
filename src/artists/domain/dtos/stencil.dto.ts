@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -8,7 +9,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { StencilType } from '../stencilType';
+import { StencilStatus, StencilType } from '../stencilType';
 import { TagDto } from '../../../tags/tag.dto';
 
 export class StencilDto implements StencilType {
@@ -48,14 +49,30 @@ export class StencilDto implements StencilType {
   @IsInt()
   thumbnailVersion: number;
 
+  @ApiProperty({ description: 'Is featured item', default: false })
+  @IsBoolean()
+  isFeatured: boolean;
+
+  @ApiProperty({ description: 'Display order position', default: 0 })
+  @IsInt()
+  orderPosition: number;
+
   @ApiPropertyOptional({ description: 'Stencil price' })
   @IsNumber()
   @IsOptional()
   price?: number;
 
-  @ApiProperty({ description: 'Is available for use', default: true })
+  @ApiProperty({ 
+    description: 'Stencil status', 
+    enum: StencilStatus,
+    default: StencilStatus.AVAILABLE
+  })
+  @IsEnum(StencilStatus)
+  status: StencilStatus;
+
+  @ApiProperty({ description: 'Is stencil hidden', default: false })
   @IsBoolean()
-  isAvailable: boolean;
+  isHidden: boolean;
 
   @ApiProperty({ description: 'Creation timestamp' })
   createdAt: Date;
@@ -96,15 +113,34 @@ export class CreateStencilDto {
   @IsOptional()
   thumbnailUrl?: string;
 
+  @ApiPropertyOptional({ description: 'Is featured item', default: false })
+  @IsBoolean()
+  @IsOptional()
+  isFeatured?: boolean;
+
+  @ApiPropertyOptional({ description: 'Display order position', default: 0 })
+  @IsInt()
+  @IsOptional()
+  orderPosition?: number;
+
   @ApiPropertyOptional({ description: 'Stencil price' })
   @IsNumber()
   @IsOptional()
   price?: number;
 
-  @ApiProperty({ description: 'Is available for use', default: true })
+  @ApiPropertyOptional({ 
+    description: 'Stencil status', 
+    enum: StencilStatus,
+    default: StencilStatus.AVAILABLE
+  })
+  @IsEnum(StencilStatus)
+  @IsOptional()
+  status?: StencilStatus;
+
+  @ApiPropertyOptional({ description: 'Is stencil hidden', default: false })
   @IsBoolean()
   @IsOptional()
-  isAvailable?: boolean;
+  isHidden?: boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })
@@ -133,15 +169,33 @@ export class UpdateStencilDto {
   @IsOptional()
   thumbnailUrl?: string;
 
+  @ApiPropertyOptional({ description: 'Is featured item' })
+  @IsBoolean()
+  @IsOptional()
+  isFeatured?: boolean;
+
+  @ApiPropertyOptional({ description: 'Display order position' })
+  @IsInt()
+  @IsOptional()
+  orderPosition?: number;
+
   @ApiPropertyOptional({ description: 'Stencil price' })
   @IsNumber()
   @IsOptional()
   price?: number;
 
-  @ApiPropertyOptional({ description: 'Is available for use' })
+  @ApiPropertyOptional({ 
+    description: 'Stencil status', 
+    enum: StencilStatus
+  })
+  @IsEnum(StencilStatus)
+  @IsOptional()
+  status?: StencilStatus;
+
+  @ApiPropertyOptional({ description: 'Is stencil hidden' })
   @IsBoolean()
   @IsOptional()
-  isAvailable?: boolean;
+  isHidden?: boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })

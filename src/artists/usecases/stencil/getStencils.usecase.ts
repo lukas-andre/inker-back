@@ -13,13 +13,13 @@ export class GetStencilsUseCase extends BaseUseCase {
 
   async execute(params: { artistId: number; query: StencilQueryDto }): Promise<PaginatedStencilResponseDto> {
     const { artistId, query } = params;
-    const { page = 1, limit = 10, available } = query;
+    const { page = 1, limit = 10, includeHidden } = query;
     
     const [stencils, total] = await this.stencilProvider.findStencilsByArtistIdWithPagination(
       artistId,
       page,
       limit,
-      available
+      includeHidden
     );
     
     // Calculate total pages

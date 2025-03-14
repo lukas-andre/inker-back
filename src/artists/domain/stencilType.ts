@@ -1,5 +1,11 @@
+export enum StencilStatus {
+  AVAILABLE = 'AVAILABLE',
+  SOLD = 'SOLD',
+  USED = 'USED',
+}
+
 export interface StencilType {
-  id: number;
+  id?: number;
   artistId: number;
   title: string;
   description?: string;
@@ -7,9 +13,12 @@ export interface StencilType {
   imageVersion: number;
   thumbnailUrl?: string;
   thumbnailVersion: number;
+  isFeatured: boolean;
+  orderPosition: number;
   price?: number;
-  isAvailable: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  status?: StencilStatus;
+  isHidden?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
   deletedAt?: Date;
 }

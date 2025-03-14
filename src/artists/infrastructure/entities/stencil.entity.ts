@@ -11,10 +11,11 @@ import {
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { Artist } from './artist.entity';
 import { Tag } from '../../../tags/tag.entity';
-import { StencilType } from '../../domain/stencilType';
+import { StencilStatus, StencilType } from '../../domain/stencilType';
 
 @Entity('stencils')
-@Index(['isAvailable'])
+@Index(['status'])
+@Index(['isHidden'])
 @Index(['deletedAt'])
 export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'artist_id' })
@@ -43,11 +44,25 @@ export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'thumbnail_version', default: 0 })
   thumbnailVersion: number;
 
+  @Column({ name: 'is_featured', default: false })
+  isFeatured: boolean;
+
+  @Column({ name: 'order_position', default: 0 })
+  orderPosition: number;
+
   @Column({ name: 'price', type: 'decimal', precision: 10, scale: 2, nullable: true })
   price?: number;
 
-  @Column({ name: 'is_available', default: true })
-  isAvailable: boolean;
+  @Column({ 
+    name: 'status',
+    type: 'enum',
+    enum: StencilStatus,
+    default: StencilStatus.AVAILABLE
+  })
+  status: StencilStatus;
+
+  @Column({ name: 'is_hidden', default: false })
+  isHidden: boolean;
 
   @ManyToMany(() => Tag, { eager: false })
   @JoinTable({

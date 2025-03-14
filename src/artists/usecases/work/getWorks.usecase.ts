@@ -9,13 +9,17 @@ export class GetWorksUseCase extends BaseUseCase {
     super(GetWorksUseCase.name);
   }
 
-  async execute(params: { artistId: number; onlyFeatured?: boolean }): Promise<WorkDto[]> {
-    const { artistId, onlyFeatured } = params;
+  async execute(params: { 
+    artistId: number; 
+    onlyFeatured?: boolean;
+    includeHidden?: boolean;
+  }): Promise<WorkDto[]> {
+    const { artistId, onlyFeatured, includeHidden = false } = params;
     
     if (onlyFeatured) {
-      return this.workProvider.findFeaturedWorksByArtistId(artistId);
+      return this.workProvider.findFeaturedWorksByArtistId(artistId, includeHidden);
     }
     
-    return this.workProvider.findWorksByArtistId(artistId);
+    return this.workProvider.findWorksByArtistId(artistId, includeHidden);
   }
 }

@@ -64,6 +64,10 @@ export class WorkDto implements WorkType {
   @IsEnum(WorkSource)
   source: WorkSource;
 
+  @ApiProperty({ description: 'Is work hidden', default: false })
+  @IsBoolean()
+  isHidden: boolean;
+
   @ApiProperty({ description: 'Creation timestamp' })
   createdAt: Date;
 
@@ -127,6 +131,11 @@ export class CreateWorkDto {
   @IsOptional()
   source?: WorkSource;
 
+  @ApiProperty({ description: 'Is work hidden', default: false })
+  @IsBoolean()
+  @IsOptional()
+  isHidden?: boolean;
+
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })
   @IsOptional()
@@ -171,6 +180,11 @@ export class UpdateWorkDto {
   @IsEnum(WorkSource)
   @IsOptional()
   source?: WorkSource;
+
+  @ApiPropertyOptional({ description: 'Is work hidden' })
+  @IsBoolean()
+  @IsOptional()
+  isHidden?: boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })

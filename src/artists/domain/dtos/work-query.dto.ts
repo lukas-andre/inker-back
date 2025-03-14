@@ -32,4 +32,12 @@ export class WorkQueryDto {
   @IsOptional()
   @IsEnum(WorkSource)
   source?: WorkSource;
+
+  @ApiPropertyOptional({ 
+    description: 'Incluir trabajos ocultos en los resultados',
+    default: false
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  includeHidden?: boolean;
 } 
