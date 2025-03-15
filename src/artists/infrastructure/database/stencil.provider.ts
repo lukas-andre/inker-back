@@ -8,6 +8,7 @@ import { BaseComponent } from '../../../global/domain/components/base.component'
 import { TagsService } from '../../../tags/tags.service';
 import { StencilSearchQueryDto } from '../../domain/dtos/stencil-search.dto';
 import { Like } from 'typeorm';
+import { StencilStatus } from '../../domain/stencilType';
 
 @Injectable()
 export class StencilProvider extends BaseComponent {
@@ -102,7 +103,15 @@ export class StencilProvider extends BaseComponent {
       .andWhere('stencil.deletedAt IS NULL');
     
     if (isAvailable !== undefined) {
-      queryBuilder.andWhere('stencil.isAvailable = :isAvailable', { isAvailable });
+      if (isAvailable) {
+        // If isAvailable is true, filter by AVAILABLE status and not hidden
+        queryBuilder.andWhere('stencil.status = :status', { status: StencilStatus.AVAILABLE })
+          .andWhere('stencil.isHidden = :isHidden', { isHidden: false });
+      } else {
+        // If isAvailable is false, filter by non-AVAILABLE status or hidden
+        queryBuilder.andWhere('(stencil.status != :status OR stencil.isHidden = :isHidden)', 
+          { status: StencilStatus.AVAILABLE, isHidden: true });
+      }
     }
     
     queryBuilder.orderBy('stencil.createdAt', 'DESC');
