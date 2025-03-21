@@ -12,6 +12,11 @@ export class UpdateWorkUseCase extends BaseUseCase {
   async execute(params: { id: number; artistId: number; dto: UpdateWorkDto }): Promise<WorkDto> {
     const { id, artistId, dto } = params;
     
+    // Validation pipeline not working for multipart/form-data, so we need to convert the string to boolean
+    // https://github.com/typestack/class-transformer/issues/550
+    const isFeatured = dto.isFeatured === 'true' || dto.isFeatured === true;
+    const isHidden = dto.isHidden === 'true' || dto.isHidden === true;
+    
     const work = await this.workProvider.findWorkById(id);
     
     if (!work) {
@@ -21,7 +26,8 @@ export class UpdateWorkUseCase extends BaseUseCase {
     if (work.artistId !== artistId) {
       throw new Error('Work does not belong to this artist');
     }
-    
-    return this.workProvider.updateWork(id, dto);
+    delete dto.isFeatured;
+    delete dto.isHidden;
+    return this.workProvider.updateWork(id, dto, isFeatured, isHidden);
   }
 }

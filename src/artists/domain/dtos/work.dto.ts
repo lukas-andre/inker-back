@@ -56,8 +56,8 @@ export class WorkDto implements WorkType {
   @IsInt()
   orderPosition: number;
 
-  @ApiProperty({ 
-    description: 'Source of the work (APP or EXTERNAL)', 
+  @ApiProperty({
+    description: 'Source of the work (APP or EXTERNAL)',
     enum: WorkSource,
     default: WorkSource.EXTERNAL
   })
@@ -97,6 +97,11 @@ export class CreateWorkDto {
   @IsNotEmpty()
   imageUrl: string;
 
+  @ApiProperty({ description: 'Image ID' })
+  @IsString()
+  @IsNotEmpty()
+  imageId: string;
+
   @ApiPropertyOptional({ description: 'Thumbnail URL' })
   @IsString()
   @IsOptional()
@@ -115,15 +120,15 @@ export class CreateWorkDto {
   @ApiProperty({ description: 'Is featured item', default: false })
   @IsBoolean()
   @IsOptional()
-  isFeatured?: boolean;
+  isFeatured?: string | boolean;
 
   @ApiProperty({ description: 'Display order position', default: 0 })
   @IsInt()
   @IsOptional()
   orderPosition?: number;
 
-  @ApiProperty({ 
-    description: 'Source of the work (APP or EXTERNAL)', 
+  @ApiProperty({
+    description: 'Source of the work (APP or EXTERNAL)',
     enum: WorkSource,
     default: WorkSource.EXTERNAL
   })
@@ -134,7 +139,7 @@ export class CreateWorkDto {
   @ApiProperty({ description: 'Is work hidden', default: false })
   @IsBoolean()
   @IsOptional()
-  isHidden?: boolean;
+  isHidden?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })
@@ -166,15 +171,15 @@ export class UpdateWorkDto {
   @ApiPropertyOptional({ description: 'Is featured item' })
   @IsBoolean()
   @IsOptional()
-  isFeatured?: boolean;
+  isFeatured?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Display order position' })
   @IsInt()
   @IsOptional()
   orderPosition?: number;
 
-  @ApiPropertyOptional({ 
-    description: 'Source of the work (APP or EXTERNAL)', 
+  @ApiPropertyOptional({
+    description: 'Source of the work (APP or EXTERNAL)',
     enum: WorkSource
   })
   @IsEnum(WorkSource)
@@ -184,7 +189,7 @@ export class UpdateWorkDto {
   @ApiPropertyOptional({ description: 'Is work hidden' })
   @IsBoolean()
   @IsOptional()
-  isHidden?: boolean;
+  isHidden?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })

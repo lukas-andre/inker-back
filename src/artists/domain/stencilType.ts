@@ -10,6 +10,7 @@ export interface StencilType {
   title: string;
   description?: string;
   imageUrl: string;
+  imageId: string;
   imageVersion: number;
   thumbnailUrl?: string;
   thumbnailVersion: number;
@@ -18,6 +19,13 @@ export interface StencilType {
   price?: number;
   status?: StencilStatus;
   isHidden?: boolean;
+  dimensions?: { width: number; height: number };
+  recommendedPlacements?: string;
+  estimatedTime?: number;
+  isCustomizable?: boolean;
+  isDownloadable?: boolean;
+  license?: string;
+  licenseUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

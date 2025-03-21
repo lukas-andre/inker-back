@@ -7,7 +7,7 @@ import { TagsModule } from '../../../tags/tags.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Stencil], 'artist-db'),
-    TagsModule,
+    TagsModule
   ],
   providers: [StencilProvider],
   exports: [StencilProvider],

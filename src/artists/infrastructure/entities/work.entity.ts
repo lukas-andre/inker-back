@@ -16,6 +16,7 @@ import { WorkSource, WorkType } from '../../domain/workType';
 @Entity('works')
 @Index(['isFeatured'])
 @Index(['deletedAt'])
+@Index(['tsv'])
 @Index(['source'])
 @Index(['isHidden'])
 export class Work extends BaseEntity implements WorkType {
@@ -51,11 +52,11 @@ export class Work extends BaseEntity implements WorkType {
   @Column({ name: 'order_position', default: 0 })
   orderPosition: number;
 
-  @Column({ 
-    name: 'source', 
-    type: 'enum', 
-    enum: WorkSource, 
-    default: WorkSource.EXTERNAL 
+  @Column({
+    name: 'source',
+    type: 'enum',
+    enum: WorkSource,
+    default: WorkSource.EXTERNAL
   })
   source: WorkSource;
 

@@ -2,15 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { WorkProvider } from '../../infrastructure/database/work.provider';
 import { WorkSearchQueryDto } from '../../domain/dtos/work-search.dto';
-import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
+import { PaginatedWorkResponseDto, WorkWithRelevanceDto } from '../../domain/dtos/paginated-work-response.dto';
 import { InteractionProvider } from '../../../interactions/infrastructure/database/interaction.provider';
 import { WorkDto } from '../../domain/dtos/work.dto';
-
-// Interfaz para extender WorkDto con campos de relevancia
-interface EnrichedWorkDto extends WorkDto {
-  relevanceScore?: number;
-  relevanceFactors?: string[];
-}
 
 @Injectable()
 export class SearchWorksUseCase extends BaseUseCase {
@@ -28,17 +22,18 @@ export class SearchWorksUseCase extends BaseUseCase {
     const [works, total] = await this.workProvider.searchWorks(params);
 
     // Enriquecer los resultados con información de relevancia y popularidad
-    const enrichedWorks: EnrichedWorkDto[] = await this.enrichSearchResults(works, query, sortBy);
+    const enrichedWorks: WorkWithRelevanceDto[] = await this.enrichSearchResults(works, query, sortBy);
 
-    // Crear respuesta paginada con la nueva estructura
+    // Calcular páginas totales
+    const pages = Math.ceil(total / limit);
+    
+    // Crear respuesta paginada
     return {
-      data: enrichedWorks,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      }
+      items: enrichedWorks,
+      page,
+      limit,
+      total,
+      pages
     };
   }
 
@@ -49,7 +44,7 @@ export class SearchWorksUseCase extends BaseUseCase {
     works: any[], 
     searchQuery?: string, 
     sortBy: string = 'relevance'
-  ): Promise<EnrichedWorkDto[]> {
+  ): Promise<WorkWithRelevanceDto[]> {
     // Si no hay trabajos, devolver array vacío
     if (!works.length) return [];
 
@@ -82,7 +77,7 @@ export class SearchWorksUseCase extends BaseUseCase {
 
       // Enriquecer cada trabajo
       return works.map(work => {
-        const result: EnrichedWorkDto = { ...work };
+        const result: WorkWithRelevanceDto = { ...work };
         const relevanceFactors: string[] = [];
         let baseScore = 0.5; // Puntuación base
         
@@ -177,7 +172,7 @@ export class SearchWorksUseCase extends BaseUseCase {
         // Añadir información de popularidad
         return works.map(work => {
           const viewCount = popularityMap.get(work.id) || 0;
-          const result: EnrichedWorkDto = { ...work };
+          const result: WorkWithRelevanceDto = { ...work };
           
           if (viewCount > 0) {
             result.relevanceScore = Math.min(1.0, viewCount * 0.01);

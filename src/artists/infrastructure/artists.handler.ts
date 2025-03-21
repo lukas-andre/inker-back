@@ -42,6 +42,8 @@ import { SearchWorksUseCase } from '../usecases/work/search-works.usecase';
 import { GetWorkTagSuggestionsUseCase } from '../usecases/work/get-tag-suggestions.usecase';
 import { WorkQueryDto } from '../domain/dtos/work-query.dto';
 import { GetWorksPaginatedUseCase } from '../usecases/work/get-works-paginated.usecase';
+import { CreateTagUseCase } from '../usecases/stencil/create-tag.usecase';
+import { CreateTagDto } from '../../tags/tag.dto';
 
 @Injectable()
 export class ArtistsHandler extends BaseComponent {
@@ -69,6 +71,7 @@ export class ArtistsHandler extends BaseComponent {
     private readonly requestContext: RequestContextService,
     private readonly searchStencilsUseCase: SearchStencilsUseCase,
     private readonly getTagSuggestionsUseCase: GetTagSuggestionsUseCase,
+    private readonly createTagUseCase: CreateTagUseCase,
     private readonly searchWorksUseCase: SearchWorksUseCase,
     private readonly getWorkTagSuggestionsUseCase: GetWorkTagSuggestionsUseCase,
     private readonly getWorksPaginatedUseCase: GetWorksPaginatedUseCase,
@@ -279,5 +282,9 @@ export class ArtistsHandler extends BaseComponent {
   getWorkTagSuggestions(queryParams: WorkTagSuggestionQueryDto): Promise<WorkTagSuggestionResponseDto[]> {
     this.logger.log(`Getting work tag suggestions with prefix: ${queryParams.prefix}`);
     return this.getWorkTagSuggestionsUseCase.execute(queryParams);
+  }
+
+  createTag(createTagDto: CreateTagDto): Promise<TagSuggestionResponseDto> {
+    return this.createTagUseCase.execute(createTagDto);
   }
 }

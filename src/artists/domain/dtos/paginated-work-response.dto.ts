@@ -1,30 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkDto } from './work.dto';
 
-export class PaginationMeta {
-  @ApiProperty({ description: 'Total number of items' })
-  total: number;
+export class WorkWithRelevanceDto extends WorkDto {
+  @ApiProperty({ description: 'Relevance score for search results', example: 0.85 })
+  relevanceScore?: number;
 
-  @ApiProperty({ description: 'Current page number' })
-  page: number;
-
-  @ApiProperty({ description: 'Number of items per page' })
-  limit: number;
-
-  @ApiProperty({ description: 'Total number of pages' })
-  totalPages: number;
+  @ApiProperty({ description: 'Factors that contributed to the relevance score', example: ['title_match', 'recent'] })
+  relevanceFactors?: string[];
 }
 
 export class PaginatedWorkResponseDto {
-  @ApiProperty({
-    description: 'Array of works',
-    type: [WorkDto],
-  })
-  data: WorkDto[];
+  @ApiProperty({ type: [WorkWithRelevanceDto] })
+  items: WorkWithRelevanceDto[];
 
-  @ApiProperty({
-    description: 'Pagination metadata',
-    type: PaginationMeta,
-  })
-  meta: PaginationMeta;
-} 
+  @ApiProperty({ example: 1 })
+  page: number;
+
+  @ApiProperty({ example: 10 })
+  limit: number;
+
+  @ApiProperty({ example: 50 })
+  total: number;
+
+  @ApiProperty({ example: 5 })
+  pages: number;
+}
+

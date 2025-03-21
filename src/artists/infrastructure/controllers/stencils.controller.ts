@@ -11,33 +11,31 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConsumes,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { ArtistsHandler } from '../artists.handler';
 import { CreateStencilDto, UpdateStencilDto, StencilDto } from '../../domain/dtos/stencil.dto';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 import { FileInterceptor } from '@nest-lab/fastify-multer';
-import { MultimediasService } from '../../../multimedias/services/multimedias.service';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { StencilQueryDto } from '../../domain/dtos/stencil-query.dto';
 import { PaginatedStencilResponseDto } from '../../domain/dtos/paginated-stencil-response.dto';
+import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 
 @ApiTags('Stencils')
 @Controller('stencils')
+@UseGuards(AuthGuard)
 export class StencilsController {
   constructor(
     private readonly artistsHandler: ArtistsHandler,
-    private readonly requestContext: RequestContextService,
-    private readonly multimediasService: MultimediasService
-  ) {}
+  ) { }
 
   @Get('artist/:artistId')
   @ApiOperation({ summary: 'Get stencils by artist ID' })

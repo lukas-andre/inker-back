@@ -8,9 +8,23 @@ import {
   IsOptional,
   IsString,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { StencilStatus, StencilType } from '../stencilType';
 import { TagDto } from '../../../tags/tag.dto';
+import { Transform, Type } from 'class-transformer';
+import { ToBoolean } from '../../../global/infrastructure/dtos/toBoolean';
+
+// DTO para las dimensiones del stencil
+export class StencilDimensionsDto {
+  @ApiProperty({ description: 'Width in pixels or millimeters' })
+  @IsNumber()
+  width: number;
+
+  @ApiProperty({ description: 'Height in pixels or millimeters' })
+  @IsNumber()
+  height: number;
+}
 
 export class StencilDto implements StencilType {
   @ApiProperty({ description: 'Stencil ID' })
@@ -36,6 +50,10 @@ export class StencilDto implements StencilType {
   @IsNotEmpty()
   imageUrl: string;
 
+  @ApiProperty({ description: 'Unique image identifier' })
+  @IsString()
+  imageId: string;
+
   @ApiProperty({ description: 'Image version', default: 0 })
   @IsInt()
   imageVersion: number;
@@ -50,7 +68,7 @@ export class StencilDto implements StencilType {
   thumbnailVersion: number;
 
   @ApiProperty({ description: 'Is featured item', default: false })
-  @IsBoolean()
+  @ToBoolean()
   isFeatured: boolean;
 
   @ApiProperty({ description: 'Display order position', default: 0 })
@@ -62,8 +80,8 @@ export class StencilDto implements StencilType {
   @IsOptional()
   price?: number;
 
-  @ApiProperty({ 
-    description: 'Stencil status', 
+  @ApiProperty({
+    description: 'Stencil status',
     enum: StencilStatus,
     default: StencilStatus.AVAILABLE
   })
@@ -71,7 +89,7 @@ export class StencilDto implements StencilType {
   status: StencilStatus;
 
   @ApiProperty({ description: 'Is stencil hidden', default: false })
-  @IsBoolean()
+  @ToBoolean()
   isHidden: boolean;
 
   @ApiProperty({ description: 'Creation timestamp' })
@@ -85,6 +103,42 @@ export class StencilDto implements StencilType {
 
   @ApiPropertyOptional({ description: 'Stencil tags', type: [TagDto] })
   tags?: TagDto[];
+
+  @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => StencilDimensionsDto)
+  dimensions?: { width: number; height: number };
+
+  @ApiPropertyOptional({ description: 'Recommended placement areas', type: 'string' })
+  @IsString()
+  @IsOptional()
+  recommendedPlacements?: string;
+
+  @ApiPropertyOptional({ description: 'Estimated time in minutes to complete', type: 'number' })
+  @IsInt()
+  @IsOptional()
+  estimatedTime?: number;
+
+  @ApiPropertyOptional({ description: 'Whether the stencil can be customized', default: false })
+  @ToBoolean()
+  @IsOptional()
+  isCustomizable?: boolean;
+
+  @ApiPropertyOptional({ description: 'Whether the stencil can be downloaded', default: false })
+  @ToBoolean()
+  @IsOptional()
+  isDownloadable?: boolean;
+
+  @ApiPropertyOptional({ description: 'License information' })
+  @IsString()
+  @IsOptional()
+  license?: string;
+
+  @ApiPropertyOptional({ description: 'URL to license details' })
+  @IsString()
+  @IsOptional()
+  licenseUrl?: string;
 }
 
 export class CreateStencilDto {
@@ -103,6 +157,11 @@ export class CreateStencilDto {
   @IsOptional()
   imageUrl?: string;
 
+  @ApiPropertyOptional({ description: 'Unique image identifier' })
+  @IsString()
+  @IsOptional()
+  imageId?: string;
+
   @ApiProperty({ description: 'Image version', default: 1 })
   @IsInt()
   @IsOptional()
@@ -113,10 +172,9 @@ export class CreateStencilDto {
   @IsOptional()
   thumbnailUrl?: string;
 
-  @ApiPropertyOptional({ description: 'Is featured item', default: false })
-  @IsBoolean()
+  @ApiPropertyOptional({ description: 'Is featured item', default: 'false' })
   @IsOptional()
-  isFeatured?: boolean;
+  isFeatured?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Display order position', default: 0 })
   @IsInt()
@@ -128,8 +186,8 @@ export class CreateStencilDto {
   @IsOptional()
   price?: number;
 
-  @ApiPropertyOptional({ 
-    description: 'Stencil status', 
+  @ApiPropertyOptional({
+    description: 'Stencil status',
     enum: StencilStatus,
     default: StencilStatus.AVAILABLE
   })
@@ -137,15 +195,49 @@ export class CreateStencilDto {
   @IsOptional()
   status?: StencilStatus;
 
-  @ApiPropertyOptional({ description: 'Is stencil hidden', default: false })
-  @IsBoolean()
+  @ApiPropertyOptional({ description: 'Is stencil hidden', default: 'false' })
   @IsOptional()
-  isHidden?: boolean;
+  isHidden?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
-  @IsInt({ each: true })
   @IsOptional()
-  tagIds?: number[];
+  tagIds?: number[] | string;
+
+  @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => StencilDimensionsDto)
+  dimensions?: { width: number; height: number };
+
+  @ApiPropertyOptional({ description: 'Recommended placement areas', type: 'string' })
+  @IsString()
+  @IsOptional()
+  recommendedPlacements?: string;
+
+  @ApiPropertyOptional({ description: 'Estimated time in minutes to complete', type: 'number' })
+  @IsInt()
+  @IsOptional()
+  estimatedTime?: number;
+
+  @ApiPropertyOptional({ description: 'Whether the stencil can be customized', default: false })
+  @ToBoolean()
+  @IsOptional()
+  isCustomizable?: boolean;
+
+  @ApiPropertyOptional({ description: 'Whether the stencil can be downloaded', default: false })
+  @ToBoolean()
+  @IsOptional()
+  isDownloadable?: boolean;
+
+  @ApiPropertyOptional({ description: 'License information' })
+  @IsString()
+  @IsOptional()
+  license?: string;
+
+  @ApiPropertyOptional({ description: 'URL to license details' })
+  @IsString()
+  @IsOptional()
+  licenseUrl?: string;
 }
 
 export class UpdateStencilDto {
@@ -164,15 +256,24 @@ export class UpdateStencilDto {
   @IsOptional()
   imageUrl?: string;
 
+  @ApiPropertyOptional({ description: 'Unique image identifier' })
+  @IsString()
+  @IsOptional()
+  imageId?: string;
+
+  @ApiPropertyOptional({ description: 'Image version' })
+  @IsInt()
+  @IsOptional()
+  imageVersion?: number;
+
   @ApiPropertyOptional({ description: 'Thumbnail URL' })
   @IsString()
   @IsOptional()
   thumbnailUrl?: string;
 
   @ApiPropertyOptional({ description: 'Is featured item' })
-  @IsBoolean()
   @IsOptional()
-  isFeatured?: boolean;
+  isFeatured?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Display order position' })
   @IsInt()
@@ -184,8 +285,8 @@ export class UpdateStencilDto {
   @IsOptional()
   price?: number;
 
-  @ApiPropertyOptional({ 
-    description: 'Stencil status', 
+  @ApiPropertyOptional({
+    description: 'Stencil status',
     enum: StencilStatus
   })
   @IsEnum(StencilStatus)
@@ -193,12 +294,47 @@ export class UpdateStencilDto {
   status?: StencilStatus;
 
   @ApiPropertyOptional({ description: 'Is stencil hidden' })
-  @IsBoolean()
   @IsOptional()
-  isHidden?: boolean;
+  isHidden?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
   @IsInt({ each: true })
   @IsOptional()
   tagIds?: number[];
+
+  @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => StencilDimensionsDto)
+  dimensions?: { width: number; height: number };
+
+  @ApiPropertyOptional({ description: 'Recommended placement areas', type: 'string' })
+  @IsString()
+  @IsOptional()
+  recommendedPlacements?: string;
+
+  @ApiPropertyOptional({ description: 'Estimated time in minutes to complete', type: 'number' })
+  @IsInt()
+  @IsOptional()
+  estimatedTime?: number;
+
+  @ApiPropertyOptional({ description: 'Whether the stencil can be customized', default: false })
+  @ToBoolean()
+  @IsOptional()
+  isCustomizable?: boolean;
+
+  @ApiPropertyOptional({ description: 'Whether the stencil can be downloaded', default: false })
+  @ToBoolean()
+  @IsOptional()
+  isDownloadable?: boolean;
+
+  @ApiPropertyOptional({ description: 'License information' })
+  @IsString()
+  @IsOptional()
+  license?: string;
+
+  @ApiPropertyOptional({ description: 'URL to license details' })
+  @IsString()
+  @IsOptional()
+  licenseUrl?: string;
 }

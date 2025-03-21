@@ -24,17 +24,17 @@ export class GetWorksPaginatedUseCase extends BaseUseCase {
       limit,
       isFeatured,
       source,
-      includeHidden
+      includeHidden,    
     );
     
+    const pages = Math.ceil(total / limit);
+    
     return {
-      data: works,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      }
+      items: works,
+      page,
+      limit,
+      total,
+      pages
     };
   }
 } 
