@@ -20,7 +20,6 @@ import { NotificationQueueModule } from './queues/notifications/notification.que
 import { ReactionsModule } from './reactions/reactions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { SchedulerModule } from './schedulers/scheduler.module';
-import { TagsModule } from './tags/tags.module';
 import { UsersModule } from './users/users.module';
 import { SyncQueueModule } from './queues/sync/sync.queue.module';
 import { FastifyMulterModule } from '@nest-lab/fastify-multer';
@@ -51,7 +50,6 @@ import { FastifyMulterModule } from '@nest-lab/fastify-multer';
     PostsModule,
     ReviewsModule,
     ReactionsModule,
-    TagsModule,
     UsersModule,
     NotificationQueueModule,
     SyncQueueModule,

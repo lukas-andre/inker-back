@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Like } from 'typeorm';
+import { Repository, In, Like, FindOneOptions, FindOptionsWhere } from 'typeorm';
 import { Work } from '../entities/work.entity';
 import { CreateWorkDto, UpdateWorkDto } from '../../domain/dtos/work.dto';
 import { Tag } from '../../../tags/tag.entity';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { TagsService } from '../../../tags/tags.service';
 import { WorkSearchQueryDto } from '../../domain/dtos/work-search.dto';
+import { WorkSource } from '../../domain/workType';
 
 @Injectable()
 export class WorkProvider extends BaseComponent {
@@ -18,11 +19,15 @@ export class WorkProvider extends BaseComponent {
     super(WorkProvider.name);
   }
 
-  async findWorksByArtistId(artistId: number, includeHidden: boolean = false): Promise<Work[]> {
-    const query: any = { artistId, deletedAt: null };
+  async findWorksByArtistId(artistId: number, includeHidden: boolean = false, source?: WorkSource): Promise<Work[]> {
+    const query: FindOptionsWhere<Work> = { artistId, deletedAt: null };
     
     if (!includeHidden) {
       query.isHidden = false;
+    }
+
+    if (source) {
+      query.source = source;
     }
     
     return this.workRepository.find({
@@ -32,11 +37,15 @@ export class WorkProvider extends BaseComponent {
     });
   }
 
-  async findFeaturedWorksByArtistId(artistId: number, includeHidden: boolean = false): Promise<Work[]> {
-    const query: any = { artistId, isFeatured: true, deletedAt: null };
+  async findFeaturedWorksByArtistId(artistId: number, includeHidden: boolean = false, source?: WorkSource): Promise<Work[]> {
+    const query: FindOptionsWhere<Work> = { artistId, isFeatured: true, deletedAt: null };
     
     if (!includeHidden) {
       query.isHidden = false;
+    }
+
+    if (source) {
+      query.source = source;
     }
     
     return this.workRepository.find({
@@ -53,41 +62,188 @@ export class WorkProvider extends BaseComponent {
     });
   }
 
-  async createWork(artistId: number, createWorkDto: CreateWorkDto): Promise<Work> {
+  async createWork(artistId: number, createWorkDto: CreateWorkDto, isFeatured: boolean = false, isHidden: boolean = false): Promise<Work> {
     const { tagIds, ...workData } = createWorkDto;
 
-    const work = this.workRepository.create({
-      ...workData,
-      artistId,
-    });
+    // Using a query runner to allow for a transaction
+    const queryRunner = this.workRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if (tagIds && tagIds.length > 0) {
-      work.tags = await this.tagsService.find({
-        where: { id: In(tagIds) },
-      });
+    try {
+      // Use raw query to insert with tsv value computed directly
+      const textSearchFields = `${workData.title || ''} ${workData.description || ''}`;
+      const insertResult = await queryRunner.query(`
+        INSERT INTO works (
+          artist_id, title, description, image_url, image_id, image_version, 
+          thumbnail_url, thumbnail_version, is_featured, order_position, 
+          source, is_hidden, tsv, created_at, updated_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, 
+          $7, $8, $9, $10, 
+          $11, $12, to_tsvector('english', $13), NOW(), NOW()
+        ) RETURNING id
+      `, [
+        artistId,
+        workData.title,
+        workData.description,
+        workData.imageUrl,
+        workData.imageUrl?.split('/').pop() || '', // Extract imageId from URL as a fallback
+        workData.imageVersion || 0,
+        workData.thumbnailUrl,
+        0, // Default thumbnailVersion to 0 if not provided
+        isFeatured,
+        workData.orderPosition || 0,
+        workData.source,
+        isHidden,
+        textSearchFields
+      ]);
+
+      const workId = insertResult[0].id;
+
+      // Add tags if provided
+      if (tagIds && tagIds.length > 0) {
+        // Get the tags
+        const tags = await this.tagsService.find({
+          where: { id: In(tagIds) },
+        });
+
+        // Create tag relationships using join table
+        for (const tag of tags) {
+          await queryRunner.query(`
+            INSERT INTO work_tags (work_id, tag_id)
+            VALUES ($1, $2)
+          `, [workId, tag.id]);
+        }
+      }
+
+      // Commit the transaction
+      await queryRunner.commitTransaction();
+
+      // Return the complete work entity
+      return this.findWorkById(workId);
+    } catch (error) {
+      // If anything fails, rollback the transaction
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Error creating work', error);
+      throw error;
+    } finally {
+      // Release the query runner
+      await queryRunner.release();
     }
-
-    return this.workRepository.save(work);
   }
 
-  async updateWork(id: number, updateWorkDto: UpdateWorkDto): Promise<Work> {
+  async updateWork(id: number, updateWorkDto: UpdateWorkDto, isFeatured?: boolean, isHidden?: boolean): Promise<Work> {
     const { tagIds, ...workData } = updateWorkDto;
     
-    await this.workRepository.update(id, workData);
+    // Using a query runner to allow for a transaction
+    const queryRunner = this.workRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     
-    const work = await this.workRepository.findOne({
-      where: { id },
-      relations: ['tags'],
-    });
-    
-    if (tagIds) {
-      work.tags = await this.tagsService.find({
-        where: { id: In(tagIds) },
-      });
-      await this.workRepository.save(work);
+    try {
+      // First, update the work data
+      if (Object.keys(workData).length > 0 || isFeatured !== undefined || isHidden !== undefined) {
+        // Build SET clause dynamically from provided data
+        const updateFields = [];
+        const params = [];
+        let paramIndex = 1;
+        
+        // Add each field that's provided in the DTO
+        for (const [key, value] of Object.entries(workData)) {
+          if (value !== undefined) {
+            // Convert camelCase to snake_case for column names
+            const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            updateFields.push(`${columnName} = $${paramIndex}`);
+            params.push(value);
+            paramIndex++;
+          }
+        }
+        
+        // Add featured flag if provided
+        if (isFeatured !== undefined) {
+          updateFields.push(`is_featured = $${paramIndex}`);
+          params.push(isFeatured);
+          paramIndex++;
+        }
+        
+        // Add hidden flag if provided
+        if (isHidden !== undefined) {
+          updateFields.push(`is_hidden = $${paramIndex}`);
+          params.push(isHidden);
+          paramIndex++;
+        }
+        
+        // Also update updated_at
+        updateFields.push(`updated_at = NOW()`);
+        
+        // Execute the update only if there are fields to update
+        if (updateFields.length > 0) {
+          await queryRunner.query(`
+            UPDATE works 
+            SET ${updateFields.join(', ')}
+            WHERE id = $${paramIndex}
+          `, [...params, id]);
+        }
+      }
+      
+      // Get the current work data to update tsv
+      const currentWork = await queryRunner.query(
+        `SELECT title, description FROM works WHERE id = $1`,
+        [id]
+      );
+      
+      // Only update tsv if title or description fields were updated or currentWork exists
+      if ((workData.title || workData.description) && currentWork.length > 0) {
+        // Combine original fields with updates for tsv computation
+        const title = workData.title || currentWork[0].title || '';
+        const description = workData.description || currentWork[0].description || '';
+        
+        // Update the tsv field
+        await queryRunner.query(`
+          UPDATE works 
+          SET tsv = to_tsvector('english', $1 || ' ' || $2)
+          WHERE id = $3
+        `, [title, description, id]);
+      }
+      
+      // Update tag relationships if specified
+      if (tagIds !== undefined) {
+        // First, remove existing tag relationships
+        await queryRunner.query(`
+          DELETE FROM work_tags
+          WHERE work_id = $1
+        `, [id]);
+        
+        // Then add new tag relationships
+        if (tagIds && tagIds.length > 0) {
+          const tags = await this.tagsService.find({
+            where: { id: In(tagIds) },
+          });
+          
+          for (const tag of tags) {
+            await queryRunner.query(`
+              INSERT INTO work_tags (work_id, tag_id)
+              VALUES ($1, $2)
+            `, [id, tag.id]);
+          }
+        }
+      }
+      
+      // Commit the transaction
+      await queryRunner.commitTransaction();
+      
+      // Return the updated work with tags
+      return this.findWorkById(id);
+    } catch (error) {
+      // If anything fails, rollback the transaction
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Error updating work', error);
+      throw error;
+    } finally {
+      // Release the query runner
+      await queryRunner.release();
     }
-    
-    return work;
   }
 
   async deleteWork(id: number): Promise<void> {

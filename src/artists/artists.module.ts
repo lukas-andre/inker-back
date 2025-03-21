@@ -32,7 +32,6 @@ import { FollowsModule } from '../follows/follows.module';
 import { FindArtistsUseCases } from './usecases/findArtist.usecases';
 import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
 import { FollowProviderModule } from '../follows/infrastructure/database/followProvider.module';
-import { TagsModule } from '../tags/tags.module';
 import { SearchStencilsUseCase } from './usecases/stencil/search-stencils.usecase';
 import { GetTagSuggestionsUseCase } from './usecases/stencil/get-tag-suggestions.usecase';
 import { StencilSearchController } from './infrastructure/controllers/stencil-search.controller';
@@ -42,6 +41,8 @@ import { SearchWorksUseCase } from './usecases/work/search-works.usecase';
 import { GetWorkTagSuggestionsUseCase } from './usecases/work/get-tag-suggestions.usecase';
 import { WorkSearchController } from './infrastructure/controllers/work-search.controller';
 import { GetWorksPaginatedUseCase } from './usecases/work/get-works-paginated.usecase';
+import { CreateTagUseCase } from './usecases/stencil/create-tag.usecase';
+import { TagsModule } from '../tags/tags.module';
 
 const useCases = [
   CreateArtistUseCase,
@@ -67,6 +68,7 @@ const useCases = [
   // Stencil search use cases
   SearchStencilsUseCase,
   GetTagSuggestionsUseCase,
+  CreateTagUseCase,
   // Artist Style use cases
   GetArtistStylesUseCase,
   AddArtistStyleUseCase,
@@ -87,8 +89,8 @@ const useCases = [
     ArtistStyleProviderModule,
     MultimediasModule,
     FollowsModule,
-    TagsModule,
     InteractionProviderModule,
+    TagsModule
   ],
   controllers: [
     ArtistsController,

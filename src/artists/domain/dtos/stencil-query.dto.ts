@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import {  IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { StencilStatus } from '../stencilType';
 
 export class StencilQueryDto {

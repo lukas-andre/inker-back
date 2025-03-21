@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,8 +19,10 @@ import {
 import { InteractionsHandler } from './interactions.handler';
 import { CreateInteractionDto, InteractionDto } from '../domain/dtos/interaction.dto';
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
+import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 
 @ApiTags('Interactions')
+@UseGuards(AuthGuard)
 @Controller('interactions')
 export class InteractionsController {
   constructor(private readonly interactionsHandler: InteractionsHandler, private readonly requestContext: RequestContextService) {}

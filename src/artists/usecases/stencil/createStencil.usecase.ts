@@ -10,6 +10,7 @@ import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { DomainBadRequest, DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
 import mime from 'mime-types';
 import sharp from 'sharp';
+import { UniqueIdService } from '../../../global/infrastructure/services/uniqueId.service';
 
 @Injectable()
 export class CreateStencilUseCase extends BaseUseCase {
@@ -18,12 +19,18 @@ export class CreateStencilUseCase extends BaseUseCase {
     private readonly artistProvider: ArtistProvider,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
+    private readonly uniqueIdService: UniqueIdService,
   ) {
     super(CreateStencilUseCase.name);
   }
 
   async execute(params: { artistId: number; dto: CreateStencilDto; file: FileInterface }): Promise<StencilDto> {
     const { artistId, dto, file } = params;
+    
+    // Convert string values to booleans for proper handling in multipart/form-data
+    const isFeatured = dto.isFeatured === 'true' || dto.isFeatured === true;
+    const isHidden = dto.isHidden === 'true' || dto.isHidden === true;
+    
     
     // Validate artist
     const existingArtist = await this.artistProvider.findById(artistId);
@@ -42,6 +49,9 @@ export class CreateStencilUseCase extends BaseUseCase {
       throw new DomainBadRequest('Not valid file type to upload');
     }
 
+    // Generate a unique imageId using the service
+    const imageId = this.uniqueIdService.generateImageId();
+
     // Set version to 1 for new stencil
     const imageVersion = 1;
 
@@ -53,9 +63,9 @@ export class CreateStencilUseCase extends BaseUseCase {
     let uploadResult: UploadToS3Result[];
     try {
       uploadResult = await Promise.all([
-        this.uploadOriginal(file, source, fileExtension, imageVersion),
-        this.uploadThumbnail(file, source, fileExtension, imageVersion),
-        this.uploadTiny(file, source, fileExtension, imageVersion),
+        this.uploadOriginal(file, source, fileExtension, imageId, imageVersion),
+        this.uploadThumbnail(file, source, fileExtension, imageId, imageVersion),
+        this.uploadTiny(file, source, fileExtension, imageId, imageVersion),
       ]);
     } catch (error) {
       this.logger.error(error);
@@ -63,16 +73,17 @@ export class CreateStencilUseCase extends BaseUseCase {
     }
     console.timeEnd('uploadStencilFile');
 
-    // Update DTO with file URLs
+    // Update DTO with file URLs and imageId
     const updatedDto: CreateStencilDto = {
       ...dto,
       imageUrl: uploadResult[0].cloudFrontUrl,
       thumbnailUrl: uploadResult[1].cloudFrontUrl,
+      imageId: imageId,
       imageVersion: imageVersion,
     };
 
     // Create the stencil using the updated DTO
-    const stencil = await this.stencilProvider.createStencil(artistId, updatedDto);
+    const stencil = await this.stencilProvider.createStencil(artistId, updatedDto, isFeatured, isHidden);
     
     return stencil;
   }
@@ -81,9 +92,10 @@ export class CreateStencilUseCase extends BaseUseCase {
     file: any,
     source: string,
     fileExtension: string,
+    imageId: string,
     version: number,
   ) {
-    const fileName = `stencil_${version}.${fileExtension}`;
+    const fileName = `stencil_${imageId}_v${version}.${fileExtension}`;
     return this.multimediasService.upload(file, source, fileName);
   }
 
@@ -91,9 +103,10 @@ export class CreateStencilUseCase extends BaseUseCase {
     file: any,
     source: string,
     fileExtension: string,
+    imageId: string,
     version: number,
   ) {
-    const fileName = `stencil_thumbnail_${version}.${fileExtension}`;
+    const fileName = `stencil_thumbnail_${imageId}_v${version}.${fileExtension}`;
 
     const data = await sharp(file.buffer)
       .resize({ width: 512 })
@@ -110,9 +123,10 @@ export class CreateStencilUseCase extends BaseUseCase {
     file: any,
     source: string,
     fileExtension: string,
+    imageId: string,
     version: number,
   ) {
-    const fileName = `stencil_tiny_${version}.${fileExtension}`;
+    const fileName = `stencil_tiny_${imageId}_v${version}.${fileExtension}`;
 
     const data = await sharp(file.buffer)
       .resize({ width: 50 })

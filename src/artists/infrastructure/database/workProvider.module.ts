@@ -7,7 +7,7 @@ import { TagsModule } from '../../../tags/tags.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Work], 'artist-db'),
-    TagsModule,
+    TagsModule
   ],
   providers: [WorkProvider],
   exports: [WorkProvider],

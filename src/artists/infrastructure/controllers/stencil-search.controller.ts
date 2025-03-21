@@ -5,6 +5,8 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Post,
+  Body,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,6 +20,7 @@ import { ArtistsHandler } from '../artists.handler';
 import { StencilSearchQueryDto, TagSuggestionQueryDto, TagSuggestionResponseDto } from '../../domain/dtos/stencil-search.dto';
 import { PaginatedStencilResponseDto } from '../../domain/dtos/paginated-stencil-response.dto';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
+import { CreateTagDto } from '../../../tags/tag.dto';
 
 /**
  * Información detallada sobre el algoritmo de puntuación de relevancia
@@ -147,5 +150,18 @@ export class StencilSearchController {
   async getPopularTags(@Query('limit') limit: number = 10): Promise<TagSuggestionResponseDto[]> {
     // Utilizar el mismo método de sugerencias pero sin prefijo para obtener etiquetas populares
     return this.artistsHandler.getTagSuggestions({ prefix: '', limit });
+  }
+
+  @Post('tags')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Crear una nueva etiqueta o devolver la existente si coincide el nombre' })
+  @ApiOkResponse({
+    description: 'Etiqueta creada o existente',
+    type: TagSuggestionResponseDto,
+  })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async createTag(@Body() createTagDto: CreateTagDto): Promise<TagSuggestionResponseDto> {
+    return this.artistsHandler.createTag(createTagDto);
   }
 } 

@@ -35,6 +35,9 @@ export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'image_url' })
   imageUrl: string;
 
+  @Column({ name: 'image_id', type: 'varchar', length: 40 })
+  imageId: string;
+
   @Column({ name: 'image_version', default: 0 })
   imageVersion: number;
 
@@ -53,7 +56,7 @@ export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'price', type: 'decimal', precision: 10, scale: 2, nullable: true })
   price?: number;
 
-  @Column({ 
+  @Column({
     name: 'status',
     type: 'enum',
     enum: StencilStatus,
@@ -79,7 +82,29 @@ export class Stencil extends BaseEntity implements StencilType {
   tags: Tag[];
 
   @Column({ type: 'tsvector', nullable: false, select: false })
+  @Index()
   tsv: string;
+
+  @Column({ name: 'dimensions', type: 'jsonb', nullable: true })
+  dimensions?: { width: number; height: number };
+
+  @Column({ name: 'recommended_placements', type: 'text', nullable: true, default: '[]' })
+  recommendedPlacements?: string;
+
+  @Column({ name: 'estimated_time', type: 'int', nullable: true })
+  estimatedTime?: number;
+
+  @Column({ name: 'is_customizable', type: 'boolean', nullable: true, default: false })
+  isCustomizable?: boolean;
+
+  @Column({ name: 'is_downloadable', type: 'boolean', nullable: true, default: false })
+  isDownloadable?: boolean;
+
+  @Column({ name: 'license', type: 'text', nullable: true })
+  license?: string;
+
+  @Column({ name: 'license_url', type: 'text', nullable: true })
+  licenseUrl?: string;
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
