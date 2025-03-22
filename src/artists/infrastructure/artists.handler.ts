@@ -246,19 +246,38 @@ export class ArtistsHandler extends BaseComponent {
 
   // Query methods
   handleGetAll() {
+    const userId = this.requestContext.userId;
     this.logger.log('Getting all artists');
-    return this.findArtistsUseCases.findAll({});
+    return this.findArtistsUseCases.findAll({}, {
+      includeWorkCounts: true,  
+      includeStencilCounts: true,
+      includeRatings: true,
+      currentUserId: userId,
+      includeUserFollow: true
+    });
   }
 
   handleFindById(id: number) {
+    const userId = this.requestContext.userId;
     this.logger.log(`Finding artist by ID: ${id}`);
-    return this.getArtistById(id);
+    return this.findArtistsUseCases.findById(id, { 
+      includeAll: true,
+      currentUserId: userId
+    });
   }
 
   me() {
     const userId = this.requestContext.userId;
     this.logger.log(`Getting current artist profile for user ID: ${userId}`);
-    return this.getArtistByUserId(userId);
+    
+    // Usar las opciones de include para obtener información completa
+    return this.findArtistsUseCases.findOne(
+      { where: { userId } },
+      { 
+        includeAll: true, 
+        currentUserId: userId
+      }
+    );
   }
 
   handleUpdateMe(updateArtistDto: UpdateArtistDto) {
@@ -268,8 +287,15 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   handleSearchArtists(searchParams: any) {
+    const userId = this.requestContext.userId;
     this.logger.log(`Searching artists with params: ${JSON.stringify(searchParams)}`);
-    return this.findArtistsUseCase.execute(searchParams);
+    return this.findArtistsUseCase.execute(searchParams, {
+      includeWorkCounts: true,
+      includeStencilCounts: true,
+      includeRatings: true,
+      currentUserId: userId,
+      includeUserFollow: true
+    });
   }
 
   // Métodos de búsqueda de trabajos

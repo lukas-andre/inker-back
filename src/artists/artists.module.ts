@@ -43,6 +43,8 @@ import { WorkSearchController } from './infrastructure/controllers/work-search.c
 import { GetWorksPaginatedUseCase } from './usecases/work/get-works-paginated.usecase';
 import { CreateTagUseCase } from './usecases/stencil/create-tag.usecase';
 import { TagsModule } from '../tags/tags.module';
+import { ReviewAvgProvider } from '../reviews/database/providers/reviewAvg.provider';
+import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
 
 const useCases = [
   CreateArtistUseCase,
@@ -90,7 +92,8 @@ const useCases = [
     MultimediasModule,
     FollowsModule,
     InteractionProviderModule,
-    TagsModule
+    TagsModule,
+    ReviewProviderModule
   ],
   controllers: [
     ArtistsController,
