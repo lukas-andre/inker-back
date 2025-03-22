@@ -94,8 +94,8 @@ export class ArtistLocationCreateDto {
 export class ArtistLocationUpdateDto {
   @ApiProperty({ description: 'Location ID', example: 1 })
   @IsNumber()
-  @IsNotEmpty()
-  id: number;
+  @IsOptional()
+  id?: number;
 
   @ApiPropertyOptional({ description: 'Location name', example: 'My Studio' })
   @IsString()

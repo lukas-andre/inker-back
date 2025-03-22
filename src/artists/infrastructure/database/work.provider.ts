@@ -105,7 +105,7 @@ export class WorkProvider extends BaseComponent {
       if (tagIds && tagIds.length > 0) {
         // Get the tags
         const tags = await this.tagsService.find({
-          where: { id: In(tagIds) },
+          where: { id: In(Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(Number)) },
         });
 
         // Create tag relationships using join table
@@ -121,14 +121,14 @@ export class WorkProvider extends BaseComponent {
       if (isHidden) {
         // For hidden works, only increment the total counter
         await queryRunner.query(`
-          UPDATE artists
+          UPDATE artist
           SET works_count = works_count + 1
           WHERE id = $1
         `, [artistId]);
       } else {
         // For visible works, increment both counters
         await queryRunner.query(`
-          UPDATE artists
+          UPDATE artist
           SET works_count = works_count + 1,
               visible_works_count = visible_works_count + 1
           WHERE id = $1
@@ -219,14 +219,14 @@ export class WorkProvider extends BaseComponent {
         if (isHidden) {
           // Work changed from visible to hidden, decrement visible counter
           await queryRunner.query(`
-            UPDATE artists
+            UPDATE artist
             SET visible_works_count = visible_works_count - 1
             WHERE id = $1 AND visible_works_count > 0
           `, [artistId]);
         } else {
           // Work changed from hidden to visible, increment visible counter
           await queryRunner.query(`
-            UPDATE artists
+            UPDATE artist
             SET visible_works_count = visible_works_count + 1
             WHERE id = $1
           `, [artistId]);
@@ -264,7 +264,7 @@ export class WorkProvider extends BaseComponent {
         // Then add new tag relationships
         if (tagIds && tagIds.length > 0) {
           const tags = await this.tagsService.find({
-            where: { id: In(tagIds) },
+            where: { id: In(Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(Number)) },
           });
           
           for (const tag of tags) {
@@ -317,14 +317,14 @@ export class WorkProvider extends BaseComponent {
       if (isHidden) {
         // If the work was hidden, only decrement the total counter
         await queryRunner.query(`
-          UPDATE artists
+          UPDATE artist
           SET works_count = works_count - 1
           WHERE id = $1 AND works_count > 0
         `, [artistId]);
       } else {
         // If the work was visible, decrement both counters
         await queryRunner.query(`
-          UPDATE artists
+          UPDATE artist
           SET works_count = works_count - 1,
               visible_works_count = visible_works_count - 1
           WHERE id = $1 AND works_count > 0 AND visible_works_count > 0

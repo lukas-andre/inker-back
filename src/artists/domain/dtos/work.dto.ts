@@ -140,9 +140,8 @@ export class CreateWorkDto {
   isHidden?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
-  @IsInt({ each: true })
   @IsOptional()
-  tagIds?: number[];
+  tagIds?: number[] | string;
 }
 
 export class UpdateWorkDto {
@@ -188,7 +187,6 @@ export class UpdateWorkDto {
   isHidden?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
-  @IsInt({ each: true })
   @IsOptional()
-  tagIds?: number[];
+  tagIds?: number[] | string;
 }

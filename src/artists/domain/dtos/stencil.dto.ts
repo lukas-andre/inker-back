@@ -298,9 +298,8 @@ export class UpdateStencilDto {
   isHidden?: string | boolean;
 
   @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
-  @IsInt({ each: true })
   @IsOptional()
-  tagIds?: number[];
+  tagIds?: number[] | string;
 
   @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
   @IsOptional()
