@@ -93,7 +93,7 @@ Content-Type: image/png
 
 ### Get Specific Quotation
 GET {{$dotenv APP_URL}}/quotations/16 HTTP/1.1
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjksImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidXNlcm5hbWUiOiJqdWFsaWFydCIsImZ1bGxuYW1lIjoiSnVsaWFubyBHcmFuZGUiLCJ1c2VyVHlwZSI6IkFSVElTVCIsInVzZXJUeXBlSWQiOjksInByb2ZpbGVUaHVtYm5haWwiOm51bGwsInBlcm1pc3Npb24iOlt7ImMiOiJBcnRpc3RzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiQ3VzdG9tZXJzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiUG9zdHNDb250cm9sbGVyIiwiYSI6IioifSx7ImMiOiJVc2Vyc0NvbnRyb2xsZXIiLCJhIjoiKiJ9XSwiaWF0IjoxNzQyNTI3NDYyLCJleHAiOjE3NDI3MDAyNjIsImlzcyI6Iklua2VyIn0.rEiMCtG4bcPZDG8X0AcIJVXEnn4RWQapa3EipCgvsTo
 
 ### Get Quotations
 GET {{$dotenv APP_URL}}/quotations?status=quoted&page=1&limit=10 HTTP/1.1
@@ -136,8 +136,8 @@ Content-Type: application/json
 }
 
 ### List Events from Artist Agenda
-GET {{$dotenv APP_URL}}/agenda/event/3 HTTP/1.1
-Authorization: Bearer {{token}}
+GET {{$dotenv APP_URL}}/agenda/event/14 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjksImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidXNlcm5hbWUiOiJqdWFsaWFydCIsImZ1bGxuYW1lIjoiSnVsaWFubyBHcmFuZGUiLCJ1c2VyVHlwZSI6IkFSVElTVCIsInVzZXJUeXBlSWQiOjksInByb2ZpbGVUaHVtYm5haWwiOm51bGwsInBlcm1pc3Npb24iOlt7ImMiOiJBcnRpc3RzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiQ3VzdG9tZXJzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiUG9zdHNDb250cm9sbGVyIiwiYSI6IioifSx7ImMiOiJVc2Vyc0NvbnRyb2xsZXIiLCJhIjoiKiJ9XSwiaWF0IjoxNzQyNTI3NDYyLCJleHAiOjE3NDI3MDAyNjIsImlzcyI6Iklua2VyIn0.rEiMCtG4bcPZDG8X0AcIJVXEnn4RWQapa3EipCgvsTo
 
 ### Send Forgot Password Code
 POST {{$dotenv APP_URL}}/users/send-forgot-password-code HTTP/1.1
@@ -267,3 +267,8 @@ Content-Disposition: form-data; name="additionalDetails"
 
 Unfortunately, I'm unable to accommodate your appeal due to scheduling conflicts during the requested period.
 --boundary--
+
+### Ge  t Artist by Id
+GET {{$dotenv APP_URL}}/artist/me HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjksImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidXNlcm5hbWUiOiJqdWFsaWFydCIsImZ1bGxuYW1lIjoiSnVsaWFubyBHcmFuZGUiLCJ1c2VyVHlwZSI6IkFSVElTVCIsInVzZXJUeXBlSWQiOjksInByb2ZpbGVUaHVtYm5haWwiOm51bGwsInBlcm1pc3Npb24iOlt7ImMiOiJBcnRpc3RzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiQ3VzdG9tZXJzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiUG9zdHNDb250cm9sbGVyIiwiYSI6IioifSx7ImMiOiJVc2Vyc0NvbnRyb2xsZXIiLCJhIjoiKiJ9XSwiaWF0IjoxNzQyNTI3NDYyLCJleHAiOjE3NDI3MDAyNjIsImlzcyI6Iklua2VyIn0.rEiMCtG4bcPZDG8X0AcIJVXEnn4RWQapa3EipCgvsTo
+
