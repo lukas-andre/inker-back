@@ -81,7 +81,7 @@ export class WorkProvider extends BaseComponent {
         ) VALUES (
           $1, $2, $3, $4, $5, $6, 
           $7, $8, $9, $10, 
-          $11, $12, to_tsvector('english', $13), NOW(), NOW()
+          $11, $12, to_tsvector('english', $13) || to_tsvector('spanish', $13), NOW(), NOW()
         ) RETURNING id
       `, [
         artistId,
@@ -94,7 +94,7 @@ export class WorkProvider extends BaseComponent {
         0, // Default thumbnailVersion to 0 if not provided
         isFeatured,
         workData.orderPosition || 0,
-        workData.source,
+        workData.source || 'EXTERNAL', // Ensure source has a default value
         isHidden,
         textSearchFields
       ]);
@@ -117,6 +117,24 @@ export class WorkProvider extends BaseComponent {
         }
       }
 
+      // Increment the appropriate counters
+      if (isHidden) {
+        // For hidden works, only increment the total counter
+        await queryRunner.query(`
+          UPDATE artists
+          SET works_count = works_count + 1
+          WHERE id = $1
+        `, [artistId]);
+      } else {
+        // For visible works, increment both counters
+        await queryRunner.query(`
+          UPDATE artists
+          SET works_count = works_count + 1,
+              visible_works_count = visible_works_count + 1
+          WHERE id = $1
+        `, [artistId]);
+      }
+
       // Commit the transaction
       await queryRunner.commitTransaction();
 
@@ -135,6 +153,15 @@ export class WorkProvider extends BaseComponent {
 
   async updateWork(id: number, updateWorkDto: UpdateWorkDto, isFeatured?: boolean, isHidden?: boolean): Promise<Work> {
     const { tagIds, ...workData } = updateWorkDto;
+    
+    // First, get the current work data to handle visibility changes
+    const currentWork = await this.findWorkById(id);
+    if (!currentWork) {
+      throw new Error(`Work with id ${id} not found`);
+    }
+    
+    const artistId = currentWork.artistId;
+    const wasHidden = currentWork.isHidden;
     
     // Using a query runner to allow for a transaction
     const queryRunner = this.workRepository.manager.connection.createQueryRunner();
@@ -187,22 +214,41 @@ export class WorkProvider extends BaseComponent {
         }
       }
       
+      // If the visibility state changed, update the appropriate counters
+      if (isHidden !== undefined && wasHidden !== isHidden) {
+        if (isHidden) {
+          // Work changed from visible to hidden, decrement visible counter
+          await queryRunner.query(`
+            UPDATE artists
+            SET visible_works_count = visible_works_count - 1
+            WHERE id = $1 AND visible_works_count > 0
+          `, [artistId]);
+        } else {
+          // Work changed from hidden to visible, increment visible counter
+          await queryRunner.query(`
+            UPDATE artists
+            SET visible_works_count = visible_works_count + 1
+            WHERE id = $1
+          `, [artistId]);
+        }
+      }
+      
       // Get the current work data to update tsv
-      const currentWork = await queryRunner.query(
+      const workData2 = await queryRunner.query(
         `SELECT title, description FROM works WHERE id = $1`,
         [id]
       );
       
-      // Only update tsv if title or description fields were updated or currentWork exists
-      if ((workData.title || workData.description) && currentWork.length > 0) {
+      // Only update tsv if title or description fields were updated or workData2 exists
+      if ((workData.title || workData.description) && workData2.length > 0) {
         // Combine original fields with updates for tsv computation
-        const title = workData.title || currentWork[0].title || '';
-        const description = workData.description || currentWork[0].description || '';
+        const title = workData.title || workData2[0].title || '';
+        const description = workData.description || workData2[0].description || '';
         
         // Update the tsv field
         await queryRunner.query(`
           UPDATE works 
-          SET tsv = to_tsvector('english', $1 || ' ' || $2)
+          SET tsv = to_tsvector('english', $1 || ' ' || $2) || to_tsvector('spanish', $1 || ' ' || $2)
           WHERE id = $3
         `, [title, description, id]);
       }
@@ -247,7 +293,55 @@ export class WorkProvider extends BaseComponent {
   }
 
   async deleteWork(id: number): Promise<void> {
-    await this.workRepository.softDelete(id);
+    // Get the work first to retrieve its artistId and hidden status
+    const work = await this.findWorkById(id);
+    if (!work) return;
+    
+    const artistId = work.artistId;
+    const isHidden = work.isHidden;
+    
+    // Using a query runner to allow for a transaction
+    const queryRunner = this.workRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    
+    try {
+      // Soft delete the work
+      await queryRunner.query(`
+        UPDATE works
+        SET deleted_at = NOW()
+        WHERE id = $1
+      `, [id]);
+      
+      // Update the appropriate counters based on the work's visibility
+      if (isHidden) {
+        // If the work was hidden, only decrement the total counter
+        await queryRunner.query(`
+          UPDATE artists
+          SET works_count = works_count - 1
+          WHERE id = $1 AND works_count > 0
+        `, [artistId]);
+      } else {
+        // If the work was visible, decrement both counters
+        await queryRunner.query(`
+          UPDATE artists
+          SET works_count = works_count - 1,
+              visible_works_count = visible_works_count - 1
+          WHERE id = $1 AND works_count > 0 AND visible_works_count > 0
+        `, [artistId]);
+      }
+      
+      // Commit the transaction
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      // If anything fails, rollback the transaction
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Error deleting work', error);
+      throw error;
+    } finally {
+      // Release the query runner
+      await queryRunner.release();
+    }
   }
 
   async countWorksByArtistId(artistId: number): Promise<number> {

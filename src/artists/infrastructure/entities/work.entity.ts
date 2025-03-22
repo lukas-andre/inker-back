@@ -17,6 +17,7 @@ import { WorkSource, WorkType } from '../../domain/workType';
 @Index(['isFeatured'])
 @Index(['deletedAt'])
 @Index(['tsv'])
+@Index(['imageId'])
 @Index(['source'])
 @Index(['isHidden'])
 export class Work extends BaseEntity implements WorkType {
@@ -33,6 +34,9 @@ export class Work extends BaseEntity implements WorkType {
 
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
+
+  @Column({ name: 'image_id', nullable: true })
+  imageId?: string;
 
   @Column({ name: 'image_url' })
   imageUrl: string;

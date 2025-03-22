@@ -88,6 +88,18 @@ export class Artist extends BaseEntity implements ArtistType {
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
 
+  @Column({ name: 'works_count', default: 0, comment: 'Count of all works (including hidden)' })
+  worksCount: number;
+
+  @Column({ name: 'stencils_count', default: 0, comment: 'Count of all stencils (including hidden)' })
+  stencilsCount: number;
+
+  @Column({ name: 'visible_works_count', default: 0, comment: 'Count of visible works only (is_hidden=false)' })
+  visibleWorksCount: number;
+
+  @Column({ name: 'visible_stencils_count', default: 0, comment: 'Count of visible stencils only (is_hidden=false)' })
+  visibleStencilsCount: number;
+
   @OneToMany(() => Work, work => work.artist)
   works: Work[];
 
