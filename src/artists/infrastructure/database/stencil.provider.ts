@@ -104,14 +104,14 @@ export class StencilProvider extends BaseComponent {
       if (isHidden) {
         // For hidden stencils, only increment the total counter
         await queryRunner.query(`
-          UPDATE artists
+          UPDATE artist
           SET stencils_count = stencils_count + 1
           WHERE id = $1
         `, [artistId]);
       } else {
         // For visible stencils, increment both counters
         await queryRunner.query(`
-          UPDATE artists
+          UPDATE artist
           SET stencils_count = stencils_count + 1,
               visible_stencils_count = visible_stencils_count + 1
           WHERE id = $1
@@ -202,14 +202,14 @@ export class StencilProvider extends BaseComponent {
         if (isHidden) {
           // Stencil changed from visible to hidden, decrement visible counter
           await queryRunner.query(`
-            UPDATE artists
+            UPDATE artist
             SET visible_stencils_count = visible_stencils_count - 1
             WHERE id = $1 AND visible_stencils_count > 0
           `, [artistId]);
         } else {
           // Stencil changed from hidden to visible, increment visible counter
           await queryRunner.query(`
-            UPDATE artists
+            UPDATE artist
             SET visible_stencils_count = visible_stencils_count + 1
             WHERE id = $1
           `, [artistId]);
@@ -247,7 +247,7 @@ export class StencilProvider extends BaseComponent {
         // Then add new tag relationships
         if (tagIds && tagIds.length > 0) {
           const tags = await this.tagsService.find({
-            where: { id: In(tagIds) },
+            where: { id: In(Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(Number)) },
           });
           
           for (const tag of tags) {
@@ -300,14 +300,14 @@ export class StencilProvider extends BaseComponent {
       if (isHidden) {
         // If the stencil was hidden, only decrement the total counter
         await queryRunner.query(`
-          UPDATE artists
+          UPDATE artist
           SET stencils_count = stencils_count - 1
           WHERE id = $1 AND stencils_count > 0
         `, [artistId]);
       } else {
         // If the stencil was visible, decrement both counters
         await queryRunner.query(`
-          UPDATE artists
+          UPDATE artist
           SET stencils_count = stencils_count - 1,
               visible_stencils_count = visible_stencils_count - 1
           WHERE id = $1 AND stencils_count > 0 AND visible_stencils_count > 0

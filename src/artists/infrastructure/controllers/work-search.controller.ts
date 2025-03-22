@@ -1,6 +1,8 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
   Query,
   UseGuards,
   UsePipes,
@@ -18,6 +20,7 @@ import { ArtistsHandler } from '../artists.handler';
 import { WorkSearchQueryDto, WorkTagSuggestionQueryDto, WorkTagSuggestionResponseDto } from '../../domain/dtos/work-search.dto';
 import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
+import { CreateTagDto } from '../../../tags/tag.dto';
 
 /**
  * Información detallada sobre el algoritmo de puntuación de relevancia
@@ -147,5 +150,17 @@ export class WorkSearchController {
   async getPopularTags(@Query('limit') limit: number = 10): Promise<WorkTagSuggestionResponseDto[]> {
     // Utilizar el mismo método de sugerencias pero sin prefijo para obtener etiquetas populares
     return this.artistsHandler.getWorkTagSuggestions({ prefix: '', limit });
+  }
+
+  @Post('tags')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Crear una nueva etiqueta o devolver la existente si coincide el nombre' })
+  @ApiOkResponse({
+    description: 'Etiqueta creada o existente',
+    type: WorkTagSuggestionResponseDto,
+  })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async createTag(@Body() createTagDto: CreateTagDto): Promise<WorkTagSuggestionResponseDto> {
+    return this.artistsHandler.createTag(createTagDto);
   }
 } 

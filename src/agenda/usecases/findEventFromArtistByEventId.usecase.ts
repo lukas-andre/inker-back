@@ -48,7 +48,7 @@ export class FindEventFromArtistByEventIdUseCase
         existsAgenda.id,
         eventId,
       ),
-      this.artistLocationProvider.findById(artistId),
+      this.artistLocationProvider.findByArtistId(artistId),
     ]);
 
     if (!event) {
@@ -61,7 +61,7 @@ export class FindEventFromArtistByEventIdUseCase
 
     return {
       event,
-      location,
+      location: location[0],
     };
   }
 
