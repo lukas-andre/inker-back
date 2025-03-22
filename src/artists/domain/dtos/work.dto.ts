@@ -94,13 +94,13 @@ export class CreateWorkDto {
 
   @ApiProperty({ description: 'Image URL' })
   @IsString()
-  @IsNotEmpty()
-  imageUrl: string;
+  @IsOptional()
+  imageUrl?: string;
 
   @ApiProperty({ description: 'Image ID' })
   @IsString()
-  @IsNotEmpty()
-  imageId: string;
+  @IsOptional()
+  imageId?: string;
 
   @ApiPropertyOptional({ description: 'Thumbnail URL' })
   @IsString()
@@ -118,7 +118,6 @@ export class CreateWorkDto {
   thumbnailVersion?: number;
 
   @ApiProperty({ description: 'Is featured item', default: false })
-  @IsBoolean()
   @IsOptional()
   isFeatured?: string | boolean;
 
@@ -137,7 +136,6 @@ export class CreateWorkDto {
   source?: WorkSource;
 
   @ApiProperty({ description: 'Is work hidden', default: false })
-  @IsBoolean()
   @IsOptional()
   isHidden?: string | boolean;
 
@@ -169,7 +167,6 @@ export class UpdateWorkDto {
   thumbnailUrl?: string;
 
   @ApiPropertyOptional({ description: 'Is featured item' })
-  @IsBoolean()
   @IsOptional()
   isFeatured?: string | boolean;
 
@@ -187,7 +184,6 @@ export class UpdateWorkDto {
   source?: WorkSource;
 
   @ApiPropertyOptional({ description: 'Is work hidden' })
-  @IsBoolean()
   @IsOptional()
   isHidden?: string | boolean;
 

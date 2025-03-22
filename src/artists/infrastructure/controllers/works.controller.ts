@@ -30,8 +30,10 @@ import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { WorkQueryDto } from '../../domain/dtos/work-query.dto';
 import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
 import { WorkSource } from '../../domain/workType';
+import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 
 @ApiTags('Works')
+@UseGuards(AuthGuard)
 @Controller('works')
 export class WorksController {
   constructor(

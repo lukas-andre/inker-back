@@ -62,7 +62,7 @@ export class StencilProvider extends BaseComponent {
         ) VALUES (
           $1, $2, $3, $4, $5, $6, 
           $7, $8, $9, $10, 
-          $11, $12, $13, to_tsvector('english', $14), NOW(), NOW()
+          $11, $12, $13, to_tsvector('english', $14) || to_tsvector('spanish', $14), NOW(), NOW()
         ) RETURNING id
       `, [
         artistId,
@@ -100,6 +100,24 @@ export class StencilProvider extends BaseComponent {
         }
       }
 
+      // Increment the appropriate counters
+      if (isHidden) {
+        // For hidden stencils, only increment the total counter
+        await queryRunner.query(`
+          UPDATE artists
+          SET stencils_count = stencils_count + 1
+          WHERE id = $1
+        `, [artistId]);
+      } else {
+        // For visible stencils, increment both counters
+        await queryRunner.query(`
+          UPDATE artists
+          SET stencils_count = stencils_count + 1,
+              visible_stencils_count = visible_stencils_count + 1
+          WHERE id = $1
+        `, [artistId]);
+      }
+
       // Commit the transaction
       await queryRunner.commitTransaction();
 
@@ -118,6 +136,15 @@ export class StencilProvider extends BaseComponent {
 
   async updateStencil(id: number, updateStencilDto: UpdateStencilDto, isFeatured: boolean, isHidden: boolean): Promise<Stencil> {
     const { tagIds, ...stencilData } = updateStencilDto;
+    
+    // First, get the current stencil data to handle visibility changes
+    const currentStencil = await this.findStencilById(id);
+    if (!currentStencil) {
+      throw new Error(`Stencil with id ${id} not found`);
+    }
+    
+    const artistId = currentStencil.artistId;
+    const wasHidden = currentStencil.isHidden;
     
     // Using a query runner to allow for a transaction
     const queryRunner = this.stencilRepository.manager.connection.createQueryRunner();
@@ -170,32 +197,44 @@ export class StencilProvider extends BaseComponent {
         `, [isFeatured, isHidden, id]);
       }
       
+      // If the visibility state changed, update the appropriate counters
+      if (wasHidden !== isHidden) {
+        if (isHidden) {
+          // Stencil changed from visible to hidden, decrement visible counter
+          await queryRunner.query(`
+            UPDATE artists
+            SET visible_stencils_count = visible_stencils_count - 1
+            WHERE id = $1 AND visible_stencils_count > 0
+          `, [artistId]);
+        } else {
+          // Stencil changed from hidden to visible, increment visible counter
+          await queryRunner.query(`
+            UPDATE artists
+            SET visible_stencils_count = visible_stencils_count + 1
+            WHERE id = $1
+          `, [artistId]);
+        }
+      }
+      
       // Get the current stencil data to update tsv
-      const currentStencil = await queryRunner.query(
+      const stencilData2 = await queryRunner.query(
         `SELECT title, description FROM stencils WHERE id = $1`,
         [id]
       );
       
-      // Only update tsv if title or description fields were updated or currentStencil exists
-      if ((stencilData.title || stencilData.description) && currentStencil.length > 0) {
+      // Only update tsv if title or description fields were updated or stencilData2 exists
+      if ((stencilData.title || stencilData.description) && stencilData2.length > 0) {
         // Combine original fields with updates for tsv computation
-        const title = stencilData.title || currentStencil[0].title || '';
-        const description = stencilData.description || currentStencil[0].description || '';
+        const title = stencilData.title || stencilData2[0].title || '';
+        const description = stencilData.description || stencilData2[0].description || '';
         
         // Update the tsv field
         await queryRunner.query(`
           UPDATE stencils 
-          SET tsv = to_tsvector('english', $1 || ' ' || $2)
+          SET tsv = to_tsvector('english', $1 || ' ' || $2) || to_tsvector('spanish', $1 || ' ' || $2)
           WHERE id = $3
         `, [title, description, id]);
       }
-      
-      // Note: In a real image update scenario, if imageUrl or image content is changed,
-      // we would need to:
-      // 1. Generate a new imageId using the UniqueIdService
-      // 2. Upload the new images with the new imageId
-      // 3. Increment the imageVersion
-      // 4. Update the database with new URLs and imageId
       
       // Update tag relationships if specified
       if (tagIds !== undefined) {
@@ -237,7 +276,55 @@ export class StencilProvider extends BaseComponent {
   }
 
   async deleteStencil(id: number): Promise<void> {
-    await this.stencilRepository.softDelete(id);
+    // Get the stencil first to retrieve its artistId and hidden status
+    const stencil = await this.findStencilById(id);
+    if (!stencil) return;
+    
+    const artistId = stencil.artistId;
+    const isHidden = stencil.isHidden;
+    
+    // Using a query runner to allow for a transaction
+    const queryRunner = this.stencilRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    
+    try {
+      // Soft delete the stencil
+      await queryRunner.query(`
+        UPDATE stencils
+        SET deleted_at = NOW()
+        WHERE id = $1
+      `, [id]);
+      
+      // Update the appropriate counters based on the stencil's visibility
+      if (isHidden) {
+        // If the stencil was hidden, only decrement the total counter
+        await queryRunner.query(`
+          UPDATE artists
+          SET stencils_count = stencils_count - 1
+          WHERE id = $1 AND stencils_count > 0
+        `, [artistId]);
+      } else {
+        // If the stencil was visible, decrement both counters
+        await queryRunner.query(`
+          UPDATE artists
+          SET stencils_count = stencils_count - 1,
+              visible_stencils_count = visible_stencils_count - 1
+          WHERE id = $1 AND stencils_count > 0 AND visible_stencils_count > 0
+        `, [artistId]);
+      }
+      
+      // Commit the transaction
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      // If anything fails, rollback the transaction
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Error deleting stencil', error);
+      throw error;
+    } finally {
+      // Release the query runner
+      await queryRunner.release();
+    }
   }
 
   async countStencilsByArtistId(artistId: number): Promise<number> {
