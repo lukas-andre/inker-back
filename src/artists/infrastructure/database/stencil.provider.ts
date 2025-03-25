@@ -444,7 +444,7 @@ export class StencilProvider extends BaseComponent {
 
     // Filtrar por etiquetas si se proporcionan
     if (tagIds && tagIds.length > 0) {
-      queryBuilder.andWhere('tags.id IN (:...tagIds)', { tagIds });
+      queryBuilder.andWhere('tags.id IN (:...tagIds)', { tagIds: tagIds.split(',').map(Number) });
     }
 
     // Filtrar por artista si se proporciona
