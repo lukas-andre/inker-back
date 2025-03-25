@@ -11,11 +11,9 @@ export class StencilSearchQueryDto {
   @IsString()
   query?: string;
 
-  @ApiPropertyOptional({ description: 'IDs de etiquetas para filtrar', type: [Number] })
+  @ApiPropertyOptional({ description: 'IDs de etiquetas para filtrar separadas por coma', type: String })
   @IsOptional()
-  @IsArray()
-  @Type(() => Number)
-  tagIds?: number[];
+  tagIds?: string;
 
   @ApiPropertyOptional({ description: 'ID del artista', type: Number })
   @IsOptional()

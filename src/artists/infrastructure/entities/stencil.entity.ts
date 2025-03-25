@@ -100,6 +100,9 @@ export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'is_downloadable', type: 'boolean', nullable: true, default: false })
   isDownloadable?: boolean;
 
+  @Column({ name: 'is_available', type: 'boolean', nullable: true, default: false })
+  isAvailable?: boolean;
+
   @Column({ name: 'license', type: 'text', nullable: true })
   license?: string;
 
