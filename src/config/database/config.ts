@@ -18,6 +18,7 @@ import { ratingDatabaseConf } from './review.config';
 import { tagDatabaseConf } from './tag.config';
 import { userDatabaseConf } from './user.config';
 import { notificationsDatabaseConf } from './notification.config';
+import { analyticsDatabaseConf } from './analytics.config';
 
 type DataBaseTypes = 'postgres';
 
@@ -47,6 +48,7 @@ type ConnectionConfig = {
   logging: LoggerOptions;
   keepConnectionAlive: boolean;
   synchronize?: boolean;
+  cache?: boolean;
 };
 
 // This type can be extended by the database configuration
@@ -101,4 +103,5 @@ export const databaseConfigs = [
   customerFeedDatabaseConf,
   oasConfig,
   notificationsDatabaseConf,
+  analyticsDatabaseConf,
 ];

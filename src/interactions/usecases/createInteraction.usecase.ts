@@ -2,9 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InteractionProvider } from '../infrastructure/database/interaction.provider';
 import { CreateInteractionDto, InteractionDto } from '../domain/dtos/interaction.dto';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import { RecordAnalyticsUseCase } from './recordAnalytics.usecase';
+
 @Injectable()
 export class CreateInteractionUseCase extends BaseUseCase {
-  constructor(private readonly interactionProvider: InteractionProvider) {
+  constructor(
+    private readonly interactionProvider: InteractionProvider,
+    private readonly recordAnalyticsUseCase: RecordAnalyticsUseCase,
+  ) {
     super(CreateInteractionUseCase.name);
   }
 
@@ -25,6 +30,13 @@ export class CreateInteractionUseCase extends BaseUseCase {
       }
     }
     
-    return this.interactionProvider.create(userId, dto);
+    // Create the interaction
+    const interaction = await this.interactionProvider.create(userId, dto);
+    
+    // Record analytics in the background (non-blocking)
+    this.recordAnalyticsUseCase.execute({ userId, dto })
+      .catch(error => this.logger.error(`Failed to record analytics: ${error.message}`, error.stack));
+    
+    return interaction;
   }
 }
