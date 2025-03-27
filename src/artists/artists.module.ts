@@ -45,6 +45,7 @@ import { CreateTagUseCase } from './usecases/stencil/create-tag.usecase';
 import { TagsModule } from '../tags/tags.module';
 import { ReviewAvgProvider } from '../reviews/database/providers/reviewAvg.provider';
 import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
+import { AnalyticsModule } from '../analytics/analytics.module';
 
 const useCases = [
   CreateArtistUseCase,
@@ -84,6 +85,7 @@ const useCases = [
 @Module({
   imports: [
     AgendaProviderModule,
+    AnalyticsModule,
     ArtistsProviderModule,
     FollowProviderModule,
     WorkProviderModule,

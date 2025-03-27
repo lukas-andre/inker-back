@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   AGENDA_DB_CONFIG_NAME,
   AGENDA_DB_CONNECTION_NAME,
+  ANALYTICS_DB_CONFIG_NAME,
+  ANALYTICS_DB_CONNECTION_NAME,
   ARTIST_DB_CONFIG_NAME,
   ARTIST_DB_CONNECTION_NAME,
   CUSTOMER_DB_CONFIG_NAME,
@@ -122,6 +124,13 @@ import {
       name: NOTIFICATIONS_DB_CONNECTION_NAME,
       useFactory: (configService: ConfigService) =>
         configService.get(NOTIFICATIONS_DB_CONFIG_NAME),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: ANALYTICS_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(ANALYTICS_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
   ],

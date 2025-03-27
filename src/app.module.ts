@@ -3,6 +3,7 @@ import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
 import { AgendaModule } from './agenda/agenda.module';
 import { AlertGateway } from './alert/alert.gateway';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { ArtistsModule } from './artists/artists.module';
 import { AuthModule } from './auth/auth.module';
 import { ChatGateway } from './chat/chat.gateway';
@@ -22,7 +23,6 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { SchedulerModule } from './schedulers/scheduler.module';
 import { UsersModule } from './users/users.module';
 import { SyncQueueModule } from './queues/sync/sync.queue.module';
-import { FastifyMulterModule } from '@nest-lab/fastify-multer';
 @Module({
   imports: [
     BullModule.forRoot({
@@ -36,6 +36,7 @@ import { FastifyMulterModule } from '@nest-lab/fastify-multer';
     //   port: 8000,
     // }),
     AgendaModule,
+    AnalyticsModule,
     ArtistsModule,
     AuthModule,
     CustomersModule,
