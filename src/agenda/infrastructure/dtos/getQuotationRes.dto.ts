@@ -6,6 +6,7 @@ import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
 import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
 import { LocationDto } from '../../../global/infrastructure/dtos/geometry.dto';
+import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
 
 export class QuotationDto {
   @ApiProperty()
@@ -16,6 +17,9 @@ export class QuotationDto {
 
   @ApiProperty()
   artistId: number;
+
+  @ApiProperty({ required: false })
+  stencilId?: number;
 
   @ApiProperty()
   description: string;
@@ -81,4 +85,7 @@ export class QuotationDto {
 
   @ApiProperty()
   location: LocationDto;
+
+  @ApiProperty({ required: false })
+  stencil?: Stencil;
 }

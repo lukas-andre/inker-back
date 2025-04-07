@@ -3,6 +3,7 @@ import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Queue } from 'bull';
 
 import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
+import { StencilProvider } from '../../artists/infrastructure/database/stencil.provider';
 import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
 import {
   DomainBadRule,
@@ -29,6 +30,7 @@ export class CreateQuotationUseCase
     private readonly quotationProvider: QuotationProvider,
     private readonly customerProvider: CustomerProvider,
     private readonly artistProvider: ArtistProvider,
+    private readonly stencilProvider: StencilProvider,
     private readonly multimediasService: MultimediasService,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
@@ -64,6 +66,14 @@ export class CreateQuotationUseCase
       throw new DomainNotFound('Customer not found');
     }
 
+    // Validate stencil if provided
+    if (createQuotationDto.stencilId) {
+      const stencil = await this.stencilProvider.findStencilById(createQuotationDto.stencilId);
+      if (!stencil) {
+        throw new DomainNotFound('Stencil not found');
+      }
+    }
+
     let quotationId: number;
 
     const queryRunner = this.quotationProvider.source.createQueryRunner();
@@ -73,8 +83,8 @@ export class CreateQuotationUseCase
 
     try {
       const createQuotationSql = `
-        INSERT INTO quotation (customer_id, artist_id, description, status, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, NOW(), NOW())
+        INSERT INTO quotation (customer_id, artist_id, description, status, stencil_id, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
         RETURNING id;
       `;
 
@@ -83,6 +93,7 @@ export class CreateQuotationUseCase
         createQuotationDto.artistId,
         createQuotationDto.description,
         'pending' as QuotationStatus,
+        createQuotationDto.stencilId || null,
       ];
 
       const quotationResult = await queryRunner.query(

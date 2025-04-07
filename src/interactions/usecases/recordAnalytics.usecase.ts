@@ -55,7 +55,7 @@ export class RecordAnalyticsUseCase {
     await this.recordInteractionUseCase.execute(userId, {
       contentId: dto.entityId,
       contentType,
-      interactionType,
+      interactionType: interactionType,
     });
   }
 } 

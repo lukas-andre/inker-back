@@ -9,6 +9,17 @@ import { ArtistMetricsViewer } from '../entities/artist-metrics-viewer.entity';
 import { ContentType } from '../../domain/enums/content-types.enum';
 import { InteractionType, ViewSource } from '../../domain/enums/interaction-types.enum';
 import { ANALYTICS_DB_CONNECTION_NAME } from '../../../databases/constants';
+import { IContentSummaryMetrics } from '../../domain/interfaces/content-summary-metrics.interface';
+import { AnalyticsInteractionResponseDto } from '../../domain/dtos/analytics-interaction-response.dto';
+
+interface ToggleReactionResponse {
+  result: boolean;
+  isLiked: boolean;
+  metrics: {
+    count: number;
+    userIds: number[];
+  };
+}
 
 @Injectable()
 export class AnalyticsProvider extends BaseComponent {
@@ -87,7 +98,7 @@ export class AnalyticsProvider extends BaseComponent {
     return this.artistMetricsRepository.save(metrics);
   }
 
-  async incrementContentView(contentId: number, contentType: ContentType, userId: number, viewSource?: ViewSource): Promise<void> {
+  async incrementContentView(contentId: number, contentType: ContentType, userId: number, viewSource?: ViewSource): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
 
     // Increment total views count
@@ -130,6 +141,22 @@ export class AnalyticsProvider extends BaseComponent {
         [metrics.id]
       );
     }
+
+    // Get updated metrics
+    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
+    
+    return {
+      result: true,
+      state: {
+        count: updatedMetrics?.metrics.views?.count || 0,
+        userIds: [userId]
+      },
+      metrics: {
+        viewCount: updatedMetrics?.metrics.views?.count || 0,
+        uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0
+      }
+    };
   }
 
   async incrementArtistView(artistId: number, userId: number): Promise<void> {
@@ -173,7 +200,7 @@ export class AnalyticsProvider extends BaseComponent {
     }
   }
 
-  async toggleContentReaction(contentId: number, contentType: ContentType, userId: number): Promise<boolean> {
+  async toggleContentReaction(contentId: number, contentType: ContentType, userId: number): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
     
     // Initialize reactions if they don't exist
@@ -211,10 +238,13 @@ export class AnalyticsProvider extends BaseComponent {
              (COALESCE((metrics->'reactions'->'like'->>'count')::int, 0) - 1)::text::jsonb
            ),
            '{reactions,like,userIds}', 
-           (
-             SELECT jsonb_agg(u) 
-             FROM jsonb_array_elements((metrics->'reactions'->'like'->'userIds')) as u 
-             WHERE u::text != $1::text
+           COALESCE(
+             (
+               SELECT jsonb_agg(u) 
+               FROM jsonb_array_elements((metrics->'reactions'->'like'->'userIds')) as u 
+               WHERE u::text != $1::text
+             ),
+             '[]'::jsonb
            )
          )
          WHERE id = $2`,
@@ -243,10 +273,24 @@ export class AnalyticsProvider extends BaseComponent {
     // Update engagement rate
     await this.updateContentEngagementRate(metrics.id);
     
-    return isLiked;
+    // Get updated metrics
+    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
+    
+    return {
+      result: true,
+      state: {
+        count: updatedMetrics?.metrics.reactions?.like?.count || 0,
+        userIds: updatedMetrics?.metrics.reactions?.like?.userIds || []
+      },
+      metrics: {
+        viewCount: updatedMetrics?.metrics.views?.count || 0,
+        uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0
+      }
+    };
   }
 
-  async recordViewDuration(contentId: number, contentType: ContentType, durationSeconds: number): Promise<void> {
+  async recordViewDuration(contentId: number, contentType: ContentType, durationSeconds: number): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
     
     // Initialize view duration if it doesn't exist
@@ -284,9 +328,25 @@ export class AnalyticsProvider extends BaseComponent {
     
     // Update engagement rate
     await this.updateContentEngagementRate(metrics.id);
+
+    // Get updated metrics
+    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
+    
+    return {
+      result: true,
+      state: {
+        count: updatedMetrics?.metrics.viewDuration?.totalSeconds || 0,
+        userIds: []
+      },
+      metrics: {
+        viewCount: updatedMetrics?.metrics.views?.count || 0,
+        uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0
+      }
+    };
   }
 
-  async recordConversion(contentId: number, contentType: ContentType): Promise<void> {
+  async recordConversion(contentId: number, contentType: ContentType): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
     
     // Initialize conversions if they don't exist
@@ -321,9 +381,25 @@ export class AnalyticsProvider extends BaseComponent {
        WHERE id = $1`,
       [metrics.id]
     );
+
+    // Get updated metrics
+    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
+    
+    return {
+      result: true,
+      state: {
+        count: updatedMetrics?.metrics.conversions?.count || 0,
+        userIds: []
+      },
+      metrics: {
+        viewCount: updatedMetrics?.metrics.views?.count || 0,
+        uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0
+      }
+    };
   }
 
-  async recordImpression(contentId: number, contentType: ContentType): Promise<void> {
+  async recordImpression(contentId: number, contentType: ContentType): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
     
     // Initialize impressions if they don't exist
@@ -358,9 +434,25 @@ export class AnalyticsProvider extends BaseComponent {
        WHERE id = $1`,
       [metrics.id]
     );
+
+    // Get updated metrics
+    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
+    
+    return {
+      result: true,
+      state: {
+        count: updatedMetrics?.metrics.impressions?.count || 0,
+        userIds: []
+      },
+      metrics: {
+        viewCount: updatedMetrics?.metrics.views?.count || 0,
+        uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0
+      }
+    };
   }
 
-  async recordArtistFollow(artistId: number, fromContentView: boolean = false): Promise<void> {
+  async recordArtistFollow(artistId: number, fromContentView: boolean = false): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertArtistMetrics(artistId);
     
     // Initialize followers if they don't exist
@@ -401,6 +493,21 @@ export class AnalyticsProvider extends BaseComponent {
        WHERE id = $2`,
       [fromContentViewsIncrement, metrics.id]
     );
+
+    // Get updated metrics
+    const updatedMetrics = await this.findArtistMetrics(artistId);
+    
+    return {
+      result: true,
+      state: {
+        count: updatedMetrics?.metrics.followers?.count || 0,
+        userIds: []
+      },
+      metrics: {
+        viewCount: updatedMetrics?.metrics.views?.count || 0,
+        uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
+      }
+    };
   }
 
   private async updateContentEngagementRate(metricsId: number): Promise<void> {
@@ -432,13 +539,15 @@ export class AnalyticsProvider extends BaseComponent {
     return metrics.metrics.reactions.like.userIds.includes(userId);
   }
 
-  async getSummaryMetricsForContent(contentId: number, contentType: ContentType): Promise<{viewCount: number, likeCount: number}> {
+  async getSummaryMetricsForContent(contentId: number, contentType: ContentType, disableCache?: boolean): Promise<IContentSummaryMetrics> {
+    const cacheOptions = disableCache ? undefined : {
+      id: `content_metrics_summary_${contentType}_${contentId}`,
+      milliseconds: 60000 // 1 minute cache
+    };
+
     const metrics = await this.contentMetricsRepository.findOne({
       where: { contentId, contentType },
-      cache: {
-        id: `content_metrics_summary_${contentType}_${contentId}`,
-        milliseconds: 60000 // 1 minute cache
-      }
+      cache: cacheOptions
     });
     
     if (!metrics) {
@@ -454,21 +563,23 @@ export class AnalyticsProvider extends BaseComponent {
     };
   }
   
-  async getBatchSummaryMetrics(contentIds: number[], contentType: ContentType): Promise<Map<number, {viewCount: number, likeCount: number}>> {
+  async getBatchSummaryMetrics(contentIds: number[], contentType: ContentType, disableCache?: boolean): Promise<Map<number, IContentSummaryMetrics>> {
     if (contentIds.length === 0) {
       return new Map();
     }
     
+    const cacheOptions = disableCache ? undefined : {
+      id: `content_metrics_batch_${contentType}_${contentIds.join('_')}`,
+      milliseconds: 60000 // 1 minute cache
+    };
+    
     const metrics = await this.contentMetricsRepository.find({
       where: contentIds.map(id => ({ contentId: id, contentType })),
-      cache: {
-        id: `content_metrics_batch_${contentType}_${contentIds.join('_')}`,
-        milliseconds: 60000 // 1 minute cache
-      }
+      cache: cacheOptions
     });
     
     // Create a map of contentId -> metrics
-    const metricsMap = new Map<number, {viewCount: number, likeCount: number}>();
+    const metricsMap = new Map<number, IContentSummaryMetrics>();
     
     // Initialize with default values for all requested IDs
     contentIds.forEach(id => {

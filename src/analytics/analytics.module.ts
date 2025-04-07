@@ -8,6 +8,7 @@ import { GetArtistMetricsUseCase } from './usecases/getArtistMetrics.usecase';
 import { GetBatchContentMetricsUseCase } from './usecases/getBatchContentMetrics.usecase';
 import { RecordArtistFollowUseCase } from './usecases/recordArtistFollow.usecase';
 import { GetContentSummaryMetricsUseCase } from './usecases/getContentSummaryMetrics.usecase';
+import { ContentMetricsEnricherService } from './infrastructure/services/content-metrics-enricher.service';
 
 const useCases = [
   RecordInteractionUseCase,
@@ -19,15 +20,20 @@ const useCases = [
   GetContentSummaryMetricsUseCase,
 ];
 
+const services = [
+  ContentMetricsEnricherService,
+];
+
 @Module({
   imports: [AnalyticsProviderModule],
   controllers: [AnalyticsController],
-  providers: [...useCases],
+  providers: [...useCases, ...services],
   exports: [
     RecordInteractionUseCase,
     RecordArtistViewUseCase,
     RecordArtistFollowUseCase,
     GetContentSummaryMetricsUseCase,
+    ContentMetricsEnricherService,
   ],
 })
 export class AnalyticsModule {} 

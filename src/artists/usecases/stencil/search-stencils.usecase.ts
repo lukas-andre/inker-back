@@ -4,36 +4,58 @@ import { StencilProvider } from '../../infrastructure/database/stencil.provider'
 import { StencilSearchQueryDto } from '../../domain/dtos/stencil-search.dto';
 import { PaginatedStencilResponseDto, StencilWithRelevanceDto } from '../../domain/dtos/paginated-stencil-response.dto';
 import { InteractionProvider } from '../../../interactions/infrastructure/database/interaction.provider';
+import { ContentMetricsEnricherService, WithMetrics, MetricsOptions } from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
+import { ContentType } from '../../../analytics/domain/enums/content-types.enum';
+
+type StencilWithRelevanceAndMetrics = StencilWithRelevanceDto & WithMetrics;
+
+interface PaginatedStencilResponseWithMetrics extends Omit<PaginatedStencilResponseDto, 'items'> {
+  items: StencilWithRelevanceAndMetrics[];
+}
 
 @Injectable()
 export class SearchStencilsUseCase extends BaseUseCase {
   constructor(
     private readonly stencilProvider: StencilProvider,
     private readonly interactionProvider: InteractionProvider,
+    private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(SearchStencilsUseCase.name);
   }
 
-  async execute(params: StencilSearchQueryDto): Promise<PaginatedStencilResponseDto> {
-    const { query, page = 1, limit = 10, sortBy = 'relevance' } = params;
+  async execute(params: StencilSearchQueryDto & { 
+    includeMetrics?: boolean; 
+    userId?: number;
+    disableCache?: boolean;
+  }): Promise<PaginatedStencilResponseWithMetrics> {
+    const { query, page = 1, limit = 10, sortBy = 'relevance', includeMetrics = true, userId, disableCache } = params;
 
     // Usar el método searchStencils del provider para buscar estenciles
     const [stencils, total] = await this.stencilProvider.searchStencils(params);
 
     // Enriquecer los resultados con información de relevancia y popularidad
-    const enrichedStencils: StencilWithRelevanceDto[] = await this.enrichSearchResults(stencils, query, sortBy);
+    const stencilsWithRelevance = await this.enrichSearchResults(stencils, query, sortBy);
 
     // Calcular páginas totales
     const pages = Math.ceil(total / limit);
-
-    // Crear respuesta paginada
-    return {
-      items: enrichedStencils,
+    
+    const paginatedResponse = {
+      items: stencilsWithRelevance,
       page,
       limit,
       total,
       pages,
     };
+    
+    const options: MetricsOptions = { disableCache };
+    
+    // Add metrics if requested
+    return includeMetrics 
+      ? await this.metricsEnricher.enrichPaginatedWithMetrics(paginatedResponse, ContentType.STENCIL, userId, options)
+      : {
+          ...paginatedResponse,
+          items: this.metricsEnricher.addEmptyMetricsToAll(stencilsWithRelevance)
+        };
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Module, CacheModule, forwardRef } from '@nestjs/common';
 
 import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
+import { StencilProviderModule } from '../artists/infrastructure/database/stencilProvider.module';
 import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
 import { LocationProviderModule } from '../locations/infrastructure/database/locationProvider.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
@@ -57,6 +58,7 @@ import { CreateAgendaEventService } from './usecases/common/createAgendaEvent.se
     CacheModule.register(),
     AgendaProviderModule,
     ArtistsProviderModule,
+    StencilProviderModule,
     UserProviderModule,
     CustomerProviderModule,
     ReviewProviderModule,

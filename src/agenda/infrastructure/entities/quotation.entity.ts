@@ -256,6 +256,9 @@ export class Quotation extends BaseEntity {
   })
   customerReadAt?: Date;
 
+  @Column({ name: 'stencil_id', nullable: true })
+  stencilId?: number;
+
   @OneToMany(() => QuotationHistory, history => history.quotation)
   history?: QuotationHistory[];
 }

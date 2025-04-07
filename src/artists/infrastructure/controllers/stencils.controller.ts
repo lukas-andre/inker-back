@@ -12,6 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
   ValidationPipe,
+  Headers,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -48,8 +49,10 @@ export class StencilsController {
   async getStencilsByArtistId(
     @Param('artistId', ParseIntPipe) artistId: number,
     @Query() query: StencilQueryDto,
+    @Headers('cache-control') cacheControl?: string
   ): Promise<PaginatedStencilResponseDto> {
-    return this.artistsHandler.getStencils(artistId, query);
+    const disableCache = cacheControl === 'no-cache';
+    return this.artistsHandler.getStencils(artistId, query, disableCache);
   }
 
   @Get(':id')
@@ -60,8 +63,12 @@ export class StencilsController {
     type: StencilDto,
   })
   @ApiParam({ name: 'id', description: 'Stencil ID' })
-  async getStencilById(@Param('id') id: number): Promise<StencilDto> {
-    return this.artistsHandler.getStencilById(Number(id));
+  async getStencilById(
+    @Param('id') id: number,
+    @Headers('cache-control') cacheControl?: string
+  ): Promise<StencilDto> {
+    const disableCache = cacheControl === 'no-cache';
+    return this.artistsHandler.getStencilById(Number(id), disableCache);
   }
 
   @Post()

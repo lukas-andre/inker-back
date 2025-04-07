@@ -7,6 +7,7 @@ import {
   ValidationPipe,
   Post,
   Body,
+  Headers,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -46,6 +47,7 @@ class SearchRankingInfoDto {
 }
 
 @ApiTags('Stencil Search')
+@UseGuards(AuthGuard)
 @Controller('stencil-search')
 export class StencilSearchController {
   constructor(private readonly artistsHandler: ArtistsHandler) {}
@@ -59,8 +61,13 @@ export class StencilSearchController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async searchStencils(
     @Query() searchParams: StencilSearchQueryDto,
+    @Headers('cache-control') cacheControl?: string
   ): Promise<PaginatedStencilResponseDto> {
-    return this.artistsHandler.searchStencils(searchParams);
+    const disableCache = cacheControl === 'no-cache';
+    return this.artistsHandler.searchStencils({
+      ...searchParams,
+      disableCache
+    });
   }
 
   @Get('ranking-info')

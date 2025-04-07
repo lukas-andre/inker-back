@@ -35,6 +35,15 @@ export class CreateQuotationReqDto {
   readonly artistId: number;
 
   @ApiProperty({
+    example: 123,
+    description: 'Stencil Id (optional) - Reference to a specific stencil design',
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  readonly stencilId?: number;
+
+  @ApiProperty({
     type: 'string',
     format: 'binary',
     isArray: true,

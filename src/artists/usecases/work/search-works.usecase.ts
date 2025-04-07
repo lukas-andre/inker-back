@@ -5,36 +5,58 @@ import { WorkSearchQueryDto } from '../../domain/dtos/work-search.dto';
 import { PaginatedWorkResponseDto, WorkWithRelevanceDto } from '../../domain/dtos/paginated-work-response.dto';
 import { InteractionProvider } from '../../../interactions/infrastructure/database/interaction.provider';
 import { WorkDto } from '../../domain/dtos/work.dto';
+import { ContentMetricsEnricherService, WithMetrics, MetricsOptions } from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
+import { ContentType } from '../../../analytics/domain/enums/content-types.enum';
+
+type WorkWithRelevanceAndMetrics = WorkWithRelevanceDto & WithMetrics;
+
+interface PaginatedWorkResponseWithMetrics extends Omit<PaginatedWorkResponseDto, 'items'> {
+  items: WorkWithRelevanceAndMetrics[];
+}
 
 @Injectable()
 export class SearchWorksUseCase extends BaseUseCase {
   constructor(
     private readonly workProvider: WorkProvider,
     private readonly interactionProvider: InteractionProvider,
+    private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(SearchWorksUseCase.name);
   }
 
-  async execute(params: WorkSearchQueryDto): Promise<PaginatedWorkResponseDto> {
-    const { query, page = 1, limit = 10, sortBy = 'relevance' } = params;
+  async execute(params: WorkSearchQueryDto & { 
+    includeMetrics?: boolean; 
+    userId?: number;
+    disableCache?: boolean;
+  }): Promise<PaginatedWorkResponseWithMetrics> {
+    const { query, page = 1, limit = 10, sortBy = 'relevance', includeMetrics = true, userId, disableCache } = params;
 
     // Usar el método searchWorks del provider para buscar trabajos
     const [works, total] = await this.workProvider.searchWorks(params);
 
     // Enriquecer los resultados con información de relevancia y popularidad
-    const enrichedWorks: WorkWithRelevanceDto[] = await this.enrichSearchResults(works, query, sortBy);
+    const worksWithRelevance = await this.enrichSearchResults(works, query, sortBy);
 
     // Calcular páginas totales
     const pages = Math.ceil(total / limit);
     
-    // Crear respuesta paginada
-    return {
-      items: enrichedWorks,
+    const paginatedResponse = {
+      items: worksWithRelevance,
       page,
       limit,
       total,
       pages
     };
+    
+    const options: MetricsOptions = { disableCache };
+    
+    // Add metrics if requested
+    return includeMetrics 
+      ? await this.metricsEnricher.enrichPaginatedWithMetrics(paginatedResponse, ContentType.WORK, userId, options)
+      : {
+          ...paginatedResponse,
+          items: this.metricsEnricher.addEmptyMetricsToAll(worksWithRelevance)
+        };
   }
 
   /**
