@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -27,9 +28,11 @@ import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { ReviewIdPipe } from './pipes/review.pipe';
 import { ReviewReactionPipe } from './pipes/reviewReactionEnum.pipe';
 import { ReviewHandler } from './reviews.handler';
+import { AuthGuard } from '../global/infrastructure/guards/auth.guard';
 
 @ApiTags('reviews')
 @Controller('reviews')
+@UseGuards(AuthGuard)
 export class ReviewsController {
   private readonly logger = new Logger(ReviewsController.name);
   constructor(private readonly handler: ReviewHandler) {}

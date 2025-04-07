@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Queue } from 'bull';
 
 import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
 import {
@@ -9,22 +11,34 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
+import { AgendaEventcreatedJobType } from '../../queues/notifications/domain/schemas/agenda';
+import { queues } from '../../queues/queues';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
-import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
 import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
 import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { CreateAgendaEventService } from './common/createAgendaEvent.service';
 
 @Injectable()
-export class AddEventUseCase extends BaseUseCase implements UseCase {
+export class AddEventUseCase
+  extends BaseUseCase
+  implements UseCase, OnModuleDestroy
+{
   constructor(
     private readonly agendaProvider: AgendaProvider,
     private readonly agendaEventProvider: AgendaEventProvider,
     private readonly customerProvider: CustomerProvider,
+    private readonly createAgendaEventService: CreateAgendaEventService,
+    @InjectQueue(queues.notification.name)
+    private readonly notificationQueue: Queue,
   ) {
     super(AddEventUseCase.name);
   }
 
-  async execute(addEventDto: AddEventReqDto): Promise<AgendaEvent> {
+  async onModuleDestroy() {
+    await this.notificationQueue.close();
+  }
+
+  async execute(addEventDto: AddEventReqDto): Promise<void> {
     const existsAgenda = await this.agendaProvider.findById(
       addEventDto.agendaId,
     );
@@ -52,9 +66,43 @@ export class AddEventUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule('Already exists event in current date range');
     }
 
-    return await this.agendaEventProvider.saveWithAddEventDto(
-      addEventDto,
-      existsAgenda,
-    );
+    // Use the centralized event creation service
+    const result = await this.createAgendaEventService.createEventWithHistory({
+      agendaId: existsAgenda.id,
+      title: addEventDto.title,
+      info: addEventDto.info,
+      color: addEventDto.color,
+      startDate: addEventDto.start,
+      endDate: addEventDto.end,
+      notification: addEventDto.notification,
+      customerId: existsCustomer.id,
+      createdBy: existsAgenda.artistId, // Using artist ID as creator
+    });
+
+    if (!result.transactionIsOK || !result.eventId) {
+      throw new DomainBadRule('Error creating event');
+    }
+    
+    // Send notification
+    const queueMessage: AgendaEventcreatedJobType = {
+      jobId: 'EVENT_CREATED',
+      metadata: {
+        eventId: result.eventId,
+        artistId: existsAgenda.artistId,
+        customerId: existsCustomer.id,
+      },
+      notificationTypeId: 'EMAIL',
+    };
+
+    try {
+      const job = await this.notificationQueue.add(queueMessage);
+      this.logger.log({
+        message: 'Event published to notification queue',
+        data: queueMessage,
+        job,
+      });
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 }

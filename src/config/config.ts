@@ -3,6 +3,7 @@ import { authConfig } from './auth.config';
 import { AWSConfig } from './aws.config';
 import { databaseConfigs } from './database/config';
 import { oasConfig } from './oas.config';
+import { sendGridConfig } from './sendgrid.config';
 import { verificationHashConf } from './verificationHash';
 
 export const config = [
@@ -11,5 +12,6 @@ export const config = [
   AWSConfig,
   verificationHashConf,
   oasConfig,
+  sendGridConfig,
   ...databaseConfigs,
 ];

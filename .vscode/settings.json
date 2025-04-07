@@ -1,5 +1,4 @@
 {
-  "compile-hero.disable-compile-files-on-did-save-code": true,
   "terminal.integrated.fontFamily": "Hack Nerd Font",
   "terminal.integrated.defaultProfile.osx": "zsh",
   "editor.formatOnSave": false,
@@ -10,36 +9,5 @@
   "files.exclude": {
     "**/.git": false,
   },
-  "cSpell.words": [
-    "activar",
-    "c",
-    "código",
-    "cuenta",
-    "digo",
-    "dtos",
-    "eter",
-    "fastify",
-    "fieldame",
-    "fieldname",
-    "Followeds",
-    "fullname",
-    "Ingrese",
-    "jsonb",
-    "kilometros",
-    "latitud",
-    "longitud",
-    "Multimedias",
-    "n",
-    "nestjs",
-    "originalname",
-    "Rango",
-    "siguiente",
-    "SRID",
-    "typeorm",
-    "unfollow",
-    "usecase",
-    "usecases",
-    "verificaci",
-    "verificación"
-  ]
+  "jest.runMode": "on-demand"
 }

@@ -1,4 +1,4 @@
-import { Column, DeleteDateColumn, Entity } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { CustomerFollows } from '../../domain/interfaces/customerFollows.interface';
@@ -31,6 +31,13 @@ export class Customer extends BaseEntity {
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;
+
+  // This doesn't have index because it's already indexed in the database! it's a tsvector column
+  // and it's important to check if it's already indexed in the database before adding an index here
+  // if it's already indexed in the database, it will throw an error
+  // check fulltextsearch_customer.sql file in the migrations folder for more information
+  @Column({ type: 'tsvector', nullable: false })
+  tsv: string;
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;

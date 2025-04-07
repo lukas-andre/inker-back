@@ -6,6 +6,7 @@ import { HttpAdapterHost } from '@nestjs/core';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import stringify from 'fast-safe-stringify';
+import multipart from '@fastify/multipart';
 
 import { oasConfig } from './config/oas.config';
 import { corsOptions, validationPipeOptions } from './constants';
@@ -24,7 +25,11 @@ const configureOAS = async (app: NestFastifyApplication) => {
       )
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    fs.writeFileSync('./postman/schemas/oas.json', stringify(document));
+    try {
+      fs.writeFileSync('./postman/schemas/oas.json', stringify(document));
+    } catch (error) {
+      Logger.error(error);
+    }
     SwaggerModule.setup(oasConf.path, app, document);
 
     Logger.log(
@@ -43,8 +48,7 @@ export const configure = async (app: NestFastifyApplication) => {
   // TODO: USE THROTTLE MIDDLEWARE https://docs.nestjs.com/security/rate-limiting#rate-limiting
   // await app.register(rateLimit, rateLimitOptions);
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  await app.register(require('@fastify/multipart'));
+  await app.register(multipart);
 
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
 

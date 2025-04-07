@@ -10,6 +10,7 @@ import {
 } from '../../global/domain/interfaces/jwtPayload.interface';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { User } from '../../users/infrastructure/entities/user.entity';
+import { Permission } from '../../users/infrastructure/entities/permission.entity';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,9 @@ export class AuthService {
       userType: UserType[userType],
       userTypeId: entity.id,
       profileThumbnail: entity.profileThumbnail,
-      permission: user.role.permissions.map(permission => ({
+      permission: (
+        user as User & { permissions: Permission[] }
+      ).permissions.map(permission => ({
         c: permission.controller,
         a: permission.action,
       })),

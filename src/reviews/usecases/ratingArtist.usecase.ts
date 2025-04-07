@@ -18,12 +18,21 @@ import {
 import { ERROR_CREATING_REVIEW } from '../codes';
 import { ReviewProvider } from '../database/providers/review.provider';
 import { ReviewArtistRequestDto } from '../dtos/reviewArtistRequest.dto';
+import { queues } from '../../queues/queues';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import {
+  SyncArtistRatingsJobType,
+  SyncJobIdSchema,
+} from '../../queues/sync/jobs';
 
 @Injectable()
 export class RatingArtistUsecase extends BaseUseCase implements UseCase {
   constructor(
     private readonly reviewProvider: ReviewProvider,
     private readonly agendaProvider: AgendaProvider,
+    @InjectQueue(queues.sync.name)
+    private readonly syncQueue: Queue,
   ) {
     super(RatingArtistUsecase.name);
   }
@@ -84,10 +93,28 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
       throw new DomainUnProcessableEntity(ERROR_CREATING_REVIEW);
     }
 
+    await this.dispatchSyncArtistRatingEvent(artistId);
+
     return {
       status: DefaultResponseStatus.CREATED,
       data: 'Artist rated successfully',
     };
+  }
+  async dispatchSyncArtistRatingEvent(artistId: number): Promise<void> {
+    try {
+      await this.syncQueue.add({
+        jobId: SyncJobIdSchema.enum.SYNC_ARTIST_RATINGS,
+        metadata: {
+          artistId,
+        } as SyncArtistRatingsJobType,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        this.logger.error(`Error syncing artist rating: ${error.message}`);
+      } else {
+        this.logger.error('Error syncing artist rating: Unknown error');
+      }
+    }
   }
 
   private isUserNotReviewIt(body: ReviewArtistRequestDto): boolean {

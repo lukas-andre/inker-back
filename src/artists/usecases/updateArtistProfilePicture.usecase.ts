@@ -39,11 +39,10 @@ export class UpdateArtistProfilePictureUseCase
       throw new DomainBadRequest('Not valid file to upload');
     }
 
-    this.logger.log(`id:  ${id}`);
     let artist = await this.artistProvider.findById(id);
 
     if (!artist) {
-      throw new DomainNotFound('Artists not found');
+      throw new DomainNotFound('Artist not found');
     }
 
     const fileExtension = mime.extension(file.mimetype);
@@ -52,14 +51,17 @@ export class UpdateArtistProfilePictureUseCase
       throw new DomainBadRequest(NOT_VALID_FILE_TYPE_TO_UPLOAD);
     }
 
+    const version = (artist.profileThumbnailVersion || 0) + 1;
+    artist.profileThumbnailVersion = version;
+
     const source = `artist/${id}`;
     console.time('uploadFile');
     let uploadResult: UploadToS3Result[];
     try {
       uploadResult = await Promise.all([
-        this.uploadNormal(file, source, fileExtension),
-        this.uploadSmall(file, source, fileExtension),
-        this.uploadTiny(file, source, fileExtension),
+        this.uploadNormal(file, source, fileExtension, version),
+        this.uploadSmall(file, source, fileExtension, version),
+        this.uploadTiny(file, source, fileExtension, version),
       ]);
     } catch (error) {
       throw new DomainBadRequest((error as Error).message);
@@ -69,18 +71,28 @@ export class UpdateArtistProfilePictureUseCase
 
     artist = await this.artistProvider.save(artist);
 
-    this.logger.log(`artist: ' ${stringify(artist)}`);
+    this.logger.log({ artist });
 
     return artist;
   }
 
-  async uploadNormal(file: any, source: string, fileExtension: string) {
-    const fileName = `profile_picture.${fileExtension}`;
+  async uploadNormal(
+    file: any,
+    source: string,
+    fileExtension: string,
+    version: number,
+  ) {
+    const fileName = `profile_picture_${version}.${fileExtension}`;
     return this.multimediasService.upload(file, source, fileName);
   }
 
-  async uploadSmall(file: any, source: string, fileExtension: string) {
-    const fileName = `profile_picture_small.${fileExtension}`;
+  async uploadSmall(
+    file: any,
+    source: string,
+    fileExtension: string,
+    version: number,
+  ) {
+    const fileName = `profile_picture_small_${version}.${fileExtension}`;
 
     const data = await sharp(file.buffer)
       .resize({ width: 512 })
@@ -90,8 +102,13 @@ export class UpdateArtistProfilePictureUseCase
     return this.multimediasService.upload(file, source, fileName);
   }
 
-  async uploadTiny(file: any, source: string, fileExtension: string) {
-    const fileName = `profile_picture_tiny.${fileExtension}`;
+  async uploadTiny(
+    file: any,
+    source: string,
+    fileExtension: string,
+    version: number,
+  ) {
+    const fileName = `profile_picture_tiny_${version}.${fileExtension}`;
 
     const data = await sharp(file.buffer)
       .resize({ width: 50 })

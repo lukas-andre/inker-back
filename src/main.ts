@@ -11,6 +11,7 @@ import { appConfig } from './config/app.config';
 import { configure } from './configure';
 import { SERVICE_NAME } from './constants';
 
+// test
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -24,6 +25,7 @@ async function bootstrap() {
   await configure(app);
 
   const appConf: ConfigType<typeof appConfig> = app.get(appConfig.KEY);
+  console.log(appConf);
   await app.listen(appConf.port, appConf.host);
 
   const appUrl = await app.getUrl();

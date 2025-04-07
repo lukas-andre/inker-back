@@ -5,7 +5,7 @@ import { Tag } from './tag.entity';
 import { TagsService } from './tags.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tag], 'tag-db')],
+  imports: [TypeOrmModule.forFeature([Tag], 'artist-db')],
   providers: [TagsService],
   exports: [TagsService],
 })

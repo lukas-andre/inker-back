@@ -1,3 +1,5 @@
+import { UserType } from '../../../users/domain/enums/userType.enum';
+
 export interface JwtPermission {
   c: string;
   a: string;
@@ -8,7 +10,7 @@ export interface JwtPayload {
   username: string;
   fullname: string;
   email?: string;
-  userType: string;
+  userType: UserType;
   userTypeId: number;
   profileThumbnail: string;
   permission: JwtPermission[];

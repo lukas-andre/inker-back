@@ -9,6 +9,10 @@ import { LocationsController } from './infrastructure/locations.controller';
 import { LocationsHandler } from './infrastructure/locations.handler';
 import { AddLocationByApiUseCase } from './usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
+import { CreateArtistLocationUseCase } from './useCases/artistLocations/createArtistLocation.usecase';
+import { GetArtistLocationsUseCase } from './useCases/artistLocations/getArtistLocations.usecase';
+import { UpdateArtistLocationUseCase } from './useCases/artistLocations/updateArtistLocation.usecase';
+import { DeleteArtistLocationUseCase } from './useCases/artistLocations/deleteArtistLocation.usecase';
 
 @Module({
   imports: [
@@ -22,6 +26,10 @@ import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
     LocationsHandler,
     AddLocationByApiUseCase,
     FindArtistByRangeUseCase,
+    CreateArtistLocationUseCase,
+    GetArtistLocationsUseCase,
+    UpdateArtistLocationUseCase,
+    DeleteArtistLocationUseCase,
   ],
 })
 export class LocationsModule {}

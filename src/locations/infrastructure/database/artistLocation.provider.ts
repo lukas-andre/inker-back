@@ -17,6 +17,7 @@ import {
 } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { TROUBLE_SAVING_LOCATION } from '../../../users/domain/errors/codes';
 import { TROUBLE_FINDING_LOCATIONS } from '../../domain/codes/codes';
+import { ArtistLocationCreateDto, ArtistLocationUpdateDto } from '../../domain/interfaces/artistLocation.interface';
 import { FindArtistByRangeResponseDTO } from '../dtos/findArtistByRangeResponse.dto';
 import { ArtistLocation } from '../entities/artistLocation.entity';
 
@@ -29,12 +30,45 @@ export class ArtistLocationProvider extends BaseComponent {
     super(ArtistLocationProvider.name);
   }
 
+  get repo(): Repository<ArtistLocation> {
+    return this.artistLocationsRepository;
+  }
+
   async findById(id: number) {
-    return this.artistLocationsRepository.findOne({ where: { id } });
+    try {
+      return await this.artistLocationsRepository.findOne({ where: { id } });
+    } catch (error) {
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
+    }
   }
 
   async find(options: FindManyOptions<ArtistLocation>) {
-    return this.artistLocationsRepository.find(options);
+    try {
+      return await this.artistLocationsRepository.find(options);
+    } catch (error) {
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
+    }
+  }
+
+  async findByArtistId(artistId: number) {
+    try {
+      return await this.artistLocationsRepository.find({
+        where: { artistId, isActive: true },
+        order: { locationOrder: 'ASC' },
+      });
+    } catch (error) {
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
+    }
+  }
+
+  async countByArtistId(artistId: number): Promise<number> {
+    try {
+      return await this.artistLocationsRepository.count({
+        where: { artistId, isActive: true },
+      });
+    } catch (error) {
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
+    }
   }
 
   async findByRange(
@@ -76,13 +110,64 @@ export class ArtistLocationProvider extends BaseComponent {
   }
 
   async findAndCount(options: FindManyOptions<ArtistLocation>) {
-    return this.artistLocationsRepository.findAndCount(options);
+    try {
+      return await this.artistLocationsRepository.findAndCount(options);
+    } catch (error) {
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
+    }
   }
 
   async findOne(
     options?: FindOneOptions<ArtistLocation>,
   ): Promise<ArtistLocation | undefined> {
-    return this.artistLocationsRepository.findOne(options);
+    try {
+      return await this.artistLocationsRepository.findOne(options);
+    } catch (error) {
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
+    }
+  }
+
+  async create(data: ArtistLocationCreateDto): Promise<ArtistLocation> {
+    try {
+      const point: Point = {
+        type: 'Point',
+        coordinates: [data.lng, data.lat],
+      };
+
+      const artistLocation = this.artistLocationsRepository.create({
+        ...data,
+        location: point,
+      });
+
+      return await this.artistLocationsRepository.save(artistLocation);
+    } catch (error) {
+      throw new DBServiceSaveException(this, TROUBLE_SAVING_LOCATION, error);
+    }
+  }
+
+  async update(data: ArtistLocationUpdateDto): Promise<ArtistLocation> {
+    try {
+      const artistLocation = await this.findById(data.id);
+      
+      if (!artistLocation) {
+        return null;
+      }
+
+      // Update location point if lat/lng provided
+      if (data.lat !== undefined && data.lng !== undefined) {
+        const point: Point = {
+          type: 'Point',
+          coordinates: [data.lng, data.lat],
+        };
+        data.location = point;
+      }
+
+      // Update the entity
+      const updatedLocation = this.artistLocationsRepository.merge(artistLocation, data);
+      return await this.artistLocationsRepository.save(updatedLocation);
+    } catch (error) {
+      throw new DBServiceSaveException(this, TROUBLE_SAVING_LOCATION, error);
+    }
   }
 
   async save(location: DeepPartial<ArtistLocation>): Promise<ArtistLocation> {
@@ -93,7 +178,11 @@ export class ArtistLocationProvider extends BaseComponent {
     }
   }
 
-  async delete(id: string): Promise<DeleteResult> {
-    return this.artistLocationsRepository.delete(id);
+  async delete(id: number): Promise<DeleteResult> {
+    try {
+      return await this.artistLocationsRepository.delete(id);
+    } catch (error) {
+      throw new DBServiceSaveException(this, TROUBLE_SAVING_LOCATION, error);
+    }
   }
 }

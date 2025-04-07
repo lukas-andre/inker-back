@@ -45,6 +45,8 @@ export class VerificationHashProvider
     notificationType: NotificationType,
     verificationType: VerificationType,
     tries: number,
+    email?: string,
+    phone?: string,
   ): Promise<VerificationHash> {
     const verificationHash = await this.hashVerificationCode(verificationCode);
 
@@ -55,6 +57,8 @@ export class VerificationHashProvider
         verificationType,
         hash: verificationHash,
         tries,
+        email,
+        phone,
       });
     } catch (error) {
       throw new DBServiceCreateException(
@@ -111,5 +115,9 @@ export class VerificationHashProvider
 
   public generateVerificationCode(): string {
     return String(Math.floor(1000 + Math.random() * 9000));
+  }
+
+  public generateForgotPasswordCode(): string {
+    return String(Math.floor(100000 + Math.random() * 900000));
   }
 }
