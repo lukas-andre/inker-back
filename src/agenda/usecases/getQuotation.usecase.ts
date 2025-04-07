@@ -10,6 +10,7 @@ import { QuotationProvider } from '../infrastructure/providers/quotation.provide
 import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
 import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { ArtistLocationProvider } from '../../locations/infrastructure/database/artistLocation.provider';
+import { StencilProvider } from '../../artists/infrastructure/database/stencil.provider';
 
 @Injectable()
 export class GetQuotationUseCase extends BaseUseCase implements UseCase {
@@ -18,6 +19,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
     private readonly customerProvider: CustomerProvider,
     private readonly artistProvider: ArtistProvider,
     private readonly artistLocationProvider: ArtistLocationProvider,
+    private readonly stencilProvider: StencilProvider,
   ) {
     super(GetQuotationUseCase.name);
   }
@@ -32,12 +34,13 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotFound('Quotation not found');
     }
 
-    const [customer, artist, location] = await Promise.all([
+    const [customer, artist, location, stencil] = await Promise.all([
       this.customerProvider.findOne({ where: { id: quotation.customerId } }),
       this.artistProvider.findOne({ where: { id: quotation.artistId } }),
       this.artistLocationProvider.findOne({
         where: { artistId: quotation.artistId },
       }),
+      quotation.stencilId ? this.stencilProvider.findStencilById(quotation.stencilId) : null,
     ]);
 
     return {
@@ -45,6 +48,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
       customer,
       artist,
       location,
+      stencil,
     };
   }
 }

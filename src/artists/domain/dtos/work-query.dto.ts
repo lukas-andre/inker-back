@@ -40,4 +40,12 @@ export class WorkQueryDto {
   @IsOptional()
   @Type(() => Boolean)
   includeHidden?: boolean;
+  
+  @ApiPropertyOptional({ 
+    description: 'Incluir métricas (vistas y likes) en los resultados',
+    default: true
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  includeMetrics?: boolean = true;
 } 

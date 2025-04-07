@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
+  Headers,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -31,6 +32,7 @@ import { WorkQueryDto } from '../../domain/dtos/work-query.dto';
 import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
 import { WorkSource } from '../../domain/workType';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
+import { PaginatedWorkResponseWithMetrics } from '../../usecases/work/get-works-paginated.usecase';
 
 @ApiTags('Works')
 @UseGuards(AuthGuard)
@@ -61,8 +63,10 @@ export class WorksController {
   async getWorksByArtistIdPaginated(
     @Param('artistId') artistId: number,
     @Query() query: WorkQueryDto,
-  ): Promise<PaginatedWorkResponseDto> {
-    return this.artistsHandler.getWorksPaginated(Number(artistId), query);
+    @Headers('cache-control') cacheControl?: string
+  ): Promise<PaginatedWorkResponseWithMetrics> {
+    const disableCache = cacheControl === 'no-cache';
+    return this.artistsHandler.getWorksPaginated(Number(artistId), query, disableCache);
   }
 
   @Get(':id')
@@ -73,8 +77,12 @@ export class WorksController {
     type: WorkDto,
   })
   @ApiParam({ name: 'id', description: 'Work ID' })
-  async getWorkById(@Param('id') id: number): Promise<WorkDto> {
-    return this.artistsHandler.getWorkById(Number(id));
+  async getWorkById(
+    @Param('id') id: number, 
+    @Headers('cache-control') cacheControl?: string
+  ): Promise<WorkDto> {
+    const disableCache = cacheControl === 'no-cache';
+    return this.artistsHandler.getWorkById(Number(id), disableCache);
   }
 
   @Post()

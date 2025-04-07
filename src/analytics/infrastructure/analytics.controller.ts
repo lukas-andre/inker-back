@@ -31,8 +31,10 @@ import {
   RecordInteractionDto 
 } from '../domain/dtos/metrics.dto';
 import { ContentType } from '../domain/enums/content-types.enum';
+import { AnalyticsInteractionResponseDto } from '../domain/dtos/analytics-interaction-response.dto';
 
 @ApiTags('Analytics')
+@UseGuards(AuthGuard)
 @Controller('analytics')
 export class AnalyticsController {
   constructor(
@@ -51,16 +53,15 @@ export class AnalyticsController {
   @ApiOperation({ summary: 'Record a content interaction (view, like, etc.)' })
   @ApiResponse({
     status: 200,
-    description: 'Returns true if content is liked, false if unliked, undefined for other interactions',
-    type: Boolean,
+    description: 'Returns the interaction result with updated metrics',
+    type: AnalyticsInteractionResponseDto,
   })
-  async recordInteraction(@Body() dto: RecordInteractionDto): Promise<boolean | void> {
+  async recordInteraction(@Body() dto: RecordInteractionDto): Promise<AnalyticsInteractionResponseDto> {
     const userId = this.requestContext.userId;
     return this.recordInteractionUseCase.execute(userId, dto);
   }
 
   @Post('interactions/artist/view')
-  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Record an artist profile view' })
   @ApiResponse({

@@ -13,6 +13,7 @@ import { QuotationProvider } from '../infrastructure/providers/quotation.provide
 import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
 import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
 import { ArtistLocationProvider } from '../../locations/infrastructure/database/artistLocation.provider';
+import { StencilProvider } from '../../artists/infrastructure/database/stencil.provider';
 
 @Injectable()
 export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
@@ -21,6 +22,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
     private readonly customerProvider: CustomerProvider,
     private readonly artistProvider: ArtistProvider,
     private readonly artistLocationProvider: ArtistLocationProvider,
+    private readonly stencilProvider: StencilProvider,
   ) {
     super(GetQuotationsUseCase.name);
   }
@@ -54,21 +56,26 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
       order: { updatedAt: 'DESC' },
     });
 
-    // Get unique IDs for customers and artists
+    // Get unique IDs for customers, artists, and stencils
     const customerIds = [...new Set(quotations.map(q => q.customerId))];
     const artistIds = [...new Set(quotations.map(q => q.artistId))];
+    const stencilIds = quotations.filter(q => q.stencilId).map(q => q.stencilId);
 
     // Fetch all related data in parallel
-    const [customers, artists, locations] = await Promise.all([
+    const [customers, artists, locations, stencils] = await Promise.all([
       this.customerProvider.find({ where: { id: In(customerIds) } }),
       this.artistProvider.find({ where: { id: In(artistIds) } }),
       this.artistLocationProvider.find({ where: { artistId: In(artistIds) } }),
+      stencilIds.length > 0 
+        ? Promise.all(stencilIds.map(id => this.stencilProvider.findStencilById(id)))
+        : [],
     ]);
 
     // Create lookup maps for efficient access
     const customerMap = new Map(customers.map(c => [c.id, c]));
     const artistMap = new Map(artists.map(a => [a.id, a]));
     const locationMap = new Map(locations.map(l => [l.artistId, l]));
+    const stencilMap = new Map(stencils.filter(Boolean).map(s => [s.id, s]));
 
     // Map quotations to DTOs with related data
     const enrichedQuotations = quotations.map(quotation => ({
@@ -76,6 +83,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
       customer: customerMap.get(quotation.customerId),
       artist: artistMap.get(quotation.artistId),
       location: locationMap.get(quotation.artistId),
+      stencil: quotation.stencilId ? stencilMap.get(quotation.stencilId) : null,
     }));
 
     return {

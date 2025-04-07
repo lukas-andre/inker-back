@@ -7,6 +7,7 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Headers,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -46,6 +47,7 @@ class WorkSearchRankingInfoDto {
 }
 
 @ApiTags('Work Search')
+@UseGuards(AuthGuard)
 @Controller('work-search')
 export class WorkSearchController {
   constructor(private readonly artistsHandler: ArtistsHandler) {}
@@ -59,8 +61,13 @@ export class WorkSearchController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async searchWorks(
     @Query() searchParams: WorkSearchQueryDto,
+    @Headers('cache-control') cacheControl?: string
   ): Promise<PaginatedWorkResponseDto> {
-    return this.artistsHandler.searchWorks(searchParams);
+    const disableCache = cacheControl === 'no-cache';
+    return this.artistsHandler.searchWorks({
+      ...searchParams,
+      disableCache
+    });
   }
 
   @Get('ranking-info')

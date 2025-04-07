@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 import { ContentType } from '../enums/content-types.enum';
-import { InteractionType, ViewSource } from '../enums/interaction-types.enum';
+import { ViewSource } from '../enums/interaction-types.enum';
 
 export class RecordInteractionDto {
   @ApiProperty({ description: 'Content ID', type: Number })
@@ -14,10 +14,12 @@ export class RecordInteractionDto {
   @IsNotEmpty()
   contentType: ContentType;
 
-  @ApiProperty({ description: 'Interaction type', enum: InteractionType })
-  @IsEnum(InteractionType)
+  @ApiProperty({ 
+    description: 'Interaction type', 
+    enum: ['view', 'like', 'viewDuration', 'conversion', 'impression']
+  })
   @IsNotEmpty()
-  interactionType: InteractionType;
+  interactionType: 'view' | 'like' | 'viewDuration' | 'conversion' | 'impression';
 
   @ApiPropertyOptional({ description: 'View source', enum: ViewSource })
   @IsEnum(ViewSource)
@@ -28,7 +30,7 @@ export class RecordInteractionDto {
   @IsInt()
   @Min(0)
   @IsOptional()
-  viewDurationSeconds?: number;
+  durationSeconds?: number;
 }
 
 export class RecordArtistViewDto {

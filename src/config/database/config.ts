@@ -69,6 +69,7 @@ export function createDatabaseConnection(
     entities: connectionConf.entities,
     logging: connectionConf.logging,
     keepConnectionAlive: connectionConf.keepConnectionAlive,
+    cache: connectionConf.cache,
   };
 }
 

@@ -41,7 +41,7 @@ import { PaginatedWorkResponseDto } from '../domain/dtos/paginated-work-response
 import { SearchWorksUseCase } from '../usecases/work/search-works.usecase';
 import { GetWorkTagSuggestionsUseCase } from '../usecases/work/get-tag-suggestions.usecase';
 import { WorkQueryDto } from '../domain/dtos/work-query.dto';
-import { GetWorksPaginatedUseCase } from '../usecases/work/get-works-paginated.usecase';
+import { GetWorksPaginatedUseCase, PaginatedWorkResponseWithMetrics } from '../usecases/work/get-works-paginated.usecase';
 import { CreateTagUseCase } from '../usecases/stencil/create-tag.usecase';
 import { CreateTagDto } from '../../tags/tag.dto';
 
@@ -126,14 +126,26 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Work handlers
-  getWorks(artistId: number, onlyFeatured?: boolean): Promise<WorkDto[]> {
+  getWorks(artistId: number, onlyFeatured?: boolean, disableCache?: boolean): Promise<WorkDto[]> {
     this.logger.log(`Getting works for artist: ${artistId}`);
-    return this.getWorksUseCase.execute({ artistId, onlyFeatured });
+    const userId = this.requestContext.userId;
+    return this.getWorksUseCase.execute({ 
+      artistId, 
+      onlyFeatured,
+      userId,
+      disableCache
+    });
   }
 
-  getWorksPaginated(artistId: number, query: WorkQueryDto): Promise<PaginatedWorkResponseDto> {
+  getWorksPaginated(artistId: number, query: WorkQueryDto, disableCache?: boolean): Promise<PaginatedWorkResponseWithMetrics> {
     this.logger.log(`Getting paginated works for artist: ${artistId}`);
-    return this.getWorksPaginatedUseCase.execute({ artistId, query });
+    const userId = this.requestContext.userId;
+    return this.getWorksPaginatedUseCase.execute({ 
+      artistId, 
+      query,
+      userId,
+      disableCache
+    });
   }
 
   async createWork(dto: CreateWorkDto, file: FileInterface): Promise<WorkDto> {
@@ -145,9 +157,14 @@ export class ArtistsHandler extends BaseComponent {
     return this.createWorkUseCase.execute({ artistId: userTypeId, dto, file });
   }
 
-  getWorkById(id: number): Promise<WorkDto> {
+  getWorkById(id: number, disableCache?: boolean): Promise<WorkDto> {
     this.logger.log(`Getting work by id: ${id}`);
-    return this.getWorkByIdUseCase.execute({ id });
+    const userId = this.requestContext.userId;
+    return this.getWorkByIdUseCase.execute({ 
+      id,
+      userId,
+      disableCache 
+    });
   }
 
   updateWork(id: number, dto: UpdateWorkDto): Promise<WorkDto> {
@@ -169,9 +186,15 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Stencil handlers
-  getStencils(artistId: number, query: StencilQueryDto): Promise<PaginatedStencilResponseDto> {
+  getStencils(artistId: number, query: StencilQueryDto, disableCache?: boolean): Promise<PaginatedStencilResponseDto> {
     this.logger.log(`Getting stencils for artist: ${artistId}`);
-    return this.getStencilsUseCase.execute({ artistId, query });
+    const userId = this.requestContext.userId;
+    return this.getStencilsUseCase.execute({ 
+      artistId, 
+      query,
+      userId,
+      disableCache 
+    });
   }
 
   async createStencil(dto: CreateStencilDto, file: FileInterface): Promise<StencilDto> {
@@ -183,9 +206,14 @@ export class ArtistsHandler extends BaseComponent {
     return this.createStencilUseCase.execute({ artistId: userTypeId, dto, file });
   }
 
-  getStencilById(id: number): Promise<StencilDto> {
+  getStencilById(id: number, disableCache?: boolean): Promise<StencilDto> {
     this.logger.log(`Getting stencil by id: ${id}`);
-    return this.getStencilByIdUseCase.execute({ id });
+    const userId = this.requestContext.userId;
+    return this.getStencilByIdUseCase.execute({ 
+      id,
+      userId,
+      disableCache
+    });
   }
 
   updateStencil(id: number, dto: UpdateStencilDto): Promise<StencilDto> {
@@ -207,9 +235,16 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Métodos de búsqueda de estenciles
-  searchStencils(searchParams: StencilSearchQueryDto): Promise<PaginatedStencilResponseDto> {
+  searchStencils(searchParams: StencilSearchQueryDto & { disableCache?: boolean }): Promise<PaginatedStencilResponseDto> {
     this.logger.log(`Searching stencils with params: ${JSON.stringify(searchParams)}`);
-    return this.searchStencilsUseCase.execute(searchParams);
+    const userId = this.requestContext.userId;
+    const { disableCache, ...restParams } = searchParams;
+    return this.searchStencilsUseCase.execute({
+      ...restParams,
+      userId,
+      includeMetrics: true,
+      disableCache
+    });
   }
 
   // Métodos de sugerencias de etiquetas
@@ -299,9 +334,16 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Métodos de búsqueda de trabajos
-  searchWorks(searchParams: WorkSearchQueryDto): Promise<PaginatedWorkResponseDto> {
+  searchWorks(searchParams: WorkSearchQueryDto & { disableCache?: boolean }): Promise<PaginatedWorkResponseDto> {
     this.logger.log(`Searching works with params: ${JSON.stringify(searchParams)}`);
-    return this.searchWorksUseCase.execute(searchParams);
+    const userId = this.requestContext.userId;
+    const { disableCache, ...restParams } = searchParams;
+    return this.searchWorksUseCase.execute({
+      ...restParams,
+      userId,
+      includeMetrics: true,
+      disableCache
+    });
   }
 
   // Métodos de sugerencias de etiquetas para trabajos

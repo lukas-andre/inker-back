@@ -3,7 +3,7 @@ import { WorkProvider } from '../../infrastructure/database/work.provider';
 import { WorkDto } from '../../domain/dtos/work.dto';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { WorkSource } from '../../domain/workType';
-import { GetContentSummaryMetricsUseCase } from '../../../analytics/usecases/getContentSummaryMetrics.usecase';
+import { ContentMetricsEnricherService, WithMetrics, MetricsOptions } from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
 import { ContentType } from '../../../analytics/domain/enums/content-types.enum';
 
 // Extended DTO that includes metrics
@@ -18,7 +18,7 @@ export interface WorkDtoWithMetrics extends WorkDto {
 export class GetWorksUseCase extends BaseUseCase {
   constructor(
     private readonly workProvider: WorkProvider,
-    private readonly getContentSummaryMetricsUseCase: GetContentSummaryMetricsUseCase,
+    private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(GetWorksUseCase.name);
   }
@@ -29,8 +29,18 @@ export class GetWorksUseCase extends BaseUseCase {
     includeHidden?: boolean;
     source?: string;
     includeMetrics?: boolean;
-  }): Promise<WorkDtoWithMetrics[]> {
-    const { artistId, onlyFeatured, includeHidden = false, source, includeMetrics = true } = params;
+    userId?: number;
+    disableCache?: boolean;
+  }): Promise<(WorkDto & WithMetrics)[]> {
+    const { 
+      artistId, 
+      onlyFeatured, 
+      includeHidden = false, 
+      source, 
+      includeMetrics = true,
+      userId,
+      disableCache 
+    } = params;
     
     let works: WorkDto[];
     
@@ -40,33 +50,10 @@ export class GetWorksUseCase extends BaseUseCase {
       works = await this.workProvider.findWorksByArtistId(artistId, includeHidden, source as WorkSource);
     }
 
-    // If no works or metrics not requested, return early
-    if (!works.length || !includeMetrics) {
-      return works.map(work => ({
-        ...work,
-        metrics: {
-          viewCount: 0,
-          likeCount: 0
-        }
-      }));
-    }
+    const options: MetricsOptions = { disableCache };
 
-    // Get all work IDs for batch lookup
-    const workIds = works.map(work => work.id);
-    
-    // Fetch metrics for all works in a single batch query
-    const metricsMap = await this.getContentSummaryMetricsUseCase.executeBatch(
-      workIds, 
-      ContentType.WORK
-    );
-    
-    // Map the works with their metrics
-    return works.map(work => ({
-      ...work,
-      metrics: metricsMap.get(work.id) || {
-        viewCount: 0,
-        likeCount: 0
-      }
-    }));
+    return includeMetrics
+      ? await this.metricsEnricher.enrichAllWithMetrics(works, ContentType.WORK, userId, options)
+      : this.metricsEnricher.addEmptyMetricsToAll(works);
   }
 }
