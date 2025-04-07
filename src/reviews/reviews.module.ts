@@ -10,6 +10,7 @@ import { ReviewHandler } from './reviews.handler';
 import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
 import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
 import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
+import { SyncQueueModule } from '../queues/sync/sync.queue.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
     ReviewProviderModule,
     ArtistsProviderModule,
     UserProviderModule,
+    SyncQueueModule,
   ],
   controllers: [ReviewsController],
   providers: [

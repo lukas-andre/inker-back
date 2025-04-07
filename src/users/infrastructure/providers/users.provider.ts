@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcryptjs';
 import {
+  DataSource,
   DeepPartial,
   DeleteResult,
   FindManyOptions,
@@ -28,14 +29,108 @@ import { CreateUserByTypeParams } from '../../usecases/user/interfaces/createUse
 import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
 
+export const userQueries = {
+  findUserWithPermissionsByIdentifier: (fieldName: string) => `
+    SELECT json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'email', u.email,
+      'phoneNumber', u.phone_number,
+      'userType', u.user_type,
+      'active', u.active,
+      'permissions', COALESCE(
+        (
+          SELECT json_agg(
+            json_build_object(
+              'c', p.controller,
+              'a', p.action
+            )
+          )
+          FROM role_permission rp 
+          JOIN permission p ON p.id = rp."permissionId"
+          WHERE rp."roleId" = u."roleId"
+        ),
+        '[]'::json
+      )
+    ) as user
+    FROM public.user u
+    WHERE u.${fieldName} = $1
+  `,
+  findUserForLogin: (type: LoginType) => `  
+    SELECT json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'email', u.email,
+      'password', u.password,
+      'userType', u.user_type,
+      'active', u.active,
+      'deletedAt', u.deleted_at,
+      'createdAt', u.created_at,
+      'updatedAt', u.updated_at,
+      'permissions', COALESCE(
+        (
+          SELECT json_agg(
+            json_build_object(
+              'controller', p.controller,
+              'action', p.action
+            )
+          )
+          FROM role_permission rp 
+          JOIN permission p ON p.id = rp."permissionId"
+          WHERE rp."roleId" = u."roleId"
+        ),
+        '[]'::json
+      )
+    ) as user
+    FROM public.user u
+    WHERE u.${String(LoginType[type]).toLowerCase()} = $1
+  `,
+  findById: `
+    SELECT json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'email', u.email,
+      'phoneNumber', u.phone_number,
+      'userType', u.user_type,
+      'active', u.active,
+      'deletedAt', u.deleted_at,
+      'createdAt', u.created_at,
+      'updatedAt', u.updated_at
+    ) as user
+    FROM public.user u
+    WHERE u.id = $1
+  `,
+  findByIdWithPassword: `
+    SELECT json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'email', u.email,
+      'password', u.password,
+      'userType', u.user_type,
+      'active', u.active,
+      'deletedAt', u.deleted_at,
+      'createdAt', u.created_at,
+      'updatedAt', u.updated_at
+    ) as user
+    FROM public.user u
+    WHERE u.id = $1
+  `,
+};
+
 @Injectable()
 export class UsersProvider extends BaseComponent {
   constructor(
     @InjectRepository(User, USER_DB_CONNECTION_NAME)
     private readonly usersRepository: Repository<User>,
+    @InjectDataSource(USER_DB_CONNECTION_NAME)
+    private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
   ) {
     super(UsersProvider.name);
+  }
+
+  get source() {
+    return this.dataSource;
   }
 
   async create(
@@ -56,6 +151,7 @@ export class UsersProvider extends BaseComponent {
     user.userType = createUserParams.userType;
     user.email = createUserParams.email.toLowerCase();
     user.password = await this.hashPassword(createUserParams.password);
+    user.phoneNumber = createUserParams.phoneNumberDetails.number;
     user.role = role;
 
     const { password, ...result } = await this.usersRepository.save(user);
@@ -67,11 +163,15 @@ export class UsersProvider extends BaseComponent {
     return this.usersRepository.findOne({ where: { id } });
   }
 
-  async findByType(type: string, identifier: string) {
-    return this.findOne({
-      relations: ['role', 'role.permissions'],
-      where: { [String(LoginType[type]).toLocaleLowerCase()]: identifier },
+  async softDelete(id: number) {
+    return this.usersRepository.update(id, {
+      active: false,
+      deletedAt: new Date(),
     });
+  }
+
+  async findByLoginType(type: LoginType, identifier: string) {
+    return this.source.query(userQueries.findUserForLogin(type), [identifier]);
   }
 
   async existsByUsernameAndEmail(
@@ -97,6 +197,30 @@ export class UsersProvider extends BaseComponent {
     const [result]: ExistsQueryResult[] = await this.usersRepository.query(
       `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.id = $1 AND u.active = $2)`,
       [userId, true],
+    );
+    return result.exists;
+  }
+
+  async existsByEmail(email: string): Promise<boolean | undefined> {
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.email = $1)`,
+      [email],
+    );
+    return result.exists;
+  }
+
+  async existsByUsername(username: string): Promise<boolean | undefined> {
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.username = $1)`,
+      [username],
+    );
+    return result.exists;
+  }
+
+  async existsByPhoneNumber(phoneNumber: string): Promise<boolean | undefined> {
+    const [result]: ExistsQueryResult[] = await this.usersRepository.query(
+      `SELECT EXISTS(SELECT 1 FROM public.user u WHERE u.phone_number = $1)`,
+      [phoneNumber],
     );
     return result.exists;
   }

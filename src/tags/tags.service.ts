@@ -19,7 +19,7 @@ export class TagsService {
   private readonly serviceName: string = TagsService.name;
 
   constructor(
-    @InjectRepository(Tag, 'tag-db')
+    @InjectRepository(Tag, 'artist-db')
     private readonly tagsRepository: Repository<Tag>,
   ) {}
 

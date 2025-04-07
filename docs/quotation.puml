@@ -1,0 +1,46 @@
+@startuml
+actor Cliente as User
+actor Artista as Artist
+participant Sistema as System
+User -> System: Crea cotización
+System -> System: Estado "pending"
+alt Cancelación temprana
+User -> System: Cancela cotización
+System -> System: Estado "canceled"
+System -> Artist: Notifica cancelación
+end
+Artist -> System: Revisa cotización
+alt Artista acepta
+Artist -> System: Envía cotización
+System -> System: Estado "quoted"
+System -> User: Notifica cotización
+alt Cliente acepta
+User -> System: Acepta cotización
+System -> System: Estado "accepted"
+System -> Artist: Notifica aceptación
+System -> System: Crea evento
+else Cliente rechaza
+User -> System: Rechaza cotización
+System -> System: Estado "rejected"
+System -> Artist: Notifica rechazo
+else Cliente apela
+User -> System: Solicita cambio de hora
+System -> System: Estado "appealed"
+System -> Artist: Notifica apelación
+alt Artista acepta apelación
+Artist -> System: Acepta cambio
+System -> System: Estado "accepted"
+System -> User: Notifica aceptación
+System -> System: Actualiza evento
+else Artista rechaza apelación
+Artist -> System: Rechaza cambio
+System -> System: Estado "rejected"
+System -> User: Notifica rechazo
+end
+end
+else Artista rechaza
+Artist -> System: Rechaza cotización
+System -> System: Estado "rejected"
+System -> User: Notifica rechazo
+end
+@enduml

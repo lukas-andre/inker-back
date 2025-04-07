@@ -9,7 +9,11 @@ import {
 import { createDatabaseConnection } from './config';
 
 const DB_NAME = 'inker-artist';
-const ENTITIES = [__dirname + '/../../artists/**/*.entity{.ts,.js}'];
+const ENTITIES = [
+  __dirname + '/../../artists/**/*.entity{.ts,.js}',
+  __dirname + '/../../interactions/**/*.entity{.ts,.js}',
+  __dirname + '/../../tags/tag.entity{.ts,.js}',
+];
 
 export type ArtistDbConfig = TypeOrmModuleOptions;
 

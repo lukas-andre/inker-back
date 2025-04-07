@@ -4,6 +4,7 @@ import {
   InjectEntityManager,
   InjectRepository,
 } from '@nestjs/typeorm';
+import { is } from 'date-fns/locale';
 import {
   DataSource,
   DeepPartial,
@@ -29,6 +30,11 @@ import {
   PROBLEMS_SAVING_AGENDA_FOR_USER,
 } from '../../../users/domain/errors/codes';
 import { Agenda } from '../entities/agenda.entity';
+import { AgendaEvent } from '../entities/agendaEvent.entity';
+import {
+  AgendaInvitation,
+  AgendaInvitationStatus,
+} from '../entities/agendaInvitation.entity';
 
 export interface ArtistAgendaAndEventRelatedToCustomerResult {
   id: number;
@@ -154,6 +160,10 @@ export class AgendaProvider extends BaseComponent {
     }
   }
 
+  async update(id: number, agenda: DeepPartial<Agenda>){
+    return this.agendaRepository.update(id, agenda);
+  }
+
   async delete(id: number): Promise<DeleteResult> {
     return this.agendaRepository.delete(id);
   }
@@ -194,5 +204,69 @@ export class AgendaProvider extends BaseComponent {
         error,
       );
     }
+  }
+
+  async createEventAndInvitationTransaction(event: {
+    agendaId: number;
+    title: string;
+    info: string;
+    color: string;
+    end: string;
+    start: string;
+    notification: boolean;
+    customerId: number;
+  }): Promise<{ transactionIsOK: boolean; eventId: number }> {
+    let transactionIsOK = false;
+    let eventId: number = undefined;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const createEventSql = `
+        INSERT INTO agenda_event (agenda_id, title, info, color, "end_date", "start_date", notification, customer_id, done, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, false, NOW(), NOW())
+        RETURNING id;
+      `;
+
+      const eventParams = [
+        event.agendaId,
+        event.title,
+        event.info,
+        event.color,
+        event.end,
+        event.start,
+        event.notification,
+        event.customerId,
+      ];
+      const eventResult = await queryRunner.query(createEventSql, eventParams);
+
+      eventId = eventResult[0].id;
+
+      const createInvitationSql = `
+        INSERT INTO agenda_invitation (event_id, invitee_id, status, updated_at)
+        VALUES ($1, $2, $3, NOW());
+      `;
+
+      const invitationParams = [
+        eventId,
+        event.customerId,
+        AgendaInvitationStatus.pending,
+      ];
+      await queryRunner.query(createInvitationSql, invitationParams);
+
+      await queryRunner.commitTransaction();
+
+      transactionIsOK = true;
+    } catch (error) {
+      this.logger.error(error);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+
+    return { transactionIsOK, eventId };
   }
 }

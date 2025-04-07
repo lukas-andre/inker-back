@@ -1,5 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
-
+import { Column, Entity, Index, ManyToMany } from 'typeorm';
 import { BaseEntity } from '../global/infrastructure/entities/base.entity';
 
 @Entity()

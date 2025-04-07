@@ -5,18 +5,22 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   AGENDA_DB_CONFIG_NAME,
   AGENDA_DB_CONNECTION_NAME,
+  ANALYTICS_DB_CONFIG_NAME,
+  ANALYTICS_DB_CONNECTION_NAME,
   ARTIST_DB_CONFIG_NAME,
   ARTIST_DB_CONNECTION_NAME,
   CUSTOMER_DB_CONFIG_NAME,
   CUSTOMER_DB_CONNECTION_NAME,
-  CUSTOMER_FEED_DB_CONFIG_NAME,
-  CUSTOMER_FEED_DB_CONNECTION_NAME,
+  // CUSTOMER_FEED_DB_CONFIG_NAME,
+  // CUSTOMER_FEED_DB_CONNECTION_NAME,
   FOLLOW_DB_CONFIG_NAME,
   FOLLOW_DB_CONNECTION_NAME,
   GENRE_DB_CONFIG_NAME,
   GENRE_DB_CONNECTION_NAME,
   LOCATION_DB_CONFIG_NAME,
   LOCATION_DB_CONNECTION_NAME,
+  NOTIFICATIONS_DB_CONFIG_NAME,
+  NOTIFICATIONS_DB_CONNECTION_NAME,
   POST_DB_CONFIG_NAME,
   POST_DB_CONNECTION_NAME,
   REACTION_DB_CONFIG_NAME,
@@ -101,18 +105,32 @@ import {
         configService.get(LOCATION_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      name: CUSTOMER_FEED_DB_CONNECTION_NAME,
-      useFactory: (configService: ConfigService) =>
-        configService.get(CUSTOMER_FEED_DB_CONFIG_NAME),
-      inject: [ConfigService],
-    }),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   name: CUSTOMER_FEED_DB_CONNECTION_NAME,
+    //   useFactory: (configService: ConfigService) =>
+    //     configService.get(CUSTOMER_FEED_DB_CONFIG_NAME),
+    //   inject: [ConfigService],
+    // }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       name: REVIEW_DB_CONNECTION_NAME,
       useFactory: (configService: ConfigService) =>
         configService.get(REVIEW_DB_CONFIG_NAME),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: NOTIFICATIONS_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(NOTIFICATIONS_DB_CONFIG_NAME),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: ANALYTICS_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(ANALYTICS_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
   ],

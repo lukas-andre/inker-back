@@ -1,0 +1,44 @@
+@startuml
+actor Usuario as User
+actor Artista as Artist
+
+User -> Artist: Solicita cotización
+Artist -> User: Envía cotización (costo estimado, fecha, imágenes de referencia)
+alt Usuario revisa cotización
+    User -> User: Aceptar cotización
+    User -> User: Rechazar cotización
+    User -> User: Apelar cotización (actualizar hora)
+    User -> History: Registrar cambio de estado (pending)
+end
+
+alt Aceptar cotización
+    User -> Artist: Acepta cotización
+    Artist -> User: Notificación de aceptación
+    User -> History: Registrar cambio de estado (accepted)
+    User -> User: Crear evento
+    User -> User: Notificación de creación de evento
+    note right: Copiar appointment_date y appointment_duration a start y end del evento
+end
+
+alt Rechazar cotización
+    User -> Artist: Rechaza cotización
+    Artist -> User: Notificación de rechazo
+    User -> History: Registrar cambio de estado (rejected)
+end
+
+alt Apelar cotización
+    User -> Artist: Solicitud de actualización de hora
+    alt Artista revisa actualización de hora
+        Artist -> User: Aceptar actualización
+        User -> History: Registrar cambio de estado (accepted)
+        User -> User: Crear evento
+        User -> User: Notificación de creación de evento
+        note right: Copiar appointment_date y appointment_duration a start y end del evento
+    else
+        Artist -> User: Rechazar actualización
+        User -> History: Registrar cambio de estado (rejected)
+        User -> User: Notificación de rechazo de actualización
+    end
+end
+
+@enduml

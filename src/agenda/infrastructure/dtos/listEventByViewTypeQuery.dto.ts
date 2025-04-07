@@ -7,7 +7,7 @@ import { AgendaViewType } from '../../domain/enum/agendaViewType.enum';
 export class ListEventByViewTypeQueryDto {
   @ApiProperty({
     example: AgendaViewType.WEEK,
-    enum: [AgendaViewType.WEEK, AgendaViewType.DAY],
+    enum: [AgendaViewType.WEEK, AgendaViewType.DAY, AgendaViewType.MONTH],
     description: 'Agenda View Type',
   })
   @IsEnum(AgendaViewType)

@@ -1,9 +1,16 @@
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ClsService } from 'nestjs-cls';
 import { ExtractJwt } from 'passport-jwt';
 
-import { JwtPayload } from '../domain/interfaces/jwtPayload.interface';
+import { UserType } from '../../users/domain/enums/userType.enum';
+import {
+  JwtPayload,
+  JwtPermission,
+} from '../domain/interfaces/jwtPayload.interface';
 import { logCatchedError } from '../domain/utils/logCatchedError';
+
+import { InkerClsStore } from './guards/auth.guard';
 
 @Injectable()
 export class BaseHandler {

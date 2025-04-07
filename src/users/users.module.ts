@@ -26,6 +26,17 @@ import { UpdateUserEmailUseCase } from './usecases/user/updateUserEmail.usecase'
 import { UpdateUserPasswordUseCase } from './usecases/user/updateUserPassword.usecase';
 import { UpdateUserUsernameUseCase } from './usecases/user/updateUserUsername.usecase';
 import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/validateSMSAccountVerificationCode.usecase';
+import { SettingsHandler } from './infrastructure/handlers/settings.handler';
+import { GetSettingsUseCase } from './usecases/settings/getSettings.usecase';
+import { UpdateLocationServicesUseCase } from './usecases/settings/updateLocationService.usecase';
+import { UpdateNotificationsUseCase } from './usecases/settings/updateNotifications.usecase';
+import { SettingsController } from './infrastructure/controllers/settings.controller';
+import { DeleteUserUseCase } from './usecases/user/deleteUser.usecase';
+import { SendSMSVerificationCodeUseCase } from './usecases/user/verification-code/sendSmsVerificationCode.usecase';
+import { SendEmailVerificationCodeUseCase } from './usecases/user/verification-code/sendEmailVerificationCode.usecase';
+import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
+import { SendForgotPasswordCodeUseCase } from './usecases/user/sendForgotPasswordCode.usecase';
+import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPasswordWithCode.usecase';
 
 @Module({
   imports: [
@@ -34,11 +45,13 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
     CustomerProviderModule,
     LocationProviderModule,
     UserProviderModule,
+    NotificationQueueModule,
   ],
   providers: [
     UsersHandler,
     RolesHandler,
     PermissionsHandler,
+    SettingsHandler,
     InitRolesUseCase,
     InitPermissionsUseCase,
     CreateUserByTypeUseCase,
@@ -53,7 +66,21 @@ import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/valid
     UpdateUserPasswordUseCase,
     UpdateUserUsernameUseCase,
     ValidateSMSAccountVerificationCodeUseCase,
+    GetSettingsUseCase,
+    UpdateNotificationsUseCase,
+    UpdateLocationServicesUseCase,
+    SettingsHandler,
+    DeleteUserUseCase,
+    SendSMSVerificationCodeUseCase,
+    SendEmailVerificationCodeUseCase,
+    SendForgotPasswordCodeUseCase,
+    UpdateUserPasswordWithCodeUseCase,
   ],
-  controllers: [UsersController, PermissionsController, RolesController],
+  controllers: [
+    UsersController,
+    PermissionsController,
+    RolesController,
+    SettingsController,
+  ],
 })
 export class UsersModule {}
