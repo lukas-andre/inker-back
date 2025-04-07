@@ -33,3 +33,9 @@ export const CUSTOMER_FEED_DB_CONFIG_NAME = 'customerFeedDb';
 
 export const REVIEW_DB_CONNECTION_NAME = 'review-db';
 export const REVIEW_DB_CONFIG_NAME = 'reviewDb';
+
+export const NOTIFICATIONS_DB_CONNECTION_NAME = 'notifications-db';
+export const NOTIFICATIONS_DB_CONFIG_NAME = 'notificationsDb';
+
+export const ANALYTICS_DB_CONNECTION_NAME = 'analytics-db';
+export const ANALYTICS_DB_CONFIG_NAME = 'analyticsDb';

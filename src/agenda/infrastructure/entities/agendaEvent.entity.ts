@@ -2,32 +2,43 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
+  OneToOne,
 } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 
 import { Agenda } from './agenda.entity';
+import { AgendaEventHistory } from './agendaEventHistory.entity';
+import { AgendaInvitation } from './agendaInvitation.entity';
 
 @Entity()
+@Index(['startDate', 'endDate'])
+@Index('idx_agenda_id', ['agenda'])
 export class AgendaEvent extends BaseEntity {
   @ManyToOne(() => Agenda, agenda => agenda.agendaEvent)
   @JoinColumn({ name: 'agenda_id' })
   agenda: Agenda;
 
+  @Index()
   @Column({ name: 'customer_id', nullable: true })
   customerId: number;
 
   @Column()
   title: string;
 
-  @Column()
-  start: Date;
+  @Index()
+  @Column({ name: 'start_date' })
+  startDate: Date;
 
-  @Column()
-  end: Date;
+  @Index()
+  @Column({ name: 'end_date' })
+  endDate: Date;
 
   @Column()
   color: string;
@@ -41,10 +52,46 @@ export class AgendaEvent extends BaseEntity {
   @Column({ default: false })
   done: boolean;
 
+  @Column({
+    type: 'varchar',
+    default: AgendaEventStatus.SCHEDULED,
+  })
+  status: AgendaEventStatus;
+
   @Column('jsonb', { nullable: true, name: 'work_evidence' })
   workEvidence: MultimediasMetadataInterface;
 
+  @OneToOne(() => AgendaInvitation, agendaInvitation => agendaInvitation.event)
+  agendaInvitation: AgendaInvitation;
+
+  @Column({ name: 'cancelation_reason', nullable: true })
+  cancelationReason: string;
+
+  @Column({ name: 'reschedule_reason', nullable: true })
+  rescheduleReason: string;
+
+  @Column({ name: 'notes', type: 'text', nullable: true })
+  notes: string;
+
+  @Column({ name: 'preparation_time', type: 'integer', nullable: true })
+  preparationTime: number;
+
+  @Column({ name: 'cleanup_time', type: 'integer', nullable: true })
+  cleanupTime: number;
+
+  @Column({ name: 'last_status_change', nullable: true })
+  lastStatusChange: Date;
+
+  @Column({ name: 'customer_notified', default: false })
+  customerNotified: boolean;
+
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
-  // TODO: HACER RELACION OneToOne A UNA ENTIDAD customer que tenga su informacion basica;
+
+  @OneToMany(() => AgendaEventHistory, history => history.event)
+  history: AgendaEventHistory[];
+
+  @Index()
+  @Column({ name: 'quotation_id', nullable: true })
+  quotationId: number;
 }

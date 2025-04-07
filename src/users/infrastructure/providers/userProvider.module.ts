@@ -12,11 +12,13 @@ import { PermissionsProvider } from './permissions.service';
 import { RolesProvider } from './roles.service';
 import { UsersProvider } from './users.provider';
 import { VerificationHashProvider } from './verificationHash.service';
+import { Settings } from '../entities/settings.entity';
+import { SettingsProvider } from './settings.provider';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature(
-      [User, Role, Permission, VerificationHash],
+      [User, Role, Permission, VerificationHash, Settings],
       USER_DB_CONNECTION_NAME,
     ),
   ],
@@ -26,6 +28,7 @@ import { VerificationHashProvider } from './verificationHash.service';
     RolesProvider,
     UsersProvider,
     VerificationHashProvider,
+    SettingsProvider,
   ],
   exports: [
     InitialPermissionsProvider,
@@ -33,6 +36,7 @@ import { VerificationHashProvider } from './verificationHash.service';
     RolesProvider,
     UsersProvider,
     VerificationHashProvider,
+    SettingsProvider,
   ],
 })
 export class UserProviderModule {}

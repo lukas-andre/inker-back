@@ -1,19 +1,28 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Logger,
+  Param,
+  ParseIntPipe,
   Post,
+  Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 
+import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import {
   NO_ARTISTS_FOUND,
@@ -25,9 +34,11 @@ import { AddLocationDto } from './dtos/addLocation.dto';
 import { FindArtistByRangeDTORequest } from './dtos/findArtistByRangeRequest.dto';
 import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
 import { LocationsHandler } from './locations.handler';
+import { ArtistLocationCreateDto, ArtistLocationDto, ArtistLocationUpdateDto } from '../domain/interfaces/artistLocation.interface';
 
 @ApiTags('locations')
 @Controller('locations')
+@UseGuards(AuthGuard)
 export class LocationsController {
   private readonly logger = new Logger(LocationsController.name);
   constructor(private readonly locationsHandler: LocationsHandler) {}
@@ -61,5 +72,71 @@ export class LocationsController {
     @Body() body: FindArtistByRangeDTORequest,
   ): Promise<FindArtistByRangeResponseDTO[]> {
     return this.locationsHandler.handleFindArtistByRange(body);
+  }
+
+  /* Artist Locations CRUD endpoints */
+
+  @ApiOperation({ summary: 'Create a new artist location' })
+  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'number' })
+  @ApiOkResponse({
+    description: 'Artist location successfully created',
+    type: ArtistLocationDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request. Artist already has 3 locations or invalid data.',
+  })
+  @Post('artist/:artistId/locations')
+  async createArtistLocation(
+    @Param('artistId') artistId: number,
+    @Body() body: ArtistLocationCreateDto,
+  ): Promise<ArtistLocationDto> {
+    return this.locationsHandler.handleCreateArtistLocation(artistId, body);
+  }
+
+  @ApiOperation({ summary: 'Get artist locations' })
+  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'number' })
+  @ApiOkResponse({
+    description: 'Artist locations successfully retrieved',
+    type: ArtistLocationDto,
+    isArray: true,
+  })
+  @Get('artist/:artistId/locations')
+  async getArtistLocations(
+    @Param('artistId') artistId: number,
+  ): Promise<ArtistLocationDto[]> {
+    return this.locationsHandler.handleGetArtistLocations(artistId);
+  }
+
+  @ApiOperation({ summary: 'Update an artist location' })
+  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'number' })
+  @ApiParam({ name: 'locationId', description: 'Location ID', type: 'string' })
+  @ApiOkResponse({
+    description: 'Artist location successfully updated',
+    type: ArtistLocationDto,
+  })
+  @ApiNotFoundResponse({ description: 'Artist location not found' })
+  @Put('artist/:artistId/locations/:locationId')
+  async updateArtistLocation(
+    @Param('artistId', ParseIntPipe) artistId: number,
+    @Param('locationId', ParseIntPipe) locationId: number,
+    @Body() body: ArtistLocationUpdateDto,
+  ): Promise<ArtistLocationDto> {
+    return this.locationsHandler.handleUpdateArtistLocation(artistId, locationId, body);
+  }
+
+  @ApiOperation({ summary: 'Delete an artist location' })
+  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'number' })
+  @ApiParam({ name: 'locationId', description: 'Location ID', type: 'string' })
+  @ApiOkResponse({
+    description: 'Artist location successfully deleted',
+    type: Boolean,
+  })
+  @ApiNotFoundResponse({ description: 'Artist location not found' })
+  @Delete('artist/:artistId/locations/:locationId')
+  async deleteArtistLocation(
+    @Param('artistId', ParseIntPipe) artistId: number,
+    @Param('locationId', ParseIntPipe) locationId: number,
+  ): Promise<boolean> {
+    return this.locationsHandler.handleDeleteArtistLocation(artistId, locationId);
   }
 }

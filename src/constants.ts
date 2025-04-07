@@ -19,7 +19,7 @@ export const corsOptions: CorsOptions = {};
 // };
 
 export const validationPipeOptions: ValidationPipeOptions = {
-  whitelist: true,
+  whitelist: false,
   forbidNonWhitelisted: true,
   transform: true,
   transformOptions: {

@@ -1,24 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../../global/infrastructure/base.handler';
-import { RequestService } from '../../global/infrastructure/services/request.service';
+import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { AddLocationByApiUseCase } from '../usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from '../usecases/findArtistByRange.usecase';
+import { CreateArtistLocationUseCase } from '../useCases/artistLocations/createArtistLocation.usecase';
+import { GetArtistLocationsUseCase } from '../useCases/artistLocations/getArtistLocations.usecase';
+import { UpdateArtistLocationUseCase } from '../useCases/artistLocations/updateArtistLocation.usecase';
+import { DeleteArtistLocationUseCase } from '../useCases/artistLocations/deleteArtistLocation.usecase';
 
 import { AddLocationDto } from './dtos/addLocation.dto';
 import { FindArtistByRangeDTORequest } from './dtos/findArtistByRangeRequest.dto';
 import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
+import { 
+  ArtistLocationCreateDto, 
+  ArtistLocationDto, 
+  ArtistLocationUpdateDto,
+  DeleteArtistLocationParams
+} from '../domain/interfaces/artistLocation.interface';
+import { BaseComponent } from '../../global/domain/components/base.component';
 
 @Injectable()
-export class LocationsHandler extends BaseHandler {
+export class LocationsHandler extends BaseComponent {
   constructor(
     private readonly addLocationByApiUseCase: AddLocationByApiUseCase,
     private readonly findArtistByRangeUseCase: FindArtistByRangeUseCase,
-    private readonly requestService: RequestService,
-    private readonly jwtService: JwtService,
+    private readonly createArtistLocationUseCase: CreateArtistLocationUseCase,
+    private readonly getArtistLocationsUseCase: GetArtistLocationsUseCase,
+    private readonly updateArtistLocationUseCase: UpdateArtistLocationUseCase,
+    private readonly deleteArtistLocationUseCase: DeleteArtistLocationUseCase,
+    private readonly requestService: RequestContextService,
   ) {
-    super(jwtService);
+    super(LocationsHandler.name);
   }
 
   public async handleAddLocation(dto: AddLocationDto) {
@@ -33,5 +46,54 @@ export class LocationsHandler extends BaseHandler {
       this.requestService.userTypeId,
       this.requestService.userId,
     );
+  }
+
+  // New methods for artist locations CRUD operations
+  
+  public async handleCreateArtistLocation(
+    artistId: number,
+    dto: ArtistLocationCreateDto,
+  ): Promise<ArtistLocationDto> {
+    this.logger.log('Creating artist location', { artistId, dto });
+    
+    // Ensure artist ID is set
+    dto.artistId = artistId;
+    
+    return this.createArtistLocationUseCase.execute(dto);
+  }
+
+  public async handleGetArtistLocations(
+    artistId: number,
+  ): Promise<ArtistLocationDto[]> {
+    this.logger.log('Getting artist locations', { artistId });
+    
+    return this.getArtistLocationsUseCase.execute({ artistId });
+  }
+
+  public async handleUpdateArtistLocation(
+    artistId: number,
+    locationId: number,
+    dto: ArtistLocationUpdateDto,
+  ): Promise<ArtistLocationDto> {
+    this.logger.log('Updating artist location', { artistId, locationId, dto });
+    
+    // Set the ID in the DTO
+    dto.id = locationId;
+    
+    return this.updateArtistLocationUseCase.execute(dto);
+  }
+
+  public async handleDeleteArtistLocation(
+    artistId: number,
+    locationId: number,
+  ): Promise<boolean> {
+    this.logger.log('Deleting artist location', { artistId, locationId });
+    
+    const params: DeleteArtistLocationParams = {
+      id: locationId,
+      artistId,
+    };
+    
+    return this.deleteArtistLocationUseCase.execute(params);
   }
 }

@@ -1,9 +1,9 @@
+import { BullModule } from '@nestjs/bull';
 import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
-import { DevtoolsModule } from '@nestjs/devtools-integration';
-
 import { AgendaModule } from './agenda/agenda.module';
 import { AlertGateway } from './alert/alert.gateway';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { ArtistsModule } from './artists/artists.module';
 import { AuthModule } from './auth/auth.module';
 import { ChatGateway } from './chat/chat.gateway';
@@ -13,20 +13,30 @@ import { FollowsModule } from './follows/follows.module';
 import { GenresModule } from './genres/genres.module';
 import { GlobalModule } from './global/global.module';
 import { HealthModule } from './health/health.module';
+import { InteractionsModule } from './interactions/interactions.module';
 import { LocationsModule } from './locations/locations.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { PostsModule } from './posts/posts.module';
+import { NotificationQueueModule } from './queues/notifications/notification.queue.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ReviewsModule } from './reviews/reviews.module';
-import { TagsModule } from './tags/tags.module';
+import { SchedulerModule } from './schedulers/scheduler.module';
 import { UsersModule } from './users/users.module';
+import { SyncQueueModule } from './queues/sync/sync.queue.module';
 @Module({
   imports: [
-    DevtoolsModule.register({
-      http: process.env.NODE_ENV !== 'production',
-      port: 8000,
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
     }),
+    // DevtoolsModule.register({
+    //   http: process.env.NODE_ENV !== 'production',
+    //   port: 8000,
+    // }),
     AgendaModule,
+    AnalyticsModule,
     ArtistsModule,
     AuthModule,
     CustomersModule,
@@ -35,13 +45,16 @@ import { UsersModule } from './users/users.module';
     GenresModule,
     GlobalModule,
     HealthModule,
+    InteractionsModule,
     LocationsModule,
     MultimediasModule,
     PostsModule,
     ReviewsModule,
     ReactionsModule,
-    TagsModule,
     UsersModule,
+    NotificationQueueModule,
+    SyncQueueModule,
+    SchedulerModule,
   ],
   providers: [ChatGateway, AlertGateway, ModulesContainer],
 })

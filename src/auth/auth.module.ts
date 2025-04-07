@@ -9,6 +9,7 @@ import { AuthService } from './domain/auth.service';
 import { AuthController } from './infrastructure/auth.controller';
 import { AuthHandler } from './infrastructure/auth.handler';
 import { DefaultLoginUseCase } from './usecases/defaultLogin.usecase';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DefaultLoginUseCase } from './usecases/defaultLogin.usecase';
     UserProviderModule,
     ArtistsModule,
     CustomerProviderModule,
+    NotificationsModule,
   ],
   controllers: [AuthController],
   providers: [AuthHandler, AuthService, DefaultLoginUseCase],

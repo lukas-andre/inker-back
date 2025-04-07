@@ -1,0 +1,61 @@
+# rules.yml
+.changes-package:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - package.json
+        - package-lock.json
+      when: always
+    - if: $CI_COMMIT_BRANCH == "master"
+      changes:
+        - package.json
+        - package-lock.json
+      when: always
+
+.changes-src:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - src/**/*
+        - package.json
+        - package-lock.json
+        - tsconfig.json
+        - .eslintrc*
+        - .prettierrc*
+      when: always
+    - if: $CI_COMMIT_BRANCH == "master"
+      changes:
+        - src/**/*
+        - package.json
+        - package-lock.json
+        - tsconfig.json
+        - .eslintrc*
+        - .prettierrc*
+      when: always
+
+.changes-docker:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - Dockerfile
+        - docker-compose.yml
+        - .docker/**/*
+        - dist/**/*
+      when: always
+    - if: $CI_COMMIT_BRANCH == "master"
+      changes:
+        - Dockerfile
+        - docker-compose.yml
+        - .docker/**/*
+        - dist/**/*
+      when: always
+
+.release-branch:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_MESSAGE !~ $RELEASE_COMMIT_PATTERN
+      when: always
+
+.release-tag:
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_MESSAGE =~ $RELEASE_COMMIT_PATTERN
+      when: always
