@@ -18,8 +18,8 @@ import {
   VerificationHash,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
-import { UsersProvider } from '../../infrastructure/providers/users.provider';
-import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
+import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
+import { UsersRepository } from '../../infrastructure/repositories/users.repository';
 
 @Injectable()
 export class SendSMSAccountVerificationCodeUseCase
@@ -30,8 +30,8 @@ export class SendSMSAccountVerificationCodeUseCase
   private maxTries: number;
 
   constructor(
-    private readonly verificationHashProvider: VerificationHashProvider,
-    private readonly usersProvider: UsersProvider,
+    private readonly verificationHashRepository: VerificationHashRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly smsClient: SMSClient,
     private readonly configService: ConfigService,
   ) {
@@ -46,10 +46,10 @@ export class SendSMSAccountVerificationCodeUseCase
   }
 
   public async execute(
-    userId: number,
+    userId: string,
     phoneNumber: string,
   ): Promise<DefaultResponseDto> {
-    const userIsAlreadyVerified = await this.usersProvider.existsAndIsActive(
+    const userIsAlreadyVerified = await this.usersRepository.existsAndIsActive(
       userId,
     );
 
@@ -58,11 +58,11 @@ export class SendSMSAccountVerificationCodeUseCase
     }
 
     const verificationCode =
-      this.verificationHashProvider.generateVerificationCode();
+      this.verificationHashRepository.generateVerificationCode();
 
     this.logger.log({ verificationCode });
 
-    const isSmsAlreadySent = await this.verificationHashProvider.findOne({
+    const isSmsAlreadySent = await this.verificationHashRepository.findOne({
       where: {
         userId: userId,
         notificationType: NotificationType.SMS,
@@ -77,7 +77,7 @@ export class SendSMSAccountVerificationCodeUseCase
       }
       await this.generateNewValidationHash(isSmsAlreadySent, verificationCode);
     } else {
-      await this.verificationHashProvider.create(
+      await this.verificationHashRepository.create(
         userId,
         verificationCode,
         NotificationType.SMS,
@@ -99,10 +99,10 @@ export class SendSMSAccountVerificationCodeUseCase
     previousHash: VerificationHash,
     verificationCode: string,
   ): Promise<VerificationHash> {
-    return this.verificationHashProvider.edit(previousHash.id, {
+    return this.verificationHashRepository.edit(previousHash.id, {
       ...previousHash,
       tries: ++previousHash.tries,
-      hash: await this.verificationHashProvider.hashVerificationCode(
+      hash: await this.verificationHashRepository.hashVerificationCode(
         verificationCode,
       ),
     });

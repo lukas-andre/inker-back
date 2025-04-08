@@ -6,19 +6,19 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 
 @Injectable()
 export class ListEventsByArtistId extends BaseUseCase implements UseCase {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
   ) {
     super(ListEventsByArtistId.name);
   }
 
-  async execute(artistId: number): Promise<AgendaEvent[]> {
+  async execute(artistId: string): Promise<AgendaEvent[]> {
     console.time('ListEventsByAgendaId');
     const existsAgenda = await this.agendaProvider.findOne({
       where: {

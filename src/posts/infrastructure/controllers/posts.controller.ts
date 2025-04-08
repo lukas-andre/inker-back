@@ -77,7 +77,7 @@ export class PostsController {
   async listArtistPost(
     @Ip() ip: string,
     @HostParam() host: any,
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('userId') userId: string,
     @Query() query: ListAllArtistPostsQueryDto,
     @Query() pagination: PaginationDto,
   ): Promise<ArtistPostResponseDto[]> {

@@ -23,10 +23,10 @@ export type AgendaInvitationStatusEnum =
 @Entity()
 export class AgendaInvitation extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column({ name: 'invitee_id' })
-  inviteeId: number;
+  inviteeId: string;
 
   @Column({
     enum: ['pending', 'accepted', 'rejected'],

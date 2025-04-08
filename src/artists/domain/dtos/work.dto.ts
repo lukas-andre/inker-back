@@ -13,12 +13,11 @@ import { TagDto } from '../../../tags/tag.dto';
 
 export class WorkDto implements WorkType {
   @ApiProperty({ description: 'Work ID' })
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Artist ID' })
-  @IsInt()
-  @Min(1)
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({ description: 'Work title' })
   @IsString()

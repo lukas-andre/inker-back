@@ -9,31 +9,25 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
-import {
-  userQueries,
-  UsersProvider,
-} from '../../infrastructure/providers/users.provider';
+import { UsersRepository } from '../../infrastructure/repositories/users.repository';
 
 @Injectable()
 export class DeleteUserUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly usersProvider: UsersProvider) {
+  constructor(private readonly usersRepository: UsersRepository) {
     super(DeleteUserUseCase.name);
   }
 
   public async execute(
-    userId: number,
+    userId: string,
     password: string,
   ): Promise<DefaultResponseDto> {
-    const [{ user }] = await this.usersProvider.source.query(
-      userQueries.findByIdWithPassword,
-      [userId],
-    );
+    const user = await this.usersRepository.findByIdWithPassword(userId);
 
     if (!user) {
       throw new DomainBadRule('User not found');
     }
 
-    const isValidPassword = await this.usersProvider.validatePassword(
+    const isValidPassword = await this.usersRepository.validatePassword(
       password,
       user.password,
     );
@@ -43,7 +37,7 @@ export class DeleteUserUseCase extends BaseUseCase implements UseCase {
     }
 
     try {
-      await this.usersProvider.softDelete(userId);
+      await this.usersRepository.softDelete(userId);
     } catch (error) {
       this.logger.error('Error deleting user', error);
       throw new DomainConflict('Unable to delete user');

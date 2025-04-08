@@ -4,8 +4,8 @@ import { RatingArtistUsecase } from '../../../reviews/usecases/ratingArtist.usec
 import { BaseUseCase, UseCase } from '../../../global/domain/usecases/base.usecase';
 import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 import { DomainUnProcessableEntity } from '../../../global/domain/exceptions/domain.exception';
-import { AgendaEventProvider } from '../../infrastructure/providers/agendaEvent.provider';
-import { AgendaProvider } from '../../infrastructure/providers/agenda.provider';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { CUSTOMER_NOT_AUTHORIZED, EVENT_NOT_READY_FOR_REVIEW } from '../../domain/errors/codes';
 import { ReviewArtistRequestDto } from '../../../reviews/dtos/reviewArtistRequest.dto';
@@ -15,16 +15,16 @@ import { DefaultResponseDto, DefaultResponseStatus } from '../../../global/infra
 export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCase {
   constructor(
     private readonly requestContext: RequestContextService,
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
     // private readonly ratingArtistUsecase: RatingArtistUsecase,
   ) {
     super(EventReviewIntegrationUsecase.name);
   }
 
   async execute(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     reviewData: ReviewArtistRequestDto,
   ): Promise<DefaultResponseDto> {
     const { isNotCustomer, userTypeId, userId } = this.requestContext;

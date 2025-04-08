@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
-import { RolesProvider } from '../../infrastructure/providers/roles.service';
+import { RolesRepository } from '../../infrastructure/repositories/roles.repository';
 
 @Injectable()
 export class FindOneRoleUseCase {
-  constructor(private readonly rolesProvider: RolesProvider) {}
+  constructor(private readonly rolesRepository: RolesRepository) {}
 
-  async execute(id: number) {
-    return this.rolesProvider.findOne({ where: { id } });
+  async execute(id: string) {
+    return this.rolesRepository.findOne({ where: { id } });
   }
 }

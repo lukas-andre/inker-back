@@ -25,7 +25,7 @@ import { Tag } from '../../../tags/tag.entity';
 export class Artist extends BaseEntity implements ArtistType {
   @Column({ name: 'user_id' })
   @Index()
-  userId: number;
+  userId: string;
 
   @Column({ name: 'username' })
   @Index()

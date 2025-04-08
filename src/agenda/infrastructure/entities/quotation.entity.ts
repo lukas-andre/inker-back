@@ -78,11 +78,11 @@ export type QuotationStatus =
 export class Quotation extends BaseEntity {
   @Index()
   @Column({ name: 'customer_id' })
-  customerId: number;
+  customerId: string;
 
   @Index()
   @Column({ name: 'artist_id' })
-  artistId: number;
+  artistId: string;
 
   @Column()
   description: string;
@@ -217,7 +217,7 @@ export class Quotation extends BaseEntity {
     nullable: true,
     comment: 'User ID of the last person who updated the quotation',
   })
-  lastUpdatedBy?: number;
+  lastUpdatedBy?: string;
 
   @Column({
     name: 'last_updated_by_user_type',
@@ -257,7 +257,7 @@ export class Quotation extends BaseEntity {
   customerReadAt?: Date;
 
   @Column({ name: 'stencil_id', nullable: true })
-  stencilId?: number;
+  stencilId?: string;
 
   @OneToMany(() => QuotationHistory, history => history.quotation)
   history?: QuotationHistory[];

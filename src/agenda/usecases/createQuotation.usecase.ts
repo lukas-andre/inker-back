@@ -2,9 +2,9 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Queue } from 'bull';
 
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
-import { StencilProvider } from '../../artists/infrastructure/database/stencil.provider';
-import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
+import { StencilRepository } from '../../artists/infrastructure/repositories/stencil.repository';
+import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
 import {
   DomainBadRule,
   DomainNotFound,
@@ -18,7 +18,7 @@ import { MultimediasService } from '../../multimedias/services/multimedias.servi
 import { queues } from '../../queues/queues';
 import { CreateQuotationReqDto } from '../infrastructure/dtos/createQuotationReq.dto';
 import { QuotationStatus } from '../infrastructure/entities/quotation.entity';
-import { QuotationProvider } from '../infrastructure/providers/quotation.provider';
+import { QuotationRepository } from '../infrastructure/repositories/quotation.provider';
 import { QuotationCreatedJobType } from '../../queues/notifications/domain/schemas/quotation';
 
 @Injectable()
@@ -27,10 +27,10 @@ export class CreateQuotationUseCase
   implements UseCase, OnModuleDestroy
 {
   constructor(
-    private readonly quotationProvider: QuotationProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly stencilProvider: StencilProvider,
+    private readonly quotationProvider: QuotationRepository,
+    private readonly customerProvider: CustomerRepository,
+    private readonly artistProvider: ArtistRepository,
+    private readonly stencilProvider: StencilRepository,
     private readonly multimediasService: MultimediasService,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
@@ -46,7 +46,7 @@ export class CreateQuotationUseCase
     createQuotationDto: CreateQuotationReqDto,
     referenceImages: FileInterface[],
   ): Promise<{
-    id: number;
+    id: string;
     message: string;
     created: boolean;
   }> {
@@ -74,7 +74,7 @@ export class CreateQuotationUseCase
       }
     }
 
-    let quotationId: number;
+    let quotationId: string;
 
     const queryRunner = this.quotationProvider.source.createQueryRunner();
 
@@ -105,7 +105,7 @@ export class CreateQuotationUseCase
         throw new DomainBadRule('Error creating quotation');
       }
 
-      quotationId = quotationResult[0].id as number;
+      quotationId = quotationResult[0].id as string;
 
       if (referenceImages.length) {
         const multimedias = await this.multimediasService.uploadReferenceImages(

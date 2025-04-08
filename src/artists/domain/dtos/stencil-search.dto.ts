@@ -15,11 +15,10 @@ export class StencilSearchQueryDto {
   @IsOptional()
   tagIds?: string;
 
-  @ApiPropertyOptional({ description: 'ID del artista', type: Number })
+  @ApiPropertyOptional({ description: 'ID del artista', type: String })
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  artistId?: number;
+  @IsString()
+  artistId?: string;
 
   @ApiPropertyOptional({ 
     description: 'Filtrar por estado del estencil',
@@ -79,7 +78,7 @@ export class TagSuggestionQueryDto {
 
 export class TagSuggestionResponseDto {
   @ApiProperty({ description: 'ID de la etiqueta' })
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Nombre de la etiqueta' })
   name: string;

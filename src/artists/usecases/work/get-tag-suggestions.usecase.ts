@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { WorkProvider } from '../../infrastructure/database/work.provider';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 import { WorkTagSuggestionQueryDto, WorkTagSuggestionResponseDto } from '../../domain/dtos/work-search.dto';
 
 @Injectable()
 export class GetWorkTagSuggestionsUseCase extends BaseUseCase {
-  constructor(private readonly workProvider: WorkProvider) {
+  constructor(private readonly workProvider: WorkRepository) {
     super(GetWorkTagSuggestionsUseCase.name);
   }
 

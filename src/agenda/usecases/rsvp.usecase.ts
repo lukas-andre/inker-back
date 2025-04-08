@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Queue } from 'bull';
 
-import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
@@ -17,8 +17,8 @@ import {
 } from '../../queues/notifications/domain/schemas/agenda';
 import { queues } from '../../queues/queues';
 import { AgendaInvitationStatusEnum } from '../infrastructure/entities/agendaInvitation.entity';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaInvitationProvider } from '../infrastructure/providers/agendaInvitation.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaInvitationRepository } from '../infrastructure/repositories/agendaInvitation.provider';
 
 @Injectable()
 export class RsvpUseCase
@@ -26,9 +26,9 @@ export class RsvpUseCase
   implements UseCase, OnModuleDestroy
 {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaInvitationProvider: AgendaInvitationProvider,
-    private readonly customerProvider: CustomerProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaInvitationProvider: AgendaInvitationRepository,
+    private readonly customerProvider: CustomerRepository,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
@@ -40,9 +40,9 @@ export class RsvpUseCase
   }
 
   async execute(
-    customerId: number,
-    agendaId: number,
-    eventId: number,
+    customerId: string,
+    agendaId: string,
+    eventId: string,
     willAttend: boolean,
   ): Promise<DefaultResponseDto> {
     const existsAgenda = await this.agendaProvider.findById(agendaId);
@@ -87,9 +87,9 @@ export class RsvpUseCase
 
 function createQueueMessage(
   willAttend: boolean,
-  eventId: number,
-  artistId: number,
-  customerId: number,
+  eventId: string,
+  artistId: string,
+  customerId: string,
 ): RsvpJobType {
   const jobId: 'RSVP_ACCEPTED' | 'RSVP_DECLINED' = willAttend
     ? 'RSVP_ACCEPTED'

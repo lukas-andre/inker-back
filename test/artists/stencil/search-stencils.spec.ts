@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SearchStencilsUseCase } from '../../../src/artists/usecases/stencil/search-stencils.usecase';
-import { StencilProvider } from '../../../src/artists/infrastructure/database/stencil.provider';
-import { InteractionProvider } from '../../../src/interactions/infrastructure/database/interaction.provider';
+import { StencilRepository } from '../../../src/artists/infrastructure/repositories/stencil.repository';
+import { InteractionRepository } from '../../../src/interactions/infrastructure/database/repositories/interaction.repository';
 import { StencilSearchQueryDto } from '../../../src/artists/domain/dtos/stencil-search.dto';
 import { PaginatedStencilResponseDto, StencilWithRelevanceDto } from '../../../src/artists/domain/dtos/paginated-stencil-response.dto';
 
 describe('SearchStencilsUseCase', () => {
   let useCase: SearchStencilsUseCase;
-  let stencilProvider: jest.Mocked<StencilProvider>;
-  let interactionProvider: jest.Mocked<InteractionProvider>;
+  let stencilProvider: jest.Mocked<StencilRepository>;
+  let interactionProvider: jest.Mocked<InteractionRepository>;
 
   beforeEach(async () => {
     // Create mock providers
@@ -24,19 +24,19 @@ describe('SearchStencilsUseCase', () => {
       providers: [
         SearchStencilsUseCase,
         {
-          provide: StencilProvider,
+          provide: StencilRepository,
           useValue: stencilProviderMock,
         },
         {
-          provide: InteractionProvider,
+          provide: InteractionRepository,
           useValue: interactionProviderMock,
         },
       ],
     }).compile();
 
     useCase = module.get<SearchStencilsUseCase>(SearchStencilsUseCase);
-    stencilProvider = module.get(StencilProvider) as jest.Mocked<StencilProvider>;
-    interactionProvider = module.get(InteractionProvider) as jest.Mocked<InteractionProvider>;
+    stencilProvider = module.get(StencilRepository) as jest.Mocked<StencilRepository>;
+    interactionProvider = module.get(InteractionRepository) as jest.Mocked<InteractionRepository>;
   });
 
   it('should be defined', () => {

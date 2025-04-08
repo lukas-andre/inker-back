@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 import { WorkSource } from '../workType';
 
 export class WorkSearchQueryDto {
-  @ApiPropertyOptional({ 
-    description: 'Término de búsqueda en texto libre. Se utilizará para buscar coincidencias en títulos, descripciones y etiquetas. Para búsquedas más precisas, utilice comillas ("") alrededor de frases exactas.' 
+  @ApiPropertyOptional({
+    description: 'Término de búsqueda en texto libre. Se utilizará para buscar coincidencias en títulos, descripciones y etiquetas. Para búsquedas más precisas, utilice comillas ("") alrededor de frases exactas.'
   })
   @IsOptional()
   @IsString()
@@ -16,18 +16,17 @@ export class WorkSearchQueryDto {
   @IsString()
   tagIds?: string;
 
-  @ApiPropertyOptional({ description: 'ID del artista', type: Number })
+  @ApiPropertyOptional({ description: 'ID del artista', type: String })
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  artistId?: number;
+  @IsString()
+  artistId?: string;
 
   @ApiPropertyOptional({ description: 'Mostrar solo trabajos destacados', default: false })
   @IsOptional()
   @Type(() => Boolean)
   onlyFeatured?: boolean;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Filtrar por origen del trabajo (APP o EXTERNAL)',
     enum: WorkSource
   })
@@ -35,7 +34,7 @@ export class WorkSearchQueryDto {
   @IsEnum(WorkSource)
   source?: WorkSource;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Incluir trabajos ocultos en los resultados',
     default: false
   })
@@ -43,14 +42,14 @@ export class WorkSearchQueryDto {
   @Type(() => Boolean)
   includeHidden?: boolean;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: `Ordenar por: 
     - relevance: Utiliza un algoritmo inteligente que considera coincidencias en título, descripción, popularidad y fecha de creación.
     - newest: Ordena por fecha de creación más reciente.
     - oldest: Ordena por fecha de creación más antigua.
     - popularity: Ordena por número de visualizaciones.
     - position: Ordena por la posición asignada al trabajo.
-    Para más información sobre cómo funciona el algoritmo de relevancia, consulte el endpoint /work-search/ranking-info.`, 
+    Para más información sobre cómo funciona el algoritmo de relevancia, consulte el endpoint /work-search/ranking-info.`,
     enum: ['relevance', 'newest', 'oldest', 'popularity', 'position'],
     default: 'relevance'
   })
@@ -91,7 +90,7 @@ export class WorkTagSuggestionQueryDto {
 
 export class WorkTagSuggestionResponseDto {
   @ApiProperty({ description: 'ID de la etiqueta' })
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Nombre de la etiqueta' })
   name: string;

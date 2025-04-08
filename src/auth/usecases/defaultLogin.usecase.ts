@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
-import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
 import {
   DomainBadRule,
   DomainConflict,
@@ -16,20 +16,20 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { User } from '../../users/infrastructure/entities/user.entity';
-import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
 import { AuthService } from '../domain/auth.service';
 
 import { LoginParams } from './interfaces/defaultLogin.params';
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
 import { PushNotificationService } from '../../notifications/services/push/pushNotification.service';
+import { UsersRepository } from '../../users/infrastructure/repositories/users.repository';
 
 @Injectable()
 export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
   constructor(
     private authService: AuthService,
-    private usersProvider: UsersProvider,
-    private artistProvider: ArtistProvider,
-    private customerProvider: CustomerProvider,
+    private usersRepository: UsersRepository,
+    private artistProvider: ArtistRepository,
+    private customerProvider: CustomerRepository,
     private pushNotificationService: PushNotificationService,
   ) {
     super(DefaultLoginUseCase.name);
@@ -37,7 +37,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
 
   async execute(loginParams: LoginParams): Promise<DefaultLoginResult> {
     this.logger.log({ loginParams });
-    const result = await this.usersProvider.findByLoginType(
+    const result = await this.usersRepository.findByLoginType(
       loginParams.loginType,
       loginParams.identifier,
     );
@@ -67,7 +67,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
     user: User,
     loginParams: LoginParams,
   ): Promise<DefaultLoginResult> {
-    const result = await this.usersProvider.validatePassword(
+    const result = await this.usersRepository.validatePassword(
       loginParams.password,
       user.password,
     );
@@ -91,7 +91,7 @@ export class DefaultLoginUseCase extends BaseUseCase implements UseCase {
 
   private async findUserEntityByType(
     userType: string,
-    userId: number,
+    userId: string,
   ): Promise<Customer | Artist> {
     let userFounded = null;
     switch (userType) {

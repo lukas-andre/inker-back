@@ -9,20 +9,20 @@ import { UserType } from '../../users/domain/enums/userType.enum';
 import { QuotationDto } from '../infrastructure/dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from '../infrastructure/dtos/getQuotationsQuery.dto';
 import { Quotation } from '../infrastructure/entities/quotation.entity';
-import { QuotationProvider } from '../infrastructure/providers/quotation.provider';
-import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
-import { ArtistLocationProvider } from '../../locations/infrastructure/database/artistLocation.provider';
-import { StencilProvider } from '../../artists/infrastructure/database/stencil.provider';
+import { QuotationRepository } from '../infrastructure/repositories/quotation.provider';
+import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
+import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository';
+import { StencilRepository } from '../../artists/infrastructure/repositories/stencil.repository';
 
 @Injectable()
 export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly quotationProvider: QuotationProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly artistLocationProvider: ArtistLocationProvider,
-    private readonly stencilProvider: StencilProvider,
+    private readonly quotationProvider: QuotationRepository,
+    private readonly customerProvider: CustomerRepository,
+    private readonly artistProvider: ArtistRepository,
+    private readonly artistLocationProvider: ArtistLocationRepository,
+    private readonly stencilProvider: StencilRepository,
   ) {
     super(GetQuotationsUseCase.name);
   }
@@ -31,7 +31,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
   async execute(
     query: GetQuotationsQueryDto,
     userType: UserType,
-    userTypeId: number,
+    userTypeId: string,
   ): Promise<{ items: QuotationDto[]; total: number }> {
     const { status, page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;

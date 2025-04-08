@@ -4,10 +4,10 @@ import { SMSClient } from '../../../../global/infrastructure/clients/sms.client'
 import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../../global/infrastructure/helpers/defaultResponse.helper';
 import { NotificationType } from '../../../infrastructure/entities/verificationHash.entity';
-import { UsersProvider } from '../../../infrastructure/providers/users.provider';
-import { VerificationHashProvider } from '../../../infrastructure/providers/verificationHash.service';
 import { BaseSendVerificationUseCase } from './baseSendVerificationCode.usecase';
 import { UseCase } from '../../../../global/domain/usecases/base.usecase';
+import { VerificationHashRepository } from '../../../infrastructure/repositories/verificationHash.repository';
+import { UsersRepository } from '../../../infrastructure/repositories/users.repository';
 
 @Injectable()
 export class SendSMSVerificationCodeUseCase
@@ -17,14 +17,14 @@ export class SendSMSVerificationCodeUseCase
   protected notificationType = NotificationType.SMS;
 
   constructor(
-    verificationHashProvider: VerificationHashProvider,
-    usersProvider: UsersProvider,
+    verificationHashRepository: VerificationHashRepository,
+    usersRepository: UsersRepository,
     private readonly smsClient: SMSClient,
     private readonly configService: ConfigService,
   ) {
     super(
-      verificationHashProvider,
-      usersProvider,
+      verificationHashRepository,
+      usersRepository,
       SendSMSVerificationCodeUseCase.name,
     );
   }
@@ -41,7 +41,7 @@ export class SendSMSVerificationCodeUseCase
     this.validateUserStatus(user);
 
     const verificationCode =
-      this.verificationHashProvider.generateVerificationCode();
+      this.verificationHashRepository.generateVerificationCode();
     this.logger.log({ verificationCode });
 
     await this.handleVerificationHash(user.id, verificationCode);

@@ -20,7 +20,7 @@ import { StencilStatus, StencilType } from '../../domain/stencilType';
 export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'artist_id' })
   @Index()
-  artistId: number;
+  artistId: string;
 
   @ManyToOne(() => Artist, artist => artist.stencils)
   @JoinColumn({ name: 'artist_id' })

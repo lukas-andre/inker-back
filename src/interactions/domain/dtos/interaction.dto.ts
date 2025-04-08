@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEnum,
-  IsInt,
   IsNotEmpty,
-  Min,
+  IsString,
 } from 'class-validator';
 import { InteractionType } from '../interactionType';
 
@@ -22,12 +21,11 @@ enum EntityTypeEnum {
 
 export class InteractionDto implements InteractionType {
   @ApiProperty({ description: 'Interaction ID' })
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'User ID' })
-  @IsInt()
-  @Min(1)
-  userId: number;
+  @IsString()
+  userId: string;
 
   @ApiProperty({ description: 'Interaction type', enum: InteractionTypeEnum })
   @IsEnum(InteractionTypeEnum)
@@ -38,9 +36,8 @@ export class InteractionDto implements InteractionType {
   entityType: string;
 
   @ApiProperty({ description: 'Entity ID' })
-  @IsInt()
-  @Min(1)
-  entityId: number;
+  @IsString()
+  entityId: string;
 
   @ApiProperty({ description: 'Creation timestamp' })
   createdAt: Date;
@@ -58,7 +55,6 @@ export class CreateInteractionDto {
   entityType: string;
 
   @ApiProperty({ description: 'Entity ID' })
-  @IsInt()
-  @Min(1)
-  entityId: number;
+  @IsString()
+  entityId: string;
 }

@@ -5,7 +5,7 @@ import { TagInterface } from '../../tags/tag.interface';
 import { ContactInterface } from './interfaces/contact.interface';
 
 export type ArtistType = {
-  userId: number;
+  userId: string;
   username: string;
   firstName: string;
   lastName: string;

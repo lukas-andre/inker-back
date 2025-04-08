@@ -8,14 +8,14 @@ import { DataSource, Repository } from 'typeorm';
 import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../../../agenda/infrastructure/entities/agendaEvent.entity';
 import { AgendaInvitation } from '../../../agenda/infrastructure/entities/agendaInvitation.entity';
-import { AgendaProvider } from '../../../agenda/infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
+import { AgendaRepository } from '../../../agenda/infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../../../agenda/infrastructure/repositories/agendaEvent.repository';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { Contact } from '../../../artists/infrastructure/entities/contact.entity';
 import { sendGridConfig } from '../../../config/sendgrid.config';
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
-import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
 import {
   AGENDA_DB_CONNECTION_NAME,
   ARTIST_DB_CONNECTION_NAME,
@@ -23,8 +23,8 @@ import {
   LOCATION_DB_CONNECTION_NAME,
 } from '../../../databases/constants';
 import { AddressType } from '../../../global/domain/interfaces/address.interface';
-import { ArtistLocationProvider } from '../../../locations/infrastructure/database/artistLocation.provider';
-import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
+import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
+import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
 import { NotificationsModule } from '../../../notifications/notifications.module';
 import { DeadLetterQueueModule } from '../../deadletter/deadletter.queue.module';
 import { queues } from '../../queues';
@@ -51,10 +51,10 @@ describe('NotificationProcessor E2E', () => {
   const customerToken = getRepositoryToken(Customer);
   const locationToken = getRepositoryToken(ArtistLocation);
 
-  let agendaProvider: AgendaProvider;
-  let artistProvider: ArtistProvider;
-  let customerProvider: CustomerProvider;
-  let locationProvider: ArtistLocationProvider;
+  let agendaProvider: AgendaRepository;
+  let artistProvider: ArtistRepository;
+  let customerProvider: CustomerRepository;
+  let locationProvider: ArtistLocationRepository;
   let moduleFixture: TestingModule;
 
   beforeAll(async () => {
@@ -171,19 +171,19 @@ describe('NotificationProcessor E2E', () => {
           provide: locationToken,
           useClass: Repository,
         },
-        AgendaProvider,
-        ArtistProvider,
-        CustomerProvider,
-        ArtistLocationProvider,
-        AgendaEventProvider,
+        AgendaRepository,
+        ArtistRepository,
+        CustomerRepository,
+        ArtistLocationRepository,
+        AgendaEventRepository,
       ],
     }).compile();
 
     jobHandlerFactory = moduleFixture.get(JobHandlerFactory);
-    agendaProvider = moduleFixture.get(AgendaProvider);
-    artistProvider = moduleFixture.get(ArtistProvider);
-    customerProvider = moduleFixture.get(CustomerProvider);
-    locationProvider = moduleFixture.get(ArtistLocationProvider);
+    agendaProvider = moduleFixture.get(AgendaRepository);
+    artistProvider = moduleFixture.get(ArtistRepository);
+    customerProvider = moduleFixture.get(CustomerRepository);
+    locationProvider = moduleFixture.get(ArtistLocationRepository);
     notificationProcessor = moduleFixture.get(NotificationProcessor);
   });
 

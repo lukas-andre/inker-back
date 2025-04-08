@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { InteractionsController } from './infrastructure/interactions.controller';
 import { InteractionsHandler } from './infrastructure/interactions.handler';
-import { InteractionProviderModule } from './infrastructure/database/interactionProvider.module';
+import { InteractionProviderModule } from './infrastructure/database/repositories/interactionRepository.module';
 import { CreateInteractionUseCase } from './usecases/createInteraction.usecase';
 import { GetUserInteractionsUseCase } from './usecases/getUserInteractions.usecase';
 import { DeleteInteractionUseCase } from './usecases/deleteInteraction.usecase';

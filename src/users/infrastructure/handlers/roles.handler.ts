@@ -16,7 +16,7 @@ export class RolesHandler {
     return this.initRolesUseCase.execute();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.findOneRoleUseCase.execute(id);
   }
   async findAll(query: any) {

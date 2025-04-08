@@ -82,7 +82,7 @@ export class AnalyticsController {
     description: 'Artist follow recorded successfully',
   })
   async recordArtistFollow(
-    @Body('artistId', ParseIntPipe) artistId: number,
+    @Body('artistId') artistId: string,
     @Body('fromContentView') fromContentView: boolean = false,
   ): Promise<void> {
     return this.recordArtistFollowUseCase.execute(artistId, fromContentView);
@@ -97,7 +97,7 @@ export class AnalyticsController {
     type: ContentMetricsDto,
   })
   async getContentMetrics(
-    @Param('contentId', ParseIntPipe) contentId: number,
+    @Param('contentId') contentId: string,
     @Query('type') contentType: ContentType,
   ): Promise<ContentMetricsDto> {
     const userId = this.requestContext.userId;
@@ -113,7 +113,7 @@ export class AnalyticsController {
     type: ArtistMetricsDto,
   })
   async getArtistMetrics(
-    @Param('artistId', ParseIntPipe) artistId: number,
+    @Param('artistId') artistId: string,
   ): Promise<ArtistMetricsDto> {
     return this.getArtistMetricsUseCase.execute(artistId);
   }

@@ -2,8 +2,8 @@ import { Injectable, Logger, NotFoundException, BadRequestException } from '@nes
 import { Connection } from 'typeorm';
 import { InjectConnection } from '@nestjs/typeorm';
 import { AGENDA_DB_CONNECTION_NAME } from '../../databases/constants';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 import { RescheduleEventReqDto } from '../infrastructure/dtos/rescheduleEventReq.dto';
 import { AgendaEventStatus } from '../domain/enum/agendaEventStatus.enum';
 import { InjectQueue } from '@nestjs/bull';
@@ -16,8 +16,8 @@ export class RescheduleEventUseCase {
   private readonly logger = new Logger(RescheduleEventUseCase.name);
 
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
     private readonly schedulingService: SchedulingService,
     @InjectConnection(AGENDA_DB_CONNECTION_NAME)
     private connection: Connection,
@@ -25,10 +25,10 @@ export class RescheduleEventUseCase {
   ) {}
 
   async execute(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     dto: RescheduleEventReqDto,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     this.logger.log(`Rescheduling event ${eventId} for agenda ${agendaId}`);
 

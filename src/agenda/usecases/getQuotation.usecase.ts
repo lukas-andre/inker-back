@@ -6,25 +6,25 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { QuotationDto } from '../infrastructure/dtos/getQuotationRes.dto';
-import { QuotationProvider } from '../infrastructure/providers/quotation.provider';
-import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
-import { ArtistLocationProvider } from '../../locations/infrastructure/database/artistLocation.provider';
-import { StencilProvider } from '../../artists/infrastructure/database/stencil.provider';
+import { QuotationRepository } from '../infrastructure/repositories/quotation.provider';
+import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
+import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository';
+import { StencilRepository } from '../../artists/infrastructure/repositories/stencil.repository';
 
 @Injectable()
 export class GetQuotationUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly quotationProvider: QuotationProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly artistLocationProvider: ArtistLocationProvider,
-    private readonly stencilProvider: StencilProvider,
+    private readonly quotationProvider: QuotationRepository,
+    private readonly customerProvider: CustomerRepository,
+    private readonly artistProvider: ArtistRepository,
+    private readonly artistLocationProvider: ArtistLocationRepository,
+    private readonly stencilProvider: StencilRepository,
   ) {
     super(GetQuotationUseCase.name);
   }
 
-  async execute(id: number): Promise<Partial<QuotationDto>> {
+  async execute(id: string): Promise<Partial<QuotationDto>> {
     const quotation = await this.quotationProvider.findOne({
       where: { id },
       relations: ['history'],

@@ -30,7 +30,7 @@ export const defaultRatingMap: Record<RatingRate, number> = {
 };
 
 export interface ReviewAvgInterface extends BaseModelType {
-  artistId: number;
+  artistId: string;
   value: number;
   detail: Record<RatingRate, number>;
   count: number;

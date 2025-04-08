@@ -23,7 +23,7 @@ import { WorkSource, WorkType } from '../../domain/workType';
 export class Work extends BaseEntity implements WorkType {
   @Column({ name: 'artist_id' })
   @Index()
-  artistId: number;
+  artistId: string;
 
   @ManyToOne(() => Artist, artist => artist.works)
   @JoinColumn({ name: 'artist_id' })

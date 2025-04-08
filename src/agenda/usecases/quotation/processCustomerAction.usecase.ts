@@ -17,7 +17,7 @@ import {
   CustomerQuotationActionDto,
 } from '../../infrastructure/dtos/customerQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
-import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
+import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 import {
   QuotationCustomerActionJobIdType,
   QuotationCustomerActionJobType,
@@ -31,7 +31,7 @@ export class ProcessCustomerActionUseCase
   implements UseCase
 {
   constructor(
-    private readonly quotationProvider: QuotationProvider,
+    private readonly quotationProvider: QuotationRepository,
     private readonly quotationStateMachine: QuotationStateMachine,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
@@ -42,8 +42,8 @@ export class ProcessCustomerActionUseCase
   }
 
   async execute(
-    userId: number,
-    quotationId: number,
+    userId: string,
+    quotationId: string,
     customerActionDto: CustomerQuotationActionDto,
   ): Promise<{ message: string; updated: boolean }> {
     const quotation = await this.quotationProvider.findById(quotationId);

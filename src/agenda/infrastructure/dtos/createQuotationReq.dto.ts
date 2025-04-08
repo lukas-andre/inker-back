@@ -23,25 +23,25 @@ export class CreateQuotationReqDto {
 
     required: false,
   })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  readonly customerId?: number;
+  readonly customerId?: string;
 
   @ApiProperty({
     example: 1,
     description: 'Artist Id',
   })
-  @IsNumber()
-  readonly artistId: number;
+  @IsString()
+  readonly artistId: string;
 
   @ApiProperty({
     example: 123,
     description: 'Stencil Id (optional) - Reference to a specific stencil design',
     required: false,
   })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  readonly stencilId?: number;
+  readonly stencilId?: string;
 
   @ApiProperty({
     type: 'string',

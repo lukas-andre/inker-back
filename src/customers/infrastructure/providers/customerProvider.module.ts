@@ -3,11 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Customer } from '../entities/customer.entity';
 
-import { CustomerProvider } from './customer.provider';
+import { CustomerRepository } from './customer.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Customer], 'customer-db')],
-  providers: [CustomerProvider],
-  exports: [CustomerProvider],
+  providers: [CustomerRepository],
+  exports: [CustomerRepository],
 })
-export class CustomerProviderModule {}
+export class CustomerRepositoryModule {}

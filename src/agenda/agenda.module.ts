@@ -1,19 +1,18 @@
 import { Module, CacheModule, forwardRef } from '@nestjs/common';
 
-import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
-import { StencilProviderModule } from '../artists/infrastructure/database/stencilProvider.module';
-import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
-import { LocationProviderModule } from '../locations/infrastructure/database/locationProvider.module';
+import { ArtistsRepositoryModule } from '../artists/infrastructure/repositories/artistRepository.module';
+import { StencilRepositoryModule } from '../artists/infrastructure/repositories/stencilRepository.module';
+import { CustomerRepositoryModule } from '../customers/infrastructure/providers/customerProvider.module';
+import { LocationRepositoryModule } from '../locations/infrastructure/database/locationRepository.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
 import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
-import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
-import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
+import { ReviewRepositoryModule } from '../reviews/database/reviewRepository.module';
 
 import { QuotationStateMachine } from './domain/quotation.statemachine';
 import { AgendaHandler } from './infrastructure/agenda.handler';
 import { AgendaController } from './infrastructure/controllers/agenda.controller';
 import { QuotationController } from './infrastructure/controllers/quotation.controller';
-import { AgendaProviderModule } from './infrastructure/providers/agendaProvider.module';
+import { AgendaRepositoryModule } from './infrastructure/repositories/agendaRepository.module';
 import { AddEventUseCase } from './usecases/addEvent.usecase';
 import { CancelEventUseCase } from './usecases/cancelEvent.usecase';
 import { CreateQuotationUseCase } from './usecases/createQuotation.usecase';
@@ -48,23 +47,24 @@ import { GetSuggestedTimeSlotsUseCase } from './usecases/getSuggestedTimeSlots.u
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgendaUnavailableTime } from './infrastructure/entities/agendaUnavailableTime.entity';
 import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
-import { AgendaUnavailableTimeProvider } from './infrastructure/providers/agendaUnavailableTime.provider';
+import { AgendaUnavailableTimeRepository } from './infrastructure/repositories/agendaUnavailableTime.provider';
 import { UpdateAgendaSettingsUseCase } from './usecases/updateAgendaSettings.usecase';
 import { GetAgendaSettingsUseCase } from './usecases/getAgendaSettings.usecase';
 import { CreateAgendaEventService } from './usecases/common/createAgendaEvent.service';
+import { UserRepositoryModule } from '../users/infrastructure/repositories/userRepository.module';
 
 @Module({
   imports: [
     CacheModule.register(),
-    AgendaProviderModule,
-    ArtistsProviderModule,
-    StencilProviderModule,
-    UserProviderModule,
-    CustomerProviderModule,
-    ReviewProviderModule,
+    AgendaRepositoryModule,
+    ArtistsRepositoryModule,
+    StencilRepositoryModule,
+    UserRepositoryModule,
+    CustomerRepositoryModule,
+    ReviewRepositoryModule,
     MultimediasModule,
     NotificationQueueModule,
-    LocationProviderModule,
+    LocationRepositoryModule,
     forwardRef(() => SyncQueueModule),
     TypeOrmModule.forFeature([AgendaUnavailableTime], AGENDA_DB_CONNECTION_NAME),
   ],
@@ -104,7 +104,7 @@ import { CreateAgendaEventService } from './usecases/common/createAgendaEvent.se
     GetSuggestedTimeSlotsUseCase,
     UpdateAgendaSettingsUseCase,
     GetAgendaSettingsUseCase,
-    AgendaUnavailableTimeProvider,
+    AgendaUnavailableTimeRepository,
   ],
   controllers: [AgendaController, QuotationController],
   exports: [

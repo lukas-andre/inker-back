@@ -17,15 +17,15 @@ export class InteractionsHandler extends BaseComponent {
     super(InteractionsHandler.name);
   }
 
-  async createInteraction(userId: number, dto: CreateInteractionDto): Promise<InteractionDto> {
+  async createInteraction(userId: string, dto: CreateInteractionDto): Promise<InteractionDto> {
     this.logger.log(`Creating interaction for user: ${userId}, type: ${dto.interactionType}`);
     return this.createInteractionUseCase.execute({ userId, dto });
   }
 
   async getUserInteractions(
-    userId: number,
+    userId: string,
     entityType: string,
-    entityId: number,
+    entityId: string,
     interactionType?: string,
   ): Promise<InteractionDto[]> {
     this.logger.log(`Getting interactions for user: ${userId}, entity: ${entityType}/${entityId}`);
@@ -37,7 +37,7 @@ export class InteractionsHandler extends BaseComponent {
     });
   }
 
-  async deleteInteraction(userId: number, interactionId: number): Promise<void> {
+  async deleteInteraction(userId: string, interactionId: string): Promise<void> {
     this.logger.log(`Deleting interaction: ${interactionId} for user: ${userId}`);
     return this.deleteInteractionUseCase.execute({ userId, interactionId });
   }
@@ -46,7 +46,7 @@ export class InteractionsHandler extends BaseComponent {
     entityType: string,
     limit?: number,
     daysBack?: number,
-  ): Promise<{ entityId: number; count: number }[]> {
+  ): Promise<{ entityId: string; count: number }[]> {
     this.logger.log(`Getting trending ${entityType} content`);
     return this.getTrendingContentUseCase.execute({ entityType, limit, daysBack });
   }

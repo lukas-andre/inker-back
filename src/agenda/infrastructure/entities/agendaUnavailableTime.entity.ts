@@ -18,7 +18,7 @@ export class AgendaUnavailableTime extends BaseEntity {
   agenda: Agenda;
 
   @Column({ name: 'agenda_id' })
-  agendaId: number;
+  agendaId: string;
 
   @Index()
   @Column({ name: 'start_date' })

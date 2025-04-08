@@ -5,7 +5,7 @@ import { NotificationsController } from './notifications.controller';
 import { NotificationsHandler } from './notifications.handler';
 import { EmailNotificationService } from './services/email/email.notification';
 import { TemplateService } from './services/email/templates/template.service';
-import { NotificationsDatabaseModule } from './database/notificactionsDatabase.module';
+import { NotificationsRepositoryModule } from './database/notificactionsRepository.module';
 import { FirebaseFcmConfig } from './config/firebaseFcm.config';
 import { PushNotificationService } from './services/push/pushNotification.service';
 import { NotificationStorageService } from './services/notification.storage';
@@ -17,7 +17,7 @@ import { GlobalModule } from '../global/global.module';
 
 @Module({
   imports: [
-    NotificationsDatabaseModule,
+    NotificationsRepositoryModule,
     GlobalModule,
   ],
   providers: [

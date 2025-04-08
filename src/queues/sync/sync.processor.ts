@@ -8,10 +8,10 @@ import {
   SyncJobIdSchema,
   SyncJobType,
 } from './jobs';
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
-import { ReviewAvgProvider } from '../../reviews/database/providers/reviewAvg.provider';
-import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
-import { QuotationProvider } from '../../agenda/infrastructure/providers/quotation.provider';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
+import { ReviewAvgRepository } from '../../reviews/database/repositories/reviewAvg.repository';
+import { AgendaRepository } from '../../agenda/infrastructure/repositories/agenda.repository';
+import { QuotationRepository } from '../../agenda/infrastructure/repositories/quotation.provider';
 import { CreateAgendaEventService } from '../../agenda/usecases/common/createAgendaEvent.service';
 
 @Processor(queues.sync.name)
@@ -19,10 +19,10 @@ export class SyncProcessor extends BaseComponent {
   constructor(
     @InjectQueue(queues.deadLetter.name)
     private readonly deadLetterQueue: Queue,
-    private readonly artistProvider: ArtistProvider,
-    private readonly reviewAvgProvider: ReviewAvgProvider,
-    private readonly agendaProvider: AgendaProvider,
-    private readonly quotationProvider: QuotationProvider,
+    private readonly artistProvider: ArtistRepository,
+    private readonly reviewAvgProvider: ReviewAvgRepository,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly quotationProvider: QuotationRepository,
     private readonly createAgendaEventService: CreateAgendaEventService,
   ) {
     super(SyncProcessor.name);

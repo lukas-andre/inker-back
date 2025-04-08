@@ -30,7 +30,7 @@ export class PostsHandler extends BaseHandler {
   }
 
   public async listArtistPostByUserId(
-    userId: number,
+    userId: string,
     query: ListAllArtistPostsQueryDto,
     pagination: PaginationDto,
   ) {

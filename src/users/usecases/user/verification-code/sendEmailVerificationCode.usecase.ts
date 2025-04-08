@@ -6,13 +6,12 @@ import { DefaultResponseDto } from '../../../../global/infrastructure/dtos/defau
 import { DefaultResponse } from '../../../../global/infrastructure/helpers/defaultResponse.helper';
 import { queues } from '../../../../queues/queues';
 import { NotificationType } from '../../../infrastructure/entities/verificationHash.entity';
-import { UsersProvider } from '../../../infrastructure/providers/users.provider';
-import { VerificationHashProvider } from '../../../infrastructure/providers/verificationHash.service';
 import { BaseSendVerificationUseCase } from './baseSendVerificationCode.usecase';
 import { UseCase } from '../../../../global/domain/usecases/base.usecase';
 import { SendVerificationCodeJobType } from '../../../../queues/notifications/domain/schemas/codes';
 import { User } from '../../../infrastructure/entities/user.entity';
-
+import { VerificationHashRepository } from '../../../infrastructure/repositories/verificationHash.repository';
+import { UsersRepository } from '../../../infrastructure/repositories/users.repository';
 @Injectable()
 export class SendEmailVerificationCodeUseCase
   extends BaseSendVerificationUseCase
@@ -21,15 +20,15 @@ export class SendEmailVerificationCodeUseCase
   protected notificationType = NotificationType.EMAIL;
 
   constructor(
-    verificationHashProvider: VerificationHashProvider,
-    usersProvider: UsersProvider,
+    verificationHashRepository: VerificationHashRepository,
+    usersRepository: UsersRepository,
     private readonly configService: ConfigService,
     @InjectQueue(queues.notification.name)
     private readonly notificationsQueue: Queue,
   ) {
     super(
-      verificationHashProvider,
-      usersProvider,
+      verificationHashRepository,
+      usersRepository,
       SendEmailVerificationCodeUseCase.name,
     );
   }
@@ -46,7 +45,7 @@ export class SendEmailVerificationCodeUseCase
     this.validateUserStatus(user);
 
     const verificationCode =
-      this.verificationHashProvider.generateVerificationCode();
+      this.verificationHashRepository.generateVerificationCode();
     this.logger.log({ verificationCode });
 
     await this.handleVerificationHash(user.id, verificationCode);

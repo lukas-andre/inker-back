@@ -1,35 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { BaseComponent } from '../../../global/domain/components/base.component';
-import { AgendaProvider } from '../../infrastructure/providers/agenda.provider';
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { DataSource } from 'typeorm';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 export interface CreateEventParams {
   // Event details
-  agendaId: number;
+  agendaId: string;
   title: string;
   info: string;
   color: string;
   startDate: Date | string;
   endDate: Date | string;
   notification: boolean;
-  customerId: number;
-  quotationId?: number;
+  customerId: string;
+  quotationId?: string;
   
   // Creator details 
-  createdBy: number;
+  createdBy: string;
 }
 
 export interface CreateEventResult {
   transactionIsOK: boolean;
-  eventId: number;
+  eventId: string;
 }
 
 @Injectable()
 export class CreateAgendaEventService extends BaseComponent {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
+    private readonly agendaProvider: AgendaRepository,
   ) {
     super(CreateAgendaEventService.name);
   }
@@ -40,7 +40,7 @@ export class CreateAgendaEventService extends BaseComponent {
    */
   async createEventWithHistory(params: CreateEventParams): Promise<CreateEventResult> {
     let transactionIsOK = false;
-    let eventId: number = null;
+    let eventId: string = null;
 
     const queryRunner = this.agendaProvider.source.createQueryRunner();
 
@@ -127,15 +127,15 @@ export class CreateAgendaEventService extends BaseComponent {
    * This is used by the sync processor when a quotation is accepted.
    */
   async createEventFromQuotation(
-    agendaId: number,
-    quotationId: number,
-    customerId: number,
+    agendaId: string,
+    quotationId: string,
+    customerId: string,
     title: string,
     info: string,
     color: string,
     startDate: Date,
     endDate: Date,
-    createdBy: number,
+    createdBy: string,
   ): Promise<CreateEventResult> {
     return this.createEventWithHistory({
       agendaId,

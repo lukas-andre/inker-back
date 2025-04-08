@@ -35,8 +35,8 @@ export class MultimediasService {
 
   async handlePostMultimedias(
     files: FileInterface[],
-    artistId: number,
-    postId: number,
+    artistId: string,
+    postId: string,
   ): Promise<MultimediasMetadataInterface> {
     const multimediasMetadata: MultimediasMetadataInterface = {
       count: 0,
@@ -69,8 +69,8 @@ export class MultimediasService {
 
   async handleWorkEvidenceMultimedias(
     files: FileInterface[],
-    eventId: number,
-    agendaId: number,
+    eventId: string,
+    agendaId: string,
   ): Promise<MultimediasMetadataInterface> {
     const multimediasMetadata: MultimediasMetadataInterface = {
       count: 0,
@@ -102,8 +102,8 @@ export class MultimediasService {
 
   async uploadReferenceImages(
     files: FileInterface[],
-    quotationId: number,
-    artistId: number,
+    quotationId: string,
+    artistId: string,
   ): Promise<MultimediasMetadataInterface> {
     const multimediasMetadata: MultimediasMetadataInterface = {
       count: 0,
@@ -168,8 +168,8 @@ export class MultimediasService {
 
   async uploadProposedDesigns(
     files: FileInterface[],
-    quotationId: number,
-    artistId: number,
+    quotationId: string,
+    artistId: string,
   ): Promise<MultimediasMetadataInterface> {
     const multimediasMetadata: MultimediasMetadataInterface = {
       count: 0,

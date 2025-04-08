@@ -58,11 +58,11 @@ export class CustomersController {
     description: 'Customer updated successfully',
     type: Customer,
   })
-  @ApiParam({ name: 'id', required: true, type: Number })
+  @ApiParam({ name: 'id', required: true, type: String })
   @Put(':id')
   @UsePipes(new ValidationPipe({ forbidUnknownValues: false }))
   async updateCustomerBasicInfo(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() body: UpdateCustomerDto,
   ) {
     return this.customerHandler.handleUpdateCustomerBasicInfo(id, body);

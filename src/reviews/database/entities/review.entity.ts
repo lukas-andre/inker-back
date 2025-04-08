@@ -7,14 +7,15 @@ import {
 } from '../../interfaces/review.interface';
 
 @Entity()
+@Index(['artistId', 'eventId'])
 export class Review extends BaseEntity implements ReviewInterface {
-  @Column({ type: 'int', nullable: false, name: 'artist_id' })
+  @Column({ nullable: false, name: 'artist_id' })
   @Index()
-  artistId: number;
+  artistId: string;
 
-  @Column({ type: 'int', nullable: false, name: 'event_id' })
+  @Column({ nullable: false, name: 'event_id' })
   @Index()
-  eventId: number;
+  eventId: string;
 
   @Column({ type: 'real', nullable: true, name: 'value' })
   value?: number;
@@ -41,8 +42,8 @@ export class Review extends BaseEntity implements ReviewInterface {
   })
   reviewReactions?: ReviewReactionsDetail;
 
-  @Column({ type: 'int', nullable: false, name: 'created_by' })
-  createdBy: number;
+  @Column({ nullable: false, name: 'created_by' })
+  createdBy: string;
 
   @Column({ nullable: false, name: 'display_name' })
   displayName: string;

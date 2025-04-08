@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WorkProvider } from '../../infrastructure/database/work.provider';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 import { WorkDto } from '../../domain/dtos/work.dto';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { WorkQueryDto } from '../../domain/dtos/work-query.dto';
@@ -15,16 +15,16 @@ export interface PaginatedWorkResponseWithMetrics extends Omit<PaginatedWorkResp
 @Injectable()
 export class GetWorksPaginatedUseCase extends BaseUseCase {
   constructor(
-    private readonly workProvider: WorkProvider,
+    private readonly workProvider: WorkRepository,
     private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(GetWorksPaginatedUseCase.name);
   }
 
   async execute(params: { 
-    artistId: number; 
+    artistId: string; 
     query: WorkQueryDto;
-    userId?: number;
+    userId?: string;
     disableCache?: boolean;
   }): Promise<PaginatedWorkResponseWithMetrics> {
     const { artistId, query, userId, disableCache } = params;

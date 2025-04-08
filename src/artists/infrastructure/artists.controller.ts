@@ -86,7 +86,7 @@ export class ArtistsController {
   @UseInterceptors(FileFastifyInterceptor('file'))
   async updateProfilePicture(
     @UploadedFile() file,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
   ) {
     console.log('file: ', file);
     return this.artistHandler.updateProfilePicture(id, file);
@@ -115,7 +115,7 @@ export class ArtistsController {
   @UseInterceptors(FileFastifyInterceptor('file'))
   async updateStudioPhoto(
     @UploadedFile() file,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
   ) {
     console.log('file: ', file);
     return this.artistHandler.updateStudioPhoto(id, file);
@@ -140,7 +140,7 @@ export class ArtistsController {
   })
   @ApiParam({ name: 'id', required: true, type: Number })
   @Get(':id')
-  async findArtistById(@Param('id', ParseIntPipe) id: number) {
+  async findArtistById(@Param('id') id: string) {
     console.log(id);
     return this.artistHandler.handleFindById(id);
   }
@@ -164,7 +164,7 @@ export class ArtistsController {
   @Put(':id')
   @UsePipes(new ValidationPipe({ forbidUnknownValues: false }))
   async updateArtistBasicInfo(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() body: UpdateArtistDto,
   ) {
     return this.artistHandler.updateArtistBasicInfo(id, body);

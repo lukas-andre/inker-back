@@ -31,7 +31,7 @@ export class CustomerHandler {
     return this.cRCustomerUseCase.findOne(options);
   }
 
-  async handleFindById(id: number): Promise<Customer> {
+  async handleFindById(id: string): Promise<Customer> {
     return this.cRCustomerUseCase.findById(id);
   }
 
@@ -50,7 +50,7 @@ export class CustomerHandler {
   }
 
   async handleUpdateCustomerBasicInfo(
-    id: number,
+    id: string,
     dto: UpdateCustomerDto,
   ): Promise<Customer> {
     return this.updateCustomerBasicInfoUseCase.execute(id, dto);

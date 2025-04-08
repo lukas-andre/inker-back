@@ -15,15 +15,15 @@ import { Tag } from './tag.entity';
 import { TagInterface } from './tag.interface';
 
 @Injectable()
-export class TagsService {
-  private readonly serviceName: string = TagsService.name;
+export class TagsRepository {
+  private readonly serviceName: string = TagsRepository.name;
 
   constructor(
     @InjectRepository(Tag, 'artist-db')
     private readonly tagsRepository: Repository<Tag>,
   ) {}
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.tagsRepository.findOne({ where: { id } });
   }
 

@@ -7,8 +7,7 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { Review } from '../database/entities/review.entity';
-import { ReviewProvider } from '../database/providers/review.provider';
-import { ReviewReactionProvider } from '../database/providers/reviewReaction.provider';
+import { ReviewRepository } from '../database/repositories/review.repository';
 import { GetReviewsFromArtistResponseDto } from '../dtos/getReviewsFromArtistResponse.dto';
 
 type WritableResult = O.Writable<Pagination<Review, IPaginationMeta>>;
@@ -19,15 +18,14 @@ export class GetReviewsFromArtistUsecase
   implements UseCase
 {
   constructor(
-    private readonly reviewProvider: ReviewProvider,
-    private readonly reviewReactionProvider: ReviewReactionProvider,
+    private readonly reviewProvider: ReviewRepository,
   ) {
     super(GetReviewsFromArtistUsecase.name);
   }
 
   async execute(
-    customerId: number,
-    artistId: number,
+    customerId: string,
+    artistId: string,
     page: number,
     limit: number,
   ): Promise<GetReviewsFromArtistResponseDto> {
@@ -40,7 +38,7 @@ export class GetReviewsFromArtistUsecase
 
     if (customerId) {
       const customerReviewReactionDetail =
-        await this.reviewReactionProvider.findCustomerReviewsReactionDetail(
+        await this.reviewProvider.findCustomerReviewsReactionDetail(
           customerId,
           reviews.items.map(review => review.id),
         );

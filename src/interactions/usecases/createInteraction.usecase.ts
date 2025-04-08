@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InteractionProvider } from '../infrastructure/database/interaction.provider';
+import { InteractionRepository } from '../infrastructure/database/repositories/interaction.repository';
 import { CreateInteractionDto, InteractionDto } from '../domain/dtos/interaction.dto';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { RecordAnalyticsUseCase } from './recordAnalytics.usecase';
@@ -7,13 +7,13 @@ import { RecordAnalyticsUseCase } from './recordAnalytics.usecase';
 @Injectable()
 export class CreateInteractionUseCase extends BaseUseCase {
   constructor(
-    private readonly interactionProvider: InteractionProvider,
+    private readonly interactionProvider: InteractionRepository,
     private readonly recordAnalyticsUseCase: RecordAnalyticsUseCase,
   ) {
     super(CreateInteractionUseCase.name);
   }
 
-  async execute(params: { userId: number; dto: CreateInteractionDto }): Promise<InteractionDto> {
+  async execute(params: { userId: string; dto: CreateInteractionDto }): Promise<InteractionDto> {
     const { userId, dto } = params;
     
     // For 'like' interactions, we should ensure only one like per user per entity

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WorkProvider } from '../../infrastructure/database/work.provider';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 import { WorkDto } from '../../domain/dtos/work.dto';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { WorkSource } from '../../domain/workType';
@@ -17,19 +17,19 @@ export interface WorkDtoWithMetrics extends WorkDto {
 @Injectable()
 export class GetWorksUseCase extends BaseUseCase {
   constructor(
-    private readonly workProvider: WorkProvider,
+    private readonly workProvider: WorkRepository,
     private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(GetWorksUseCase.name);
   }
 
   async execute(params: { 
-    artistId: number; 
+    artistId: string; 
     onlyFeatured?: boolean;
     includeHidden?: boolean;
     source?: string;
     includeMetrics?: boolean;
-    userId?: number;
+    userId?: string;
     disableCache?: boolean;
   }): Promise<(WorkDto & WithMetrics)[]> {
     const { 

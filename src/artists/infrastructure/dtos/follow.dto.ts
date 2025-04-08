@@ -7,14 +7,14 @@ export class FollowerDto {
     description: 'User Id',
   })
   @IsString()
-  userId: number;
+  userId: string;
 
   @ApiProperty({
     example: '415604',
     description: 'UserType Id, artist or customer Id',
   })
   @IsString()
-  readonly userTypeId: number;
+  readonly userTypeId: string;
 
   @ApiProperty({
     example: 'ARTIST',

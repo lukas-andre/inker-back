@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FindManyOptions } from 'typeorm';
 
-import { FollowedsProvider } from '../../follows/infrastructure/database/followeds.provider';
-import { FollowingsProvider } from '../../follows/infrastructure/database/followings.provider';
+import { FollowedsRepository } from '../../follows/infrastructure/database/followeds.repository';
+import { FollowingsRepository } from '../../follows/infrastructure/database/followings.repository';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
-import { ArtistProvider } from '../infrastructure/database/artist.provider';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 import { Artist } from '../infrastructure/entities/artist.entity';
-import { ReviewAvgProvider } from '../../reviews/database/providers/reviewAvg.provider';
+import { ReviewAvgRepository } from '../../reviews/database/repositories/reviewAvg.repository';
 
 import { FindArtistByIdResult } from './interfaces/findArtistById.result';
 
@@ -19,21 +19,21 @@ export interface FindArtistOptions {
   includeWorkCounts?: boolean;     // Incluir conteo de trabajos (total y visibles)
   includeStencilCounts?: boolean;  // Incluir conteo de stencils (total y visibles)
   includeAll?: boolean;            // Incluir toda la información disponible
-  currentUserId?: number;          // ID del usuario actual (para verificar follows)
+  currentUserId?: string;          // ID del usuario actual (para verificar follows)
 }
 
 @Injectable()
 export class FindArtistsUseCases extends BaseUseCase {
   constructor(
-    private readonly artistProvider: ArtistProvider,
-    private readonly followedsProvider: FollowedsProvider,
-    private readonly followingProvider: FollowingsProvider,
-    private readonly reviewAvgProvider: ReviewAvgProvider,
+    private readonly artistProvider: ArtistRepository,
+    private readonly followedsProvider: FollowedsRepository,
+    private readonly followingProvider: FollowingsRepository,
+    private readonly reviewAvgProvider: ReviewAvgRepository,
   ) {
     super(FindArtistsUseCases.name);
   }
 
-  async findById(id: number, options: FindArtistOptions = {}): Promise<FindArtistByIdResult> {
+  async findById(id: string, options: FindArtistOptions = {}): Promise<FindArtistByIdResult> {
     // Si includeAll está activado, activamos todas las opciones
     if (options.includeAll) {
       options = {

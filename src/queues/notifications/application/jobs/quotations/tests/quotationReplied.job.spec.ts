@@ -2,12 +2,12 @@ import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { AgendaEventProvider } from '../../../../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { QuotationProvider } from '../../../../../../agenda/infrastructure/providers/quotation.provider';
-import { ArtistProvider } from '../../../../../../artists/infrastructure/database/artist.provider';
+import { AgendaEventRepository } from '../../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
+import { QuotationRepository } from '../../../../../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../../../../../artists/infrastructure/repositories/artist.repository';
 import { sendGridConfig } from '../../../../../../config/sendgrid.config';
-import { CustomerProvider } from '../../../../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../../../../locations/infrastructure/database/artistLocation.provider';
+import { CustomerRepository } from '../../../../../../customers/infrastructure/providers/customer.repository';
+import { ArtistLocationRepository } from '../../../../../../locations/infrastructure/database/artistLocation.repository';
 import { SendGridClient } from '../../../../../../notifications/clients/sendGrid.client';
 import { EmailNotificationService } from '../../../../../../notifications/services/email/email.notification';
 import { TemplateService } from '../../../../../../notifications/services/email/templates/template.service';
@@ -53,15 +53,15 @@ describe('QuotationRepliedJob', () => {
       providers: [
         QuotationRepliedJob,
         {
-          provide: AgendaEventProvider,
-          useValue: createMock<AgendaEventProvider>(),
+          provide: AgendaEventRepository,
+          useValue: createMock<AgendaEventRepository>(),
         },
-        { provide: QuotationProvider, useValue: mockQuotationProvider },
-        { provide: ArtistProvider, useValue: mockArtistProvider },
-        { provide: CustomerProvider, useValue: mockCustomerProvider },
+        { provide: QuotationRepository, useValue: mockQuotationProvider },
+        { provide: ArtistRepository, useValue: mockArtistProvider },
+        { provide: CustomerRepository, useValue: mockCustomerProvider },
         {
-          provide: ArtistLocationProvider,
-          useValue: createMock<ArtistLocationProvider>(),
+          provide: ArtistLocationRepository,
+          useValue: createMock<ArtistLocationRepository>(),
         },
         TemplateService,
         SendGridClient,

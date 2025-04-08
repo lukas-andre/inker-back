@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Queue } from 'bull';
 
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
-import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
 import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
 import {
   RsvpAcceptedJobType,
@@ -12,15 +12,15 @@ import {
 } from '../../../queues/notifications/domain/schemas/agenda';
 import { queues } from '../../../queues/queues';
 import { Agenda } from '../../infrastructure/entities/agenda.entity';
-import { AgendaProvider } from '../../infrastructure/providers/agenda.provider';
-import { AgendaInvitationProvider } from '../../infrastructure/providers/agendaInvitation.provider';
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
+import { AgendaInvitationRepository } from '../../infrastructure/repositories/agendaInvitation.provider';
 import { RsvpUseCase } from '../rsvp.usecase';
 
 describe('RsvpUseCase', () => {
   let useCase: RsvpUseCase;
-  let agendaProvider: DeepMocked<AgendaProvider>;
-  let agendaInvitationProvider: DeepMocked<AgendaInvitationProvider>;
-  let customerProvider: DeepMocked<CustomerProvider>;
+  let agendaProvider: DeepMocked<AgendaRepository>;
+  let agendaInvitationProvider: DeepMocked<AgendaInvitationRepository>;
+  let customerProvider: DeepMocked<CustomerRepository>;
   let notificationQueue: DeepMocked<Queue>;
 
   beforeEach(async () => {
@@ -28,16 +28,16 @@ describe('RsvpUseCase', () => {
       providers: [
         RsvpUseCase,
         {
-          provide: AgendaProvider,
-          useValue: createMock<AgendaProvider>(),
+          provide: AgendaRepository,
+          useValue: createMock<AgendaRepository>(),
         },
         {
-          provide: AgendaInvitationProvider,
-          useValue: createMock<AgendaInvitationProvider>(),
+          provide: AgendaInvitationRepository,
+          useValue: createMock<AgendaInvitationRepository>(),
         },
         {
-          provide: CustomerProvider,
-          useValue: createMock<CustomerProvider>(),
+          provide: CustomerRepository,
+          useValue: createMock<CustomerRepository>(),
         },
         {
           provide: getQueueToken(queues.notification.name),
@@ -47,9 +47,9 @@ describe('RsvpUseCase', () => {
     }).compile();
 
     useCase = module.get<RsvpUseCase>(RsvpUseCase);
-    agendaProvider = module.get(AgendaProvider);
-    agendaInvitationProvider = module.get(AgendaInvitationProvider);
-    customerProvider = module.get(CustomerProvider);
+    agendaProvider = module.get(AgendaRepository);
+    agendaInvitationProvider = module.get(AgendaInvitationRepository);
+    customerProvider = module.get(CustomerRepository);
     notificationQueue = module.get(getQueueToken(queues.notification.name));
   });
 

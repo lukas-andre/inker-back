@@ -2,12 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { ArtistLocationDto, GetArtistLocationsParams } from '../../domain/interfaces/artistLocation.interface';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { ArtistLocationProvider } from '../../infrastructure/database/artistLocation.provider';
+import { ArtistLocationRepository } from '../../infrastructure/database/artistLocation.repository';
 
 @Injectable()
 export class GetArtistLocationsUseCase extends BaseUseCase {
   constructor(
-    private readonly artistLocationProvider: ArtistLocationProvider,
+    private readonly artistLocationProvider: ArtistLocationRepository,
   ) {
     super(GetArtistLocationsUseCase.name);
   }

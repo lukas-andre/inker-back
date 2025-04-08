@@ -94,16 +94,16 @@ export class AgendaHandler {
     return this.addEventUseCase.execute(dto);
   }
 
-  async handleUpdateEvent(dto: UpdateEventReqDto, id: number): Promise<any> {
+  async handleUpdateEvent(dto: UpdateEventReqDto, id: string): Promise<any> {
     return this.updateEventUseCase.execute(dto, id);
   }
 
-  async handleCancelEvent(eventId: number, agendaId: number): Promise<any> {
+  async handleCancelEvent(eventId: string, agendaId: string): Promise<any> {
     return this.cancelEventUseCase.execute(eventId, agendaId);
   }
 
   async handleListEventByViewType(
-    agendaId: number,
+    agendaId: string,
     query: ListEventByViewTypeQueryDto,
   ): Promise<any> {
     return this.listEventByViewTypeUseCase.execute(agendaId, query);
@@ -115,7 +115,7 @@ export class AgendaHandler {
     return this.listEventFromArtistAgenda.execute(userTypeId, userType, status);
   }
 
-  async handleGetEventByEventId(eventId: number): Promise<any> {
+  async handleGetEventByEventId(eventId: string): Promise<any> {
     const { isNotArtist, userTypeId } = this.requestContext;
     if (isNotArtist) {
       throw new UnauthorizedException(
@@ -128,7 +128,7 @@ export class AgendaHandler {
     );
   }
   
-  async handleGetCustomerEventByEventId(eventId: number): Promise<any> {
+  async handleGetCustomerEventByEventId(eventId: string): Promise<any> {
     const { isNotCustomer, userTypeId } = this.requestContext;
     if (isNotCustomer) {
       throw new UnauthorizedException(
@@ -142,8 +142,8 @@ export class AgendaHandler {
   }
 
   async handleMarkEventAsDone(
-    eventId: number,
-    agendaId: number,
+    eventId: string,
+    agendaId: string,
     workEvidenceFiles: FileInterface[],
   ): Promise<any> {
     return this.markEventAsDoneUseCase.execute(
@@ -154,7 +154,7 @@ export class AgendaHandler {
   }
 
   async handleGetWorkEvidenceByArtistId(
-    artistId: number,
+    artistId: string,
     page: number,
     limit: number,
   ): Promise<GetWorkEvidenceByArtistIdResponseDto> {
@@ -168,8 +168,8 @@ export class AgendaHandler {
   }
 
   async handleRsvp(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     willAttend: boolean,
   ): Promise<any> {
     // it's suposed to just the customer is able to RSVP
@@ -197,7 +197,7 @@ export class AgendaHandler {
     );
   }
 
-  async getQuotation(id: number): Promise<Partial<QuotationDto>> {
+  async getQuotation(id: string): Promise<Partial<QuotationDto>> {
     return this.getQuotationUseCase.execute(id);
   }
 
@@ -207,7 +207,7 @@ export class AgendaHandler {
   }
 
   async processArtistAction(
-    quotationId: number,
+    quotationId: string,
     artistQuoteDto: ArtistQuotationActionDto,
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {
@@ -227,7 +227,7 @@ export class AgendaHandler {
   }
 
   async processCustomerAction(
-    quotationId: number,
+    quotationId: string,
     customerActionDto: CustomerQuotationActionDto,
   ) {
     const { isNotCustomer, userId } = this.requestContext;
@@ -244,26 +244,26 @@ export class AgendaHandler {
     );
   }
 
-  async handleListEventsByAgendaId(artistId: number) {
+  async handleListEventsByAgendaId(artistId: string) {
     return await this.listEventsbyArtistId.execute(artistId);
   }
 
-  async markQuotationAsRead(id: number) {
+  async markQuotationAsRead(id: string) {
     const { userType } = this.requestContext;
     return this.markQuotationAsReadUseCase.execute(id, userType);
   }
 
   async handleChangeEventStatus(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     dto: ChangeEventStatusReqDto,
   ): Promise<void> {
     return this.changeEventStatusUsecase.execute(agendaId, eventId, dto);
   }
 
   async handleReviewEvent(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     reviewData: ReviewArtistRequestDto,
   ): Promise<any> {
     return this.eventReviewIntegrationUsecase.execute(agendaId, eventId, reviewData);
@@ -272,30 +272,30 @@ export class AgendaHandler {
   // New methods for Artist Workflow Improvements
 
   async handleSetWorkingHours(
-    agendaId: number,
+    agendaId: string,
     dto: SetWorkingHoursReqDto,
   ): Promise<void> {
     return this.setWorkingHoursUseCase.execute(agendaId, dto);
   }
 
   async handleCreateUnavailableTime(
-    agendaId: number,
+    agendaId: string,
     dto: CreateUnavailableTimeReqDto,
   ): Promise<AgendaUnavailableTime> {
     return this.createUnavailableTimeUseCase.execute(agendaId, dto);
   }
 
-  async handleGetUnavailableTimes(agendaId: number): Promise<AgendaUnavailableTime[]> {
+  async handleGetUnavailableTimes(agendaId: string): Promise<AgendaUnavailableTime[]> {
     return this.getUnavailableTimesUseCase.execute(agendaId);
   }
 
-  async handleDeleteUnavailableTime(agendaId: number, id: number): Promise<void> {
+  async handleDeleteUnavailableTime(agendaId: string, id: string): Promise<void> {
     return this.deleteUnavailableTimeUseCase.execute(agendaId, id);
   }
 
   async handleRescheduleEvent(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     dto: RescheduleEventReqDto,
   ): Promise<void> {
     const { userId } = this.requestContext;
@@ -303,30 +303,30 @@ export class AgendaHandler {
   }
 
   async handleUpdateEventNotes(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     dto: UpdateEventNotesReqDto,
   ): Promise<void> {
     return this.updateEventNotesUseCase.execute(agendaId, eventId, dto);
   }
 
   async handleGetArtistAvailability(
-    artistId: number,
+    artistId: string,
     query: ArtistAvailabilityQueryDto,
   ): Promise<AvailabilityCalendar[]> {
     return this.getArtistAvailabilityUseCase.execute(artistId, query);
   }
 
-  async handleGetSuggestedTimeSlots(quotationId: number): Promise<TimeSlot[]> {
+  async handleGetSuggestedTimeSlots(quotationId: string): Promise<TimeSlot[]> {
     return this.getSuggestedTimeSlotsUseCase.execute(quotationId);
   }
 
-  async handleGetAgendaSettings(agendaId: number): Promise<GetAgendaSettingsResDto> {
+  async handleGetAgendaSettings(agendaId: string): Promise<GetAgendaSettingsResDto> {
     return this.getAgendaSettingsUseCase.execute(agendaId);
   }
 
   async handleUpdateAgendaSettings(
-    agendaId: number,
+    agendaId: string,
     dto: UpdateAgendaSettingsReqDto,
   ): Promise<void> {
     return this.updateAgendaSettingsUseCase.execute(agendaId, dto);

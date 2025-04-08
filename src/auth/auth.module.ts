@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
 import { ArtistsModule } from '../artists/artists.module';
-import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
-import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
-import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
+import { ArtistsRepositoryModule } from '../artists/infrastructure/repositories/artistRepository.module';
+import { CustomerRepositoryModule } from '../customers/infrastructure/providers/customerProvider.module';
+import { UserRepositoryModule } from '../users/infrastructure/repositories/userRepository.module';
 
 import { AuthService } from './domain/auth.service';
 import { AuthController } from './infrastructure/auth.controller';
@@ -13,10 +13,10 @@ import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
-    ArtistsProviderModule,
-    UserProviderModule,
+    ArtistsRepositoryModule,
+    UserRepositoryModule,
     ArtistsModule,
-    CustomerProviderModule,
+    CustomerRepositoryModule,
     NotificationsModule,
   ],
   controllers: [AuthController],

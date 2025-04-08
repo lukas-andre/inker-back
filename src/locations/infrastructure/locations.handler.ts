@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { BaseHandler } from '../../global/infrastructure/base.handler';
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { AddLocationByApiUseCase } from '../usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from '../usecases/findArtistByRange.usecase';
@@ -51,7 +50,7 @@ export class LocationsHandler extends BaseComponent {
   // New methods for artist locations CRUD operations
   
   public async handleCreateArtistLocation(
-    artistId: number,
+    artistId: string,
     dto: ArtistLocationCreateDto,
   ): Promise<ArtistLocationDto> {
     this.logger.log('Creating artist location', { artistId, dto });
@@ -63,7 +62,7 @@ export class LocationsHandler extends BaseComponent {
   }
 
   public async handleGetArtistLocations(
-    artistId: number,
+    artistId: string,
   ): Promise<ArtistLocationDto[]> {
     this.logger.log('Getting artist locations', { artistId });
     
@@ -71,8 +70,8 @@ export class LocationsHandler extends BaseComponent {
   }
 
   public async handleUpdateArtistLocation(
-    artistId: number,
-    locationId: number,
+    artistId: string,
+    locationId: string,
     dto: ArtistLocationUpdateDto,
   ): Promise<ArtistLocationDto> {
     this.logger.log('Updating artist location', { artistId, locationId, dto });
@@ -84,8 +83,8 @@ export class LocationsHandler extends BaseComponent {
   }
 
   public async handleDeleteArtistLocation(
-    artistId: number,
-    locationId: number,
+    artistId: string,
+    locationId: string,
   ): Promise<boolean> {
     this.logger.log('Deleting artist location', { artistId, locationId });
     

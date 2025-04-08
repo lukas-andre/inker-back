@@ -18,7 +18,6 @@ import { LocationsModule } from './locations/locations.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { PostsModule } from './posts/posts.module';
 import { NotificationQueueModule } from './queues/notifications/notification.queue.module';
-import { ReactionsModule } from './reactions/reactions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { SchedulerModule } from './schedulers/scheduler.module';
 import { UsersModule } from './users/users.module';
@@ -50,7 +49,7 @@ import { SyncQueueModule } from './queues/sync/sync.queue.module';
     MultimediasModule,
     PostsModule,
     ReviewsModule,
-    ReactionsModule,
+    // ReactionsModule,
     UsersModule,
     NotificationQueueModule,
     SyncQueueModule,

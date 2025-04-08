@@ -15,7 +15,7 @@ export class Notification {
   id: string;
 
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Column()
   title: string;

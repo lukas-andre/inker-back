@@ -11,17 +11,15 @@ import { validate } from 'class-validator';
 
 import {
   AGENDA_ID_PIPE_FAILED,
-  AGENDA_INVALID_ID_TYPE,
   AGENDA_NOT_EXISTS,
 } from '../../domain/errors/codes';
-import { AgendaProvider } from '../providers/agenda.provider';
+import { AgendaRepository } from '../repositories/agenda.repository';
 
 @Injectable()
 export class AgendaIdPipe
-  implements PipeTransform<string, Promise<string | number>>
-{
+  implements PipeTransform<string, Promise<string | number>> {
   private readonly logger = new Logger(AgendaIdPipe.name);
-  constructor(private readonly agendaProvider: AgendaProvider) {}
+  constructor(private readonly agendaRepository: AgendaRepository) { }
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || this.invalidIdType(metatype)) {
@@ -36,24 +34,16 @@ export class AgendaIdPipe
       throw new BadRequestException(AGENDA_ID_PIPE_FAILED);
     }
 
-    const id = this.parseInt(value);
-    if (!(await this.agendaProvider.exists(id))) {
+    if (!(await this.agendaRepository.exists(value))) {
       throw new NotAcceptableException(AGENDA_NOT_EXISTS);
     }
 
-    return id;
-  }
-
-  parseInt(val: string) {
-    const value = parseInt(val, 10);
-    if (isNaN(value)) {
-      throw new BadRequestException(AGENDA_INVALID_ID_TYPE);
-    }
     return value;
   }
 
+
   private invalidIdType(metatype: Function): boolean {
-    const types: Function[] = [Number];
-    return !types.includes(metatype) || Number.isNaN(metatype);
+    const types: Function[] = [String];
+    return !types.includes(metatype);
   }
 }

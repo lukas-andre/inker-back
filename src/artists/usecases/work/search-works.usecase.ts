@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { WorkProvider } from '../../infrastructure/database/work.provider';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 import { WorkSearchQueryDto } from '../../domain/dtos/work-search.dto';
 import { PaginatedWorkResponseDto, WorkWithRelevanceDto } from '../../domain/dtos/paginated-work-response.dto';
-import { InteractionProvider } from '../../../interactions/infrastructure/database/interaction.provider';
+import { InteractionRepository } from '../../../interactions/infrastructure/database/repositories/interaction.repository';
 import { WorkDto } from '../../domain/dtos/work.dto';
 import { ContentMetricsEnricherService, WithMetrics, MetricsOptions } from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
 import { ContentType } from '../../../analytics/domain/enums/content-types.enum';
@@ -17,8 +17,8 @@ interface PaginatedWorkResponseWithMetrics extends Omit<PaginatedWorkResponseDto
 @Injectable()
 export class SearchWorksUseCase extends BaseUseCase {
   constructor(
-    private readonly workProvider: WorkProvider,
-    private readonly interactionProvider: InteractionProvider,
+    private readonly workProvider: WorkRepository,
+    private readonly interactionProvider: InteractionRepository,
     private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(SearchWorksUseCase.name);
@@ -26,7 +26,7 @@ export class SearchWorksUseCase extends BaseUseCase {
 
   async execute(params: WorkSearchQueryDto & { 
     includeMetrics?: boolean; 
-    userId?: number;
+    userId?: string;
     disableCache?: boolean;
   }): Promise<PaginatedWorkResponseWithMetrics> {
     const { query, page = 1, limit = 10, sortBy = 'relevance', includeMetrics = true, userId, disableCache } = params;
@@ -74,7 +74,7 @@ export class SearchWorksUseCase extends BaseUseCase {
     if (sortBy === 'relevance' && searchQuery && searchQuery.trim() !== '') {
       // Obtener métricas de popularidad para los trabajos
       const workIds = works.map(work => work.id);
-      let popularityData: { entityId: number; count: number }[] = [];
+      let popularityData: { entityId: string; count: number }[] = [];
       
       try {
         popularityData = await this.interactionProvider.getRecentPopularEntities(
@@ -88,7 +88,7 @@ export class SearchWorksUseCase extends BaseUseCase {
       }
 
       // Crear mapa de popularidad
-      const popularityMap = new Map<number, number>();
+      const popularityMap = new Map<string, number>();
       popularityData.forEach(item => {
         popularityMap.set(item.entityId, item.count);
       });
@@ -179,7 +179,7 @@ export class SearchWorksUseCase extends BaseUseCase {
         );
 
         // Crear mapa de popularidad
-        const popularityMap = new Map<number, number>();
+        const popularityMap = new Map<string, number>();
         popularWorks.forEach(item => {
           popularityMap.set(item.entityId, item.count);
         });

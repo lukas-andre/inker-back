@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { TagsService } from '../../../tags/tags.service';
+import { TagsRepository } from '../../../tags/tags.service';
 import { CreateTagDto } from '../../../tags/tag.dto';
 import { WorkTagSuggestionResponseDto } from '../../domain/dtos/work-search.dto';
 
 @Injectable()
 export class CreateWorkTagUseCase extends BaseUseCase {
-  constructor(private readonly tagsService: TagsService) {
+  constructor(private readonly tagsService: TagsRepository) {
     super(CreateWorkTagUseCase.name);
   }
 

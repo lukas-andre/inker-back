@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { StencilProvider } from '../../infrastructure/database/stencil.provider';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 
 @Injectable()
 export class DeleteStencilUseCase extends BaseUseCase {
-  constructor(private readonly stencilProvider: StencilProvider) {
+  constructor(private readonly stencilProvider: StencilRepository) {
     super(DeleteStencilUseCase.name);
   }
 
-  async execute(params: { id: number; artistId: number }): Promise<void> {
+  async execute(params: { id: string; artistId: string }): Promise<void> {
     const { id, artistId } = params;
     
     const stencil = await this.stencilProvider.findStencilById(id);

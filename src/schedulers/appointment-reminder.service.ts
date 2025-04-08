@@ -1,12 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { AgendaEventProvider } from '../agenda/infrastructure/providers/agendaEvent.provider';
-import { AgendaProvider } from '../agenda/infrastructure/providers/agenda.provider';
+import { AgendaEventRepository } from '../agenda/infrastructure/repositories/agendaEvent.repository';
 import { AgendaEvent } from '../agenda/infrastructure/entities/agendaEvent.entity';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { queues } from '../queues/queues';
-import { Between, LessThan, MoreThan } from 'typeorm';
+import { Between } from 'typeorm';
 import { AgendaEventStatus } from '../agenda/domain/enum/agendaEventStatus.enum';
 
 @Injectable()
@@ -14,10 +13,9 @@ export class AppointmentReminderService {
   private readonly logger = new Logger(AppointmentReminderService.name);
 
   constructor(
-    private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly agendaProvider: AgendaProvider,
+    private readonly agendaEventProvider: AgendaEventRepository,
     @InjectQueue(queues.notification.name) private notificationQueue: Queue,
-  ) {}
+  ) { }
 
   /**
    * Run every day at 10:00 AM to check for appointments happening the next day
@@ -26,15 +24,15 @@ export class AppointmentReminderService {
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
   async sendDayBeforeReminders() {
     this.logger.log('Running daily appointment reminders check...');
-    
+
     // Calculate tomorrow's date range (start of day to end of day)
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    
+
     const tomorrowEnd = new Date(tomorrow);
     tomorrowEnd.setHours(23, 59, 59, 999);
-    
+
     await this.processAppointmentReminders(tomorrow, tomorrowEnd, '24-hours');
   }
 
@@ -45,12 +43,12 @@ export class AppointmentReminderService {
   @Cron(CronExpression.EVERY_HOUR)
   async sendThreeHourReminders() {
     this.logger.log('Running 3-hour appointment reminders check...');
-    
+
     // Calculate the next 3 hours time range
     const now = new Date();
     const threeHoursFromNow = new Date();
     threeHoursFromNow.setHours(now.getHours() + 3);
-    
+
     await this.processAppointmentReminders(now, threeHoursFromNow, '3-hours');
   }
 
@@ -67,8 +65,6 @@ export class AppointmentReminderService {
         where: {
           startDate: Between(startDate, endDate),
           status: AgendaEventStatus.SCHEDULED,
-          // Only include events with valid customer information
-          customerId: MoreThan(0),
         },
         relations: ['agenda'],
       });
@@ -94,7 +90,7 @@ export class AppointmentReminderService {
       const agenda = event.agenda;
       const artistId = agenda.artistId;
       const customerId = event.customerId;
-      
+
       // Skip if we're missing required data
       if (!artistId || !customerId) {
         this.logger.warn(`Missing artist or customer ID for event ${event.id}, skipping reminder`);

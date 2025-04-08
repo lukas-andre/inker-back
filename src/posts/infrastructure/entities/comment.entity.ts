@@ -13,11 +13,11 @@ export class Comment extends BaseEntity {
 
   @Index()
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Index()
   @Column({ name: 'user_type_id' })
-  userTypeId: number;
+  userTypeId: string;
 
   @Index()
   @Column({ name: 'user_type' })
@@ -29,7 +29,7 @@ export class Comment extends BaseEntity {
 
   @Index()
   @Column({ name: 'parent_id', nullable: true })
-  parentId: number;
+  parentId: string;
 
   @Column()
   username: string;

@@ -7,7 +7,7 @@ export class DeleteUnavailableTimeUseCase {
 
   constructor(private readonly agendaSettingsService: AgendaSettingsService) {}
 
-  async execute(agendaId: number, id: number): Promise<void> {
+  async execute(agendaId: string, id: string): Promise<void> {
     this.logger.log(`Deleting unavailable time ${id} for agenda ${agendaId}`);
     return this.agendaSettingsService.deleteUnavailableTime(agendaId, id);
   }

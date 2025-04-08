@@ -8,7 +8,7 @@ export class MarkAllNotificationsReadUsecase extends BaseUseCase implements UseC
     super(MarkAllNotificationsReadUsecase.name);
   }
 
-  async execute(userId: number): Promise<void> {
+  async execute(userId: string): Promise<void> {
     await this.notificationRepository.markAllNotificationsAsRead(userId);
   }
 }

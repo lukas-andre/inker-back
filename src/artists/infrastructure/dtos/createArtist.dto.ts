@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 
 import { AddressDto } from '../../../global/infrastructure/dtos/address.dto';
 
@@ -9,8 +9,8 @@ export class CreateArtistDto {
     example: '12345',
     description: 'User Id',
   })
-  @IsNumber()
-  userId: number;
+  @IsString()
+  userId: string;
 
   @ApiProperty({
     example: 'noname_eter',

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ArtistStyleProvider } from '../../infrastructure/database/artistStyle.provider';
+import { ArtistStyleRepository } from '../../infrastructure/repositories/artistStyle.repository';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 
 @Injectable()
 export class RemoveArtistStyleUseCase extends BaseUseCase {
-  constructor(private readonly artistStyleProvider: ArtistStyleProvider) {
+  constructor(private readonly artistStyleProvider: ArtistStyleRepository) {
     super(RemoveArtistStyleUseCase.name);
   }
 
-  async execute(params: { artistId: number; styleName: string }): Promise<void> {
+  async execute(params: { artistId: string; styleName: string }): Promise<void> {
     const { artistId, styleName } = params;
     
     const existingStyle = await this.artistStyleProvider.findArtistStyle(

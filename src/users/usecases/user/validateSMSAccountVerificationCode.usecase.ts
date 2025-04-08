@@ -21,8 +21,8 @@ import {
   NotificationType,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
-import { UsersProvider } from '../../infrastructure/providers/users.provider';
-import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
+import { UsersRepository } from '../../infrastructure/repositories/users.repository';
+import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
 
 @Injectable()
 export class ValidateSMSAccountVerificationCodeUseCase
@@ -32,18 +32,18 @@ export class ValidateSMSAccountVerificationCodeUseCase
   private verificationType = VerificationType.ACTIVATE_ACCOUNT;
 
   constructor(
-    private readonly verificationHashProvider: VerificationHashProvider,
-    private readonly usersProvider: UsersProvider,
+    private readonly verificationHashRepository: VerificationHashRepository,
+    private readonly usersRepository: UsersRepository,
   ) {
     super(ValidateSMSAccountVerificationCodeUseCase.name);
   }
 
   public async execute(
-    userId: number,
+    userId: string,
     code: string,
   ): Promise<DomainException | DefaultResponseDto> {
     this.logger.log(`userId ${userId}`);
-    const userIsAlreadyVerified = await this.usersProvider.existsAndIsActive(
+    const userIsAlreadyVerified = await this.usersRepository.existsAndIsActive(
       userId,
     );
 
@@ -51,7 +51,7 @@ export class ValidateSMSAccountVerificationCodeUseCase
       throw new DomainBadRule(USER_ALREADY_VERIFIED);
     }
 
-    const userHash = await this.verificationHashProvider.findOne({
+    const userHash = await this.verificationHashRepository.findOne({
       where: {
         userId: userId,
         notificationType: NotificationType.SMS,
@@ -65,7 +65,7 @@ export class ValidateSMSAccountVerificationCodeUseCase
     }
 
     const isValidCode =
-      await this.verificationHashProvider.validateVerificationCode(
+      await this.verificationHashRepository.validateVerificationCode(
         code,
         userHash.hash,
       );
@@ -76,10 +76,10 @@ export class ValidateSMSAccountVerificationCodeUseCase
     }
 
     // TODO: - this should be done in a transaction
-    const activateUserResult = await this.usersProvider.activate(userId);
+    const activateUserResult = await this.usersRepository.activate(userId);
     this.logger.log({ activateUserResult });
     if (activateUserResult.affected >= 1) {
-      await this.verificationHashProvider.delete(userHash.id);
+      await this.verificationHashRepository.delete(userHash.id);
     }
 
     return DefaultResponse.ok;

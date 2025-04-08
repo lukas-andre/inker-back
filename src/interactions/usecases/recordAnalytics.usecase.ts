@@ -12,7 +12,7 @@ export class RecordAnalyticsUseCase {
     private readonly recordArtistViewUseCase: RecordArtistViewUseCase,
   ) {}
 
-  async execute(params: { userId: number; dto: CreateInteractionDto }): Promise<void> {
+  async execute(params: { userId: string; dto: CreateInteractionDto }): Promise<void> {
     const { userId, dto } = params;
     
     // Map interaction entity types to analytics content types

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { StencilProvider } from '../../infrastructure/database/stencil.provider';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 import { UpdateStencilDto, StencilDto } from '../../domain/dtos/stencil.dto';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 
 @Injectable()
 export class UpdateStencilUseCase extends BaseUseCase {
-  constructor(private readonly stencilProvider: StencilProvider) {
+  constructor(private readonly stencilProvider: StencilRepository) {
     super(UpdateStencilUseCase.name);
   }
 
-  async execute(params: { id: number; artistId: number; dto: UpdateStencilDto }): Promise<StencilDto> {
+  async execute(params: { id: string; artistId: string; dto: UpdateStencilDto }): Promise<StencilDto> {
     const { id, artistId, dto } = params;
     
     // Validation pipeline not working for multipart/form-data, so we need to convert the string to boolean

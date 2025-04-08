@@ -67,7 +67,7 @@ export class QuotationController {
     type: QuotationDto,
   })
   @Get(':id')
-  async getQuotation(@Param('id') id: number): Promise<Partial<QuotationDto>> {
+  async getQuotation(@Param('id') id: string): Promise<Partial<QuotationDto>> {
     return this.quotationHandler.getQuotation(id);
   }
 
@@ -96,7 +96,7 @@ export class QuotationController {
   @ApiBody({ description: 'Artist Action', type: ArtistQuotationActionDto })
   @UseInterceptors(FilesFastifyInterceptor('proposedDesigns[]', 10))
   async processArtistAction(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() dto: ArtistQuotationActionDto,
     @UploadedFiles() proposedDesigns: FileInterface[],
   ): Promise<void> {
@@ -111,7 +111,7 @@ export class QuotationController {
     description: 'Customer action processed successfully',
   })
   async processCustomerAction(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() dto: CustomerQuotationActionDto,
   ): Promise<void> {
     await this.quotationHandler.processCustomerAction(id, dto);
@@ -124,7 +124,7 @@ export class QuotationController {
     status: 204,
     description: 'Quotation marked as read successfully',
   })
-  async markAsRead(@Param('id') id: number): Promise<void> {
+  async markAsRead(@Param('id') id: string): Promise<void> {
     await this.quotationHandler.markQuotationAsRead(id);
   }
 
@@ -137,7 +137,7 @@ export class QuotationController {
   })
   @ApiResponse({ status: 404, description: 'Quotation not found' })
   @Get(':id/available-slots')
-  async getSuggestedTimeSlots(@Param('id') id: number): Promise<TimeSlot[]> {
+  async getSuggestedTimeSlots(@Param('id') id: string): Promise<TimeSlot[]> {
     return this.quotationHandler.handleGetSuggestedTimeSlots(id);
   }
 }

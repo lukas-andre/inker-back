@@ -47,7 +47,7 @@ export class StencilsController {
   })
   @ApiParam({ name: 'artistId', description: 'Artist ID' })
   async getStencilsByArtistId(
-    @Param('artistId', ParseIntPipe) artistId: number,
+    @Param('artistId') artistId: string,
     @Query() query: StencilQueryDto,
     @Headers('cache-control') cacheControl?: string
   ): Promise<PaginatedStencilResponseDto> {
@@ -64,11 +64,11 @@ export class StencilsController {
   })
   @ApiParam({ name: 'id', description: 'Stencil ID' })
   async getStencilById(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Headers('cache-control') cacheControl?: string
   ): Promise<StencilDto> {
     const disableCache = cacheControl === 'no-cache';
-    return this.artistsHandler.getStencilById(Number(id), disableCache);
+    return this.artistsHandler.getStencilById(id, disableCache);
   }
 
   @Post()
@@ -98,7 +98,7 @@ export class StencilsController {
   })
   @ApiParam({ name: 'id', description: 'Stencil ID' })
   async updateStencil(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateStencilDto: UpdateStencilDto,
   ): Promise<StencilDto> {
     return this.artistsHandler.updateStencil(id, updateStencilDto);
@@ -113,8 +113,8 @@ export class StencilsController {
   })
   @ApiParam({ name: 'id', description: 'Stencil ID' })
   async deleteStencil(
-    @Param('id') id: number,
+    @Param('id') id: string,
   ): Promise<void> {
-    return this.artistsHandler.deleteStencil(Number(id));
+    return this.artistsHandler.deleteStencil(id);
   }
 }

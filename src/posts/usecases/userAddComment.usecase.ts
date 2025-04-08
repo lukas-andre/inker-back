@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import { JwtPayload } from '../../global/domain/interfaces/jwtPayload.interface';
 import {
@@ -17,7 +17,7 @@ import { ParentCommentEnum } from '../infrastructure/enum/parentComment.enum';
 export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly commentsService: CommentsService,
-    private readonly artistProvider: ArtistProvider,
+    private readonly artistProvider: ArtistRepository,
     private readonly postsService: PostsService,
   ) {
     super(UserAddCommentUseCase.name);
@@ -58,7 +58,7 @@ export class UserAddCommentUseCase extends BaseUseCase implements UseCase {
   }
 
   private async validParent(
-    parentId: number,
+    parentId: string,
     parentType: ParentCommentEnum,
   ): Promise<boolean> {
     let validParent = false;

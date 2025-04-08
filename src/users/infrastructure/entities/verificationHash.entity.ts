@@ -15,7 +15,7 @@ export enum VerificationType {
 export class VerificationHash extends BaseEntity {
   @Index()
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Column() hash: string;
 

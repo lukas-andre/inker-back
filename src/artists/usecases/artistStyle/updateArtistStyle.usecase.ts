@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { ArtistStyleProvider } from '../../infrastructure/database/artistStyle.provider';
+import { ArtistStyleRepository } from '../../infrastructure/repositories/artistStyle.repository';
 import { ArtistStyleDto, UpdateArtistStyleDto } from '../../domain/dtos/artistStyle.dto';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 
 @Injectable()
 export class UpdateArtistStyleUseCase extends BaseUseCase {
-  constructor(private readonly artistStyleProvider: ArtistStyleProvider) {
+  constructor(private readonly artistStyleProvider: ArtistStyleRepository) {
     super(UpdateArtistStyleUseCase.name);
   }
 
   async execute(params: {
-    artistId: number;
+    artistId: string;
     styleName: string;
     dto: UpdateArtistStyleDto;
   }): Promise<ArtistStyleDto> {

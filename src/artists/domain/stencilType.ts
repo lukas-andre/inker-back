@@ -5,8 +5,8 @@ export enum StencilStatus {
 }
 
 export interface StencilType {
-  id?: number;
-  artistId: number;
+  id?: string;
+  artistId: string;
   title: string;
   description?: string;
   imageUrl: string;

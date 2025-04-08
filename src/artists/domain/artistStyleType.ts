@@ -1,5 +1,5 @@
 export interface ArtistStyleType {
-  artistId: number;
+  artistId: string;
   styleName: string;
   proficiencyLevel: number;
   createdAt: Date;

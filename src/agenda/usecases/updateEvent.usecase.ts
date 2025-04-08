@@ -12,14 +12,14 @@ import { queues } from '../../queues/queues';
 import { UpdateEventReqDto } from '../infrastructure/dtos/updateEventReq.dto';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 
 @Injectable()
 export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
@@ -31,7 +31,7 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
 
   async execute(
     updateEventReqDto: UpdateEventReqDto,
-    eventId: number,
+    eventId: string,
   ): Promise<AgendaEvent> {
     const existsAgenda = await this.agendaProvider.findById(
       updateEventReqDto.agendaId,

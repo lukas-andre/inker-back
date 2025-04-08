@@ -61,12 +61,12 @@ export class WorksController {
   })
   @UsePipes(new ValidationPipe({ transform: true }))
   async getWorksByArtistIdPaginated(
-    @Param('artistId') artistId: number,
+    @Param('artistId') artistId: string,
     @Query() query: WorkQueryDto,
     @Headers('cache-control') cacheControl?: string
   ): Promise<PaginatedWorkResponseWithMetrics> {
     const disableCache = cacheControl === 'no-cache';
-    return this.artistsHandler.getWorksPaginated(Number(artistId), query, disableCache);
+    return this.artistsHandler.getWorksPaginated(artistId, query, disableCache);
   }
 
   @Get(':id')
@@ -78,11 +78,11 @@ export class WorksController {
   })
   @ApiParam({ name: 'id', description: 'Work ID' })
   async getWorkById(
-    @Param('id') id: number, 
+    @Param('id') id: string, 
     @Headers('cache-control') cacheControl?: string
   ): Promise<WorkDto> {
     const disableCache = cacheControl === 'no-cache';
-    return this.artistsHandler.getWorkById(Number(id), disableCache);
+    return this.artistsHandler.getWorkById(id, disableCache);
   }
 
   @Post()
@@ -112,10 +112,10 @@ export class WorksController {
   })
   @ApiParam({ name: 'id', description: 'Work ID' })
   async updateWork(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateWorkDto: UpdateWorkDto,
   ): Promise<WorkDto> {
-    return this.artistsHandler.updateWork(Number(id), updateWorkDto);
+    return this.artistsHandler.updateWork(id, updateWorkDto);
   }
 
   @Delete(':id')
@@ -127,8 +127,8 @@ export class WorksController {
   })
   @ApiParam({ name: 'id', description: 'Work ID' })
   async deleteWork(
-    @Param('id') id: number,
+    @Param('id') id: string,
   ): Promise<void> {    
-    return this.artistsHandler.deleteWork(Number(id));
+    return this.artistsHandler.deleteWork(id);
   }
 }

@@ -7,7 +7,7 @@ import { ModuleMocker } from 'jest-mock';
 import { RequestContextService } from '../global/infrastructure/services/requestContext.service';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
 
-import { ReviewProvider } from './database/providers/review.provider';
+import { ReviewRepository } from './database/repositories/review.repository';
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { ReviewHandler } from './reviews.handler';
 import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
@@ -22,7 +22,7 @@ describe('ReviewHandler', () => {
   let getReviewsFromArtistUsecase: DeepMocked<GetReviewsFromArtistUsecase>;
   let requestContextService: DeepMocked<RequestContextService>;
   let jwtService: DeepMocked<JwtService>;
-  let reviewProvider: DeepMocked<ReviewProvider>;
+  let reviewProvider: DeepMocked<ReviewRepository>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -45,8 +45,8 @@ describe('ReviewHandler', () => {
           useValue: createMock<RequestContextService>(),
         },
         {
-          provide: ReviewProvider,
-          useValue: createMock<ReviewProvider>(),
+          provide: ReviewRepository,
+          useValue: createMock<ReviewRepository>(),
         },
         {
           provide: JwtService,
@@ -65,9 +65,9 @@ describe('ReviewHandler', () => {
   });
 
   it('ReviewHandler.reviewArtist should call ratingArtistUseCase.execute', async () => {
-    const artistId = 1;
-    const eventId = 1;
-    const userId = 1;
+    const artistId = '1';
+    const eventId = '1';
+    const userId = '1';
     const body: ReviewArtistRequestDto = {
       rating: 5,
       comment: 'comment',
@@ -87,8 +87,8 @@ describe('ReviewHandler', () => {
   });
 
   it('ReviewHandler.reactToReview should call reactToReviewUseCase.execute', async () => {
-    const reviewId = 1;
-    const userId = 1;
+    const reviewId = '1';
+    const userId = '1';
     const reaction = ReviewReactionEnum.like;
 
     await handler.reactToReview(reviewId, userId, reaction);
