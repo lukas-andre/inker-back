@@ -1,13 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { ContentType } from '../enums/content-types.enum';
 import { ViewSource } from '../enums/interaction-types.enum';
 
 export class RecordInteractionDto {
   @ApiProperty({ description: 'Content ID', type: Number })
-  @IsInt()
-  @Min(1)
-  contentId: number;
+  @IsString()
+  contentId: string;
 
   @ApiProperty({ description: 'Content type', enum: ContentType })
   @IsEnum(ContentType)
@@ -35,14 +34,14 @@ export class RecordInteractionDto {
 
 export class RecordArtistViewDto {
   @ApiProperty({ description: 'Artist ID', type: Number })
-  @IsInt()
-  @Min(1)
-  artistId: number;
+  @IsString()
+  artistId: string;
 }
 
 export class ContentMetricsDto {
   @ApiProperty({ description: 'Content ID', type: Number })
-  contentId: number;
+  @IsString()
+  contentId: string;
 
   @ApiProperty({ description: 'Content type', enum: ContentType })
   contentType: ContentType;
@@ -91,8 +90,8 @@ export class ContentMetricsDto {
 }
 
 export class ArtistMetricsDto {
-  @ApiProperty({ description: 'Artist ID', type: Number })
-  artistId: number;
+  @ApiProperty({ description: 'Artist ID', type: String })
+  artistId: string;
 
   @ApiProperty({ description: 'View count', type: Number })
   viewCount: number;
@@ -109,9 +108,9 @@ export class ArtistMetricsDto {
 }
 
 export class BatchMetricsQueryDto {
-  @ApiProperty({ description: 'Content IDs', type: [Number] })
+  @ApiProperty({ description: 'Content IDs', type: [String] })
   @IsNotEmpty()
-  contentIds: number[];
+  contentIds: string[];
 
   @ApiProperty({ description: 'Content type', enum: ContentType })
   @IsEnum(ContentType)

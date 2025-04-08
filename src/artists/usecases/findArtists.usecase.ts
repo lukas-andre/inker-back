@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 
 import { SearchArtistDto } from '../infrastructure/dtos/searchArtist.dto';
-import { ArtistProvider } from '../infrastructure/database/artist.provider';
-import { FollowedsProvider } from '../../follows/infrastructure/database/followeds.provider';
-import { FollowingsProvider } from '../../follows/infrastructure/database/followings.provider';
-import { ReviewAvgProvider } from '../../reviews/database/providers/reviewAvg.provider';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
+import { FollowedsRepository } from '../../follows/infrastructure/database/followeds.repository';
+import { FollowingsRepository } from '../../follows/infrastructure/database/followings.repository';
+import { ReviewAvgRepository } from '../../reviews/database/repositories/reviewAvg.repository';
 import { FindArtistOptions } from './findArtist.usecases';
 
 @Injectable()
 export class FindArtistsUsecase {
   constructor(
-    private readonly artistProvider: ArtistProvider,
-    private readonly followedsProvider: FollowedsProvider,
-    private readonly followingProvider: FollowingsProvider,
-    private readonly reviewAvgProvider: ReviewAvgProvider,
+    private readonly artistProvider: ArtistRepository,
+    private readonly followedsProvider: FollowedsRepository,
+    private readonly followingProvider: FollowingsRepository,
+    private readonly reviewAvgProvider: ReviewAvgRepository,
   ) {}
 
   async execute(searchParams: SearchArtistDto, options?: FindArtistOptions) {

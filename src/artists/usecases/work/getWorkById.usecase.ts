@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WorkProvider } from '../../infrastructure/database/work.provider';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 import { WorkDto } from '../../domain/dtos/work.dto';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { ContentMetricsEnricherService, WithMetrics, MetricsOptions } from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
@@ -8,16 +8,16 @@ import { ContentType } from '../../../analytics/domain/enums/content-types.enum'
 @Injectable()
 export class GetWorkByIdUseCase extends BaseUseCase {
   constructor(
-    private readonly workProvider: WorkProvider,
+    private readonly workProvider: WorkRepository,
     private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(GetWorkByIdUseCase.name);
   }
 
   async execute(params: { 
-    id: number; 
+    id: string; 
     includeMetrics?: boolean; 
-    userId?: number;
+    userId?: string;
     disableCache?: boolean; 
   }): Promise<(WorkDto & WithMetrics) | null> {
     const { id, includeMetrics = true, userId, disableCache } = params;

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { WorkProvider } from '../../infrastructure/database/work.provider';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 import { CreateWorkDto, WorkDto } from '../../domain/dtos/work.dto';
-import { ArtistProvider } from '../../infrastructure/database/artist.provider';
+import { ArtistRepository } from '../../infrastructure/repositories/artist.repository';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { ConfigService } from '@nestjs/config';
 import { MultimediasService, UploadToS3Result } from '../../../multimedias/services/multimedias.service';
@@ -14,8 +14,8 @@ import { UniqueIdService } from '../../../global/infrastructure/services/uniqueI
 @Injectable()
 export class CreateWorkUseCase extends BaseUseCase {
   constructor(
-    private readonly workProvider: WorkProvider,
-    private readonly artistProvider: ArtistProvider,
+    private readonly workProvider: WorkRepository,
+    private readonly artistProvider: ArtistRepository,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
     private readonly uniqueIdService: UniqueIdService,
@@ -23,7 +23,7 @@ export class CreateWorkUseCase extends BaseUseCase {
     super(CreateWorkUseCase.name);
   }
 
-  async execute(params: { artistId: number; dto: CreateWorkDto; file: FileInterface }): Promise<WorkDto> {
+  async execute(params: { artistId: string; dto: CreateWorkDto; file: FileInterface }): Promise<WorkDto> {
     const { artistId, dto, file } = params;
     
     // Convert string values to booleans for proper handling in multipart/form-data

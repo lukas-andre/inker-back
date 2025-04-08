@@ -15,8 +15,8 @@ import { AgendaEventCanceledJobType } from '../../queues/notifications/domain/sc
 import { queues } from '../../queues/queues';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 
 @Injectable()
 export class CancelEventUseCase
@@ -24,8 +24,8 @@ export class CancelEventUseCase
   implements UseCase, OnModuleDestroy
 {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
@@ -36,7 +36,7 @@ export class CancelEventUseCase
     await this.notificationQueue.close();
   }
 
-  async execute(eventId: number, agendaId: number): Promise<Agenda> {
+  async execute(eventId: string, agendaId: string): Promise<Agenda> {
     const existsAgenda = await this.agendaProvider.findById(agendaId);
 
     if (!existsAgenda) {

@@ -1,14 +1,14 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
 import { UpdateAgendaSettingsReqDto } from '../infrastructure/dtos/updateAgendaSettingsReq.dto';
 
 @Injectable()
 export class UpdateAgendaSettingsUseCase {
   private readonly logger = new Logger(UpdateAgendaSettingsUseCase.name);
 
-  constructor(private readonly agendaProvider: AgendaProvider) {}
+  constructor(private readonly agendaProvider: AgendaRepository) {}
 
-  async execute(agendaId: number, dto: UpdateAgendaSettingsReqDto): Promise<void> {
+  async execute(agendaId: string, dto: UpdateAgendaSettingsReqDto): Promise<void> {
     this.logger.log(`Updating settings for agenda ${agendaId}`);
 
     // Find the agenda

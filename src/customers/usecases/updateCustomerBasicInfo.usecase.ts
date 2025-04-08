@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerProvider } from '../infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../infrastructure/providers/customer.repository';
 import {
   BaseUseCase,
   UseCase,
@@ -13,15 +13,15 @@ export class UpdateCustomerBasicInfoUseCase
   extends BaseUseCase
   implements UseCase
 {
-  constructor(private readonly customerProvider: CustomerProvider) {
+  constructor(private readonly customerRepository: CustomerRepository) {
     super(UpdateCustomerBasicInfoUseCase.name);
   }
 
   async execute(
-    id: number,
+    id: string,
     updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
-    const customer = await this.customerProvider.findOne({
+    const customer = await this.customerRepository.findOne({
       where: { id },
     });
 
@@ -41,7 +41,7 @@ export class UpdateCustomerBasicInfoUseCase
     if (updateCustomerDto.contactPhoneNumber)
       customer.contactPhoneNumber = updateCustomerDto.contactPhoneNumber;
 
-    const updatedCustomer = await this.customerProvider.save(customer);
+    const updatedCustomer = await this.customerRepository.save(customer);
 
     return updatedCustomer;
   }

@@ -15,7 +15,7 @@ export class GetCommentsFromPostUseCase extends BaseUseCase implements UseCase {
     super(GetCommentsFromPostUseCase.name);
   }
 
-  async execute(postId: number, pagination: PaginationDto): Promise<Comment[]> {
+  async execute(postId: string, pagination: PaginationDto): Promise<Comment[]> {
     const comments = await this.commentsService.find({
       where: {
         parentId: postId,

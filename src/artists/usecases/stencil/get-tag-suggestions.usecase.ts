@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { StencilProvider } from '../../infrastructure/database/stencil.provider';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 import { TagSuggestionQueryDto, TagSuggestionResponseDto } from '../../domain/dtos/stencil-search.dto';
 
 @Injectable()
 export class GetTagSuggestionsUseCase extends BaseUseCase {
-  constructor(private readonly stencilProvider: StencilProvider) {
+  constructor(private readonly stencilProvider: StencilRepository) {
     super(GetTagSuggestionsUseCase.name);
   }
 

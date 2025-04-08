@@ -7,13 +7,13 @@ export type ReviewReactionsDetail = {
 };
 
 export interface ReviewInterface extends BaseModelType {
-  eventId: number;
+  eventId: string;
   value?: number;
   content?: string;
   reviewReactions?: ReviewReactionsDetail;
-  createdBy: number;
+  createdBy: string;
   isRated: boolean;
-  artistId: number;
+  artistId: string;
   displayName: string;
   header?: string;
 }

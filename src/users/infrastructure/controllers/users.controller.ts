@@ -55,7 +55,7 @@ export class UsersController {
   @HttpCode(200)
   @Put(':userId/email')
   async updateUserEmail(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Body() updateUserEmailReqDto: UpdateUserEmailReqDto,
   ) {
     return this.usersHandler.handleUpdateUserEmail(
@@ -68,7 +68,7 @@ export class UsersController {
   @HttpCode(200)
   @Put(':userId/username')
   async updateUserUsername(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Body() updateUserUsernameReqDto: UpdateUserUsernameReqDto,
   ) {
     return this.usersHandler.handleUpdateUserUsername(
@@ -81,7 +81,7 @@ export class UsersController {
   @HttpCode(200)
   @Put(':userId/password/:code')
   async updateUserPassword(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Param('code') code: string,
     @Query() updateUserPasswordQueryDto: UpdateUserPasswordQueryDto,
     @Body() updateUserPasswordReqDto: UpdateUserPasswordReqDto,
@@ -99,7 +99,7 @@ export class UsersController {
   @HttpCode(200)
   @Get(':userId/forgot-password-code')
   async getForgotPasswordCode(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Query() getForgotPasswordCodeQueryDto: GetForgotPasswordCodeQueryDto,
   ) {
     return this.usersHandler.handleGetForgotPasswordCode(
@@ -124,7 +124,7 @@ export class UsersController {
   @HttpCode(200)
   @Post(':userId/send-account-verification-code')
   async sendAccountValidationCode(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Query()
     sendAccountVerificationCodeQueryDto: SendAccountVerificationCodeQueryDto,
   ) {
@@ -152,7 +152,7 @@ export class UsersController {
   @HttpCode(200)
   @Post(':userId/validate-account-verification-code/:code')
   async validateAccountVerificationCode(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Param('code') code: string,
     @Query()
     { notificationType }: ValidateAccountVerificationCodeQueryDto,

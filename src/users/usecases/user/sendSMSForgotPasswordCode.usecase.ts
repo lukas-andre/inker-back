@@ -18,8 +18,7 @@ import {
   VerificationHash,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
-import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
-
+import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
 @Injectable()
 export class SendSMSForgotPasswordCodeUseCase
   extends BaseUseCase
@@ -29,7 +28,7 @@ export class SendSMSForgotPasswordCodeUseCase
   protected maxTries: number;
 
   constructor(
-    private readonly verificationHashProvider: VerificationHashProvider,
+    private readonly verificationHashRepository: VerificationHashRepository,
     private readonly smsClient: SMSClient,
     private readonly configService: ConfigService,
   ) {
@@ -44,15 +43,15 @@ export class SendSMSForgotPasswordCodeUseCase
   }
 
   public async execute(
-    userId: number,
+    userId: string,
     phoneNumber: string,
   ): Promise<DefaultResponseDto> {
     const verificationCode =
-      this.verificationHashProvider.generateForgotPasswordCode();
+      this.verificationHashRepository.generateForgotPasswordCode();
 
     this.logger.log({ verificationCode });
 
-    const isSmsAlreadySent = await this.verificationHashProvider.findOne({
+    const isSmsAlreadySent = await this.verificationHashRepository.findOne({
       where: {
         userId: userId,
         notificationType: NotificationType.SMS,
@@ -72,7 +71,7 @@ export class SendSMSForgotPasswordCodeUseCase
       );
     } else {
       try {
-        verificationHash = await this.verificationHashProvider.create(
+        verificationHash = await this.verificationHashRepository.create(
           userId,
           verificationCode,
           NotificationType.SMS,
@@ -100,10 +99,10 @@ export class SendSMSForgotPasswordCodeUseCase
     previousHash: VerificationHash,
     verificationCode: string,
   ): Promise<VerificationHash> {
-    return this.verificationHashProvider.edit(previousHash.id, {
+    return this.verificationHashRepository.edit(previousHash.id, {
       ...previousHash,
       tries: ++previousHash.tries,
-      hash: await this.verificationHashProvider.hashVerificationCode(
+      hash: await this.verificationHashRepository.hashVerificationCode(
         verificationCode,
       ),
     });

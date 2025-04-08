@@ -5,12 +5,12 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistLocationProvider } from '../../locations/infrastructure/database/artistLocation.provider';
-import { ArtistLocation } from '../../locations/infrastructure/entities/artistLocation.entity';
+import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository';
+import { ArtistLocation } from '../../locations/infrastructure/database/entities/artistLocation.entity';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 
 @Injectable()
 export class FindEventFromArtistByEventIdUseCase
@@ -18,17 +18,17 @@ export class FindEventFromArtistByEventIdUseCase
   implements UseCase
 {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly artistLocationProvider: ArtistLocationProvider,
-    private readonly artistProvider: ArtistProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
+    private readonly artistLocationProvider: ArtistLocationRepository,
+    private readonly artistProvider: ArtistRepository,
   ) {
     super(FindEventFromArtistByEventIdUseCase.name);
   }
 
   async execute(
-    artistId: number,
-    eventId: number,
+    artistId: string,
+    eventId: string,
   ): Promise<{
     event: AgendaEvent;
     location: ArtistLocation;
@@ -66,8 +66,8 @@ export class FindEventFromArtistByEventIdUseCase
   }
 
   async executeForCustomer(
-    customerId: number,
-    eventId: number,
+    customerId: string,
+    eventId: string,
   ): Promise<{
     event: AgendaEvent;
     location: ArtistLocation;

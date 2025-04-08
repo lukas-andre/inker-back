@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
-import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
-import { CustomerProviderModule } from '../customers/infrastructure/providers/customerProvider.module';
-import { LocationProviderModule } from '../locations/infrastructure/database/locationProvider.module';
+import { AgendaRepositoryModule } from '../agenda/infrastructure/repositories/agendaRepository.module';
+import { ArtistsRepositoryModule } from '../artists/infrastructure/repositories/artistRepository.module';
+import { CustomerRepositoryModule } from '../customers/infrastructure/providers/customerProvider.module';
+import { LocationRepositoryModule } from '../locations/infrastructure/database/locationRepository.module';
 
 import { PermissionsController } from './infrastructure/controllers/permissions.controller';
 import { RolesController } from './infrastructure/controllers/roles.controller';
@@ -11,7 +11,7 @@ import { UsersController } from './infrastructure/controllers/users.controller';
 import { PermissionsHandler } from './infrastructure/handlers/permissions.handler';
 import { RolesHandler } from './infrastructure/handlers/roles.handler';
 import { UsersHandler } from './infrastructure/handlers/users.handler';
-import { UserProviderModule } from './infrastructure/providers/userProvider.module';
+import { UserRepositoryModule } from './infrastructure/repositories/userRepository.module';
 import { FindAllPermissionsUseCase } from './usecases/permission/findAllPermissions.usecase';
 import { FindAllRoutesUseCase } from './usecases/permission/findAllRoutes.usecase';
 import { FindOnePermissionUseCase } from './usecases/permission/findOnePermission.usecase';
@@ -40,11 +40,11 @@ import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPas
 
 @Module({
   imports: [
-    AgendaProviderModule,
-    ArtistsProviderModule,
-    CustomerProviderModule,
-    LocationProviderModule,
-    UserProviderModule,
+    AgendaRepositoryModule,
+    ArtistsRepositoryModule,
+    CustomerRepositoryModule,
+    LocationRepositoryModule,
+    UserRepositoryModule,
     NotificationQueueModule,
   ],
   providers: [

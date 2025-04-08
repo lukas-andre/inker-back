@@ -83,9 +83,9 @@ export class RawFindByArtistIdsResponseDTO {
   @Type(() => RawContactResponseDTO)
   readonly contact: RawContactResponseDTO;
 
-  @ApiProperty({ description: 'Artist id', example: 1 })
-  @IsNumber()
-  readonly id: number;
+  @ApiProperty({ description: 'Artist id', example: '1' })
+  @IsString()
+  readonly id: string;
 
   @ApiProperty({ description: 'Username', example: 'Juanart' })
   @IsString()

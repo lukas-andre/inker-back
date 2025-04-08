@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaUnavailableTimeProvider } from '../infrastructure/providers/agendaUnavailableTime.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaUnavailableTimeRepository } from '../infrastructure/repositories/agendaUnavailableTime.provider';
 import { SetWorkingHoursReqDto } from '../infrastructure/dtos/setWorkingHoursReq.dto';
 import { CreateUnavailableTimeReqDto } from '../infrastructure/dtos/createUnavailableTimeReq.dto';
 import { AgendaUnavailableTime } from '../infrastructure/entities/agendaUnavailableTime.entity';
@@ -10,15 +10,15 @@ export class AgendaSettingsService {
   private readonly logger = new Logger(AgendaSettingsService.name);
 
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly unavailableTimeProvider: AgendaUnavailableTimeProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly unavailableTimeProvider: AgendaUnavailableTimeRepository,
   ) {}
 
   /**
    * Set working hours and working days for an artist's agenda
    */
   async setWorkingHours(
-    agendaId: number,
+    agendaId: string,
     dto: SetWorkingHoursReqDto,
   ): Promise<void> {
     this.logger.log(`Setting working hours for agenda ${agendaId}`);
@@ -49,7 +49,7 @@ export class AgendaSettingsService {
    * Create a new unavailable time block
    */
   async createUnavailableTime(
-    agendaId: number,
+    agendaId: string,
     dto: CreateUnavailableTimeReqDto,
   ): Promise<AgendaUnavailableTime> {
     this.logger.log(`Creating unavailable time for agenda ${agendaId}`);
@@ -88,7 +88,7 @@ export class AgendaSettingsService {
   /**
    * Get all unavailable time blocks for an agenda
    */
-  async getUnavailableTimes(agendaId: number): Promise<AgendaUnavailableTime[]> {
+  async getUnavailableTimes(agendaId: string): Promise<AgendaUnavailableTime[]> {
     this.logger.log(`Getting unavailable times for agenda ${agendaId}`);
 
     // Find the agenda
@@ -103,7 +103,7 @@ export class AgendaSettingsService {
   /**
    * Delete an unavailable time block
    */
-  async deleteUnavailableTime(agendaId: number, id: number): Promise<void> {
+  async deleteUnavailableTime(agendaId: string, id: string): Promise<void> {
     this.logger.log(`Deleting unavailable time ${id} for agenda ${agendaId}`);
 
     // Find the unavailable time

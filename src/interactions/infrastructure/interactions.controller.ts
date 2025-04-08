@@ -55,14 +55,14 @@ export class InteractionsController {
   @ApiQuery({ name: 'type', description: 'Interaction type', required: false })
   async getUserInteractions(
     @Query('entityType') entityType: string,
-    @Query('entityId') entityId: number,
+    @Query('entityId') entityId: string,
     @Query('type') interactionType?: string,
   ): Promise<InteractionDto[]> {
     const userId = this.requestContext.userId;
     return this.interactionsHandler.getUserInteractions(
       userId,
       entityType,
-      Number(entityId),
+      entityId,
       interactionType,
     );
   }
@@ -76,10 +76,10 @@ export class InteractionsController {
   })
   @ApiParam({ name: 'id', description: 'Interaction ID' })
   async deleteInteraction(
-    @Param('id') id: number,
+    @Param('id') id: string,
   ): Promise<void> {
     const userId = this.requestContext.userId;
-    return this.interactionsHandler.deleteInteraction(userId, Number(id));
+    return this.interactionsHandler.deleteInteraction(userId, id);
   }
 
   @Get('trending')
@@ -95,7 +95,7 @@ export class InteractionsController {
     @Query('entityType') entityType: string,
     @Query('limit') limit?: number,
     @Query('daysBack') daysBack?: number,
-  ): Promise<{ entityId: number; count: number }[]> {
+  ): Promise<{ entityId: string; count: number }[]> {
     return this.interactionsHandler.getTrendingContent(
       entityType,
       limit ? Number(limit) : undefined,

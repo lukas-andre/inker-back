@@ -10,16 +10,16 @@ import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity
 
 export class QuotationDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
-  customerId: number;
+  customerId: string;
 
   @ApiProperty()
-  artistId: number;
+  artistId: string;
 
   @ApiProperty({ required: false })
-  stencilId?: number;
+  stencilId?: string;
 
   @ApiProperty()
   description: string;

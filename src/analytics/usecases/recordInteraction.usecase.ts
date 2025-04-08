@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsProvider } from '../infrastructure/database/analytics.provider';
+import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
 import { RecordInteractionDto } from '../domain/dtos/metrics.dto';
 import { AnalyticsInteractionResponseDto } from '../domain/dtos/analytics-interaction-response.dto';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
@@ -7,12 +7,12 @@ import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 @Injectable()
 export class RecordInteractionUseCase extends BaseUseCase {
   constructor(
-    private readonly analyticsProvider: AnalyticsProvider,
+    private readonly analyticsProvider: AnalyticsRepository,
   ) {
     super(RecordInteractionUseCase.name);
   }
 
-  async execute(userId: number, dto: RecordInteractionDto): Promise<AnalyticsInteractionResponseDto> {
+  async execute(userId: string, dto: RecordInteractionDto): Promise<AnalyticsInteractionResponseDto> {
     switch (dto.interactionType) {
       case 'view':
         return this.analyticsProvider.incrementContentView(

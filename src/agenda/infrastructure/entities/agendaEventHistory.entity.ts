@@ -4,7 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
@@ -12,8 +12,8 @@ import { AgendaEvent } from './agendaEvent.entity';
 
 @Entity()
 export class AgendaEventHistory {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
   @ManyToOne(() => AgendaEvent, event => event.history)
   @JoinColumn({ name: 'event_id' })

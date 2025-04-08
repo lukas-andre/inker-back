@@ -27,7 +27,7 @@ export class AgendaEvent extends BaseEntity {
 
   @Index()
   @Column({ name: 'customer_id', nullable: true })
-  customerId: number;
+  customerId: string;
 
   @Column()
   title: string;
@@ -93,5 +93,5 @@ export class AgendaEvent extends BaseEntity {
 
   @Index()
   @Column({ name: 'quotation_id', nullable: true })
-  quotationId: number;
+  quotationId: string;
 }

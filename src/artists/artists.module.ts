@@ -5,9 +5,9 @@ import { CreateArtistUseCase } from './usecases/createArtist.usecase';
 import { WorksController } from './infrastructure/controllers/works.controller';
 import { StencilsController } from './infrastructure/controllers/stencils.controller';
 import { ArtistStylesController } from './infrastructure/controllers/artistStyles.controller';
-import { WorkProviderModule } from './infrastructure/database/workProvider.module';
-import { StencilProviderModule } from './infrastructure/database/stencilProvider.module';
-import { ArtistStyleProviderModule } from './infrastructure/database/artistStyleProvider.module';
+import { WorkRepositoryModule } from './infrastructure/repositories/workRepository.module';
+import { StencilRepositoryModule } from './infrastructure/repositories/stencilRepository.module';
+import { ArtistStyleProviderModule } from './infrastructure/repositories/artistStyleRepository.module';
 import { GetWorksUseCase } from './usecases/work/getWorks.usecase';
 import { CreateWorkUseCase } from './usecases/work/createWork.usecase';
 import { GetWorkByIdUseCase } from './usecases/work/getWorkById.usecase';
@@ -22,7 +22,7 @@ import { GetArtistStylesUseCase } from './usecases/artistStyle/getArtistStyles.u
 import { AddArtistStyleUseCase } from './usecases/artistStyle/addArtistStyle.usecase';
 import { UpdateArtistStyleUseCase } from './usecases/artistStyle/updateArtistStyle.usecase';
 import { RemoveArtistStyleUseCase } from './usecases/artistStyle/removeArtistStyle.usecase';
-import { ArtistsProviderModule } from './infrastructure/database/artistProvider.module';
+import { ArtistsRepositoryModule } from './infrastructure/repositories/artistRepository.module';
 import { FindArtistsUsecase } from './usecases/findArtists.usecase';
 import { UpdateArtistBasicInfoUseCase } from './usecases/updateArtistBasicInfo.usecase';
 import { UpdateArtistProfilePictureUseCase } from './usecases/updateArtistProfilePicture.usecase';
@@ -30,21 +30,21 @@ import { UpdateArtistStudioPhotoUseCase } from './usecases/updateArtistStudioPho
 import { MultimediasModule } from '../multimedias/multimedias.module';
 import { FollowsModule } from '../follows/follows.module';
 import { FindArtistsUseCases } from './usecases/findArtist.usecases';
-import { AgendaProviderModule } from '../agenda/infrastructure/providers/agendaProvider.module';
+import { AgendaRepositoryModule } from '../agenda/infrastructure/repositories/agendaRepository.module';
 import { FollowProviderModule } from '../follows/infrastructure/database/followProvider.module';
 import { SearchStencilsUseCase } from './usecases/stencil/search-stencils.usecase';
 import { GetTagSuggestionsUseCase } from './usecases/stencil/get-tag-suggestions.usecase';
 import { StencilSearchController } from './infrastructure/controllers/stencil-search.controller';
 import { InteractionsModule } from '../interactions/interactions.module';
-import { InteractionProviderModule } from '../interactions/infrastructure/database/interactionProvider.module';
+import { InteractionProviderModule } from '../interactions/infrastructure/database/repositories/interactionRepository.module';
 import { SearchWorksUseCase } from './usecases/work/search-works.usecase';
 import { GetWorkTagSuggestionsUseCase } from './usecases/work/get-tag-suggestions.usecase';
 import { WorkSearchController } from './infrastructure/controllers/work-search.controller';
 import { GetWorksPaginatedUseCase } from './usecases/work/get-works-paginated.usecase';
 import { CreateTagUseCase } from './usecases/stencil/create-tag.usecase';
-import { TagsModule } from '../tags/tags.module';
-import { ReviewAvgProvider } from '../reviews/database/providers/reviewAvg.provider';
-import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
+import { TagsRepositoryModule } from '../tags/tagsRespository.module';
+import { ReviewAvgRepository } from '../reviews/database/repositories/reviewAvg.repository';
+import { ReviewRepositoryModule } from '../reviews/database/reviewRepository.module';
 import { AnalyticsModule } from '../analytics/analytics.module';
 
 const useCases = [
@@ -84,18 +84,18 @@ const useCases = [
 
 @Module({
   imports: [
-    AgendaProviderModule,
+    AgendaRepositoryModule,
     AnalyticsModule,
-    ArtistsProviderModule,
+    ArtistsRepositoryModule,
     FollowProviderModule,
-    WorkProviderModule,
-    StencilProviderModule,
+    WorkRepositoryModule,
+    StencilRepositoryModule,
     ArtistStyleProviderModule,
     MultimediasModule,
     FollowsModule,
     InteractionProviderModule,
-    TagsModule,
-    ReviewProviderModule
+    TagsRepositoryModule,
+    ReviewRepositoryModule
   ],
   controllers: [
     ArtistsController,

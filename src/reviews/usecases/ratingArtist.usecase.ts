@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
+import { AgendaRepository } from '../../agenda/infrastructure/repositories/agenda.repository';
 import { DomainUnProcessableEntity } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
@@ -16,7 +16,7 @@ import {
   USER_IS_NOT_RELATED_TO_EVENT,
 } from '../../users/domain/errors/codes';
 import { ERROR_CREATING_REVIEW } from '../codes';
-import { ReviewProvider } from '../database/providers/review.provider';
+import { ReviewRepository } from '../database/repositories/review.repository';
 import { ReviewArtistRequestDto } from '../dtos/reviewArtistRequest.dto';
 import { queues } from '../../queues/queues';
 import { InjectQueue } from '@nestjs/bull';
@@ -29,8 +29,8 @@ import {
 @Injectable()
 export class RatingArtistUsecase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly reviewProvider: ReviewProvider,
-    private readonly agendaProvider: AgendaProvider,
+    private readonly reviewRepository: ReviewRepository,
+    private readonly agendaRepository: AgendaRepository,
     @InjectQueue(queues.sync.name)
     private readonly syncQueue: Queue,
   ) {
@@ -38,13 +38,13 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
   }
 
   async execute(
-    artistId: number,
-    eventId: number,
-    userId: number,
+    artistId: string,
+    eventId: string,
+    userId: string,
     body: ReviewArtistRequestDto,
   ): Promise<DefaultResponseDto> {
     const artistAgendaAndEventRelatedToCustomer =
-      await this.agendaProvider.artistAgendaAndEventRelatedToCustomer(
+      await this.agendaRepository.artistAgendaAndEventRelatedToCustomer(
         artistId,
         eventId,
         userId,
@@ -65,7 +65,7 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
     }
 
     const review =
-      await this.reviewProvider.findIfCustomerAlreadyReviewTheEvent(
+      await this.reviewRepository.findIfCustomerAlreadyReviewTheEvent(
         userId,
         eventId,
         artistId,
@@ -74,14 +74,14 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
     let transactionIsOk = false;
 
     if (!review) {
-      transactionIsOk = await this.reviewProvider.createReviewTransaction(
+      transactionIsOk = await this.reviewRepository.createReviewTransaction(
         artistId,
         eventId,
         userId,
         body,
       );
     } else {
-      transactionIsOk = await this.reviewProvider.updateReviewTransaction(
+      transactionIsOk = await this.reviewRepository.updateReviewTransaction(
         artistId,
         eventId,
         userId,
@@ -100,7 +100,7 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
       data: 'Artist rated successfully',
     };
   }
-  async dispatchSyncArtistRatingEvent(artistId: number): Promise<void> {
+  async dispatchSyncArtistRatingEvent(artistId: string): Promise<void> {
     try {
       await this.syncQueue.add({
         jobId: SyncJobIdSchema.enum.SYNC_ARTIST_RATINGS,
@@ -123,13 +123,13 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
   }
 
   private async emptyReviewFlow(
-    artistId: number,
-    eventId: number,
-    userId: number,
+    artistId: string,
+    eventId: string,
+    userId: string,
     body: ReviewArtistRequestDto,
   ): Promise<DefaultResponseDto> {
     const customerReview =
-      await this.reviewProvider.findIfCustomerAlreadyReviewTheEvent(
+      await this.reviewRepository.findIfCustomerAlreadyReviewTheEvent(
         userId,
         eventId,
         artistId,
@@ -139,7 +139,7 @@ export class RatingArtistUsecase extends BaseUseCase implements UseCase {
       return DefaultResponse.ok;
     }
 
-    await this.reviewProvider.insertEmptyReview(
+    await this.reviewRepository.insertEmptyReview(
       artistId,
       eventId,
       userId,

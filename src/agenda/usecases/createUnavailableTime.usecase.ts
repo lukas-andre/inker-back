@@ -10,7 +10,7 @@ export class CreateUnavailableTimeUseCase {
   constructor(private readonly agendaSettingsService: AgendaSettingsService) {}
 
   async execute(
-    agendaId: number,
+    agendaId: string,
     dto: CreateUnavailableTimeReqDto,
   ): Promise<AgendaUnavailableTime> {
     this.logger.log(`Creating unavailable time for agenda ${agendaId}`);

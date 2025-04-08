@@ -12,7 +12,7 @@ import { CreateDateColumn } from 'typeorm';
 @Entity('artist_styles')
 export class ArtistStyle implements ArtistStyleType {
   @PrimaryColumn({ name: 'artist_id' })
-  artistId: number;
+  artistId: string;
 
   @ManyToOne(() => Artist, artist => artist.styles)
   @JoinColumn({ name: 'artist_id' })

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { StencilProvider } from '../../infrastructure/database/stencil.provider';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { StencilQueryDto } from '../../domain/dtos/stencil-query.dto';
 import { PaginatedStencilResponseDto } from '../../domain/dtos/paginated-stencil-response.dto';
@@ -15,16 +15,16 @@ export interface PaginatedResponseWithMetrics<T> extends Omit<PaginatedStencilRe
 @Injectable()
 export class GetStencilsUseCase extends BaseUseCase {
   constructor(
-    private readonly stencilProvider: StencilProvider,
+    private readonly stencilProvider: StencilRepository,
     private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(GetStencilsUseCase.name);
   }
 
   async execute(params: { 
-    artistId: number; 
+    artistId: string; 
     query: StencilQueryDto & { includeMetrics?: boolean };
-    userId?: number;
+    userId?: string;
     disableCache?: boolean;
   }): Promise<PaginatedResponseWithMetrics<StencilDto>> {
     const { artistId, query, userId, disableCache } = params;

@@ -4,12 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Followed } from '../entities/followed.entity';
 import { Following } from '../entities/following.entity';
 
-import { FollowedsProvider } from './followeds.provider';
-import { FollowingsProvider } from './followings.provider';
+import { FollowedsRepository } from './followeds.repository';
+import { FollowingsRepository } from './followings.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Followed, Following], 'follow-db')],
-  providers: [FollowedsProvider, FollowingsProvider],
-  exports: [FollowedsProvider, FollowingsProvider],
+  providers: [FollowedsRepository, FollowingsRepository],
+  exports: [FollowedsRepository, FollowingsRepository],
 })
 export class FollowProviderModule {}

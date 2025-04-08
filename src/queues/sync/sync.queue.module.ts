@@ -2,9 +2,9 @@ import { BullModule } from '@nestjs/bull';
 import { Module, forwardRef } from '@nestjs/common';
 import { queues } from '../queues';
 import { SyncProcessor } from './sync.processor';
-import { ArtistsProviderModule } from '../../artists/infrastructure/database/artistProvider.module';
-import { ReviewProviderModule } from '../../reviews/database/reviewProvider.module';
-import { AgendaProviderModule } from '../../agenda/infrastructure/providers/agendaProvider.module';
+import { ArtistsRepositoryModule } from '../../artists/infrastructure/repositories/artistRepository.module';
+import { ReviewRepositoryModule } from '../../reviews/database/reviewRepository.module';
+import { AgendaRepositoryModule } from '../../agenda/infrastructure/repositories/agendaRepository.module';
 import { AgendaModule } from '../../agenda/agenda.module';
 
 @Module({
@@ -19,9 +19,9 @@ import { AgendaModule } from '../../agenda/agenda.module';
     BullModule.registerQueue({
       name: queues.deadLetter.name,
     }),
-    ArtistsProviderModule,
-    ReviewProviderModule,
-    AgendaProviderModule,
+    ArtistsRepositoryModule,
+    ReviewRepositoryModule,
+    AgendaRepositoryModule,
     forwardRef(() => AgendaModule), // Use forwardRef to avoid circular dependency
   ],
   providers: [SyncProcessor],

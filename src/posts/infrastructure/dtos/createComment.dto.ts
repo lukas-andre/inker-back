@@ -28,8 +28,8 @@ export class CreateCommentDto {
 
   @ApiProperty({
     description: 'Post user profile thumbnail',
-    type: Number,
+    type: String,
   })
-  @IsNumber()
-  readonly parentId: number;
+  @IsString()
+  readonly parentId: string;
 }

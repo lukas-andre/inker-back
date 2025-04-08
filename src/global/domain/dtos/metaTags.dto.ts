@@ -4,9 +4,9 @@ import { IsNumber, IsString } from 'class-validator';
 import { MetaTags } from '../interfaces/metaTags.interface';
 
 export class MetaTagsDto implements MetaTags {
-  @IsNumber()
+  @IsString()
   @Expose()
-  id?: number;
+  id?: string;
 
   @IsString()
   @Expose()

@@ -5,7 +5,7 @@ import { User } from '../../../users/infrastructure/entities/user.entity';
 @Entity()
 export class Settings extends BaseEntity {
   @Column()
-  userId: number;
+  userId: string;
 
   @OneToOne(() => User)
   @JoinColumn({ name: 'user_id' })

@@ -13,8 +13,8 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { ChangeEventStatusReqDto } from '../infrastructure/dtos/changeEventStatusReq.dto';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { queues } from '../../queues/queues';
@@ -23,8 +23,8 @@ import { queues } from '../../queues/queues';
 export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
   constructor(
     private readonly requestContext: RequestContextService,
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
     @InjectQueue(queues.notification.name)
     private readonly notificationsQueue: Queue,
   ) {
@@ -32,8 +32,8 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
   }
 
   async execute(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     { status, notes }: ChangeEventStatusReqDto,
   ): Promise<void> {
     const { isNotArtist, userTypeId, userId } = this.requestContext;
@@ -136,8 +136,8 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
   }
 
   private async notifyCustomer(
-    customerId: number,
-    eventId: number,
+    customerId: string,
+    eventId: string,
     status: AgendaEventStatus,
   ): Promise<void> {
     try {

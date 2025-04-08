@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { StencilProvider } from '../../infrastructure/database/stencil.provider';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 import { CreateStencilDto, StencilDto } from '../../domain/dtos/stencil.dto';
 import { Artist } from '../../infrastructure/entities/artist.entity';
-import { ArtistProvider } from '../../infrastructure/database/artist.provider';
+import { ArtistRepository } from '../../infrastructure/repositories/artist.repository';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { ConfigService } from '@nestjs/config';
 import { MultimediasService, UploadToS3Result } from '../../../multimedias/services/multimedias.service';
@@ -15,8 +15,8 @@ import { UniqueIdService } from '../../../global/infrastructure/services/uniqueI
 @Injectable()
 export class CreateStencilUseCase extends BaseUseCase {
   constructor(
-    private readonly stencilProvider: StencilProvider,
-    private readonly artistProvider: ArtistProvider,
+    private readonly stencilProvider: StencilRepository,
+    private readonly artistProvider: ArtistRepository,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
     private readonly uniqueIdService: UniqueIdService,
@@ -24,7 +24,7 @@ export class CreateStencilUseCase extends BaseUseCase {
     super(CreateStencilUseCase.name);
   }
 
-  async execute(params: { artistId: number; dto: CreateStencilDto; file: FileInterface }): Promise<StencilDto> {
+  async execute(params: { artistId: string; dto: CreateStencilDto; file: FileInterface }): Promise<StencilDto> {
     const { artistId, dto, file } = params;
     
     // Convert string values to booleans for proper handling in multipart/form-data

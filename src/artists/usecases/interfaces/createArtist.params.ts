@@ -2,7 +2,7 @@ import { AddressInterface } from '../../../global/domain/interfaces/address.inte
 import { PhoneNumberDetailsInterface } from '../../../users/infrastructure/dtos/phoneNumberDetails.dto';
 
 export interface CreateArtistParams {
-  userId: number;
+  userId: string;
   username: string;
   firstName: string;
   lastName: string;

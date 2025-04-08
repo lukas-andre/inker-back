@@ -14,10 +14,10 @@ import {
   NotificationType,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
-import { UsersProvider } from '../../infrastructure/providers/users.provider';
-import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
 import { queues } from '../../../queues/queues';
 import { Queue } from 'bull';
+import { UsersRepository } from '../../infrastructure/repositories/users.repository';
+import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
 
 export class SendForgotPasswordCodeUseCase implements UseCase {
   static readonly THRESHOLD: Record<NotificationType, number> = {
@@ -26,8 +26,8 @@ export class SendForgotPasswordCodeUseCase implements UseCase {
   };
 
   constructor(
-    private readonly usersProvider: UsersProvider,
-    private readonly verificationHashProvider: VerificationHashProvider,
+    private readonly usersRepository: UsersRepository,
+    private readonly verificationHashRepository: VerificationHashRepository,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {}
@@ -46,9 +46,9 @@ export class SendForgotPasswordCodeUseCase implements UseCase {
     let user: User | null = null;
 
     if (email) {
-      user = await this.usersProvider.findOne({ where: { email } });
+      user = await this.usersRepository.findOne({ where: { email } });
     } else if (phoneNumber) {
-      user = await this.usersProvider.findOne({ where: { phoneNumber } });
+      user = await this.usersRepository.findOne({ where: { phoneNumber } });
     }
 
     if (!user) {
@@ -62,7 +62,7 @@ export class SendForgotPasswordCodeUseCase implements UseCase {
       : NotificationType.SMS;
     const verificationType = VerificationType.FORGOT_PASSWORD;
 
-    const existingHash = await this.verificationHashProvider.findOne({
+    const existingHash = await this.verificationHashRepository.findOne({
       where: {
         userId: user.id,
         notificationType,
@@ -77,14 +77,14 @@ export class SendForgotPasswordCodeUseCase implements UseCase {
       ) {
         throw new DomainBadRule('Maximum email attempts reached');
       }
-      await this.verificationHashProvider.edit(existingHash.id, {
+      await this.verificationHashRepository.edit(existingHash.id, {
         tries: existingHash.tries + 1,
-        hash: await this.verificationHashProvider.hashVerificationCode(
+        hash: await this.verificationHashRepository.hashVerificationCode(
           verificationCode,
         ),
       });
     } else {
-      await this.verificationHashProvider.create(
+      await this.verificationHashRepository.create(
         user.id,
         verificationCode,
         notificationType,

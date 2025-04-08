@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsProvider } from '../infrastructure/database/analytics.provider';
+import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
 import { ContentType } from '../domain/enums/content-types.enum';
 import { BatchMetricsQueryDto, ContentMetricsDto } from '../domain/dtos/metrics.dto';
 
 @Injectable()
 export class GetBatchContentMetricsUseCase {
-  constructor(private readonly analyticsProvider: AnalyticsProvider) {}
+  constructor(private readonly analyticsProvider: AnalyticsRepository) {}
 
-  async execute(dto: BatchMetricsQueryDto, userId?: number): Promise<ContentMetricsDto[]> {
+  async execute(dto: BatchMetricsQueryDto, userId?: string): Promise<ContentMetricsDto[]> {
     const { contentIds, contentType } = dto;
 
     // Get all metrics that exist

@@ -23,7 +23,7 @@ export class FollowsHandler extends BaseHandler {
     super(jwtService);
   }
 
-  async handleFollow(userId: number, request): Promise<DefaultResponseDto> {
+  async handleFollow(userId: string, request): Promise<DefaultResponseDto> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
     const follower: FollowerDto = {
       userId: jwtPayload.id,
@@ -39,18 +39,18 @@ export class FollowsHandler extends BaseHandler {
     return this.followUseCase.execute(userId, follower);
   }
 
-  async handleUnfollow(id: number, request): Promise<DefaultResponseDto> {
+  async handleUnfollow(id: string, request): Promise<DefaultResponseDto> {
     const jwtPayload: JwtPayload = this.getJwtPayloadFromRequest(request);
     return this.unfollowUseCase.execute(id, jwtPayload.id);
   }
 
   async handleFindArtistFollowers(
-    artistUserId: number,
+    artistUserId: string,
   ): Promise<FollowerDto[]> {
     return this.findFollowersUseCase.execute(artistUserId);
   }
 
-  async findArtistFollows(artistUserId: number): Promise<FollowingType[]> {
+  async findArtistFollows(artistUserId: string): Promise<FollowingType[]> {
     return this.findFollowsUseCase.execute(artistUserId);
   }
 }

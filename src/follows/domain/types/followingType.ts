@@ -1,7 +1,7 @@
 export type FollowingType = {
-  userFollowingId: number;
-  userId: number;
-  userTypeId: number;
+  userFollowingId: string;
+  userId: string;
+  userTypeId: string;
   userType: string;
   username: string;
   fullname: string;

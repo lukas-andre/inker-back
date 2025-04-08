@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GetContentSummaryMetricsUseCase } from '../../usecases/getContentSummaryMetrics.usecase';
 import { ContentType } from '../../domain/enums/content-types.enum';
 import { IContentSummaryMetrics } from '../../domain/interfaces/content-summary-metrics.interface';
-import { AnalyticsProvider } from '../database/analytics.provider';
+import { AnalyticsRepository } from '../database/repositories/analytics.repository';
 
 export interface WithMetrics {
   metrics: IContentSummaryMetrics;
@@ -16,16 +16,16 @@ export interface MetricsOptions {
 export class ContentMetricsEnricherService {
   constructor(
     private readonly getContentSummaryMetricsUseCase: GetContentSummaryMetricsUseCase,
-    private readonly analyticsProvider: AnalyticsProvider,
+    private readonly analyticsProvider: AnalyticsRepository,
   ) {}
 
   /**
    * Enriches a single content item with metrics
    */
-  async enrichWithMetrics<T extends { id: number }>(
+  async enrichWithMetrics<T extends { id: string }>(
     content: T,
     contentType: ContentType,
-    userId?: number,
+    userId?: string,
     options?: MetricsOptions,
   ): Promise<T & WithMetrics> {
     if (!content) {
@@ -56,10 +56,10 @@ export class ContentMetricsEnricherService {
   /**
    * Enriches an array of content items with metrics
    */
-  async enrichAllWithMetrics<T extends { id: number }>(
+  async enrichAllWithMetrics<T extends { id: string }>(
     contents: T[],
     contentType: ContentType,
-    userId?: number,
+    userId?: string,
     options?: MetricsOptions,
   ): Promise<(T & WithMetrics)[]> {
     if (!contents?.length) {
@@ -74,7 +74,7 @@ export class ContentMetricsEnricherService {
     );
 
     // For user-specific likes, we need to check each content item
-    let userLikesMap: Map<number, boolean> = new Map();
+    let userLikesMap: Map<string, boolean> = new Map();
     
     if (userId) {
       // We'll make parallel calls to check likes for performance
@@ -84,7 +84,7 @@ export class ContentMetricsEnricherService {
       );
       
       const likeResults = await Promise.all(likeChecks);
-      userLikesMap = new Map(likeResults as [number, boolean][]);
+      userLikesMap = new Map(likeResults as [string, boolean][]);
     }
 
     return contents.map(content => {
@@ -108,7 +108,7 @@ export class ContentMetricsEnricherService {
   /**
    * Enriches a paginated response with metrics
    */
-  async enrichPaginatedWithMetrics<T extends { id: number }>(
+  async enrichPaginatedWithMetrics<T extends { id: string }>(
     paginatedResponse: {
       items: T[];
       page: number;
@@ -117,7 +117,7 @@ export class ContentMetricsEnricherService {
       pages: number;
     },
     contentType: ContentType,
-    userId?: number,
+    userId?: string,
     options?: MetricsOptions,
   ): Promise<{
     items: (T & WithMetrics)[];

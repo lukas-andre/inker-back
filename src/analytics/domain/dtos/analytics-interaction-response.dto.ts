@@ -7,7 +7,7 @@ export class AnalyticsInteractionResponseDto {
   @ApiProperty({ description: 'Current state of the interaction' })
   state: {
     count: number;
-    userIds: number[];
+    userIds: string[];
   };
 
   @ApiProperty({ description: 'Additional metrics related to the interaction' })

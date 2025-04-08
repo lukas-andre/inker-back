@@ -1,10 +1,10 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 import { JwtPermission } from '../../../global/domain/interfaces/jwtPayload.interface';
 
 export class DefaultLoginResult {
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 
   @IsString()
   @IsOptional()
@@ -14,9 +14,9 @@ export class DefaultLoginResult {
   @IsOptional()
   email?: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  userTypeId?: number;
+  userTypeId?: string;
 
   @IsString()
   userType: string;

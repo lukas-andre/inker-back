@@ -12,12 +12,12 @@ export class ArtistDto extends BaseDTO implements ArtistType {
   @ApiProperty({
     description: 'User id',
     required: true,
-    type: Number,
-    example: 1,
+    type: String,
+    example: '1',
   })
-  @IsNumber()
+  @IsString()
   @Expose()
-  userId: number;
+  userId: string;
 
   @ApiProperty({
     description: 'Artist username',
@@ -77,7 +77,7 @@ export class ArtistDto extends BaseDTO implements ArtistType {
     type: [MetaTagsDto],
     example: [
       {
-        id: 1,
+        id: '1',
         name: 'simpleTag',
       } as MetaTagsDto,
     ],
@@ -92,7 +92,7 @@ export class ArtistDto extends BaseDTO implements ArtistType {
     description: 'Artist genres',
     required: false,
     type: [MetaTagsDto],
-    example: [{ id: 1, name: 'simpleTag' } as MetaTagsDto],
+    example: [{ id: '1', name: 'simpleTag' } as MetaTagsDto],
   })
   @IsOptional()
   @IsInstance(MetaTagsDto)
@@ -116,7 +116,7 @@ export class ArtistDto extends BaseDTO implements ArtistType {
     required: false,
     type: ContactDto,
     example: {
-      id: 1,
+      id: '1',
       email: 'example@email.cl',
       phone: '+56954484712',
       phoneCountryIsoCode: 'CL',

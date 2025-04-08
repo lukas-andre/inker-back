@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InteractionProvider } from '../infrastructure/database/interaction.provider';
+import { InteractionRepository } from '../infrastructure/database/repositories/interaction.repository';
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 
 @Injectable()
 export class GetTrendingContentUseCase extends BaseUseCase {
-  constructor(private readonly interactionProvider: InteractionProvider) {
+  constructor(private readonly interactionProvider: InteractionRepository) {
     super(GetTrendingContentUseCase.name);
   }
 
@@ -12,7 +12,7 @@ export class GetTrendingContentUseCase extends BaseUseCase {
     entityType: string;
     limit?: number;
     daysBack?: number;
-  }): Promise<{ entityId: number; count: number }[]> {
+  }): Promise<{ entityId: string; count: number }[]> {
     const { entityType, limit = 10, daysBack = 30 } = params;
 
     // Combine both likes and views, but weight likes more heavily
@@ -31,7 +31,7 @@ export class GetTrendingContentUseCase extends BaseUseCase {
     );
 
     // Create a map to combine likes and views
-    const entityScores = new Map<number, number>();
+    const entityScores = new Map<string, number>();
 
     // Likes count 5x more than views
     likedEntities.forEach(entity => {

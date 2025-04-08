@@ -12,14 +12,14 @@ import { queues } from '../../../queues/queues';
 import { UpdateEventReqDto } from '../../infrastructure/dtos/updateEventReq.dto';
 import { Agenda } from '../../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { AgendaProvider } from '../../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 import { UpdateEventUseCase } from '../updateEvent.usecase';
 
 describe('UpdateEventUseCase', () => {
   let useCase: UpdateEventUseCase;
-  let agendaProvider: DeepMocked<AgendaProvider>;
-  let agendaEventProvider: DeepMocked<AgendaEventProvider>;
+  let agendaProvider: DeepMocked<AgendaRepository>;
+  let agendaEventProvider: DeepMocked<AgendaEventRepository>;
   let notificationQueue: DeepMocked<Queue>;
 
   beforeEach(async () => {
@@ -27,12 +27,12 @@ describe('UpdateEventUseCase', () => {
       providers: [
         UpdateEventUseCase,
         {
-          provide: AgendaProvider,
-          useValue: createMock<AgendaProvider>(),
+          provide: AgendaRepository,
+          useValue: createMock<AgendaRepository>(),
         },
         {
-          provide: AgendaEventProvider,
-          useValue: createMock<AgendaEventProvider>(),
+          provide: AgendaEventRepository,
+          useValue: createMock<AgendaEventRepository>(),
         },
         {
           provide: getQueueToken(queues.notification.name),
@@ -42,8 +42,8 @@ describe('UpdateEventUseCase', () => {
     }).compile();
 
     useCase = module.get<UpdateEventUseCase>(UpdateEventUseCase);
-    agendaProvider = module.get(AgendaProvider);
-    agendaEventProvider = module.get(AgendaEventProvider);
+    agendaProvider = module.get(AgendaRepository);
+    agendaEventProvider = module.get(AgendaEventRepository);
     notificationQueue = module.get(getQueueToken(queues.notification.name));
   });
 

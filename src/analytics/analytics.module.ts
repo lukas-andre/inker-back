@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AnalyticsController } from './infrastructure/analytics.controller';
-import { AnalyticsProviderModule } from './infrastructure/database/analyticsProvider.module';
+import { AnalyticsRepositoryModule } from './infrastructure/database/repositories/analyticsRepository.module';
 import { RecordInteractionUseCase } from './usecases/recordInteraction.usecase';
 import { RecordArtistViewUseCase } from './usecases/recordArtistView.usecase';
 import { GetContentMetricsUseCase } from './usecases/getContentMetrics.usecase';
@@ -25,7 +25,7 @@ const services = [
 ];
 
 @Module({
-  imports: [AnalyticsProviderModule],
+  imports: [AnalyticsRepositoryModule],
   controllers: [AnalyticsController],
   providers: [...useCases, ...services],
   exports: [

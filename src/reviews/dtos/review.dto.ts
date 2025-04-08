@@ -8,9 +8,9 @@ import {
 } from '../interfaces/review.interface';
 
 export class ReviewDto extends BaseDTO implements ReviewInterface {
-  @ApiProperty({ type: Number, description: 'The id of the event', example: 1 })
-  @IsNumber()
-  eventId: number;
+  @ApiProperty({ type: String, description: 'The id of the event', example: '1' })
+  @IsString()
+  eventId: string;
 
   @ApiProperty({
     type: Number,
@@ -47,11 +47,11 @@ export class ReviewDto extends BaseDTO implements ReviewInterface {
     example: 1,
     required: true,
   })
-  @IsNumber()
-  createdBy: number;
+  @IsString()
+  createdBy: string;
 
   @ApiProperty({
-    type: String,
+    type: Boolean,
     description: 'Flag to know if the review is rated',
     example: true,
   })
@@ -59,13 +59,13 @@ export class ReviewDto extends BaseDTO implements ReviewInterface {
   isRated: boolean;
 
   @ApiProperty({
-    type: Number,
+    type: String,
     description: 'The id of the artist',
-    example: 1,
+    example: '1',
     required: true,
   })
-  @IsNumber()
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({
     type: String,

@@ -1,8 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
-import { AgendaUnavailableTimeProvider } from '../infrastructure/providers/agendaUnavailableTime.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
+import { AgendaUnavailableTimeRepository } from '../infrastructure/repositories/agendaUnavailableTime.provider';
 import { AgendaEventStatus } from '../domain/enum/agendaEventStatus.enum';
 
 export interface TimeSlot {
@@ -22,9 +22,9 @@ export class SchedulingService {
   private readonly SLOT_INTERVAL_MINUTES = 30; // Default slot interval in minutes
 
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly unavailableTimeProvider: AgendaUnavailableTimeProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
+    private readonly unavailableTimeProvider: AgendaUnavailableTimeRepository,
   ) {}
 
   /**
@@ -32,7 +32,7 @@ export class SchedulingService {
    * existing appointments, and unavailable time blocks
    */
   async findAvailableSlots(
-    artistId: number,
+    artistId: string,
     durationMinutes: number,
     startDate: Date,
     endDate: Date,
@@ -119,7 +119,7 @@ export class SchedulingService {
    * Prioritizes times in the near future and with better spacing
    */
   async suggestOptimalTimes(
-    artistId: number,
+    artistId: string,
     durationMinutes: number,
     numberOfSuggestions = 8,
   ): Promise<TimeSlot[]> {
@@ -242,7 +242,7 @@ export class SchedulingService {
    * Validate if a proposed appointment time works with the artist's schedule
    */
   async validateAppointmentTime(
-    artistId: number,
+    artistId: string,
     startTime: Date,
     durationMinutes: number,
   ): Promise<{ valid: boolean; reason?: string }> {
@@ -400,7 +400,7 @@ export class SchedulingService {
    * Lower scores are better (less crowded schedule)
    */
   private async calculateDensityScores(
-    artistId: number,
+    artistId: string,
     slots: TimeSlot[],
   ): Promise<TimeSlot[]> {
     // For each slot, check how many other appointments are nearby (within 3 hours)

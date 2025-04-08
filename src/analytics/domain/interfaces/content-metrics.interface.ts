@@ -3,7 +3,7 @@ import { ViewSource } from '../enums/interaction-types.enum';
 
 export interface IReactionMetrics {
   count: number;
-  userIds: number[];
+  userIds: string[];
 }
 
 export interface IViewMetrics {
@@ -35,7 +35,7 @@ export interface IViewSourceMetrics {
 }
 
 export interface IContentMetrics {
-  contentId: number;
+  contentId: string;
   contentType: ContentType;
   metrics: {
     reactions?: {

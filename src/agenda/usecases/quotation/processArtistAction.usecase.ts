@@ -20,7 +20,7 @@ import {
   ArtistQuoteAction,
 } from '../../infrastructure/dtos/artistQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
-import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
+import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 import {
   QuotationArtistActionJobIdType,
   QuotationArtistActionJobType,
@@ -29,7 +29,7 @@ import {
 @Injectable()
 export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly quotationProvider: QuotationProvider,
+    private readonly quotationProvider: QuotationRepository,
     private readonly multimediasService: MultimediasService,
     private readonly quotationStateMachine: QuotationStateMachine,
     @InjectQueue(queues.notification.name)
@@ -39,8 +39,8 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
   }
 
   async execute(
-    userId: number,
-    quotationId: number,
+    userId: string,
+    quotationId: string,
     artistQuoteDto: ArtistQuotationActionDto,
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {

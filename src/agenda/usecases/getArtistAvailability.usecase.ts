@@ -9,7 +9,7 @@ export class GetArtistAvailabilityUseCase {
   constructor(private readonly schedulingService: SchedulingService) {}
 
   async execute(
-    artistId: number,
+    artistId: string,
     query: ArtistAvailabilityQueryDto,
   ): Promise<AvailabilityCalendar[]> {
     this.logger.log(`Getting availability for artist ${artistId}`);

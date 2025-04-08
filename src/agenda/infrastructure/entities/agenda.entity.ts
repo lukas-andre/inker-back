@@ -8,11 +8,11 @@ import { AgendaUnavailableTime } from './agendaUnavailableTime.entity';
 @Entity()
 export class Agenda extends BaseEntity {
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Index()
   @Column({ name: 'artist_id', default: 0 })
-  artistId: number;
+  artistId: string;
 
   @Column({
     name: 'working_days',

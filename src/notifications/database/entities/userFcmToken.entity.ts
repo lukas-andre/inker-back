@@ -20,7 +20,7 @@ export class UserFcmToken {
   id: string;
 
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Column()
   token: string;

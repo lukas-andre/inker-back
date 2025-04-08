@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GetAgendaSettingsResDto } from '../infrastructure/dtos/getAgendaSettingsRes.dto';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
 
 @Injectable()
 export class GetAgendaSettingsUseCase {
@@ -15,10 +15,10 @@ export class GetAgendaSettingsUseCase {
   };
 
   constructor(
-    private readonly agendaProvider: AgendaProvider,
+    private readonly agendaProvider: AgendaRepository,
   ) { }
 
-  async execute(agendaId: number): Promise<GetAgendaSettingsResDto> {
+  async execute(agendaId: string): Promise<GetAgendaSettingsResDto> {
     try {
       const agenda = await this.agendaProvider.findOne({
         where: { id: agendaId },

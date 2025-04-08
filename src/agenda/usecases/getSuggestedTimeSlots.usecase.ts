@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { SchedulingService, TimeSlot } from '../services/scheduling.service';
-import { QuotationProvider } from '../infrastructure/providers/quotation.provider';
+import { QuotationRepository } from '../infrastructure/repositories/quotation.provider';
 
 @Injectable()
 export class GetSuggestedTimeSlotsUseCase {
@@ -8,10 +8,10 @@ export class GetSuggestedTimeSlotsUseCase {
 
   constructor(
     private readonly schedulingService: SchedulingService,
-    private readonly quotationProvider: QuotationProvider,
+    private readonly quotationProvider: QuotationRepository,
   ) {}
 
-  async execute(quotationId: number): Promise<TimeSlot[]> {
+  async execute(quotationId: string): Promise<TimeSlot[]> {
     this.logger.log(`Getting suggested time slots for quotation ${quotationId}`);
     
     // Get the quotation to determine artist and expected duration

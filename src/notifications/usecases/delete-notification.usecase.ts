@@ -8,7 +8,7 @@ export class DeleteNotificationUsecase extends BaseUseCase implements UseCase {
     super(DeleteNotificationUsecase.name);
   }
 
-  async execute(id: string, userId: number): Promise<void> {
+  async execute(id: string, userId: string): Promise<void> {
     // Check if notification exists and belongs to the user
     const notification = await this.notificationRepository.findNotificationById(id);
     

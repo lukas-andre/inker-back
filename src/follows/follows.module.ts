@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
-import { UserProviderModule } from '../users/infrastructure/providers/userProvider.module';
+import { ArtistsRepositoryModule } from '../artists/infrastructure/repositories/artistRepository.module';
 
 import { FollowProviderModule } from './infrastructure/database/followProvider.module';
 import { FollowsController } from './infrastructure/follows.controller';
@@ -10,13 +9,14 @@ import { FindFollowersUseCase } from './usecases/findFollowers.usecase';
 import { FindFollowsUseCase } from './usecases/findFollows.usecase';
 import { FollowUseCase } from './usecases/follow.usecase';
 import { UnfollowUseCase } from './usecases/unfollow.usecase';
+import { UserRepositoryModule } from '../users/infrastructure/repositories/userRepository.module';
 
 @Module({
   imports: [
-    ArtistsProviderModule,
-    UserProviderModule,
+    ArtistsRepositoryModule,
+    UserRepositoryModule,
     FollowProviderModule,
-    ArtistsProviderModule,
+    ArtistsRepositoryModule,
   ],
   controllers: [FollowsController],
   providers: [

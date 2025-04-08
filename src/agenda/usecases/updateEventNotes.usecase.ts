@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 import { UpdateEventNotesReqDto } from '../infrastructure/dtos/updateEventNotesReq.dto';
 
 @Injectable()
@@ -8,13 +8,13 @@ export class UpdateEventNotesUseCase {
   private readonly logger = new Logger(UpdateEventNotesUseCase.name);
 
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
   ) {}
 
   async execute(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     dto: UpdateEventNotesReqDto,
   ): Promise<void> {
     this.logger.log(`Updating notes for event ${eventId} in agenda ${agendaId}`);

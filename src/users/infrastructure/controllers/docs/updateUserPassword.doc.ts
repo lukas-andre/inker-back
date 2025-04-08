@@ -15,8 +15,8 @@ export function UpdateUserPasswordDoc() {
       name: 'userId',
       description: 'User id',
       required: true,
-      example: 1,
-      type: Number,
+      example: '1',
+      type: String,
     }),
     ApiParam({
       name: 'code',

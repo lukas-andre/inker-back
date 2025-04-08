@@ -13,20 +13,20 @@ import { AgendaViewType } from '../domain/enum/agendaViewType.enum';
 import { ListEventByViewTypeQueryDto } from '../infrastructure/dtos/listEventByViewTypeQuery.dto';
 import { Agenda } from '../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 
 @Injectable()
 export class ListEventByViewTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
   ) {
     super(ListEventByViewTypeUseCase.name);
   }
 
   async execute(
-    agendaId: number,
+    agendaId: string,
     listEventByViewTypeQueryDto: ListEventByViewTypeQueryDto,
   ): Promise<AgendaEvent[]> {
     let result: AgendaEvent[];

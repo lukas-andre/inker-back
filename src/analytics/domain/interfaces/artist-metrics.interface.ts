@@ -7,7 +7,7 @@ export interface IFollowerMetrics {
 }
 
 export interface IArtistMetrics {
-  artistId: number;
+  artistId: string;
   metrics: {
     views: IViewMetrics;
     followers?: IFollowerMetrics;

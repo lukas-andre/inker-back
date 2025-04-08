@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../global/infrastructure/base.handler';
 import { RequestContextService } from '../global/infrastructure/services/requestContext.service';
-import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
+import { ReviewReactionEnum } from './reviews.controller';
 
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
@@ -23,23 +23,23 @@ export class ReviewHandler extends BaseHandler {
   }
 
   async reviewArtist(
-    artistId: number,
-    eventId: number,
-    userId: number,
+    artistId: string,
+    eventId: string,
+    userId: string,
     body: ReviewArtistRequestDto,
   ) {
     return this.ratingArtistUseCase.execute(artistId, eventId, userId, body);
   }
 
   async reactToReview(
-    reviewId: number,
-    customerId: number,
+    reviewId: string,
+    customerId: string,
     reaction: ReviewReactionEnum,
   ) {
     return this.reactToReviewUseCase.execute(reviewId, customerId, reaction);
   }
 
-  async getReviewFromArtist(artistId: number, page: number, limit: number) {
+  async getReviewFromArtist(artistId: string, page: number, limit: number) {
     return this.getReviewsFromArtistUsecase.execute(
       this.requestService.userTypeId,
       artistId,

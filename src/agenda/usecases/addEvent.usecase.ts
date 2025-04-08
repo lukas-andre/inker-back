@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Queue } from 'bull';
 
-import { CustomerProvider } from '../../customers/infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
 import {
   DomainBadRule,
   DomainNotFound,
@@ -14,8 +14,8 @@ import {
 import { AgendaEventcreatedJobType } from '../../queues/notifications/domain/schemas/agenda';
 import { queues } from '../../queues/queues';
 import { AddEventReqDto } from '../infrastructure/dtos/addEventReq.dto';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 import { CreateAgendaEventService } from './common/createAgendaEvent.service';
 
 @Injectable()
@@ -24,9 +24,9 @@ export class AddEventUseCase
   implements UseCase, OnModuleDestroy
 {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly customerProvider: CustomerProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
+    private readonly customerProvider: CustomerRepository,
     private readonly createAgendaEventService: CreateAgendaEventService,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,

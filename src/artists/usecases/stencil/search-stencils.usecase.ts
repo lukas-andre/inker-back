@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { StencilProvider } from '../../infrastructure/database/stencil.provider';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 import { StencilSearchQueryDto } from '../../domain/dtos/stencil-search.dto';
 import { PaginatedStencilResponseDto, StencilWithRelevanceDto } from '../../domain/dtos/paginated-stencil-response.dto';
-import { InteractionProvider } from '../../../interactions/infrastructure/database/interaction.provider';
+import { InteractionRepository } from '../../../interactions/infrastructure/database/repositories/interaction.repository';
 import { ContentMetricsEnricherService, WithMetrics, MetricsOptions } from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
 import { ContentType } from '../../../analytics/domain/enums/content-types.enum';
 
@@ -16,8 +16,8 @@ interface PaginatedStencilResponseWithMetrics extends Omit<PaginatedStencilRespo
 @Injectable()
 export class SearchStencilsUseCase extends BaseUseCase {
   constructor(
-    private readonly stencilProvider: StencilProvider,
-    private readonly interactionProvider: InteractionProvider,
+    private readonly stencilRepository: StencilRepository,
+    private readonly interactionRepository: InteractionRepository,
     private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(SearchStencilsUseCase.name);
@@ -25,13 +25,13 @@ export class SearchStencilsUseCase extends BaseUseCase {
 
   async execute(params: StencilSearchQueryDto & { 
     includeMetrics?: boolean; 
-    userId?: number;
+    userId?: string;
     disableCache?: boolean;
   }): Promise<PaginatedStencilResponseWithMetrics> {
     const { query, page = 1, limit = 10, sortBy = 'relevance', includeMetrics = true, userId, disableCache } = params;
 
     // Usar el método searchStencils del provider para buscar estenciles
-    const [stencils, total] = await this.stencilProvider.searchStencils(params);
+    const [stencils, total] = await this.stencilRepository.searchStencils(params);
 
     // Enriquecer los resultados con información de relevancia y popularidad
     const stencilsWithRelevance = await this.enrichSearchResults(stencils, query, sortBy);
@@ -73,10 +73,10 @@ export class SearchStencilsUseCase extends BaseUseCase {
     if (sortBy === 'relevance' && searchQuery && searchQuery.trim() !== '') {
       // Obtener métricas de popularidad para los estenciles
       const stencilIds = stencils.map(stencil => stencil.id);
-      let popularityData: { entityId: number; count: number }[] = [];
+      let popularityData: { entityId: string; count: number }[] = [];
       
       try {
-        popularityData = await this.interactionProvider.getRecentPopularEntities(
+        popularityData = await this.interactionRepository.getRecentPopularEntities(
           'stencil',
           'view',
           stencilIds.length,
@@ -87,7 +87,7 @@ export class SearchStencilsUseCase extends BaseUseCase {
       }
 
       // Crear mapa de popularidad
-      const popularityMap = new Map<number, number>();
+      const popularityMap = new Map<string, number>();
       popularityData.forEach(item => {
         popularityMap.set(item.entityId, item.count);
       });
@@ -170,7 +170,7 @@ export class SearchStencilsUseCase extends BaseUseCase {
       // Si ordenamos por popularidad, obtener datos de popularidad
       try {
         const stencilIds = stencils.map(stencil => stencil.id);
-        const popularStencils = await this.interactionProvider.getRecentPopularEntities(
+        const popularStencils = await this.interactionRepository.getRecentPopularEntities(
           'stencil',
           'view',
           stencilIds.length,
@@ -178,7 +178,7 @@ export class SearchStencilsUseCase extends BaseUseCase {
         );
 
         // Crear mapa de popularidad
-        const popularityMap = new Map<number, number>();
+        const popularityMap = new Map<string, number>();
         popularStencils.forEach(item => {
           popularityMap.set(item.entityId, item.count);
         });

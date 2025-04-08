@@ -3,13 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import stringify from 'fast-safe-stringify';
 
 import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
-import { AgendaProvider } from '../../../agenda/infrastructure/providers/agenda.provider';
-import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
+import { AgendaRepository } from '../../../agenda/infrastructure/repositories/agenda.repository';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
-import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
 import { CreateCustomerParams } from '../../../customers/usecases/interfaces/createCustomer.params';
 import {
   DomainConflict,
@@ -22,27 +22,27 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { TypeTransform } from '../../../global/domain/utils/typeTransform';
 import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
-import { ArtistLocationProvider } from '../../../locations/infrastructure/database/artistLocation.provider';
-import { ArtistLocation } from '../../../locations/infrastructure/entities/artistLocation.entity';
+import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
+import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
 import { UserType } from '../../domain/enums/userType.enum';
 import {
   CreateArtistUserResDto,
   CreateCustomerUserResDto,
 } from '../../infrastructure/dtos/createUserRes.dto';
-import { RolesProvider } from '../../infrastructure/providers/roles.service';
-import { UsersProvider } from '../../infrastructure/providers/users.provider';
+import { RolesRepository } from '../../infrastructure/repositories/roles.repository';
+import { UsersRepository } from '../../infrastructure/repositories/users.repository';
 
 import { CreateUserByTypeParams } from './interfaces/createUserByType.params';
 
 @Injectable()
 export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly usersProvider: UsersProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly customerProvider: CustomerProvider,
-    private readonly rolesService: RolesProvider,
-    private readonly agendaProvider: AgendaProvider,
-    private readonly artistLocationProvider: ArtistLocationProvider,
+    private readonly usersRepository: UsersRepository,
+    private readonly artistProvider: ArtistRepository,
+    private readonly customerProvider: CustomerRepository,
+    private readonly rolesRepository: RolesRepository,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly artistLocationProvider: ArtistLocationRepository,
     private readonly configService: ConfigService,
   ) {
     super(CreateUserByTypeUseCase.name);
@@ -51,7 +51,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   public async execute(
     createUserParams: CreateUserByTypeParams,
   ): Promise<CreateCustomerUserResDto | CreateArtistUserResDto> {
-    const existsRole = await this.rolesService.exists(
+    const existsRole = await this.rolesRepository.exists(
       createUserParams.userType.toLocaleLowerCase(),
     );
 
@@ -59,11 +59,11 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       throw new DomainConflict('Role not exists');
     }
 
-    const role = await this.rolesService.findOne({
+    const role = await this.rolesRepository.findOne({
       where: { name: createUserParams.userType.toLocaleLowerCase() },
     });
 
-    const created = await this.usersProvider.create(createUserParams, role);
+    const created = await this.usersRepository.create(createUserParams, role);
 
     try {
       const response = await this.handleCreateByUserType(
@@ -87,7 +87,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   }
 
   private async handleCreateByUserType(
-    userId: number,
+    userId: string,
     dto: CreateUserByTypeParams,
   ): Promise<Customer | Artist> {
     const createByType = {
@@ -154,12 +154,12 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     return this.customerProvider.create(createCustomerDto);
   }
 
-  private async rollbackCreate(userId: number): Promise<void> {
-    await this.usersProvider.delete(userId);
+  private async rollbackCreate(userId: string): Promise<void> {
+    await this.usersRepository.delete(userId);
   }
 
   private async handleCreateError(
-    userId: number,
+    userId: string,
     error: DomainException,
   ): Promise<DomainException> {
     await this.rollbackCreate(userId);
@@ -200,7 +200,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   }
 
   private mapParamsToCreateArtistParams(
-    userId: number,
+    userId: string,
     dto: CreateUserByTypeParams,
   ): CreateArtistParams {
     return {
@@ -218,7 +218,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
   }
 
   private mapParamsToCreateCustomerDto(
-    userId: number,
+    userId: string,
     dto: CreateUserByTypeParams,
   ): CreateCustomerParams {
     return {

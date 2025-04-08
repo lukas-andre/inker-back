@@ -5,8 +5,8 @@ import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { Queue } from 'bull';
 import { QueryRunner, Repository } from 'typeorm';
 
-import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
 import { S3Client } from '../../../global/infrastructure/clients/s3.client';
@@ -17,16 +17,16 @@ import {
   QuotationStatus,
 } from '../../infrastructure/entities/quotation.entity';
 import { QuotationHistory } from '../../infrastructure/entities/quotationHistory.entity';
-import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
+import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 import { CreateQuotationUseCase } from '../createQuotation.usecase';
 
 describe('CreateQuotationUseCase', () => {
   let createQuotationUseCase: CreateQuotationUseCase;
   let notificationQueue: DeepMocked<Queue>;
-  let quotationProvider: QuotationProvider;
+  let quotationProvider: QuotationRepository;
   let moduleFixture: TestingModule;
-  let artistProvider: ArtistProvider;
-  let customerProvider: CustomerProvider;
+  let artistProvider: ArtistRepository;
+  let customerProvider: CustomerRepository;
   let multimediasService: MultimediasService;
 
   beforeAll(async () => {
@@ -53,12 +53,12 @@ describe('CreateQuotationUseCase', () => {
       providers: [
         CreateQuotationUseCase,
         {
-          provide: ArtistProvider,
-          useValue: createMock<ArtistProvider>(),
+          provide: ArtistRepository,
+          useValue: createMock<ArtistRepository>(),
         },
         {
-          provide: CustomerProvider,
-          useValue: createMock<CustomerProvider>(),
+          provide: CustomerRepository,
+          useValue: createMock<CustomerRepository>(),
         },
         {
           provide: MultimediasService,
@@ -76,7 +76,7 @@ describe('CreateQuotationUseCase', () => {
           provide: getQueueToken(queues.notification.name),
           useValue: createMock<Queue>(),
         },
-        QuotationProvider,
+        QuotationRepository,
       ],
     }).compile();
 
@@ -86,9 +86,9 @@ describe('CreateQuotationUseCase', () => {
     notificationQueue = moduleFixture.get(
       getQueueToken(queues.notification.name),
     );
-    quotationProvider = moduleFixture.get<QuotationProvider>(QuotationProvider);
-    artistProvider = moduleFixture.get<ArtistProvider>(ArtistProvider);
-    customerProvider = moduleFixture.get<CustomerProvider>(CustomerProvider);
+    quotationProvider = moduleFixture.get<QuotationRepository>(QuotationRepository);
+    artistProvider = moduleFixture.get<ArtistRepository>(ArtistRepository);
+    customerProvider = moduleFixture.get<CustomerRepository>(CustomerRepository);
     multimediasService =
       moduleFixture.get<MultimediasService>(MultimediasService);
   });

@@ -7,9 +7,9 @@ import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString }
 
 export class ArtistLocationCreateDto {
   @ApiProperty({ description: 'Artist ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  artistId: number;
+  artistId: string;
 
   @ApiProperty({ description: 'Location name', example: 'My Studio' })
   @IsString()
@@ -93,9 +93,9 @@ export class ArtistLocationCreateDto {
 
 export class ArtistLocationUpdateDto {
   @ApiProperty({ description: 'Location ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  id?: number;
+  id?: string;
 
   @ApiPropertyOptional({ description: 'Location name', example: 'My Studio' })
   @IsString()
@@ -188,12 +188,12 @@ export class ArtistLocationUpdateDto {
 
 export class ArtistLocationDto {
   @ApiProperty({ description: 'Location ID', example: 1 })
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 
   @ApiProperty({ description: 'Artist ID', example: 1 })
-  @IsNumber()
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({ description: 'Location name', example: 'My Studio' })
   @IsString()
@@ -284,19 +284,19 @@ export class ArtistLocationDto {
 
 export class GetArtistLocationsParams {
   @ApiProperty({ description: 'Artist ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  artistId: number;
+  artistId: string;
 }
 
 export class DeleteArtistLocationParams {
   @ApiProperty({ description: 'Location ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Artist ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  artistId: number;
+  artistId: string;
 }

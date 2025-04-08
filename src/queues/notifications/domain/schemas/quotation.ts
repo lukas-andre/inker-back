@@ -1,12 +1,7 @@
 import { z } from 'zod';
 
 import { NotificationTypeSchema } from './notification';
-import {
-  ArtistCancelReasonSchema,
-  CancelReasonTypeSchema,
-  CustomerCancelReasonSchema,
-  SystemCancelReasonSchema,
-} from './quotationCancelReasons';
+
 
 export const QuotationJobIdSchema = z.enum([
   'QUOTATION_CREATED',
@@ -30,9 +25,9 @@ const QuotationJobSchema = z.object({
   jobId: QuotationJobIdSchema,
   notificationTypeId: NotificationTypeSchema,
   metadata: z.object({
-    customerId: z.number(),
-    artistId: z.number(),
-    quotationId: z.number(),
+    customerId: z.string(),
+    artistId: z.string(),
+    quotationId: z.string(),
   }),
 });
 
@@ -44,9 +39,9 @@ export type QuotationCreatedJobType = z.infer<typeof QuotationCreatedJobSchema>;
 const QuotationRepliedJobSchema = QuotationJobSchema.extend({
   jobId: z.literal(QuotationJobIdSchema.enum.QUOTATION_REPLIED),
   metadata: z.object({
-    quotationId: z.number(),
-    artistId: z.number(),
-    customerId: z.number(),
+    quotationId: z.string(),
+    artistId: z.string(),
+    customerId: z.string(),
     estimatedCost: z
       .object({
         amount: z.number(),
@@ -71,9 +66,9 @@ const QuotationRejectedJobSchema = QuotationJobSchema.extend({
   jobId: z.literal(QuotationJobIdSchema.enum.QUOTATION_REJECTED),
   metadata: z.object({
     by: z.enum(['artist', 'customer', 'system']),
-    quotationId: z.number(),
-    artistId: z.number(),
-    customerId: z.number(),
+    quotationId: z.string(),
+    artistId: z.string(),
+    customerId: z.string(),
     rejectionReason: z.string(),
     additionalDetails: z.string().optional(),
   }),
@@ -85,9 +80,9 @@ export type QuotationRejectedJobType = z.infer<
 const QuotationAppealedJobSchema = QuotationJobSchema.extend({
   jobId: z.literal(QuotationJobIdSchema.enum.QUOTATION_APPEALED),
   metadata: z.object({
-    quotationId: z.number(),
-    artistId: z.number(),
-    customerId: z.number(),
+    quotationId: z.string(),
+    artistId: z.string(),
+    customerId: z.string(),
     appealReason: z.string(),
     additionalDetails: z.string().optional(),
   }),
@@ -99,9 +94,9 @@ export type QuotationAppealedJobType = z.infer<
 const QuotationCanceledJobSchema = QuotationJobSchema.extend({
   jobId: z.literal(QuotationJobIdSchema.enum.QUOTATION_CANCELED),
   metadata: z.object({
-    quotationId: z.number(),
-    artistId: z.number(),
-    customerId: z.number(),
+    quotationId: z.string(),
+    artistId: z.string(),
+    customerId: z.string(),
   }),
 });
 export type QuotationCanceledJobType = z.infer<

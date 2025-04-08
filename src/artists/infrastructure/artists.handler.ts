@@ -126,7 +126,7 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Work handlers
-  getWorks(artistId: number, onlyFeatured?: boolean, disableCache?: boolean): Promise<WorkDto[]> {
+  getWorks(artistId: string, onlyFeatured?: boolean, disableCache?: boolean): Promise<WorkDto[]> {
     this.logger.log(`Getting works for artist: ${artistId}`);
     const userId = this.requestContext.userId;
     return this.getWorksUseCase.execute({ 
@@ -137,7 +137,7 @@ export class ArtistsHandler extends BaseComponent {
     });
   }
 
-  getWorksPaginated(artistId: number, query: WorkQueryDto, disableCache?: boolean): Promise<PaginatedWorkResponseWithMetrics> {
+  getWorksPaginated(artistId: string, query: WorkQueryDto, disableCache?: boolean): Promise<PaginatedWorkResponseWithMetrics> {
     this.logger.log(`Getting paginated works for artist: ${artistId}`);
     const userId = this.requestContext.userId;
     return this.getWorksPaginatedUseCase.execute({ 
@@ -157,7 +157,7 @@ export class ArtistsHandler extends BaseComponent {
     return this.createWorkUseCase.execute({ artistId: userTypeId, dto, file });
   }
 
-  getWorkById(id: number, disableCache?: boolean): Promise<WorkDto> {
+  getWorkById(id: string, disableCache?: boolean): Promise<WorkDto> {
     this.logger.log(`Getting work by id: ${id}`);
     const userId = this.requestContext.userId;
     return this.getWorkByIdUseCase.execute({ 
@@ -167,7 +167,7 @@ export class ArtistsHandler extends BaseComponent {
     });
   }
 
-  updateWork(id: number, dto: UpdateWorkDto): Promise<WorkDto> {
+  updateWork(id: string, dto: UpdateWorkDto): Promise<WorkDto> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can update works');
@@ -176,7 +176,7 @@ export class ArtistsHandler extends BaseComponent {
     return this.updateWorkUseCase.execute({ id, artistId: userTypeId, dto });
   }
 
-  deleteWork(id: number): Promise<void> {
+  deleteWork(id: string): Promise<void> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can delete works');
@@ -186,7 +186,7 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Stencil handlers
-  getStencils(artistId: number, query: StencilQueryDto, disableCache?: boolean): Promise<PaginatedStencilResponseDto> {
+  getStencils(artistId: string, query: StencilQueryDto, disableCache?: boolean): Promise<PaginatedStencilResponseDto> {
     this.logger.log(`Getting stencils for artist: ${artistId}`);
     const userId = this.requestContext.userId;
     return this.getStencilsUseCase.execute({ 
@@ -206,7 +206,7 @@ export class ArtistsHandler extends BaseComponent {
     return this.createStencilUseCase.execute({ artistId: userTypeId, dto, file });
   }
 
-  getStencilById(id: number, disableCache?: boolean): Promise<StencilDto> {
+  getStencilById(id: string, disableCache?: boolean): Promise<StencilDto> {
     this.logger.log(`Getting stencil by id: ${id}`);
     const userId = this.requestContext.userId;
     return this.getStencilByIdUseCase.execute({ 
@@ -216,7 +216,7 @@ export class ArtistsHandler extends BaseComponent {
     });
   }
 
-  updateStencil(id: number, dto: UpdateStencilDto): Promise<StencilDto> {
+  updateStencil(id: string, dto: UpdateStencilDto): Promise<StencilDto> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can update stencils');
@@ -225,7 +225,7 @@ export class ArtistsHandler extends BaseComponent {
     return this.updateStencilUseCase.execute({ id, artistId: userTypeId, dto });
   }
 
-  deleteStencil(id: number): Promise<void> {
+  deleteStencil(id: string): Promise<void> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can delete stencils');
@@ -254,27 +254,27 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Artist basic info methods
-  getArtistByUserId(userId: number): Promise<Artist> {
+  getArtistByUserId(userId: string): Promise<Artist> {
     this.logger.log(`Getting artist by user ID: ${userId}`);
     return this.findArtistsUseCases.findOne({ where: { userId } });
   }
 
-  getArtistById(id: number): Promise<FindArtistByIdResult> {
+  getArtistById(id: string): Promise<FindArtistByIdResult> {
     this.logger.log(`Getting artist by ID: ${id}`);
     return this.findArtistsUseCases.findById(id);
   }
 
-  updateArtistBasicInfo(id: number, updateArtistDto: UpdateArtistDto) {
+  updateArtistBasicInfo(id: string, updateArtistDto: UpdateArtistDto) {
     this.logger.log(`Updating basic info for artist: ${id}`);
     return this.updateArtistBasicInfoUseCase.execute(id, updateArtistDto);
   }
 
-  updateProfilePicture(id: number, file: FileInterface) {
+  updateProfilePicture(id: string, file: FileInterface) {
     this.logger.log(`Updating profile picture for artist: ${id}`);
     return this.updateArtistProfilePictureUseCase.execute(id, file);
   }
 
-  updateStudioPhoto(id: number, file: FileInterface) {
+  updateStudioPhoto(id: string, file: FileInterface) {
     this.logger.log(`Updating studio photo for artist: ${id}`);
     return this.updateArtistStudioPhotoUseCase.execute(id, file);
   }
@@ -292,7 +292,7 @@ export class ArtistsHandler extends BaseComponent {
     });
   }
 
-  handleFindById(id: number) {
+  handleFindById(id: string) {
     const userId = this.requestContext.userId;
     this.logger.log(`Finding artist by ID: ${id}`);
     return this.findArtistsUseCases.findById(id, { 

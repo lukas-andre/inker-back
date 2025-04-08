@@ -11,7 +11,7 @@ export class GetNotificationsUsecase extends BaseUseCase implements UseCase {
   }
 
   async execute(
-    userId: number,
+    userId: string,
     query: NotificationQueryDto,
   ): Promise<PaginatedNotificationsResponseDto> {
     const { page = 1, limit = 10, type } = query;

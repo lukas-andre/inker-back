@@ -8,7 +8,7 @@ export class SetWorkingHoursUseCase {
 
   constructor(private readonly agendaSettingsService: AgendaSettingsService) {}
 
-  async execute(agendaId: number, dto: SetWorkingHoursReqDto): Promise<void> {
+  async execute(agendaId: string, dto: SetWorkingHoursReqDto): Promise<void> {
     this.logger.log(`Setting working hours for agenda ${agendaId}`);
     return this.agendaSettingsService.setWorkingHours(agendaId, dto);
   }

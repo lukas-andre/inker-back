@@ -6,21 +6,21 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { AgendaEvent } from '../infrastructure/entities/agendaEvent.entity';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { AgendaEventStatus } from '../domain/enum/agendaEventStatus.enum';
 
 @Injectable()
 export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
   ) {
     super(ListEventFromArtistAgenda.name);
   }
 
-  async execute(id: number, type: UserType, status?: string): Promise<AgendaEvent[]> {
+  async execute(id: string, type: UserType, status?: string): Promise<AgendaEvent[]> {
     console.time('ListEventFromArtistAgenda');
     
     if (type === UserType.ARTIST) {
@@ -30,7 +30,7 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
     }
   }
 
-  private async getArtistEvents(artistId: number, status?: string): Promise<AgendaEvent[]> {
+  private async getArtistEvents(artistId: string, status?: string): Promise<AgendaEvent[]> {
     const existsAgenda = await this.agendaProvider.findOne({
       where: {
         artistId,
@@ -68,7 +68,7 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
     return result;
   }
 
-  private async getCustomerEvents(customerId: number, status?: string): Promise<AgendaEvent[]> {
+  private async getCustomerEvents(customerId: string, status?: string): Promise<AgendaEvent[]> {
     // Use status if provided
     if (status && Object.values(AgendaEventStatus).includes(status as AgendaEventStatus)) {
       const result = await this.agendaEventProvider.find({

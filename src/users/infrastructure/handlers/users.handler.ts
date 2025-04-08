@@ -29,7 +29,7 @@ import { SendForgotPasswordCodeUseCase } from '../../usecases/user/sendForgotPas
 import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
 
 @Injectable()
-export class UsersHandler extends BaseHandler {
+export class UsersHandler {
   constructor(
     private readonly createUserByTypeUseCase: CreateUserByTypeUseCase,
     private readonly sendSMSAccountVerificationCodeUseCase: SendSMSAccountVerificationCodeUseCase,
@@ -43,33 +43,29 @@ export class UsersHandler extends BaseHandler {
     private readonly sendEmailVerificationCodeUseCase: SendEmailVerificationCodeUseCase,
     private readonly sendForgotPasswordCodeUseCase: SendForgotPasswordCodeUseCase,
     private readonly updateUserPasswordWithCodeUseCase: UpdateUserPasswordWithCodeUseCase,
-    private readonly configService: ConfigService,
-    private readonly jwtService: JwtService,
     private readonly requestContext: RequestContextService,
-  ) {
-    super(jwtService);
-  }
+  ) {}
 
   public async handleCreate(dto: CreateUserReqDto): Promise<any> {
     return this.createUserByTypeUseCase.execute(dto as CreateUserByTypeParams);
   }
 
   public async handleUpdateUserEmail(
-    userId: number,
+    userId: string,
     dto: UpdateUserEmailReqDto,
   ) {
     return this.updateUserEmailUseCase.execute(userId, dto.email);
   }
 
   public async handleUpdateUserUsername(
-    userId: number,
+    userId: string,
     dto: UpdateUserUsernameReqDto,
   ) {
     return this.updateUserUsernameUseCase.execute(userId, dto.username);
   }
 
   public async handleUpdateUserPassword(
-    userId: number,
+    userId: string,
     code: string,
     query: UpdateUserPasswordQueryDto,
     dto: UpdateUserPasswordReqDto,
@@ -84,7 +80,7 @@ export class UsersHandler extends BaseHandler {
   }
 
   public async handleGetForgotPasswordCode(
-    userId: number,
+    userId: string,
     query: GetForgotPasswordCodeQueryDto,
   ) {
     switch (query.notificationType) {
@@ -99,7 +95,7 @@ export class UsersHandler extends BaseHandler {
   }
 
   public async handleSendAccountValidationCode(
-    userId: number,
+    userId: string,
     query: SendAccountVerificationCodeQueryDto,
   ) {
     switch (query.notificationType) {
@@ -125,7 +121,7 @@ export class UsersHandler extends BaseHandler {
   }
 
   public async handleValidateAccountVerificationCode(
-    userId: number,
+    userId: string,
     code: string,
     type: NotificationType,
   ) {

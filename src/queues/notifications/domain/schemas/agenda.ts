@@ -18,9 +18,9 @@ const AgendaJobSchema = z.object({
   jobId: AgendaJobIdSchema,
   notificationTypeId: NotificationTypeSchema,
   metadata: z.object({
-    customerId: z.number(),
-    eventId: z.number(),
-    artistId: z.number(),
+    customerId: z.string(),
+    eventId: z.string(),
+    artistId: z.string(),
   }),
 });
 
@@ -43,9 +43,9 @@ export type AgendaEventCanceledJobType = z.infer<
 const AgendaEventReminderJobSchema = AgendaJobSchema.extend({
   jobId: z.literal(AgendaJobIdSchema.enum.EVENT_REMINDER),
   metadata: z.object({
-    customerId: z.number(),
-    eventId: z.number(),
-    artistId: z.number(),
+    customerId: z.string(),
+    eventId: z.string(),
+    artistId: z.string(),
     reminderType: z.string().optional(),
   }),
 });
@@ -85,9 +85,9 @@ export type RsvpJobType =
 const AgendaEventStatusChangedJobSchema = AgendaJobSchema.extend({
   jobId: z.literal(AgendaJobIdSchema.enum.EVENT_STATUS_CHANGED),
   metadata: z.object({
-    customerId: z.number(),
-    eventId: z.number(),
-    artistId: z.number(),
+    customerId: z.string(),
+    eventId: z.string(),
+    artistId: z.string(),
     status: z.string(),
     message: z.string(),
   }),

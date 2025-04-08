@@ -1,23 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { SettingsProvider } from '../../infrastructure/providers/settings.provider';
 import { Settings } from '../../infrastructure/entities/settings.entity';
+import { SettingsRepository } from '../../infrastructure/repositories/settings.repository';
 
 @Injectable()
 export class UpdateNotificationsUseCase {
-  constructor(private readonly settingsProvider: SettingsProvider) {}
+  constructor(private readonly settingsRepository: SettingsRepository) {}
 
-  async execute(userId: number, enabled: boolean): Promise<Settings> {
-    const settings = await this.settingsProvider.findByUserId(userId);
+  async execute(userId: string, enabled: boolean): Promise<Settings> {
+    const settings = await this.settingsRepository.findByUserId(userId);
 
     if (!settings) {
-      // Create new settings if none exist
-      return this.settingsProvider.upsert({
+      return this.settingsRepository.upsert({
         userId,
         notificationsEnabled: enabled,
-        locationServicesEnabled: true, // default value
+        locationServicesEnabled: true,
       });
     }
 
-    return this.settingsProvider.updateNotifications(userId, enabled);
+    return this.settingsRepository.updateNotifications(userId, enabled);
   }
 }

@@ -16,20 +16,20 @@ import {
   AGENDA_EVENT_IS_ALREADY_DONE,
   AGENDA_EVENT_NOT_EXISTS,
 } from '../domain/errors/codes';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 
 @Injectable()
 export class MarkEventAsDoneUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly agendaEventProvider: AgendaEventProvider,
+    private readonly agendaEventProvider: AgendaEventRepository,
     private readonly multimediasService: MultimediasService,
   ) {
     super(MarkEventAsDoneUseCase.name);
   }
 
   async execute(
-    agendaId: number,
-    eventId: number,
+    agendaId: string,
+    eventId: string,
     workEvidenceFiles: FileInterface[],
   ): Promise<DefaultResponseDto> {
     const event = await this.agendaEventProvider.findAgendaEventForMarkAsDone(

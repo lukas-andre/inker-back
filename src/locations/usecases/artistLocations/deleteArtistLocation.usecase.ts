@@ -2,12 +2,12 @@ import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/com
 
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { DeleteArtistLocationParams } from '../../domain/interfaces/artistLocation.interface';
-import { ArtistLocationProvider } from '../../infrastructure/database/artistLocation.provider';
+import { ArtistLocationRepository } from '../../infrastructure/database/artistLocation.repository';
 
 @Injectable()
 export class DeleteArtistLocationUseCase extends BaseUseCase {
   constructor(
-    private readonly artistLocationProvider: ArtistLocationProvider,
+    private readonly artistLocationProvider: ArtistLocationRepository,
   ) {
     super(DeleteArtistLocationUseCase.name);
   }

@@ -28,12 +28,11 @@ export class StencilDimensionsDto {
 
 export class StencilDto implements StencilType {
   @ApiProperty({ description: 'Stencil ID' })
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Artist ID' })
-  @IsInt()
-  @Min(1)
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({ description: 'Stencil title' })
   @IsString()

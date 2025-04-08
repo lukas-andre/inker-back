@@ -90,7 +90,7 @@ export class AgendaController {
   @ApiParam({ name: 'id', required: true, type: Number })
   @Put('event/:id')
   async updateEvent(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateEventReqDto: UpdateEventReqDto,
   ): Promise<any> {
     return this.agendaHandler.handleUpdateEvent(updateEventReqDto, id);
@@ -104,8 +104,8 @@ export class AgendaController {
   @ApiParam({ name: 'eventId', required: true, type: Number })
   @Delete(':agendaId/event/:eventId')
   async cancelEvent(
-    @Param('agendaId', ParseIntPipe) agendaId: number,
-    @Param('eventId', ParseIntPipe) eventId: number,
+    @Param('agendaId') agendaId: string,
+    @Param('eventId') eventId: string,
   ): Promise<any> {
     return this.agendaHandler.handleCancelEvent(eventId, agendaId);
   }
@@ -117,7 +117,7 @@ export class AgendaController {
   @ApiParam({ name: 'agendaId', required: true, type: Number })
   @Get(':agendaId')
   async listEventByViewType(
-    @Param('agendaId', ParseIntPipe) agendaId: number,
+    @Param('agendaId') agendaId: string,
     @Query() listEventByViewTypeQueryDto: ListEventByViewTypeQueryDto,
   ): Promise<any> {
     return this.agendaHandler.handleListEventByViewType(
@@ -163,7 +163,7 @@ export class AgendaController {
   })
   @Get('/artist/:artistId')
   async listEventsByAgendaId(
-    @Param('artistId', ParseIntPipe) artistId: number,
+    @Param('artistId') artistId: string,
   ): Promise<any> {
     return this.agendaHandler.handleListEventsByAgendaId(artistId);
   }
@@ -176,7 +176,7 @@ export class AgendaController {
   @CacheTTL(20) // Cache for 20 seconds
   @Get('/event/:eventId')
   async getEventByEventId(
-    @Param('eventId', ParseIntPipe) eventId: number,
+    @Param('eventId') eventId: string,
   ): Promise<any> {
     return this.agendaHandler.handleGetEventByEventId(eventId);
   }
@@ -188,7 +188,7 @@ export class AgendaController {
   @ApiParam({ name: 'eventId', required: true, type: Number })
   @Get('/customer/event/:eventId')
   async getCustomerEventByEventId(
-    @Param('eventId', ParseIntPipe) eventId: number,
+    @Param('eventId') eventId: string,
   ): Promise<any> {
     return this.agendaHandler.handleGetCustomerEventByEventId(eventId);
   }
@@ -223,8 +223,8 @@ export class AgendaController {
   @Put(':agendaId/event/:eventId/done')
   @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
   async markEventAsDone(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
-    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
     @UploadedFiles() workEvidenceFiles: FileInterface[],
   ): Promise<any> {
     console.log({ workEvidenceFiles });
@@ -246,7 +246,7 @@ export class AgendaController {
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 6 })
   @Get('artists/:artistId/work-evidence')
   async getWorkEvidenceByArtistId(
-    @Param('artistId', ArtistIdPipe) artistId: number,
+    @Param('artistId', ArtistIdPipe) artistId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(6), ParseIntPipe) limit = 6,
   ): Promise<GetWorkEvidenceByArtistIdResponseDto> {
@@ -271,8 +271,8 @@ export class AgendaController {
   })
   @Post(':agendaId/event/:eventId/rsvp')
   async rsvp(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
-    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Query('willAttend', ParseBoolPipe) willAttend: boolean,
   ): Promise<any> {
     return this.agendaHandler.handleRsvp(agendaId, eventId, willAttend);
@@ -286,8 +286,8 @@ export class AgendaController {
   @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
   @Put(':agendaId/event/:eventId/status')
   async changeEventStatus(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
-    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Body() changeEventStatusReqDto: ChangeEventStatusReqDto,
   ): Promise<any> {
     return this.agendaHandler.handleChangeEventStatus(
@@ -305,8 +305,8 @@ export class AgendaController {
   @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
   @Post(':agendaId/event/:eventId/review')
   async reviewEvent(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
-    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Body() reviewArtistReqDto: ReviewArtistRequestDto,
   ): Promise<any> {
     return this.agendaHandler.handleReviewEvent(
@@ -325,7 +325,7 @@ export class AgendaController {
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Put(':agendaId/working-hours')
   async setWorkingHours(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Body() setWorkingHoursReqDto: SetWorkingHoursReqDto,
   ): Promise<void> {
     return this.agendaHandler.handleSetWorkingHours(agendaId, setWorkingHoursReqDto);
@@ -338,7 +338,7 @@ export class AgendaController {
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Post(':agendaId/unavailable-time')
   async createUnavailableTime(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Body() createUnavailableTimeReqDto: CreateUnavailableTimeReqDto,
   ): Promise<AgendaUnavailableTime> {
     return this.agendaHandler.handleCreateUnavailableTime(agendaId, createUnavailableTimeReqDto);
@@ -350,7 +350,7 @@ export class AgendaController {
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Get(':agendaId/unavailable-time')
   async getUnavailableTimes(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
   ): Promise<AgendaUnavailableTime[]> {
     return this.agendaHandler.handleGetUnavailableTimes(agendaId);
   }
@@ -362,8 +362,8 @@ export class AgendaController {
   @ApiParam({ name: 'id', required: true, type: Number, example: 1 })
   @Delete(':agendaId/unavailable-time/:id')
   async deleteUnavailableTime(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('id') id: string,
   ): Promise<void> {
     return this.agendaHandler.handleDeleteUnavailableTime(agendaId, id);
   }
@@ -376,8 +376,8 @@ export class AgendaController {
   @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
   @Put(':agendaId/event/:eventId/reschedule')
   async rescheduleEvent(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
-    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Body() rescheduleEventReqDto: RescheduleEventReqDto,
   ): Promise<void> {
     return this.agendaHandler.handleRescheduleEvent(agendaId, eventId, rescheduleEventReqDto);
@@ -390,8 +390,8 @@ export class AgendaController {
   @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
   @Put(':agendaId/event/:eventId/notes')
   async updateEventNotes(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
-    @Param('eventId', AgendaEventIdPipe) eventId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Body() updateEventNotesReqDto: UpdateEventNotesReqDto,
   ): Promise<void> {
     return this.agendaHandler.handleUpdateEventNotes(agendaId, eventId, updateEventNotesReqDto);
@@ -404,7 +404,7 @@ export class AgendaController {
   @Get('/artists/:artistId/availability')
   @CacheTTL(20) // Cache for 20 seconds
   async getArtistAvailability(
-    @Param('artistId', ParseIntPipe) artistId: number,
+    @Param('artistId') artistId: string,
     @Query() query: ArtistAvailabilityQueryDto,
   ): Promise<AvailabilityCalendar[]> {
     return this.agendaHandler.handleGetArtistAvailability(artistId, query);
@@ -416,7 +416,7 @@ export class AgendaController {
   @ApiParam({ name: 'artistId', required: true, type: Number, example: 1 })
   @Get('/artists/:artistId/available-slots')
   async getArtistAvailableSlots(
-    @Param('artistId', ParseIntPipe) artistId: number,
+    @Param('artistId') artistId: string,
     @Query('date') date: string,
     @Query('duration', new DefaultValuePipe(60), ParseIntPipe) duration = 60,
     @Query('suggestionsCount', new DefaultValuePipe(8), ParseIntPipe) suggestionsCount = 8,
@@ -463,7 +463,7 @@ export class AgendaController {
   @Get(':agendaId/settings')
   @CacheTTL(20) // Cache for 20 seconds
   async getAgendaSettings(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
   ): Promise<GetAgendaSettingsResDto> {
     return this.agendaHandler.handleGetAgendaSettings(agendaId);
   }
@@ -474,7 +474,7 @@ export class AgendaController {
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Put(':agendaId/settings')
   async updateAgendaSettings(
-    @Param('agendaId', AgendaIdPipe) agendaId: number,
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Body() updateAgendaSettingsReqDto: UpdateAgendaSettingsReqDto,
   ): Promise<void> {
     return this.agendaHandler.handleUpdateAgendaSettings(agendaId, updateAgendaSettingsReqDto);

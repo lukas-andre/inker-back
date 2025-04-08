@@ -10,7 +10,7 @@ export class PushNotificationService {
 
   constructor(private tokenRepository: NotificationRepository) {}
 
-  async saveToken(userId: number, token: string, deviceType: DeviceType) {
+  async saveToken(userId: string, token: string, deviceType: DeviceType) {
     try {
       await this.tokenRepository.upsertFcmToken(
         {
@@ -35,7 +35,7 @@ export class PushNotificationService {
   }
 
   async sendToUser(
-    userId: number,
+    userId: string,
     notification: { title: string; body: string },
     data?: Record<string, any>,
   ) {

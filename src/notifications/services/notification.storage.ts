@@ -17,7 +17,7 @@ export class NotificationStorageService {
    * @returns The created notification
    */
   async storeNotification(
-    userId: number,
+    userId: string,
     title: string,
     body: string,
     type: JobTypeKey,
