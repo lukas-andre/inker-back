@@ -86,7 +86,7 @@ export class StencilRepository extends BaseComponent {
       // Add tags if provided
       if (tagIds && tagIds.length > 0) {
         // Get the tags
-        const tagIdsArray = Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(Number);
+        const tagIdsArray = Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String);
         const tags = await this.tagsService.find({
           where: { id: In(tagIdsArray) },
         });
@@ -247,7 +247,7 @@ export class StencilRepository extends BaseComponent {
         // Then add new tag relationships
         if (tagIds && tagIds.length > 0) {
           const tags = await this.tagsService.find({
-            where: { id: In(Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(Number)) },
+            where: { id: In(Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String)) },
           });
 
           for (const tag of tags) {
@@ -425,7 +425,7 @@ export class StencilRepository extends BaseComponent {
     }
 
     if (tagIds && tagIds.length > 0) {
-      queryBuilder.andWhere('tags.id IN (:...tagIds)', { tagIds: tagIds.split(',').map(Number) });
+      queryBuilder.andWhere('tags.id IN (:...tagIds)', { tagIds: tagIds.split(',').map(String) });
     }
 
     if (artistId) {

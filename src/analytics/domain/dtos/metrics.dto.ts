@@ -4,7 +4,7 @@ import { ContentType } from '../enums/content-types.enum';
 import { ViewSource } from '../enums/interaction-types.enum';
 
 export class RecordInteractionDto {
-  @ApiProperty({ description: 'Content ID', type: Number })
+  @ApiProperty({ description: 'Content ID', type: String })
   @IsString()
   contentId: string;
 
@@ -33,13 +33,13 @@ export class RecordInteractionDto {
 }
 
 export class RecordArtistViewDto {
-  @ApiProperty({ description: 'Artist ID', type: Number })
+  @ApiProperty({ description: 'Artist ID', type: String })
   @IsString()
   artistId: string;
 }
 
 export class ContentMetricsDto {
-  @ApiProperty({ description: 'Content ID', type: Number })
+  @ApiProperty({ description: 'Content ID', type: String })
   @IsString()
   contentId: string;
 

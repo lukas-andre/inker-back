@@ -296,4 +296,8 @@ export class UsersRepository extends BaseComponent {
   async findByIdWithPassword(id: string): Promise<User | undefined> {
     return this.usersRepository.findOne({ where: { id, deletedAt: null } });
   }
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.usersRepository.findOne({ where: { email, deletedAt: null } });
+  }
 } 

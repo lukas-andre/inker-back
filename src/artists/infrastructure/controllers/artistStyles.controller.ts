@@ -35,7 +35,7 @@ export class ArtistStylesController {
   })
   @ApiParam({ name: 'artistId', description: 'Artist ID' })
   async getArtistStyles(
-    @Param('artistId') artistId: number,
+    @Param('artistId') artistId: string,
   ): Promise<ArtistStyleDto[]> {
     const styles = await this.artistsHandler.getArtistStyles();
     return styles;

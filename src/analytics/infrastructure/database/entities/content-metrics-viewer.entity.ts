@@ -14,6 +14,7 @@ export class ContentMetricsViewer {
   viewerKey: string;
 
   @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
   @ManyToOne(() => ContentMetrics, metrics => metrics.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'metrics_id' })

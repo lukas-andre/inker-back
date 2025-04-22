@@ -27,6 +27,10 @@ import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verificati
 import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
 import { SendForgotPasswordCodeUseCase } from '../../usecases/user/sendForgotPasswordCode.usecase';
 import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
+import { ActivateUserWithSecretUseCase } from '../../usecases/user/activateUserWithSecret.usecase';
+import { ActivateUserWithSecretReqDto } from '../dtos/activateUserWithSecret.dto';
+import { ActivateUserByEmailUseCase } from '../../usecases/user/activateUserByEmail.usecase';
+import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
 
 @Injectable()
 export class UsersHandler {
@@ -43,6 +47,8 @@ export class UsersHandler {
     private readonly sendEmailVerificationCodeUseCase: SendEmailVerificationCodeUseCase,
     private readonly sendForgotPasswordCodeUseCase: SendForgotPasswordCodeUseCase,
     private readonly updateUserPasswordWithCodeUseCase: UpdateUserPasswordWithCodeUseCase,
+    private readonly activateUserWithSecretUseCase: ActivateUserWithSecretUseCase,
+    private readonly activateUserByEmailUseCase: ActivateUserByEmailUseCase,
     private readonly requestContext: RequestContextService,
   ) {}
 
@@ -160,5 +166,16 @@ export class UsersHandler {
   public async handleDeleteMe(dto: DeleteUserReqDto) {
     const { userId } = this.requestContext;
     return this.deleteUserUseCase.execute(userId, dto.password);
+  }
+
+  public async handleActivateUserWithSecret(
+    userId: string,
+    dto: ActivateUserWithSecretReqDto,
+  ) {
+    return this.activateUserWithSecretUseCase.execute(userId, dto.secretKey);
+  }
+
+  public async handleActivateUserByEmail(dto: ActivateUserByEmailReqDto) {
+    return this.activateUserByEmailUseCase.execute(dto.email);
   }
 }

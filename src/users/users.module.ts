@@ -37,6 +37,8 @@ import { SendEmailVerificationCodeUseCase } from './usecases/user/verification-c
 import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
 import { SendForgotPasswordCodeUseCase } from './usecases/user/sendForgotPasswordCode.usecase';
 import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPasswordWithCode.usecase';
+import { ActivateUserWithSecretUseCase } from './usecases/user/activateUserWithSecret.usecase';
+import { ActivateUserByEmailUseCase } from './usecases/user/activateUserByEmail.usecase';
 
 @Module({
   imports: [
@@ -75,6 +77,8 @@ import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPas
     SendEmailVerificationCodeUseCase,
     SendForgotPasswordCodeUseCase,
     UpdateUserPasswordWithCodeUseCase,
+    ActivateUserWithSecretUseCase,
+    ActivateUserByEmailUseCase,
   ],
   controllers: [
     UsersController,

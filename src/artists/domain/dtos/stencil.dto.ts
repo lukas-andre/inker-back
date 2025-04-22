@@ -198,9 +198,9 @@ export class CreateStencilDto {
   @IsOptional()
   isHidden?: string | boolean;
 
-  @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
+  @ApiPropertyOptional({ description: 'Tag IDs', type: [String] })
   @IsOptional()
-  tagIds?: number[] | string;
+  tagIds?: string[] | string;
 
   @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
   @IsOptional()
@@ -296,9 +296,9 @@ export class UpdateStencilDto {
   @IsOptional()
   isHidden?: string | boolean;
 
-  @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
+  @ApiPropertyOptional({ description: 'Tag IDs', type: [String] })
   @IsOptional()
-  tagIds?: number[] | string;
+  tagIds?: string[] | string;
 
   @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
   @IsOptional()

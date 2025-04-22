@@ -1,12 +1,10 @@
-import { Column, Entity, Index, Unique } from 'typeorm';
+import { Column, Entity,  } from 'typeorm';
 
 import { LocationEntity } from './location.entity';
 
 @Entity()
-@Unique(['artistId', 'locationOrder'])
 export class ArtistLocation extends LocationEntity {
-  @Index()
-  @Column({ name: 'artist_id', nullable: true })
+  @Column({ name: 'artist_id',  type: 'uuid', nullable: true })
   artistId: string;
 
   @Column({ nullable: false })
