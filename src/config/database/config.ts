@@ -60,10 +60,7 @@ export function createDatabaseConnection(
 ): TypeOrmModuleOptions {
   return {
     ...getBaseDatabaseConfig(),
-    synchronize:
-      connectionConf.synchronize === undefined
-        ? Boolean(process.env.TYPEORM_SYNC)
-        : connectionConf.synchronize,
+    synchronize: false,
     name: connectionConf.name,
     database: connectionConf.database,
     entities: connectionConf.entities,

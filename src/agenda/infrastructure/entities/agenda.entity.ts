@@ -11,7 +11,7 @@ export class Agenda extends BaseEntity {
   userId: string;
 
   @Index()
-  @Column({ name: 'artist_id', default: 0 })
+  @Column({ name: 'artist_id', default: "0" })
   artistId: string;
 
   @Column({

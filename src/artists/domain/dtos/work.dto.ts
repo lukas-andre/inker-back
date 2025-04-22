@@ -138,9 +138,9 @@ export class CreateWorkDto {
   @IsOptional()
   isHidden?: string | boolean;
 
-  @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
+  @ApiPropertyOptional({ description: 'Tag IDs', type: [String] })
   @IsOptional()
-  tagIds?: number[] | string;
+  tagIds?: string[] | string;
 }
 
 export class UpdateWorkDto {
@@ -185,7 +185,7 @@ export class UpdateWorkDto {
   @IsOptional()
   isHidden?: string | boolean;
 
-  @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
+  @ApiPropertyOptional({ description: 'Tag IDs', type: [String] })
   @IsOptional()
-  tagIds?: number[] | string;
+  tagIds?: string[] | string;
 }

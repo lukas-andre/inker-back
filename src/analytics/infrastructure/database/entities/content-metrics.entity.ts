@@ -5,9 +5,9 @@ import { IContentMetrics } from '../../../domain/interfaces/content-metrics.inte
 import { BaseEntity } from '../../../../global/infrastructure/entities/base.entity';
 
 @Entity('content_metrics')
-@Index(['contentId', 'contentType'], { unique: true })
 export class ContentMetrics extends BaseEntity implements IContentMetrics {
-  @Column({ name: 'content_id' })
+  @Index("IDX_45549bf4dbca82611ce8c94804", { unique: true })
+  @Column({ name: 'content_id', type: 'uuid' })
   contentId: string;
 
   @Column({ 

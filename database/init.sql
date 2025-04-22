@@ -1,32 +1,39 @@
-SELECT 'CREATE DATABASE inker-customer'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-customer');
+DO $$
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-customer') THEN
+      CREATE DATABASE "inker-customer";
+   END IF;
 
-SELECT 'CREATE DATABASE inker-artist'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-artist');
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-artist') THEN
+      CREATE DATABASE "inker-artist";
+   END IF;
 
-SELECT 'CREATE DATABASE inker-user'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-user');
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-user') THEN
+      CREATE DATABASE "inker-user";
+   END IF;
 
-SELECT 'CREATE DATABASE inker-genre'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-genre');
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-genre') THEN
+      CREATE DATABASE "inker-genre";
+   END IF;
 
-SELECT 'CREATE DATABASE inker-post'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-post');
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-post') THEN
+      CREATE DATABASE "inker-post";
+   END IF;
 
-SELECT 'CREATE DATABASE inker-reaction'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-reaction');
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-reaction') THEN
+      CREATE DATABASE "inker-reaction";
+   END IF;
 
-SELECT 'CREATE DATABASE inker-follow'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-follow');
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-follow') THEN
+      CREATE DATABASE "inker-follow";
+   END IF;
 
-SELECT 'CREATE DATABASE inker-tag'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-tag');
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-tag') THEN
+      CREATE DATABASE "inker-tag";
+   END IF;
 
-SELECT 'CREATE DATABASE inker-artist'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-artist');
-
-SELECT 'CREATE DATABASE inker-review'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-review');
-
-
-CREATE DATABASE "inker-review";
+   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inker-review') THEN
+      CREATE DATABASE "inker-review";
+   END IF;
+END
+$$;

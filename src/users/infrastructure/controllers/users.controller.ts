@@ -37,6 +37,10 @@ import {
 import { DeleteUserDoc } from './docs/deleteUser.doc';
 import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
 import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
+import { ActivateUserWithSecretReqDto } from '../dtos/activateUserWithSecret.dto';
+import { ActivateUserWithSecretDoc } from './docs/activateUserWithSecret.doc';
+import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
+import { ActivateUserByEmailDoc } from './docs/activateUserByEmail.doc';
 
 @ApiTags('users')
 @Controller('users')
@@ -185,5 +189,29 @@ export class UsersController {
   @UseGuards(AuthGuard)
   async deleteMe(@Body() deleteUserReqDto: DeleteUserReqDto) {
     return this.usersHandler.handleDeleteMe(deleteUserReqDto);
+  }
+
+  @ActivateUserWithSecretDoc()
+  @HttpCode(200)
+  @Post(':userId/activate')
+  async activateUserWithSecret(
+    @Param('userId', UserIdPipe) userId: string,
+    @Body() activateUserWithSecretReqDto: ActivateUserWithSecretReqDto,
+  ) {
+    return this.usersHandler.handleActivateUserWithSecret(
+      userId,
+      activateUserWithSecretReqDto,
+    );
+  }
+
+  @ActivateUserByEmailDoc()
+  @HttpCode(200)
+  @Post('activate-by-email')
+  async activateUserByEmail(
+    @Body() activateUserByEmailReqDto: ActivateUserByEmailReqDto,
+  ) {
+    return this.usersHandler.handleActivateUserByEmail(
+      activateUserByEmailReqDto,
+    );
   }
 }

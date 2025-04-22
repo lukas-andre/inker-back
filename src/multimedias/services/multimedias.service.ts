@@ -135,8 +135,8 @@ export class MultimediasService {
 
   async uploadProposedImages(
     files: FileInterface[],
-    quotationId: number,
-    artistId: number,
+    quotationId: string,
+    artistId: string,
   ): Promise<MultimediasMetadataInterface> {
     const multimediasMetadata: MultimediasMetadataInterface = {
       count: 0,
