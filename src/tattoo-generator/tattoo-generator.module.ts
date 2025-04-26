@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TattooGeneratorController } from './infrastructure/controllers/tattoo-generator.controller';
 import { RunwareImageGenerationService } from './infrastructure/services/runware-image-generation.service';
-import { ImprovedTattooPromptEnhancementService } from './infrastructure/services/improved-tattoo-prompt-enhancement.service';
+import { TattooPromptEnhancementService } from './infrastructure/services/tattoo-prompt-enhancement.service';
 import { LibreTranslationService } from './infrastructure/services/libre-translation.service';
 import { GenerateTattooImagesUseCase } from './use-cases/generate-tattoo-images.use-case';
 import { HttpModule } from '@nestjs/axios';
@@ -19,7 +19,7 @@ import libreTranslateConfig from '../config/libretranslate.config';
     providers: [
         RunwareImageGenerationService,
         GenerateTattooImagesUseCase,
-        ImprovedTattooPromptEnhancementService,
+        TattooPromptEnhancementService,
         LibreTranslationService
     ],
     exports: [],
