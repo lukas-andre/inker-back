@@ -20,7 +20,7 @@ import { PostsModule } from './posts/posts.module';
 import { NotificationQueueModule } from './queues/notifications/notification.queue.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { SchedulerModule } from './schedulers/scheduler.module';
-import { TattooGeneratorModule } from './tattoo-generator/tattoo-generator.module';
+import { TattooGeneratorModule } from './tattoo-generator/tattooGenerator.module';
 import { UsersModule } from './users/users.module';
 import { SyncQueueModule } from './queues/sync/sync.queue.module';
 @Module({

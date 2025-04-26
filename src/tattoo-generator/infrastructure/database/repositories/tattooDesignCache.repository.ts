@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TattooDesignCacheEntity } from '../entities/tattoo-design-cache.entity';
+import { TattooDesignCacheEntity } from '../entities/tattooDesignCache.entity';
 import { TATTOO_TRANSLATION_DB_CONNECTION_NAME } from '../../../../databases/constants';
 
 // Define an interface for the similarity search results
@@ -18,75 +18,53 @@ export class TattooDesignCacheRepository {
     private readonly repository: Repository<TattooDesignCacheEntity>,
   ) {}
 
-  /**
-   * Convert snake_case database results to camelCase entity format
-   */
-  private convertToCamelCase(record: any): TattooDesignCacheEntity {
-    if (!record) return null;
-    
-    return {
-      id: record.id,
-      userQuery: record.user_query,
-      style: record.style,
-      imageUrls: record.image_urls,
-      prompt: record.prompt,
-      metadata: record.metadata,
-      searchVector: record.search_vector,
-      usageCount: record.usage_count,
-      isFavorite: record.is_favorite,
-      createdAt: record.created_at,
-      updatedAt: record.updated_at
-    };
-  }
-  
-  /**
-   * Convert snake_case similarity results to camelCase with similarity property
-   */
-  private convertSimilarityResult(record: any): DesignWithSimilarity {
-    if (!record) return null;
-    
-    return {
-      ...this.convertToCamelCase(record),
-      similarity: record.similarity
-    };
-  }
-
   async save(entity: Partial<TattooDesignCacheEntity>): Promise<TattooDesignCacheEntity> {
     try {
-      this.logger.log('Saving design using native query');
+      this.logger.log('Saving design using native query with JSON transformation');
       
       // Convert array to PostgreSQL array syntax
       const imageUrlsString = `{${entity.imageUrls?.map(url => `"${url.replace(/"/g, '\\"')}"`).join(',') || ''}}`;
       
-      // Generate a UUID for the new entity
-      const newId = await this.repository.query(`SELECT gen_random_uuid() as id`);
-      const id = newId[0]?.id;
-      
-      // Save the entity using a raw SQL query
+      // Save using a query that returns data in camelCase format directly
       const query = `
-        INSERT INTO tattoo_design_cache (
-          id,
-          user_query,
-          style,
-          image_urls,
-          prompt,
-          metadata,
-          usage_count,
-          is_favorite
-        ) VALUES (
-          $1,
-          $2,
-          $3,
-          $4::text[],
-          $5,
-          $6::jsonb,
-          $7,
-          $8
-        ) RETURNING *;
+        WITH inserted AS (
+          INSERT INTO tattoo_design_cache (
+            id,
+            user_query,
+            style,
+            image_urls,
+            prompt,
+            metadata,
+            usage_count,
+            is_favorite
+          ) VALUES (
+            gen_random_uuid(),
+            $1,
+            $2,
+            $3::text[],
+            $4,
+            $5::jsonb,
+            $6,
+            $7
+          ) RETURNING *
+        )
+        SELECT json_build_object(
+          'id', inserted.id,
+          'userQuery', inserted.user_query,
+          'style', inserted.style,
+          'imageUrls', inserted.image_urls,
+          'prompt', inserted.prompt,
+          'metadata', inserted.metadata,
+          'searchVector', inserted.search_vector,
+          'usageCount', inserted.usage_count,
+          'isFavorite', inserted.is_favorite,
+          'createdAt', inserted.created_at,
+          'updatedAt', inserted.updated_at
+        ) AS entity
+        FROM inserted;
       `;
       
       const result = await this.repository.query(query, [
-        id,
         entity.userQuery,
         entity.style,
         imageUrlsString,
@@ -96,13 +74,14 @@ export class TattooDesignCacheRepository {
         entity.isFavorite || false
       ]);
       
+      const savedEntity = result[0]?.entity as TattooDesignCacheEntity;
+      
       // Update the search vector
-      if (result?.[0]?.id) {
-        await this.updateSearchVector(result[0].id);
+      if (savedEntity?.id) {
+        await this.updateSearchVector(savedEntity.id);
       }
       
-      // Convert from snake_case to camelCase
-      return this.convertToCamelCase(result[0]);
+      return savedEntity;
     } catch (error: any) {
       this.logger.error(`Error saving tattoo design: ${error.message || 'Unknown error'}`, error.stack);
       throw error;
@@ -111,12 +90,26 @@ export class TattooDesignCacheRepository {
 
   async findById(id: string): Promise<TattooDesignCacheEntity | null> {
     try {
-      const result = await this.repository.query(
-        `SELECT * FROM tattoo_design_cache WHERE id = $1`,
-        [id]
-      );
+      const query = `
+        SELECT json_build_object(
+          'id', id,
+          'userQuery', user_query,
+          'style', style,
+          'imageUrls', image_urls,
+          'prompt', prompt,
+          'metadata', metadata,
+          'searchVector', search_vector,
+          'usageCount', usage_count,
+          'isFavorite', is_favorite,
+          'createdAt', created_at,
+          'updatedAt', updated_at
+        ) AS entity
+        FROM tattoo_design_cache 
+        WHERE id = $1;
+      `;
       
-      return result.length > 0 ? this.convertToCamelCase(result[0]) : null;
+      const result = await this.repository.query(query, [id]);
+      return result.length > 0 ? result[0].entity : null;
     } catch (error: any) {
       this.logger.error(`Error finding design by ID: ${error.message || 'Unknown error'}`);
       return null;
@@ -165,12 +158,24 @@ export class TattooDesignCacheRepository {
       const styleParam = style ? `%${style}%` : null;
       
       const sqlQuery = `
-        SELECT *, 
-               similarity(user_query, $1) as similarity
-        FROM tattoo_design_cache
-        WHERE similarity(user_query, $1) > $2
+        SELECT json_build_object(
+          'id', tdc.id,
+          'userQuery', tdc.user_query,
+          'style', tdc.style,
+          'imageUrls', tdc.image_urls,
+          'prompt', tdc.prompt,
+          'metadata', tdc.metadata,
+          'searchVector', tdc.search_vector,
+          'usageCount', tdc.usage_count,
+          'isFavorite', tdc.is_favorite,
+          'createdAt', tdc.created_at,
+          'updatedAt', tdc.updated_at,
+          'similarity', similarity(tdc.user_query, $1)
+        ) AS result
+        FROM tattoo_design_cache tdc
+        WHERE similarity(tdc.user_query, $1) > $2
         ${styleClause}
-        ORDER BY similarity DESC, usage_count DESC, is_favorite DESC
+        ORDER BY similarity(tdc.user_query, $1) DESC, tdc.usage_count DESC, tdc.is_favorite DESC
         LIMIT $${style ? '4' : '3'}
       `;
 
@@ -180,8 +185,8 @@ export class TattooDesignCacheRepository {
 
       const results = await this.repository.query(sqlQuery, params);
       
-      // Convert all results from snake_case to camelCase with similarity
-      return results.map(result => this.convertSimilarityResult(result));
+      // Extract the result objects from the query
+      return results.map(item => item.result) as DesignWithSimilarity[];
     } catch (error: any) {
       this.logger.error(`Error finding similar designs by text: ${error.message || 'Unknown error'}`);
       return [];
@@ -205,7 +210,19 @@ export class TattooDesignCacheRepository {
       }
 
       const sqlQuery = `
-        SELECT *
+        SELECT json_build_object(
+          'id', id,
+          'userQuery', user_query,
+          'style', style,
+          'imageUrls', image_urls,
+          'prompt', prompt,
+          'metadata', metadata,
+          'searchVector', search_vector,
+          'usageCount', usage_count,
+          'isFavorite', is_favorite,
+          'createdAt', created_at,
+          'updatedAt', updated_at
+        ) AS entity
         FROM tattoo_design_cache
         WHERE search_vector @@ to_tsquery('english', $1)
         ORDER BY usage_count DESC, is_favorite DESC, created_at DESC
@@ -214,8 +231,8 @@ export class TattooDesignCacheRepository {
 
       const results = await this.repository.query(sqlQuery, [formattedKeywords, limit]);
       
-      // Convert all results from snake_case to camelCase
-      return results.map(result => this.convertToCamelCase(result));
+      // Extract the entity objects from the query results
+      return results.map(item => item.entity);
     } catch (error: any) {
       this.logger.error(`Error finding designs by keywords: ${error.message || 'Unknown error'}`);
       return [];
@@ -228,11 +245,7 @@ export class TattooDesignCacheRepository {
 
   async executeRawQuery<T>(query: string, parameters: any[] = []): Promise<T[]> {
     try {
-      const results = await this.repository.query(query, parameters);
-      
-      // Since this is a generic method, we can't automatically convert to camelCase
-      // The caller will need to handle the conversion if needed
-      return results;
+      return await this.repository.query(query, parameters);
     } catch (error: any) {
       this.logger.error(`Error executing raw query: ${error.message || 'Unknown error'}`);
       return [];

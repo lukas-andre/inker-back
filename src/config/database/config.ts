@@ -19,7 +19,7 @@ import { tagDatabaseConf } from './tag.config';
 import { userDatabaseConf } from './user.config';
 import { notificationsDatabaseConf } from './notification.config';
 import { analyticsDatabaseConf } from './analytics.config';
-import { tattooTranslationDatabaseConf } from './tattoo-translation.config';
+import { tattooTranslationDatabaseConf } from './tattooTranslation.config';
 
 type DataBaseTypes = 'postgres';
 

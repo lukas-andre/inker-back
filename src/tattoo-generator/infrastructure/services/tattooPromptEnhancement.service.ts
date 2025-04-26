@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { getColorInstruction, TattooStyle, TattooStyleDescriptions } from '../../domain/enums/tattoo-style.enum';
 import { IPromptEnhancementService, PromptEnhancementParams } from '../../domain/interfaces/prompt-enhancement.interface';
-import { LibreTranslationService } from './libre-translation.service';
+import { LibreTranslationService } from './libreTranslation.service';
 
 @Injectable()
 export class TattooPromptEnhancementService implements IPromptEnhancementService {
