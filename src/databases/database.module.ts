@@ -29,9 +29,13 @@ import {
   REVIEW_DB_CONNECTION_NAME,
   TAG_DB_CONFIG_NAME,
   TAG_DB_CONNECTION_NAME,
+  TATTOO_TRANSLATION_DB_CONFIG_NAME,
+  TATTOO_TRANSLATION_DB_CONNECTION_NAME,
   USER_DB_CONFIG_NAME,
   USER_DB_CONNECTION_NAME,
 } from './constants';
+
+
 
 @Module({
   imports: [
@@ -133,6 +137,13 @@ import {
         configService.get(ANALYTICS_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: TATTOO_TRANSLATION_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(TATTOO_TRANSLATION_DB_CONFIG_NAME),
+      inject: [ConfigService],
+    }),
   ],
 })
-export class DatabasesModule {}
+export class DatabasesModule { }
