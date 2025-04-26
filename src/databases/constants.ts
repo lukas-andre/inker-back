@@ -39,3 +39,6 @@ export const NOTIFICATIONS_DB_CONFIG_NAME = 'notificationsDb';
 
 export const ANALYTICS_DB_CONNECTION_NAME = 'analytics-db';
 export const ANALYTICS_DB_CONFIG_NAME = 'analyticsDb';
+
+export const TATTOO_TRANSLATION_DB_CONNECTION_NAME = 'tattoo-translation-db';
+export const TATTOO_TRANSLATION_DB_CONFIG_NAME = 'tattooTranslationDb';

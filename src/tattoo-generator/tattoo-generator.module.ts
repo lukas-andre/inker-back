@@ -7,11 +7,13 @@ import { LibreTranslationService } from './infrastructure/services/libre-transla
 import { GenerateTattooImagesUseCase } from './use-cases/generate-tattoo-images.use-case';
 import { HttpModule } from '@nestjs/axios';
 import libreTranslateConfig from '../config/libretranslate.config';
+import { TattooGeneratorDatabaseModule } from './infrastructure/database/tattoGeneratorDatabase.module';
 
 @Module({
     imports: [
         HttpModule,
         ConfigModule.forFeature(libreTranslateConfig),
+        TattooGeneratorDatabaseModule
     ],
     controllers: [
         TattooGeneratorController,
@@ -22,6 +24,8 @@ import libreTranslateConfig from '../config/libretranslate.config';
         TattooPromptEnhancementService,
         LibreTranslationService
     ],
-    exports: [],
+    exports: [
+        GenerateTattooImagesUseCase,
+    ],
 })
 export class TattooGeneratorModule { } 
