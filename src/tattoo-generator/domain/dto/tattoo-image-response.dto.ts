@@ -15,7 +15,7 @@ export class TattooImageDto {
   })
   @IsString()
   imageId: string;
-  
+
   @ApiProperty({
     description: 'Cost of generating this specific image in USD',
     example: 0.0013,
@@ -42,13 +42,7 @@ export class TattooImageResponseDto {
   @IsArray()
   images: TattooImageDto[];
 
-  @ApiProperty({
-    description: 'The enhanced prompt used to generate the images',
-    example: 'A Hand of Fatima (Hamsa) tattoo design for forearm in pointillism style, intricate stippling technique, black ink',
-  })
-  @IsString()
-  enhancedPrompt: string;
-  
+
   @ApiProperty({
     description: 'Total cost of generating all images in USD',
     example: 0.0039,

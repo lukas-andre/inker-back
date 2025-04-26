@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TattooGeneratorController } from './infrastructure/controllers/tattoo-generator.controller';
-import { RunwareImageGenerationService } from './infrastructure/services/runware-image-generation.service';
-import { TattooPromptEnhancementService } from './infrastructure/services/tattoo-prompt-enhancement.service';
-import { LibreTranslationService } from './infrastructure/services/libre-translation.service';
-import { GenerateTattooImagesUseCase } from './use-cases/generate-tattoo-images.use-case';
+import { TattooGeneratorController } from './infrastructure/controllers/tattooGenerator.controller';
+import { RunwareImageGenerationService } from './infrastructure/services/runwareImageGeneration.service';
+import { TattooPromptEnhancementService } from './infrastructure/services/tattooPromptEnhancement.service';
+import { LibreTranslationService } from './infrastructure/services/libreTranslation.service';
+import { GenerateTattooImagesUseCase } from './usecases/generateTattooImages.usecase';
 import { HttpModule } from '@nestjs/axios';
 import libreTranslateConfig from '../config/libretranslate.config';
 import { TattooGeneratorDatabaseModule } from './infrastructure/database/tattoGeneratorDatabase.module';

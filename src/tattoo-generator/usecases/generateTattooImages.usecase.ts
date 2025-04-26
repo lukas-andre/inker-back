@@ -2,10 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TattooImageDto, TattooImageResponseDto } from '../domain/dto/tattoo-image-response.dto';
 import { TattooStyle } from '../domain/enums/tattoo-style.enum';
 import { BaseComponent } from '../../global/domain/components/base.component';
-import { RunwareImageGenerationService } from '../infrastructure/services/runware-image-generation.service';
+import { RunwareImageGenerationService } from '../infrastructure/services/runwareImageGeneration.service';
 import { IPromptEnhancementService } from '../domain/interfaces/prompt-enhancement.interface';
-import { TattooPromptEnhancementService } from '../infrastructure/services/tattoo-prompt-enhancement.service';
-import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattoo-design-cache.repository';
+import { TattooPromptEnhancementService } from '../infrastructure/services/tattooPromptEnhancement.service';
+import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
 
 interface GenerateTattooImagesParams {
   style: TattooStyle;
@@ -51,7 +51,6 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
           
           return {
             images,
-            enhancedPrompt: bestMatch.prompt || `Tattoo design of ${userInput} in ${style} style`,
             totalCost: 0,
             fromCache: true,
             similarityScore: bestMatch.similarity,
@@ -123,7 +122,6 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
 
     return {
       images,
-      enhancedPrompt,
       totalCost,
       fromCache: false,
     };

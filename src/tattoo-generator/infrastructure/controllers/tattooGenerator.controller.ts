@@ -2,7 +2,7 @@ import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateTattooImageDto } from '../../domain/dto/create-tattoo-image.dto';
 import { TattooImageResponseDto } from '../../domain/dto/tattoo-image-response.dto';
-import { GenerateTattooImagesUseCase } from '../../use-cases/generate-tattoo-images.use-case';
+import { GenerateTattooImagesUseCase } from '../../usecases/generateTattooImages.usecase';
 
 @ApiTags('tattoo-generator')
 @Controller('tattoo-generator')
