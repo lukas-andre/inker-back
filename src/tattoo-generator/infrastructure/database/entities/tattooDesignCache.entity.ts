@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   Index,
 } from 'typeorm';
-import { TattooStyle } from '../../../domain/enums/tattoo-style.enum';
 
 @Entity('tattoo_design_cache')
 export class TattooDesignCacheEntity {

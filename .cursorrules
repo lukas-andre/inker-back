@@ -46,7 +46,7 @@ FILE ORGANIZATION
 NAMING CONVENTIONS
 - Use PascalCase for classes and interfaces
 - Use camelCase for methods and properties
-- Use kebab-case for file names
+- Use camelCase for file names
 - Use descriptive names that reflect business domain
 - Prefix interfaces with 'I'
 - Suffix implementations with appropriate types (Controller, Service, etc.)

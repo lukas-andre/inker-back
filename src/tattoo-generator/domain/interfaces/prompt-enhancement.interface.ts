@@ -1,4 +1,4 @@
-import { TattooStyle } from "../enums/tattoo-style.enum";
+import { TattooStyle } from "../enums/tattooStyle.enum";
 
 export interface PromptEnhancementParams {
   style: TattooStyle;

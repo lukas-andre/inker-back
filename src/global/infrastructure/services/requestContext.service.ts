@@ -8,9 +8,15 @@ import {
 } from '../../domain/interfaces/jwtPayload.interface';
 import { InkerClsStore } from '../guards/auth.guard';
 
+
+export type RequestContext = InkerClsStore;
 @Injectable()
 export class RequestContextService {
   constructor(private readonly cls: ClsService<InkerClsStore>) {}
+
+  getContext(): InkerClsStore {
+    return this.cls.get('jwt');
+  }
 
   get isArtist(): boolean {
     return this.cls.get('jwt').userType === UserType.ARTIST;
