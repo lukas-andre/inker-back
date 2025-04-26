@@ -7,6 +7,7 @@ import { ITranslationService } from '../../domain/interfaces/translation.interfa
 @Injectable()
 export class LibreTranslationService implements ITranslationService {
   private readonly baseUrl: string;
+  private readonly apiKeyEnabled: boolean;
   private readonly apiKey: string;
   private readonly logger = new Logger(LibreTranslationService.name);
 
@@ -14,7 +15,8 @@ export class LibreTranslationService implements ITranslationService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.baseUrl = this.configService.get<string>('LIBRETRANSLATE_URL', 'http://localhost:5000');
+    this.baseUrl = this.configService.get<string>('LIBRETRANSLATE_URL', 'http://localhost:5001');
+    this.apiKeyEnabled = this.configService.get<boolean>('LIBRETRANSLATE_API_KEYS_ENABLED', false);
     this.apiKey = this.configService.get<string>('LIBRETRANSLATE_API_KEY', '');
   }
 
@@ -24,24 +26,28 @@ export class LibreTranslationService implements ITranslationService {
         return '';
       }
 
-      // Auto-detect if source language is 'auto'
       const source = sourceLanguage === 'auto' 
         ? await this.detectLanguage(text)
         : sourceLanguage;
 
+      const payload: any = {
+        q: text,
+        source: source,
+        target: targetLanguage,
+      };
+
+      if (this.apiKeyEnabled && this.apiKey) {
+        payload.api_key = this.apiKey;
+      }
+
       const response = await firstValueFrom(
-        this.httpService.post(`${this.baseUrl}/translate`, {
-          q: text,
-          source: source,
-          target: targetLanguage,
-          api_key: this.apiKey,
-        })
+        this.httpService.post(`${this.baseUrl}/translate`, payload)
       );
 
       return response.data.translatedText;
     } catch (error: any) {
       this.logger.error(`Translation error: ${error.message || 'Unknown error'}`, error.stack);
-      return text; // Return original text on failure
+      return text;
     }
   }
 
@@ -51,11 +57,17 @@ export class LibreTranslationService implements ITranslationService {
         return 'en';
       }
 
+      const payload: any = {
+        q: text,
+      };
+
+      // Only include API key if it's enabled
+      if (this.apiKeyEnabled && this.apiKey) {
+        payload.api_key = this.apiKey;
+      }
+
       const response = await firstValueFrom(
-        this.httpService.post(`${this.baseUrl}/detect`, {
-          q: text,
-          api_key: this.apiKey,
-        })
+        this.httpService.post(`${this.baseUrl}/detect`, payload)
       );
 
       if (response.data && response.data.length > 0) {

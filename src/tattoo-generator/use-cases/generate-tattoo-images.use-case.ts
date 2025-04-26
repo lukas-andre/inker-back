@@ -4,7 +4,7 @@ import { TattooStyle } from '../domain/enums/tattoo-style.enum';
 import { BaseComponent } from '../../global/domain/components/base.component';
 import { RunwareImageGenerationService } from '../infrastructure/services/runware-image-generation.service';
 import { IPromptEnhancementService } from '../domain/interfaces/prompt-enhancement.interface';
-import { ImprovedTattooPromptEnhancementService } from '../infrastructure/services/improved-tattoo-prompt-enhancement.service';
+import { TattooPromptEnhancementService } from '../infrastructure/services/tattoo-prompt-enhancement.service';
 
 interface GenerateTattooImagesParams {
   style: TattooStyle;
@@ -15,7 +15,7 @@ interface GenerateTattooImagesParams {
 export class GenerateTattooImagesUseCase extends BaseComponent{
   constructor(
     private readonly imageGenerationService: RunwareImageGenerationService,
-    private readonly promptEnhancementService: ImprovedTattooPromptEnhancementService,
+    private readonly promptEnhancementService: TattooPromptEnhancementService,
   ) { 
     super(GenerateTattooImagesUseCase.name);
   }
@@ -28,11 +28,10 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
       style,
     });
 
-    const negativePrompt = 'low quality, blurry, distorted, deformed, disfigured, ' +
-      'text, watermark, signature, bad anatomy, ugly, disproportioned, ' +
+    const negativePrompt = 'low quality, blurry, letter, text, watermark, signature, bad anatomy,' +
       'duplicate, missing limbs, extra limbs, bad hands, bad fingers, cropped, ' +
-      'out of frame, amateur, poorly drawn, messy, grainy, pixelated, jpeg artifacts, ' +
-      'poor resolution, multiple tattoos, incomplete design';
+      'out of frame, grainy, pixelated, jpeg artifacts, ' +
+      'poor resolution, multiple tattoos';
 
     const generatedImages = await this.imageGenerationService.generateImages({
       prompt: enhancedPrompt,

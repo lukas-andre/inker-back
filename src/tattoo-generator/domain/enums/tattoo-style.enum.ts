@@ -42,7 +42,17 @@ export const TattooStyleDescriptions: Record<TattooStyle, string> = {
     'Solid black fills|High contrast|Negative space play|Graphic patterns|Cultural symbolism',
 
   [TattooStyle.DOTWORK]:
-    'Stippling technique|Density gradients|Textured shading|Dot clusters|Mandala constructions',
+    `Create a dotwork/stippling tattoo design with these characteristics:
+- Composition formed entirely of dots with no solid lines
+- Varying dot density to create shading, contrast and dimension
+- Areas of high dot concentration for darker regions
+- Areas of sparse dots or negative space for lighter regions
+- Dots should be precise and deliberately placed
+- Subject matter should be recognizable through dot patterns alone
+- Consider how the design will age (dots may spread slightly over time)
+
+The overall aesthetic should be meticulous and precise, with a focus on how the varying density of dots creates form, depth, and texture. The design should work particularly well for detailed subjects with subtle gradients and textures.
+`,
 
   [TattooStyle.JAPANESE]:
     'Irezumi tradition|Full-body suit approach|Mythical creatures (dragons, koi)|Wave and cloud motifs|Symbolic color coding',
@@ -86,3 +96,49 @@ export const TattooStyleDescriptions: Record<TattooStyle, string> = {
   [TattooStyle.IGNORANT_STYLE]:
     'Anti-technique aesthetic|DIY appearance|Satirical themes|Bold line simplicity|Pop art irony',
 };
+
+
+const StyleColorInfo: Record<TattooStyle, 'color' | 'blackAndGrey' | 'blackwork' | 'flexible'> = {
+  [TattooStyle.TRADITIONAL_AMERICAN]: 'color', // Paleta limitada pero color
+  [TattooStyle.NEOTRADITIONAL]: 'color',
+  [TattooStyle.REALISM]: 'flexible', // Puede ser B&G o Color
+  [TattooStyle.WATERCOLOR]: 'color',
+  [TattooStyle.GEOMETRIC]: 'flexible', // A menudo negro, pero puede tener color
+  [TattooStyle.BLACKWORK]: 'blackwork',
+  [TattooStyle.DOTWORK]: 'blackwork', // Predominantemente puntos negros
+  [TattooStyle.JAPANESE]: 'color', // Tradicionalmente usa color simbólico
+  [TattooStyle.TRIBAL]: 'blackwork',
+  [TattooStyle.NEW_SCHOOL]: 'color',
+  [TattooStyle.BIOMECHANICAL]: 'flexible', // Puede ser B&G o Color
+  [TattooStyle.MINIMALIST]: 'flexible', // A menudo negro, pero no exclusivo
+  [TattooStyle.SURREALISM]: 'flexible',
+  [TattooStyle.ORNAMENTAL]: 'blackwork', // A menudo negro, como encaje
+  [TattooStyle.NEO_JAPANESE]: 'color',
+  [TattooStyle.CELTIC]: 'blackwork', // Tradicionalmente negro o un color sólido
+  [TattooStyle.CHICANO]: 'blackAndGrey',
+  [TattooStyle.ABSTRACT]: 'flexible',
+  [TattooStyle.MANDALA]: 'flexible', // A menudo negro, pero popular con color
+  [TattooStyle.FINELINE]: 'flexible', // A menudo negro, pero no exclusivo
+  [TattooStyle.IGNORANT_STYLE]: 'flexible', // Simple, puede ser color o negro
+};
+
+export function getColorInstruction(style: TattooStyle): string {
+  switch (StyleColorInfo[style]) {
+    case 'color':
+      return 'using a vibrant and appropriate color palette for the style';
+    case 'blackAndGrey':
+      return 'rendered primarily in black and grey with smooth shading';
+    case 'blackwork':
+      return 'using solid black ink with high contrast and negative space';
+    case 'flexible':
+    default:
+      // Para estilos flexibles, podríamos decidir basándonos en el input o dejarlo más abierto.
+      // Por ahora, seremos un poco más genéricos o podríamos incluso añadir una opción de usuario.
+      // Opcionalmente, podríamos especificar 'in color' o 'in black and grey' aleatoriamente o basado en algún otro factor.
+      // Una opción segura es especificar ambos para que el modelo elija o genere ambas variantes si es posible (depende del modelo de IA).
+      // Vamos a optar por una instrucción más abierta para flexibilidad:
+      return 'using appropriate shading and contrast, potentially with color or in black and grey';
+    // Alternativa: return 'using color'; // Forzar color si no se especifica B&G
+    // Alternativa: return 'in black and grey'; // Forzar B&G si no se especifica color
+  }
+}
