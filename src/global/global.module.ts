@@ -11,6 +11,7 @@ import { AWSConfigSchema } from '../config/aws.config';
 import { config } from '../config/config';
 import { databaseConfigSchema } from '../config/database/config';
 import { oasConfigSchema } from '../config/oas.config';
+import { runwareConfigSchema } from '../config/runware.config';
 import { sendGridSchema } from '../config/sendgrid.config';
 import { verificationHashConfigSchema } from '../config/verificationHash';
 
@@ -34,7 +35,8 @@ import { UniqueIdService } from './infrastructure/services/uniqueId.service';
         .concat(verificationHashConfigSchema)
         .concat(AWSConfigSchema)
         .concat(databaseConfigSchema)
-        .concat(sendGridSchema),
+        .concat(sendGridSchema)
+        .concat(runwareConfigSchema),
     }),
     ClsModule.forRoot({
       global: true,
