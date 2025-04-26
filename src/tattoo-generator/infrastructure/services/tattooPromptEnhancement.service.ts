@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { getColorInstruction, TattooStyle, TattooStyleDescriptions } from '../../domain/enums/tattoo-style.enum';
+import { getColorInstruction, TattooStyle, TattooStyleDescriptions } from '../../domain/enums/tattooStyle.enum';
 import { IPromptEnhancementService, PromptEnhancementParams } from '../../domain/interfaces/prompt-enhancement.interface';
 import { LibreTranslationService } from './libreTranslation.service';
 

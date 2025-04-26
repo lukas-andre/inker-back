@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { TattooImageDto, TattooImageResponseDto } from '../domain/dto/tattoo-image-response.dto';
-import { TattooStyle } from '../domain/enums/tattoo-style.enum';
+import { TattooStyle } from '../domain/enums/tattooStyle.enum';
 import { BaseComponent } from '../../global/domain/components/base.component';
 import { RunwareImageGenerationService } from '../infrastructure/services/runwareImageGeneration.service';
-import { IPromptEnhancementService } from '../domain/interfaces/prompt-enhancement.interface';
 import { TattooPromptEnhancementService } from '../infrastructure/services/tattooPromptEnhancement.service';
 import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
+import { RequestContext } from '../../global/infrastructure/services/requestContext.service';
 
 interface GenerateTattooImagesParams {
   style: TattooStyle;
@@ -24,8 +24,9 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
     super(GenerateTattooImagesUseCase.name);
   }
 
-  async execute(params: GenerateTattooImagesParams): Promise<TattooImageResponseDto> {
+  async execute(params: GenerateTattooImagesParams, context: RequestContext): Promise<TattooImageResponseDto> {
     const { style, userInput } = params;
+    const { id, userType, userTypeId } = context.jwt;
     
     if (this.designCacheRepository) {
       try {
@@ -101,6 +102,9 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
             timestamp: new Date().toISOString(),
             totalCost,
             negativePrompt,
+            userId: id,
+            userType,
+            userTypeId,
           },
         });
         
