@@ -9,12 +9,12 @@ import {
 import { InkerClsStore } from '../guards/auth.guard';
 
 
-export type RequestContext = InkerClsStore;
+export type RequestContext = JwtPayload;
 @Injectable()
 export class RequestContextService {
   constructor(private readonly cls: ClsService<InkerClsStore>) {}
 
-  getContext(): InkerClsStore {
+  getContext(): RequestContext {
     return this.cls.get('jwt');
   }
 

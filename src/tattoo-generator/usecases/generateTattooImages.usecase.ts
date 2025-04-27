@@ -26,7 +26,7 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
 
   async execute(params: GenerateTattooImagesParams, context: RequestContext): Promise<TattooImageResponseDto> {
     const { style, userInput } = params;
-    const { id, userType, userTypeId } = context.jwt;
+    const { id, userType, userTypeId } = context;
     
     if (this.designCacheRepository) {
       try {
