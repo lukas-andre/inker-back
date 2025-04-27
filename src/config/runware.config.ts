@@ -12,6 +12,12 @@ type RunwareConfig = {
   CFGScale: number;
   scheduler: string;
   taskType: string;
+  retry: {
+    maxRetries: number;
+    initialDelayMs: number;
+    maxDelayMs: number;
+    backoffFactor: number;
+  };
 };
 
 export const runwareConfig = registerAs<RunwareConfig>('runware', () => ({
@@ -25,7 +31,12 @@ export const runwareConfig = registerAs<RunwareConfig>('runware', () => ({
   CFGScale: parseInt(process.env.RUNWARE_CFG_SCALE, 10),
   scheduler: process.env.RUNWARE_SCHEDULER,
   taskType: process.env.RUNWARE_TASK_TYPE,
-
+  retry: {
+    maxRetries: parseInt(process.env.RUNWARE_RETRY_MAX_RETRIES || '5', 10),
+    initialDelayMs: parseInt(process.env.RUNWARE_RETRY_INITIAL_DELAY_MS || '500', 10),
+    maxDelayMs: parseInt(process.env.RUNWARE_RETRY_MAX_DELAY_MS || '10000', 10),
+    backoffFactor: parseFloat(process.env.RUNWARE_RETRY_BACKOFF_FACTOR || '2'),
+  },
 }));
 
 export const runwareConfigSchema = Joi.object({
@@ -39,4 +50,8 @@ export const runwareConfigSchema = Joi.object({
   RUNWARE_CFG_SCALE: Joi.number().required(),
   RUNWARE_SCHEDULER: Joi.string().required(),
   RUNWARE_TASK_TYPE: Joi.string().required(),
+  RUNWARE_RETRY_MAX_RETRIES: Joi.number().default(5),
+  RUNWARE_RETRY_INITIAL_DELAY_MS: Joi.number().default(500),
+  RUNWARE_RETRY_MAX_DELAY_MS: Joi.number().default(10000),
+  RUNWARE_RETRY_BACKOFF_FACTOR: Joi.number().default(2),
 }); 
