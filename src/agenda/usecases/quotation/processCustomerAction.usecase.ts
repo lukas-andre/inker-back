@@ -58,25 +58,25 @@ export class ProcessCustomerActionUseCase
         case CustomerQuotationAction.ACCEPT:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'accepted',
+            QuotationStatus.ACCEPTED,
           );
           break;
         case CustomerQuotationAction.REJECT:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'rejected',
+            QuotationStatus.REJECTED,
           );
           break;
         case CustomerQuotationAction.APPEAL:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'appealed',
+            QuotationStatus.APPEALED,
           );
           break;
         case CustomerQuotationAction.CANCEL:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'canceled',
+            QuotationStatus.CANCELED,
           );
           break;
         default:

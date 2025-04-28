@@ -6,7 +6,6 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
-import { QuotationDto } from '../infrastructure/dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from '../infrastructure/dtos/getQuotationsQuery.dto';
 import { Quotation } from '../infrastructure/entities/quotation.entity';
 import { QuotationRepository } from '../infrastructure/repositories/quotation.provider';
@@ -14,6 +13,7 @@ import { CustomerRepository } from '../../customers/infrastructure/providers/cus
 import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository';
 import { StencilRepository } from '../../artists/infrastructure/repositories/stencil.repository';
+import { GetQuotationResDto } from '../infrastructure/dtos/getQuotationRes.dto';
 
 @Injectable()
 export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
@@ -32,7 +32,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
     query: GetQuotationsQueryDto,
     userType: UserType,
     userTypeId: string,
-  ): Promise<{ items: QuotationDto[]; total: number }> {
+  ): Promise<{ items: GetQuotationResDto[]; total: number }> {
     const { status, page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;
 
@@ -92,8 +92,8 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
     };
   }
 
-  private mapToDto(quotation: any): QuotationDto {
+  private mapToDto(quotation: any): GetQuotationResDto {
     // Implement mapping logic here if needed
-    return quotation as QuotationDto;
+    return quotation as GetQuotationResDto;
   }
 }

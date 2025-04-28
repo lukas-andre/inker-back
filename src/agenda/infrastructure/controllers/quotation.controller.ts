@@ -1,12 +1,10 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   Param,
   Post,
-  Put,
   Query,
   UploadedFiles,
   UseGuards,
@@ -14,43 +12,46 @@ import {
   Request,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
-
-import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import { DefaultResponseDto, DefaultResponseStatus } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { AgendaHandler } from '../agenda.handler';
 import { ArtistQuotationActionDto } from '../dtos/artistQuotationAction.dto';
 import { CreateQuotationReqDto } from '../dtos/createQuotationReq.dto';
 import { CustomerQuotationActionDto } from '../dtos/customerQuotationAction.dto';
-import { QuotationDto } from '../dtos/getQuotationRes.dto';
+import { GetQuotationResDto } from '../dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from '../dtos/getQuotationsQuery.dto';
 import { TimeSlot } from '../../services/scheduling.service';
+import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from '../dtos/listOpenQuotationsQuery.dto';
+import { CreateQuotationOfferReqDto } from '../dtos/createQuotationOfferReq.dto';
+import { ListQuotationOffersResDto } from '../dtos/listQuotationOffersRes.dto';
 
 @ApiTags('quotations')
 @Controller('quotations')
 @UseGuards(AuthGuard)
+@ApiBearerAuth()
 export class QuotationController {
-  constructor(private readonly quotationHandler: AgendaHandler) {}
+  constructor(private readonly quotationHandler: AgendaHandler) { }
 
-  @ApiOperation({ summary: 'Create quotation' })
+  @ApiOperation({ summary: 'Create a direct or open quotation' })
   @HttpCode(201)
   @ApiCreatedResponse({
     description: 'Quotation created successfully.',
     type: DefaultResponseDto,
   })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Create Quotation',
-    type: CreateQuotationReqDto,
-  })
+  @ApiBody({ type: CreateQuotationReqDto })
   @Post()
   @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
   async createQuotation(
@@ -60,29 +61,78 @@ export class QuotationController {
     return this.quotationHandler.createQuotation(dto, referenceImages);
   }
 
-  @ApiOperation({ summary: 'Get quotation' })
+  @ApiOperation({ summary: 'Get a specific quotation by ID' })
   @ApiResponse({
     status: 200,
     description: 'Quotation retrieved successfully.',
-    type: QuotationDto,
+    type: GetQuotationResDto,
   })
   @Get(':id')
-  async getQuotation(@Param('id') id: string): Promise<Partial<QuotationDto>> {
+  async getQuotation(@Param('id') id: string): Promise<GetQuotationResDto> {
     return this.quotationHandler.getQuotation(id);
   }
 
-  @ApiOperation({ summary: 'Get quotations' })
+  @ApiOperation({ summary: 'List quotations (filtered, for customer or artist)' })
   @ApiResponse({
     status: 200,
     description: 'Quotations retrieved successfully.',
-    type: QuotationDto,
+    type: GetQuotationResDto,
     isArray: true,
   })
   @Get()
   async getQuotations(
     @Query() query: GetQuotationsQueryDto,
-  ): Promise<{ items: QuotationDto[]; total: number }> {
+  ): Promise<{ items: GetQuotationResDto[]; total: number }> {
     return this.quotationHandler.getQuotations(query);
+  }
+
+  @ApiOperation({ summary: '[Artist] List available open quotations' })
+  @ApiOkResponse({
+    description: 'Open quotations retrieved successfully.',
+    type: GetOpenQuotationsResDto,
+  })
+  @Get('/open')
+  async listOpenQuotations(
+    @Query() query: ListOpenQuotationsQueryDto,
+  ): Promise<GetOpenQuotationsResDto> {
+    return this.quotationHandler.listOpenQuotations(query);
+  }
+
+  @ApiOperation({ summary: '[Artist] Submit an offer for an open quotation' })
+  @ApiCreatedResponse({ description: 'Offer submitted successfully.', type: DefaultResponseDto })
+  @ApiParam({ name: 'id', description: 'Quotation ID' })
+  @ApiBody({ type: CreateQuotationOfferReqDto })
+  @Post(':id/offers')
+  async submitOffer(
+    @Param('id') quotationId: string,
+    @Body() dto: CreateQuotationOfferReqDto,
+  ): Promise<DefaultResponseDto> {
+    const result = await this.quotationHandler.submitOffer(quotationId, dto);
+    return { status: DefaultResponseStatus.CREATED, data: `Offer ${result.id} submitted.` };
+  }
+
+  @ApiOperation({ summary: '[Customer] List offers received for an open quotation' })
+  @ApiOkResponse({ description: 'Offers retrieved successfully.', type: ListQuotationOffersResDto })
+  @ApiParam({ name: 'id', description: 'Quotation ID' })
+  @Get(':id/offers')
+  async listOffers(
+    @Request() req,
+    @Param('id') quotationId: string,
+  ): Promise<ListQuotationOffersResDto> {
+    return this.quotationHandler.listOffers(quotationId);
+  }
+
+  @ApiOperation({ summary: '[Customer] Accept a specific offer for an open quotation' })
+  @ApiOkResponse({ description: 'Offer accepted successfully.', type: DefaultResponseDto })
+  @ApiParam({ name: 'id', description: 'Quotation ID' })
+  @ApiParam({ name: 'offerId', description: 'Offer ID to accept' })
+  @Post(':id/offers/:offerId/accept')
+  async acceptOffer(
+    @Param('id') quotationId: string,
+    @Param('offerId') offerId: string,
+  ): Promise<DefaultResponseDto> {
+    const result = await this.quotationHandler.acceptOffer(quotationId, offerId);
+    return { status: DefaultResponseStatus.OK, data: result.message };
   }
 
   @Post(':id/artist-actions')
@@ -128,7 +178,6 @@ export class QuotationController {
     await this.quotationHandler.markQuotationAsRead(id);
   }
 
-  // New endpoint for Automated Scheduling
   @ApiOperation({ summary: 'Get suggested appointment slots for a quotation' })
   @HttpCode(200)
   @ApiResponse({

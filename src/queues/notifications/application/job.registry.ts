@@ -26,6 +26,9 @@ import { RsvpUnschedulableJob } from './jobs/rsvp/rsvpUnschedulable.job';
 import { PushNotificationService } from '../../../notifications/services/push/pushNotification.service';
 import { VerificationCodeSentJob } from './jobs/codes/verficationCodeSent.job';
 import { NotificationStorageService } from '../../../notifications/services/notification.storage';
+import { NewOfferReceivedJob } from './jobs/quotationOffers/newOfferReceived.job';
+import { OfferAcceptedJob } from './jobs/quotationOffers/offerAccepted.job';
+import { OfferRejectedJob } from './jobs/quotationOffers/offerRejected.job';
 
 type NotificationJobConstructor = new (
   emailNotificationService: EmailNotificationService,
@@ -58,6 +61,10 @@ export class NotificationJobRegistry {
     this.jobMap.set('QUOTATION_REJECTED', QuotationRejectedJob);
     this.jobMap.set('QUOTATION_APPEALED', QuotationAppealedJob);
     this.jobMap.set('QUOTATION_CANCELED', QuotationCanceledJob);
+
+    this.jobMap.set('NEW_OFFER_RECEIVED', NewOfferReceivedJob);
+    this.jobMap.set('OFFER_ACCEPTED', OfferAcceptedJob);
+    this.jobMap.set('OFFER_REJECTED', OfferRejectedJob);
 
     this.jobMap.set('ACCOUNT_VERIFICATION_CODE', VerificationCodeSentJob);
   }

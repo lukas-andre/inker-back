@@ -13,11 +13,13 @@ import { AgendaRepository } from './agenda.repository';
 import { AgendaEventRepository } from './agendaEvent.repository';
 import { AgendaInvitationRepository } from './agendaInvitation.provider';
 import { QuotationRepository } from './quotation.provider';
+import { QuotationOfferRepository } from './quotationOffer.repository';
+import { QuotationOffer } from '../entities/quotationOffer.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature(
-      [Agenda, AgendaEvent, AgendaInvitation, Quotation, QuotationHistory],
+      [Agenda, AgendaEvent, AgendaInvitation, Quotation, QuotationHistory, QuotationOffer],
       AGENDA_DB_CONNECTION_NAME,
     ),
   ],
@@ -26,12 +28,14 @@ import { QuotationRepository } from './quotation.provider';
     AgendaEventRepository,
     AgendaInvitationRepository,
     QuotationRepository,
+    QuotationOfferRepository,
   ],
   exports: [
     AgendaRepository,
     AgendaEventRepository,
     AgendaInvitationRepository,
     QuotationRepository,
+    QuotationOfferRepository,
   ],
 })
 export class AgendaRepositoryModule {}
