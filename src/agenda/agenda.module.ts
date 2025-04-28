@@ -52,6 +52,10 @@ import { UpdateAgendaSettingsUseCase } from './usecases/updateAgendaSettings.use
 import { GetAgendaSettingsUseCase } from './usecases/getAgendaSettings.usecase';
 import { CreateAgendaEventService } from './usecases/common/createAgendaEvent.service';
 import { UserRepositoryModule } from '../users/infrastructure/repositories/userRepository.module';
+import { ListOpenQuotationsUseCase } from './usecases/listOpenQuotations.usecase';
+import { SubmitQuotationOfferUseCase } from './usecases/submitQuotationOffer.usecase';
+import { ListQuotationOffersUseCase } from './usecases/listQuotationOffers.usecase';
+import { AcceptQuotationOfferUseCase } from './usecases/acceptQuotationOffer.usecase';
 
 @Module({
   imports: [
@@ -105,10 +109,14 @@ import { UserRepositoryModule } from '../users/infrastructure/repositories/userR
     UpdateAgendaSettingsUseCase,
     GetAgendaSettingsUseCase,
     AgendaUnavailableTimeRepository,
+    ListOpenQuotationsUseCase,
+    SubmitQuotationOfferUseCase,
+    ListQuotationOffersUseCase,
+    AcceptQuotationOfferUseCase,
   ],
   controllers: [AgendaController, QuotationController],
   exports: [
-    CreateAgendaEventService, // Export for use in other modules
+    CreateAgendaEventService,
   ]
 })
 export class AgendaModule {}

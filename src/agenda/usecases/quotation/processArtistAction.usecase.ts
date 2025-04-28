@@ -56,25 +56,25 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
         case ArtistQuoteAction.QUOTE:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'quoted',
+            QuotationStatus.QUOTED,
           );
           break;
         case ArtistQuoteAction.REJECT:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'rejected',
+            QuotationStatus.REJECTED,
           );
           break;
         case ArtistQuoteAction.ACCEPT_APPEAL:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'accepted',
+            QuotationStatus.ACCEPTED,
           );
           break;
         case ArtistQuoteAction.REJECT_APPEAL:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'rejected',
+            QuotationStatus.REJECTED,
           );
           break;
         default:

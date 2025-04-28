@@ -5,12 +5,12 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { QuotationDto } from '../infrastructure/dtos/getQuotationRes.dto';
 import { QuotationRepository } from '../infrastructure/repositories/quotation.provider';
 import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
 import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository';
 import { StencilRepository } from '../../artists/infrastructure/repositories/stencil.repository';
+import { GetQuotationResDto } from '../infrastructure/dtos/getQuotationRes.dto';
 
 @Injectable()
 export class GetQuotationUseCase extends BaseUseCase implements UseCase {
@@ -24,7 +24,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
     super(GetQuotationUseCase.name);
   }
 
-  async execute(id: string): Promise<Partial<QuotationDto>> {
+  async execute(id: string): Promise<GetQuotationResDto> {
     const quotation = await this.quotationProvider.findOne({
       where: { id },
       relations: ['history'],

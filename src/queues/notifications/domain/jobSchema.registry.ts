@@ -17,6 +17,11 @@ import {
   QuotationRejectedJobSchema,
   QuotationRepliedJobSchema,
 } from './schemas/quotation';
+import {
+  NewOfferReceivedJobSchema,
+  OfferAcceptedJobSchema,
+  OfferRejectedJobSchema,
+} from './schemas/quotationOffer.schema';
 
 export const JobTypeSchemaRegistry = {
   EVENT_CREATED: AgendaEventCreatedJobSchema,
@@ -33,6 +38,9 @@ export const JobTypeSchemaRegistry = {
   QUOTATION_REJECTED: QuotationRejectedJobSchema,
   QUOTATION_APPEALED: QuotationAppealedJobSchema,
   QUOTATION_CANCELED: QuotationCanceledJobSchema,
+  NEW_OFFER_RECEIVED: NewOfferReceivedJobSchema,
+  OFFER_ACCEPTED: OfferAcceptedJobSchema,
+  OFFER_REJECTED: OfferRejectedJobSchema,
   ACCOUNT_VERIFICATION_CODE: SendVerificationCodeJobSchema,
 };
 

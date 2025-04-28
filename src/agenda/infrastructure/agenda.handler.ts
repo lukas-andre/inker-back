@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { ReviewArtistRequestDto } from '../../reviews/dtos/reviewArtistRequest.dto';
@@ -41,7 +40,7 @@ import { ArtistQuotationActionDto } from './dtos/artistQuotationAction.dto';
 import { ChangeEventStatusReqDto } from './dtos/changeEventStatusReq.dto';
 import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
 import { CustomerQuotationActionDto } from './dtos/customerQuotationAction.dto';
-import { QuotationDto } from './dtos/getQuotationRes.dto';
+import { GetQuotationResDto } from './dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from './dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from './dtos/listEventByViewTypeQuery.dto';
@@ -54,6 +53,18 @@ import { ArtistAvailabilityQueryDto } from './dtos/artistAvailabilityQuery.dto';
 import { UpdateAgendaSettingsReqDto } from './dtos/updateAgendaSettingsReq.dto';
 import { GetAgendaSettingsResDto } from './dtos/getAgendaSettingsRes.dto';
 import { GetAgendaSettingsUseCase } from '../usecases/getAgendaSettings.usecase';
+
+// New Use Case Imports for Open Quotations
+import { ListOpenQuotationsUseCase } from '../usecases/listOpenQuotations.usecase';
+import { SubmitQuotationOfferUseCase } from '../usecases/submitQuotationOffer.usecase';
+import { ListQuotationOffersUseCase } from '../usecases/listQuotationOffers.usecase';
+import { AcceptQuotationOfferUseCase } from '../usecases/acceptQuotationOffer.usecase';
+
+// New DTO Imports for Open Quotations
+import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from './dtos/listOpenQuotationsQuery.dto';
+import { CreateQuotationOfferReqDto } from './dtos/createQuotationOfferReq.dto';
+import { ListQuotationOffersResDto } from './dtos/listQuotationOffersRes.dto';
+import { UserType } from '../../users/domain/enums/userType.enum';
 
 @Injectable()
 export class AgendaHandler {
@@ -88,7 +99,12 @@ export class AgendaHandler {
     private readonly getSuggestedTimeSlotsUseCase: GetSuggestedTimeSlotsUseCase,
     private readonly updateAgendaSettingsUseCase: UpdateAgendaSettingsUseCase,
     private readonly getAgendaSettingsUseCase: GetAgendaSettingsUseCase,
-  ) {}
+    // New Open Quotation Use Cases
+    private readonly listOpenQuotationsUseCase: ListOpenQuotationsUseCase,
+    private readonly submitQuotationOfferUseCase: SubmitQuotationOfferUseCase,
+    private readonly listQuotationOffersUseCase: ListQuotationOffersUseCase,
+    private readonly acceptQuotationOfferUseCase: AcceptQuotationOfferUseCase,
+  ) { }
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
     return this.addEventUseCase.execute(dto);
@@ -111,7 +127,6 @@ export class AgendaHandler {
 
   async handleListEventFromArtistAgenda(status?: string): Promise<any> {
     const { userType, userTypeId } = this.requestContext;
-
     return this.listEventFromArtistAgenda.execute(userTypeId, userType, status);
   }
 
@@ -127,7 +142,7 @@ export class AgendaHandler {
       eventId,
     );
   }
-  
+
   async handleGetCustomerEventByEventId(eventId: string): Promise<any> {
     const { isNotCustomer, userTypeId } = this.requestContext;
     if (isNotCustomer) {
@@ -172,7 +187,6 @@ export class AgendaHandler {
     eventId: string,
     willAttend: boolean,
   ): Promise<any> {
-    // it's suposed to just the customer is able to RSVP
     const { userTypeId } = this.requestContext;
     return this.rsvpUseCase.execute(userTypeId, agendaId, eventId, willAttend);
   }
@@ -181,27 +195,17 @@ export class AgendaHandler {
     dto: CreateQuotationReqDto,
     referenceImages: FileInterface[],
   ): Promise<any> {
-    const { isNotCustomer, userTypeId } = this.requestContext;
-    if (isNotCustomer) {
-      throw new UnauthorizedException(
-        'You dont have permission to access this resource',
-      );
-    }
-
-    return this.createQuotationUseCase.execute(
-      {
-        ...dto,
-        customerId: userTypeId,
-      },
-      referenceImages,
-    );
+    const { userTypeId } = this.requestContext;
+    return this.createQuotationUseCase.execute(dto, userTypeId, referenceImages);
   }
 
-  async getQuotation(id: string): Promise<Partial<QuotationDto>> {
+  async getQuotation(id: string): Promise<GetQuotationResDto> {
     return this.getQuotationUseCase.execute(id);
   }
 
-  async getQuotations(query: GetQuotationsQueryDto): Promise<any> {
+  async getQuotations(
+    query: GetQuotationsQueryDto,
+  ): Promise<{ items: GetQuotationResDto[]; total: number }> {
     const { userType, userTypeId } = this.requestContext;
     return this.getQuotationsUseCase.execute(query, userType, userTypeId);
   }
@@ -211,15 +215,14 @@ export class AgendaHandler {
     artistQuoteDto: ArtistQuotationActionDto,
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {
-    const { isNotArtist, userId } = this.requestContext;
-    if (isNotArtist) {
+    const { userTypeId, userType } = this.requestContext;
+    if (userType !== UserType.ARTIST) {
       throw new UnauthorizedException(
-        'You do not have permission to send a quotation',
+        'You dont have permission to access this resource',
       );
     }
-
     return this.artistSendQuotationUseCase.execute(
-      userId,
+      userTypeId,
       quotationId,
       artistQuoteDto,
       proposedDesigns,
@@ -230,15 +233,14 @@ export class AgendaHandler {
     quotationId: string,
     customerActionDto: CustomerQuotationActionDto,
   ) {
-    const { isNotCustomer, userId } = this.requestContext;
-    if (isNotCustomer) {
+    const { userTypeId, userType } = this.requestContext;
+    if (userType !== UserType.CUSTOMER) {
       throw new UnauthorizedException(
-        'You do not have permission to perform this action',
+        'You dont have permission to access this resource',
       );
     }
-
     return this.customerQuotationActionUseCase.execute(
-      userId,
+      userTypeId,
       quotationId,
       customerActionDto,
     );
@@ -250,6 +252,11 @@ export class AgendaHandler {
 
   async markQuotationAsRead(id: string) {
     const { userType } = this.requestContext;
+    if (userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
     return this.markQuotationAsReadUseCase.execute(id, userType);
   }
 
@@ -330,5 +337,57 @@ export class AgendaHandler {
     dto: UpdateAgendaSettingsReqDto,
   ): Promise<void> {
     return this.updateAgendaSettingsUseCase.execute(agendaId, dto);
+  }
+
+  // New methods for Open Quotations
+
+  async listOpenQuotations(
+    query: ListOpenQuotationsQueryDto
+  ): Promise<GetOpenQuotationsResDto> {
+    const { userType, userTypeId } = this.requestContext;
+    if (userType !== UserType.ARTIST) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+    return this.listOpenQuotationsUseCase.execute(userTypeId, query);
+  }
+
+  async submitOffer(
+    quotationId: string,
+    dto: CreateQuotationOfferReqDto
+  ): Promise<{ id: string; created: boolean }> {
+    const { userTypeId, userType } = this.requestContext;
+    if (userType !== UserType.ARTIST) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+    return this.submitQuotationOfferUseCase.execute(quotationId, userTypeId, dto);
+  }
+
+  async listOffers(
+    quotationId: string,
+  ): Promise<ListQuotationOffersResDto> {
+    const { userTypeId, userType } = this.requestContext;
+    if (userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+    return this.listQuotationOffersUseCase.execute(quotationId, userTypeId);
+  }
+
+  async acceptOffer(
+    quotationId: string,
+    offerId: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const { userTypeId, userType } = this.requestContext;
+    if (userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+    return this.acceptQuotationOfferUseCase.execute(quotationId, offerId, userTypeId);
   }
 }

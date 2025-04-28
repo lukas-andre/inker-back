@@ -1,10 +1,11 @@
-import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { Column, Entity, Index, OneToMany, ManyToOne } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 import { QuotationHistory } from './quotationHistory.entity';
 import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { QuotationOffer } from './quotationOffer.entity';
 
 export const CUSTOMER_CANCEL_REASONS = [
   'change_of_mind',
@@ -66,23 +67,46 @@ export type QuotationRejectBy = (typeof QUOTATION_REJECTED_BY)[number];
 
 export type QuotationUserType = (typeof QUOTATION_USER_TYPE)[number];
 
-export type QuotationStatus =
-  | 'pending'
-  | 'quoted'
-  | 'accepted'
-  | 'rejected'
-  | 'appealed'
-  | 'canceled';
+export enum QuotationStatus {
+  PENDING = 'pending',
+  QUOTED = 'quoted',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+  APPEALED = 'appealed',
+  CANCELED = 'canceled',
+  OPEN = 'open',
+}
 
-@Entity()
+export enum QuotationType {
+  DIRECT = 'DIRECT',
+  OPEN = 'OPEN',
+}
+
+@Entity({ name: 'quotations' })
 export class Quotation extends BaseEntity {
   @Index()
   @Column({ name: 'customer_id' })
   customerId: string;
 
   @Index()
-  @Column({ name: 'artist_id' })
-  artistId: string;
+  @Column({ name: 'artist_id', nullable: true })
+  artistId?: string;
+
+  @Column({
+    type: 'enum',
+    enum: QuotationType,
+    default: QuotationType.DIRECT,
+  })
+  type: QuotationType;
+
+  @Column({ name: 'customer_lat', type: 'float', nullable: true })
+  customerLat?: number;
+
+  @Column({ name: 'customer_lon', type: 'float', nullable: true })
+  customerLon?: number;
+
+  @Column({ name: 'customer_travel_radius_km', type: 'integer', nullable: true })
+  customerTravelRadiusKm?: number;
 
   @Column()
   description: string;
@@ -96,9 +120,9 @@ export class Quotation extends BaseEntity {
   @Column({
     type: 'enum',
     name: 'status',
-    enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
+    enum: QuotationStatus,
     enumName: 'quotation_status',
-    default: 'pending',
+    default: QuotationStatus.PENDING,
   })
   status: QuotationStatus;
 
@@ -126,11 +150,9 @@ export class Quotation extends BaseEntity {
   @Column({ name: 'response_date', nullable: true })
   responseDate?: Date;
 
-  // Eg: 2024-09-15 01:53:00.000
   @Column({ name: 'appointment_date', nullable: true })
   appointmentDate?: Date;
 
-  // in minutes
   @Column({ name: 'appointment_duration', nullable: true })
   appointmentDuration?: number;
 
@@ -261,4 +283,7 @@ export class Quotation extends BaseEntity {
 
   @OneToMany(() => QuotationHistory, history => history.quotation)
   history?: QuotationHistory[];
+
+  @OneToMany(() => QuotationOffer, offer => offer.quotation)
+  offers?: QuotationOffer[];
 }
