@@ -5,6 +5,8 @@ import { RunwareImageGenerationService } from './infrastructure/services/runware
 import { TattooPromptEnhancementService } from './infrastructure/services/tattooPromptEnhancement.service';
 import { LibreTranslationService } from './infrastructure/services/libreTranslation.service';
 import { GenerateTattooImagesUseCase } from './usecases/generateTattooImages.usecase';
+import { GetUserTattooHistoryUseCase } from './usecases/getUserTattooHistory.usecase';
+import { UpdateTattooFavoriteUseCase } from './usecases/updateTattooFavorite.usecase';
 import { HttpModule } from '@nestjs/axios';
 import libreTranslateConfig from '../config/libretranslate.config';
 import { TattooGeneratorDatabaseModule } from './infrastructure/database/tattoGeneratorDatabase.module';
@@ -21,6 +23,8 @@ import { TattooGeneratorDatabaseModule } from './infrastructure/database/tattoGe
     providers: [
         RunwareImageGenerationService,
         GenerateTattooImagesUseCase,
+        GetUserTattooHistoryUseCase,
+        UpdateTattooFavoriteUseCase,
         TattooPromptEnhancementService,
         LibreTranslationService
     ],
