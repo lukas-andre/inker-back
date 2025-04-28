@@ -27,13 +27,6 @@ export class ArtistIdPipe
       return value;
     }
 
-    const object = plainToClass(metatype, value);
-
-    const errors = await validate(object);
-    if (errors.length > 0) {
-      this.logger.log({ errors });
-      throw new BadRequestException(ARTIST_ID_PIPE_FAILED);
-    }
 
     if (!(await this.artistProvider.exists(value))) {
       throw new NotAcceptableException(ARTIST_NOT_ACCEPTED);

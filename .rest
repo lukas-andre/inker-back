@@ -268,7 +268,7 @@ Content-Disposition: form-data; name="additionalDetails"
 Unfortunately, I'm unable to accommodate your appeal due to scheduling conflicts during the requested period.
 --boundary--
 
-### Ge  t Artist by Id
+### Get Artist by Id
 GET {{$dotenv APP_URL}}/artist/me HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjksImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidXNlcm5hbWUiOiJqdWFsaWFydCIsImZ1bGxuYW1lIjoiSnVsaWFubyBHcmFuZGUiLCJ1c2VyVHlwZSI6IkFSVElTVCIsInVzZXJUeXBlSWQiOjksInByb2ZpbGVUaHVtYm5haWwiOm51bGwsInBlcm1pc3Npb24iOlt7ImMiOiJBcnRpc3RzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiQ3VzdG9tZXJzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiUG9zdHNDb250cm9sbGVyIiwiYSI6IioifSx7ImMiOiJVc2Vyc0NvbnRyb2xsZXIiLCJhIjoiKiJ9XSwiaWF0IjoxNzQyNTI3NDYyLCJleHAiOjE3NDI3MDAyNjIsImlzcyI6Iklua2VyIn0.rEiMCtG4bcPZDG8X0AcIJVXEnn4RWQapa3EipCgvsTo
 
@@ -340,3 +340,37 @@ Content-Type: application/json
 GET {{$dotenv APP_URL}}/work-search?source=EXTERNAL&page=1&limit=10&sortBy=oldest HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjgsImVtYWlsIjoibGF1bm9Aa2VmYWkuY2wiLCJ1c2VybmFtZSI6IktlZmFpLUx1YW5vLTg1MzU3IiwiZnVsbG5hbWUiOiJMdWFubyBLZWZhaSIsInVzZXJUeXBlIjoiQ1VTVE9NRVIiLCJ1c2VyVHlwZUlkIjoyMCwicHJvZmlsZVRodW1ibmFpbCI6bnVsbCwicGVybWlzc2lvbiI6W3siYyI6IkFydGlzdHNDb250cm9sbGVyIiwiYSI6IioifSx7ImMiOiJDdXN0b21lcnNDb250cm9sbGVyIiwiYSI6IioifSx7ImMiOiJQb3N0c0NvbnRyb2xsZXIiLCJhIjoiKiJ9LHsiYyI6IlVzZXJzQ29udHJvbGxlciIsImEiOiIqIn1dLCJpYXQiOjE3NDI2NjU3NTAsImV4cCI6MTc0MjgzODU1MCwiaXNzIjoiSW5rZXIifQ.QE1TkfdDosoXXHtAk3mH9WiP-fxfDsCYMOJ8kDDtFLg
 Content-Type: application/json
+
+
+### Get Tattoo Generator History
+# @name tattooHistory
+GET {{$dotenv APP_URL}}/tattoo-generator/history?favorites=false&limit=50 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQzM2E5MjcxLWM0MWQtNDMxMy04ZTNlLWUyN2NkMWI0NjEwZCIsImVtYWlsIjoiam9zZS5tYXJ0aW4yOTEyQGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJNYXJ0aW4tSm9zZS0yODUxNSIsImZ1bGxuYW1lIjoiSm9zZSBNYXJ0aW4iLCJ1c2VyVHlwZSI6IkNVU1RPTUVSIiwidXNlclR5cGVJZCI6ImUyODk0NGJlLWE5ZGYtNDUxZS05MmEyLTMxYmJhZmYwZDY5YyIsInByb2ZpbGVUaHVtYm5haWwiOm51bGwsInBlcm1pc3Npb24iOlt7ImMiOiJBcnRpc3RzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiQ3VzdG9tZXJzQ29udHJvbGxlciIsImEiOiIqIn0seyJjIjoiUG9zdHNDb250cm9sbGVyIiwiYSI6IioifSx7ImMiOiJVc2Vyc0NvbnRyb2xsZXIiLCJhIjoiKiJ9XSwiaWF0IjoxNzQ1NzA5ODUwLCJleHAiOjE3NDU4ODI2NTAsImlzcyI6Iklua2VyIn0.xVoWS0EZLw7D5fg7nqs-1HrsuUwlr76lZkDaC9PV4TM
+Content-Type: application/json
+Accept: application/json
+
+### Get Tattoo Generator Favorites
+GET {{$dotenv APP_URL}}/tattoo-generator/history?favorites=true&limit=20 HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+### Generate Tattoo Design
+POST {{$dotenv APP_URL}}/tattoo-generator/generate HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "style": "TRADITIONAL",
+  "userInput": "wolf howling at the moon with forest background"
+}
+
+### Update Tattoo Favorite Status
+PATCH {{$dotenv APP_URL}}/tattoo-generator/favorite HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "designId": "design-id-here",
+  "isFavorite": true
+}

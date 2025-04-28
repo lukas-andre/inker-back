@@ -6,6 +6,7 @@ import { RunwareImageGenerationService } from '../infrastructure/services/runwar
 import { TattooPromptEnhancementService } from '../infrastructure/services/tattooPromptEnhancement.service';
 import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
 import { RequestContext } from '../../global/infrastructure/services/requestContext.service';
+import { TattooDesignCacheEntity } from '../infrastructure/database/entities/tattooDesignCache.entity';
 
 interface GenerateTattooImagesParams {
   style: TattooStyle;
@@ -88,12 +89,12 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
     if (images.some(img => img.cost !== undefined)) {
       totalCost = images.reduce((sum, img) => sum + (img.cost || 0), 0);
     }
-
+    let designEntity: TattooDesignCacheEntity | undefined;
     if (this.designCacheRepository && images.length > 0) {
       try {
         const imageUrls = images.map(img => img.imageUrl);
         
-        const designEntity = await this.designCacheRepository.save({
+        designEntity = await this.designCacheRepository.save({
           userQuery: userInput,
           style,
           imageUrls,
@@ -125,7 +126,10 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
     });
 
     return {
-      images,
+      images: images.map(image => ({
+        ...image,
+        imageId: designEntity?.id || image.imageId,
+      })),
       totalCost,
       fromCache: false,
     };
