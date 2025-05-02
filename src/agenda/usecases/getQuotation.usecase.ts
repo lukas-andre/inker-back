@@ -11,6 +11,7 @@ import { ArtistRepository } from '../../artists/infrastructure/repositories/arti
 import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository';
 import { StencilRepository } from '../../artists/infrastructure/repositories/stencil.repository';
 import { GetQuotationResDto } from '../infrastructure/dtos/getQuotationRes.dto';
+import { TattooDesignCacheRepository } from '../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository';
 
 @Injectable()
 export class GetQuotationUseCase extends BaseUseCase implements UseCase {
@@ -20,6 +21,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
     private readonly artistProvider: ArtistRepository,
     private readonly artistLocationProvider: ArtistLocationRepository,
     private readonly stencilProvider: StencilRepository,
+    private readonly tattooDesignCacheProvider: TattooDesignCacheRepository,
   ) {
     super(GetQuotationUseCase.name);
   }
@@ -34,13 +36,14 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotFound('Quotation not found');
     }
 
-    const [customer, artist, location, stencil] = await Promise.all([
+    const [customer, artist, location, stencil, tattooDesignCache] = await Promise.all([
       this.customerProvider.findOne({ where: { id: quotation.customerId } }),
       this.artistProvider.findOne({ where: { id: quotation.artistId } }),
       this.artistLocationProvider.findOne({
         where: { artistId: quotation.artistId },
       }),
       quotation.stencilId ? this.stencilProvider.findStencilById(quotation.stencilId) : null,
+      quotation.tattooDesignCacheId ? this.tattooDesignCacheProvider.findById(quotation.tattooDesignCacheId) : null
     ]);
 
     return {
@@ -49,6 +52,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
       artist,
       location,
       stencil,
+      tattooDesignCache: tattooDesignCache
     };
   }
 }

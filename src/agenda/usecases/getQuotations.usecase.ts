@@ -14,6 +14,12 @@ import { ArtistRepository } from '../../artists/infrastructure/repositories/arti
 import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository';
 import { StencilRepository } from '../../artists/infrastructure/repositories/stencil.repository';
 import { GetQuotationResDto } from '../infrastructure/dtos/getQuotationRes.dto';
+import { TattooDesignCacheRepository } from '../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository';
+import { TattooDesignCacheEntity } from '../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
+import { Artist } from '../../artists/infrastructure/entities/artist.entity';
+import { Stencil } from '../../artists/infrastructure/entities/stencil.entity';
+import { Customer } from '../../customers/infrastructure/entities/customer.entity';
+import { ArtistLocation } from '../../locations/infrastructure/database/entities/artistLocation.entity';
 
 @Injectable()
 export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
@@ -23,6 +29,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
     private readonly artistProvider: ArtistRepository,
     private readonly artistLocationProvider: ArtistLocationRepository,
     private readonly stencilProvider: StencilRepository,
+    private readonly tattooDesignCacheProvider: TattooDesignCacheRepository,
   ) {
     super(GetQuotationsUseCase.name);
   }
@@ -58,24 +65,35 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
 
     // Get unique IDs for customers, artists, and stencils
     const customerIds = [...new Set(quotations.map(q => q.customerId))];
-    const artistIds = [...new Set(quotations.map(q => q.artistId))];
+    const artistIds = [...new Set(quotations.map(q => q.artistId).filter(Boolean))];
     const stencilIds = quotations.filter(q => q.stencilId).map(q => q.stencilId);
+    const tattooDesignCacheIds = quotations.filter(q => q.tattooDesignCacheId).map(q => q.tattooDesignCacheId);
 
     // Fetch all related data in parallel
-    const [customers, artists, locations, stencils] = await Promise.all([
-      this.customerProvider.find({ where: { id: In(customerIds) } }),
-      this.artistProvider.find({ where: { id: In(artistIds) } }),
-      this.artistLocationProvider.find({ where: { artistId: In(artistIds) } }),
+    const [customers, artists, locations, stencils, tattooDesignCaches]: [
+      Customer[],
+      Artist[],
+      ArtistLocation[],
+      (Stencil | null)[],
+      (TattooDesignCacheEntity | null)[]
+    ] = await Promise.all([
+      customerIds.length > 0 ? this.customerProvider.find({ where: { id: In(customerIds) } }) : [],
+      artistIds.length > 0 ? this.artistProvider.find({ where: { id: In(artistIds) } }) : [],
+      artistIds.length > 0 ? this.artistLocationProvider.find({ where: { artistId: In(artistIds) } }) : [],
       stencilIds.length > 0 
         ? Promise.all(stencilIds.map(id => this.stencilProvider.findStencilById(id)))
+        : [],
+      tattooDesignCacheIds.length > 0
+        ? Promise.all(tattooDesignCacheIds.map(id => this.tattooDesignCacheProvider.findById(id)))
         : [],
     ]);
 
     // Create lookup maps for efficient access
-    const customerMap = new Map(customers.map(c => [c.id, c]));
-    const artistMap = new Map(artists.map(a => [a.id, a]));
-    const locationMap = new Map(locations.map(l => [l.artistId, l]));
-    const stencilMap = new Map(stencils.filter(Boolean).map(s => [s.id, s]));
+    const customerMap = new Map<string, Customer>(customers.map(c => [c.id, c]));
+    const artistMap = new Map<string, Artist>(artists.map(a => [a.id, a]));
+    const locationMap = new Map<string, ArtistLocation>(locations.map(l => [l.artistId, l]));
+    const stencilMap = new Map<string, Stencil>(stencils.filter((s): s is Stencil => s !== null).map(s => [s.id, s]));
+    const tattooDesignCacheMap = new Map<string, TattooDesignCacheEntity>(tattooDesignCaches.filter((tdc): tdc is TattooDesignCacheEntity => tdc !== null).map(tdc => [tdc.id, tdc]));
 
     // Map quotations to DTOs with related data
     const enrichedQuotations = quotations.map(quotation => ({
@@ -84,6 +102,7 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
       artist: artistMap.get(quotation.artistId),
       location: locationMap.get(quotation.artistId),
       stencil: quotation.stencilId ? stencilMap.get(quotation.stencilId) : null,
+      tattooDesignCache: quotation.tattooDesignCacheId ? tattooDesignCacheMap.get(quotation.tattooDesignCacheId) : null,
     }));
 
     return {

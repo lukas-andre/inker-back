@@ -51,6 +51,29 @@ export class CreateQuotationReqDto {
   readonly stencilId?: string;
 
   @ApiPropertyOptional({
+    example: 'cluv123abc...',
+    description: 'Tattoo Design Cache ID (optional) - Reference to a specific AI-generated design. Required if tattooDesignImageUrl is provided. Only valid for OPEN type quotations. Cannot be used with stencilId.',
+  })
+  @ValidateIf(o => o.type === QuotationType.OPEN && (o.tattooDesignCacheId || o.tattooDesignImageUrl))
+  @IsNotEmpty({ message: 'tattooDesignCacheId is required if tattooDesignImageUrl is provided' })
+  @ValidateIf(o => !o.stencilId || !o.tattooDesignCacheId, {
+    message: 'stencilId and tattooDesignCacheId cannot both be provided',
+  })
+  @IsString()
+  @IsOptional()
+  readonly tattooDesignCacheId?: string;
+
+  @ApiPropertyOptional({
+    example: 'https://example.com/image.png',
+    description: 'Specific Image URL from the Tattoo Design Cache (optional) - Required if tattooDesignCacheId is provided. Only valid for OPEN type quotations.',
+  })
+  @ValidateIf(o => o.type === QuotationType.OPEN && (o.tattooDesignCacheId || o.tattooDesignImageUrl))
+  @IsNotEmpty({ message: 'tattooDesignImageUrl is required if tattooDesignCacheId is provided' })
+  @IsString()
+  @IsOptional()
+  readonly tattooDesignImageUrl?: string;
+
+  @ApiPropertyOptional({
     type: 'string',
     format: 'binary',
     isArray: true,

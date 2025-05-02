@@ -5,6 +5,7 @@ import { Queue } from 'bull';
 import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { StencilRepository } from '../../artists/infrastructure/repositories/stencil.repository';
 import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
+import { TattooDesignCacheRepository } from '../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository';
 import {
   DomainBadRule,
   DomainNotFound,
@@ -34,6 +35,7 @@ export class CreateQuotationUseCase
     private readonly customerProvider: CustomerRepository,
     private readonly artistProvider: ArtistRepository,
     private readonly stencilProvider: StencilRepository,
+    private readonly tattooDesignCacheProvider: TattooDesignCacheRepository,
     private readonly multimediasService: MultimediasService,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
@@ -54,7 +56,7 @@ export class CreateQuotationUseCase
     message: string;
     created: boolean;
   }> {
-    const { type, artistId, description, stencilId, customerLat, customerLon, customerTravelRadiusKm } = createQuotationDto;
+    const { type, artistId, description, stencilId, customerLat, customerLon, customerTravelRadiusKm, tattooDesignCacheId, tattooDesignImageUrl } = createQuotationDto;
 
     // 1. Validate Customer
     const existsCustomer = await this.customerProvider.exists(customerId);
@@ -78,13 +80,39 @@ export class CreateQuotationUseCase
       if (customerLat == null || customerLon == null || customerTravelRadiusKm == null) {
         throw new DomainBadRule('customerLat, customerLon, and customerTravelRadiusKm are required for OPEN quotations');
       }
+      if (stencilId) {
+        throw new DomainBadRule('stencilId cannot be provided for OPEN quotations if tattooDesignCacheId is used');
+      }
+      if (tattooDesignCacheId && !tattooDesignImageUrl) {
+        throw new DomainBadRule('tattooDesignImageUrl is required when tattooDesignCacheId is provided');
+      }
+      if (!tattooDesignCacheId && tattooDesignImageUrl) {
+        throw new DomainBadRule('tattooDesignCacheId is required when tattooDesignImageUrl is provided');
+      }
     }
 
     // 3. Validate stencil if provided
     if (stencilId) {
+      if (tattooDesignCacheId) {
+        throw new DomainBadRule('stencilId and tattooDesignCacheId cannot both be provided');
+      }
       const stencil = await this.stencilProvider.findStencilById(stencilId);
       if (!stencil) {
         throw new DomainNotFound('Stencil not found');
+      }
+    }
+
+    // 3.5 Validate Tattoo Design Cache if provided
+    if (tattooDesignCacheId) {
+      if (type !== QuotationType.OPEN) {
+        throw new DomainBadRule('tattooDesignCacheId is only allowed for OPEN quotations');
+      }
+      const tattooDesign = await this.tattooDesignCacheProvider.findById(tattooDesignCacheId);
+      if (!tattooDesign) {
+        throw new DomainNotFound('Tattoo Design Cache not found');
+      }
+      if (!tattooDesign.imageUrls.includes(tattooDesignImageUrl)) {
+        throw new DomainNotFound(`Image URL ${tattooDesignImageUrl} not found in the specified Tattoo Design Cache`);
       }
     }
 
@@ -107,6 +135,8 @@ export class CreateQuotationUseCase
         'customer_lat',
         'customer_lon',
         'customer_travel_radius_km',
+        'tattoo_design_cache_id',
+        'tattoo_design_image_url',
         'created_at',
         'updated_at'
       ];
@@ -120,6 +150,8 @@ export class CreateQuotationUseCase
         customerLat ?? null, // Null coalescing for OPEN type
         customerLon ?? null,
         customerTravelRadiusKm ?? null,
+        tattooDesignCacheId || null,
+        tattooDesignImageUrl || null,
         'NOW()', // Use SQL function for timestamp
         'NOW()'
       ];
@@ -132,7 +164,7 @@ export class CreateQuotationUseCase
       const placeholders = filteredValues.map((_, i) => `$${i + 1}`).join(', ');
 
       const createQuotationSql = `
-        INSERT INTO quotations (${filteredColumns.join(', ')})
+        INSERT INTO quotation (${filteredColumns.join(', ')})
         VALUES (${placeholders})
         RETURNING id;
       `;
@@ -159,7 +191,7 @@ export class CreateQuotationUseCase
         );
 
         const updateQuotationSql = `
-          UPDATE quotations
+          UPDATE quotation
           SET reference_images = $1
           WHERE id = $2;
         `;
