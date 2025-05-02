@@ -88,7 +88,7 @@ export class QuotationController {
 
   @ApiOperation({ summary: '[Artist] List available open quotations' })
   @ApiOkResponse({
-    description: 'Open quotations retrieved successfully.',
+    description: 'Open quotations retrieved successfully. Each quotation includes a list of offers received so far.',
     type: GetOpenQuotationsResDto,
   })
   @Get('/open')

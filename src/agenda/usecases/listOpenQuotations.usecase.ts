@@ -11,13 +11,18 @@ import { QuotationRepository } from '../infrastructure/repositories/quotation.pr
 import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from '../infrastructure/dtos/listOpenQuotationsQuery.dto';
 import { QuotationStatus, QuotationType } from '../infrastructure/entities/quotation.entity';
 import { OpenQuotationListItemDto } from '../domain/dtos/openQuotationListItem.dto';
+import { OpenQuotationOfferDto } from '../domain/dtos/openQuotationOffer.dto';
 import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository'; // Assuming location repo exists
+import { QuotationOfferRepository } from '../infrastructure/repositories/quotationOffer.repository';
+import { In } from 'typeorm';
 
 @Injectable()
 export class ListOpenQuotationsUseCase extends BaseUseCase implements UseCase {
     constructor(
         private readonly quotationRepo: QuotationRepository,
         private readonly artistLocationRepo: ArtistLocationRepository,
+        private readonly quotationOfferRepo: QuotationOfferRepository,
+        private readonly artistRepo: ArtistRepository,
     ) {
         super(ListOpenQuotationsUseCase.name);
     }
@@ -93,6 +98,44 @@ export class ListOpenQuotationsUseCase extends BaseUseCase implements UseCase {
 
         // TODO: Consider fetching basic customer info and attaching it if needed for the DTO
 
-        return { quotations: rawQuotations };
+        // 3. Fetch offers for the retrieved quotations
+        const quotationIds = rawQuotations.map(q => q.id);
+        let offersMap = new Map<string, OpenQuotationOfferDto[]>();
+
+        if (quotationIds.length > 0) {
+            const offers = await this.quotationOfferRepo.find({
+                where: { quotationId: In(quotationIds) },
+                relations: ['artist'], // Eagerly load artist basic info if relation exists
+            });
+
+            // Fetch artist names if not included in relation or need specific fields
+            const artistIds = [...new Set(offers.map(o => o.artistId))];
+            const artists = await this.artistRepo.find({ where: { id: In(artistIds) }, select: ['id', 'firstName', 'lastName'] }); // Select firstName, lastName
+            const artistNameMap = new Map(artists.map(a => [a.id, `${a.firstName} ${a.lastName}`])); // Combine names
+
+            // Group offers by quotationId
+            offersMap = offers.reduce((map, offer) => {
+                const offerDto: OpenQuotationOfferDto = {
+                    id: offer.id,
+                    artistId: offer.artistId,
+                    // Use artist name from map
+                    artistName: artistNameMap.get(offer.artistId) ?? 'Unknown Artist',
+                    estimatedCost: offer.estimatedCost,
+                    message: offer.message,
+                };
+                const existing = map.get(offer.quotationId) || [];
+                existing.push(offerDto);
+                map.set(offer.quotationId, existing);
+                return map;
+            }, new Map<string, OpenQuotationOfferDto[]>());
+        }
+
+        // 4. Combine quotations with their offers
+        const results = rawQuotations.map(quotation => ({
+            ...quotation,
+            offers: offersMap.get(quotation.id) || [],
+        }));
+
+        return { quotations: results };
     }
 } 

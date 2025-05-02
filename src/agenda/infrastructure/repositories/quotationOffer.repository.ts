@@ -7,7 +7,7 @@ import { BaseComponent } from '../../../global/domain/components/base.component'
 
 @Injectable()
 export class QuotationOfferRepository extends BaseComponent {
- 
+
     constructor(
         @InjectRepository(QuotationOffer, AGENDA_DB_CONNECTION_NAME)
         private readonly quotationOfferRepository: Repository<QuotationOffer>,
@@ -41,5 +41,28 @@ export class QuotationOfferRepository extends BaseComponent {
 
     async find(options: FindManyOptions<QuotationOffer>): Promise<QuotationOffer[]> {
         return this.repo.find(options);
+    }
+
+    async findByQuotationIdsNative(quotationIds: string[]): Promise<QuotationOffer[]> {
+        if (!quotationIds.length) return [];
+
+        const quotationIdsParam = quotationIds.map(id => `'${id}'`).join(',');
+
+        const query = `
+            SELECT json_build_object(
+                'id', qo.id,
+                'quotationId', qo.quotation_id,
+                'artistId', qo.artist_id,
+                'estimatedCost', qo.estimated_cost,
+                'message', qo.message,
+                'createdAt', qo.created_at,
+                'updatedAt', qo.updated_at
+            ) as offer
+            FROM quotation_offers qo
+            WHERE qo.quotation_id IN (${quotationIdsParam})
+        `;
+
+        const result = await this.source.query(query);
+        return result.map(row => row.offer) as QuotationOffer[];
     }
 } 
