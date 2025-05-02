@@ -11,6 +11,7 @@ import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
 import { LocationDto } from '../../../global/infrastructure/dtos/geometry.dto';
 import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
 import { QuotationOfferListItemDto } from '../../domain/dtos/quotationOffer.dto';
+import { TattooDesignCacheEntity } from '../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
 
 // Define local const for enum values used in decorators if not exported
 const CUSTOMER_APPEAL_REASONS = [
@@ -107,4 +108,7 @@ export class GetQuotationResDto {
 
   @ApiPropertyOptional({ type: [QuotationOfferListItemDto] })
   offers?: QuotationOfferListItemDto[];
+
+  @ApiPropertyOptional({ type: () => TattooDesignCacheEntity })
+  tattooDesignCache?: TattooDesignCacheEntity;
 }

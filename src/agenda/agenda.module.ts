@@ -56,6 +56,7 @@ import { ListOpenQuotationsUseCase } from './usecases/listOpenQuotations.usecase
 import { SubmitQuotationOfferUseCase } from './usecases/submitQuotationOffer.usecase';
 import { ListQuotationOffersUseCase } from './usecases/listQuotationOffers.usecase';
 import { AcceptQuotationOfferUseCase } from './usecases/acceptQuotationOffer.usecase';
+import { TattooGeneratorDatabaseModule } from '../tattoo-generator/infrastructure/database/tattoGeneratorDatabase.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { AcceptQuotationOfferUseCase } from './usecases/acceptQuotationOffer.use
     MultimediasModule,
     NotificationQueueModule,
     LocationRepositoryModule,
+    TattooGeneratorDatabaseModule,
     forwardRef(() => SyncQueueModule),
     TypeOrmModule.forFeature([AgendaUnavailableTime], AGENDA_DB_CONNECTION_NAME),
   ],

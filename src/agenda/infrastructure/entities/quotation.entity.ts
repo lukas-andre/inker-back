@@ -82,7 +82,7 @@ export enum QuotationType {
   OPEN = 'OPEN',
 }
 
-@Entity({ name: 'quotations' })
+@Entity({ name: 'quotation' })
 export class Quotation extends BaseEntity {
   @Index()
   @Column({ name: 'customer_id' })
@@ -280,6 +280,13 @@ export class Quotation extends BaseEntity {
 
   @Column({ name: 'stencil_id', nullable: true })
   stencilId?: string;
+
+  @Index()
+  @Column({ name: 'tattoo_design_cache_id', nullable: true })
+  tattooDesignCacheId?: string;
+
+  @Column({ name: 'tattoo_design_image_url', type: 'text', nullable: true })
+  tattooDesignImageUrl?: string;
 
   @OneToMany(() => QuotationHistory, history => history.quotation)
   history?: QuotationHistory[];
