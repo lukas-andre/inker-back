@@ -111,4 +111,7 @@ export class GetQuotationResDto {
 
   @ApiPropertyOptional({ type: () => TattooDesignCacheEntity })
   tattooDesignCache?: TattooDesignCacheEntity;
+
+  @ApiPropertyOptional({ description: 'Indicates if the current artist has offered on this quotation' })
+  hasOffered?: boolean;
 }

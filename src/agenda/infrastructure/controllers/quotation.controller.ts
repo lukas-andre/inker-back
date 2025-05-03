@@ -6,7 +6,7 @@ import {
   Param,
   Post,
   Query,
-  UploadedFiles,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
   Request,
@@ -22,7 +22,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
+import { FileFastifyInterceptor } from 'fastify-file-interceptor';
 import { DefaultResponseDto, DefaultResponseStatus } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
@@ -36,6 +36,10 @@ import { TimeSlot } from '../../services/scheduling.service';
 import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from '../dtos/listOpenQuotationsQuery.dto';
 import { CreateQuotationOfferReqDto } from '../dtos/createQuotationOfferReq.dto';
 import { ListQuotationOffersResDto } from '../dtos/listQuotationOffersRes.dto';
+import { SendOfferMessageReqDto } from '../dtos/sendOfferMessageReq.dto';
+import { OfferMessageDto } from '../../domain/dtos/offerMessage.dto';
+import { ListParticipatingQuotationsResDto } from '../../domain/dtos/participatingQuotationOffer.dto';
+import { ParticipatingQuotationOfferDto } from '../../domain/dtos/participatingQuotationOffer.dto';
 
 @ApiTags('quotations')
 @Controller('quotations')
@@ -53,9 +57,9 @@ export class QuotationController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateQuotationReqDto })
   @Post()
-  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
+  @UseInterceptors(FileFastifyInterceptor('files[]', 10))
   async createQuotation(
-    @UploadedFiles() referenceImages: FileInterface[],
+    @UploadedFile() referenceImages: FileInterface[],
     @Body() dto: CreateQuotationReqDto,
   ): Promise<any> {
     return this.quotationHandler.createQuotation(dto, referenceImages);
@@ -86,6 +90,17 @@ export class QuotationController {
     return this.quotationHandler.getQuotations(query);
   }
 
+  @ApiOperation({ summary: '[Artist] List quotations the artist is participating in (has offered on)' })
+  @ApiOkResponse({
+    description: 'Participating quotation offers retrieved successfully.',
+    type: ListParticipatingQuotationsResDto,
+  })
+  @Get('/participating')
+  async listParticipatingQuotations(
+  ): Promise<ListParticipatingQuotationsResDto> {
+    return this.quotationHandler.listParticipatingQuotations();
+  }
+
   @ApiOperation({ summary: '[Artist] List available open quotations' })
   @ApiOkResponse({
     description: 'Open quotations retrieved successfully. Each quotation includes a list of offers received so far.',
@@ -103,9 +118,11 @@ export class QuotationController {
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @ApiBody({ type: CreateQuotationOfferReqDto })
   @Post(':id/offers')
+  @UseInterceptors(FileFastifyInterceptor('files[]', 10))
   async submitOffer(
     @Param('id') quotationId: string,
     @Body() dto: CreateQuotationOfferReqDto,
+    @UploadedFile() files: FileInterface[],
   ): Promise<DefaultResponseDto> {
     const result = await this.quotationHandler.submitOffer(quotationId, dto);
     return { status: DefaultResponseStatus.CREATED, data: `Offer ${result.id} submitted.` };
@@ -144,11 +161,11 @@ export class QuotationController {
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ description: 'Artist Action', type: ArtistQuotationActionDto })
-  @UseInterceptors(FilesFastifyInterceptor('proposedDesigns[]', 10))
+  @UseInterceptors(FileFastifyInterceptor('proposedDesigns[]', 10))
   async processArtistAction(
     @Param('id') id: string,
     @Body() dto: ArtistQuotationActionDto,
-    @UploadedFiles() proposedDesigns: FileInterface[],
+    @UploadedFile() proposedDesigns: FileInterface[],
   ): Promise<void> {
     await this.quotationHandler.processArtistAction(id, dto, proposedDesigns);
   }
@@ -188,5 +205,45 @@ export class QuotationController {
   @Get(':id/available-slots')
   async getSuggestedTimeSlots(@Param('id') id: string): Promise<TimeSlot[]> {
     return this.quotationHandler.handleGetSuggestedTimeSlots(id);
+  }
+
+  @ApiOperation({ summary: '[Customer/Artist] Send a message regarding a specific offer' })
+  @ApiOkResponse({ description: 'Message sent successfully.', type: OfferMessageDto })
+  @ApiParam({ name: 'id', description: 'Quotation ID' })
+  @ApiParam({ name: 'offerId', description: 'Offer ID' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Message content and optional image file. Send image using a field named \'image\'.',
+    type: SendOfferMessageReqDto,
+  })
+  @Post(':id/offers/:offerId/messages')
+  @UseInterceptors(FileFastifyInterceptor('image'))
+  async sendOfferMessage(
+    @Param('id') quotationId: string,
+    @Param('offerId') offerId: string,
+    @Body() dto: SendOfferMessageReqDto,
+    @UploadedFile() image?: FileInterface,
+  ): Promise<OfferMessageDto> {
+    const newMessage = await this.quotationHandler.sendOfferMessage(
+      quotationId,
+      offerId,
+      dto,
+      image,
+    );
+    return newMessage as OfferMessageDto;
+  }
+
+  @ApiOperation({ summary: 'Get a single quotation offer by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Quotation offer retrieved successfully.',
+    type: ParticipatingQuotationOfferDto,
+  })
+  @ApiResponse({ status: 404, description: 'Quotation offer not found.' })
+  @Get('offers/:id')
+  async getQuotationOffer(
+    @Param('id') offerId: string,
+  ): Promise<ParticipatingQuotationOfferDto> {
+    return this.quotationHandler.getQuotationOffer(offerId);
   }
 }

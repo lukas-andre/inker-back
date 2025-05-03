@@ -66,6 +66,20 @@ import { CreateQuotationOfferReqDto } from './dtos/createQuotationOfferReq.dto';
 import { ListQuotationOffersResDto } from './dtos/listQuotationOffersRes.dto';
 import { UserType } from '../../users/domain/enums/userType.enum';
 
+// Import necessary types for the new method
+import { SendOfferMessageUseCase } from '../usecases/sendOfferMessage.usecase';
+import { SendOfferMessageReqDto } from './dtos/sendOfferMessageReq.dto';
+import { OfferMessageDto } from '../domain/dtos/offerMessage.dto';
+
+// Import the new use case and DTO
+import { ListParticipatingQuotationsUseCase } from '../usecases/listParticipatingQuotations.usecase';
+import { ListParticipatingQuotationsResDto } from '../domain/dtos/participatingQuotationOffer.dto';
+// Import the GetQuotationOfferUseCase
+import { GetQuotationOfferUseCase } from '../usecases/getQuotationOffer.usecase';
+import { ParticipatingQuotationOfferDto } from '../domain/dtos/participatingQuotationOffer.dto';
+// Potentially import Query DTO if pagination is implemented
+// import { ListParticipatingQuotationsQueryDto } from './dtos/listParticipatingQuotationsQuery.dto';
+
 @Injectable()
 export class AgendaHandler {
   constructor(
@@ -104,6 +118,12 @@ export class AgendaHandler {
     private readonly submitQuotationOfferUseCase: SubmitQuotationOfferUseCase,
     private readonly listQuotationOffersUseCase: ListQuotationOffersUseCase,
     private readonly acceptQuotationOfferUseCase: AcceptQuotationOfferUseCase,
+    // Inject the new use case
+    private readonly sendOfferMessageUseCase: SendOfferMessageUseCase,
+    // Inject the new use case
+    private readonly listParticipatingQuotationsUseCase: ListParticipatingQuotationsUseCase,
+    // Inject the new use case for getting a single offer
+    private readonly getQuotationOfferUseCase: GetQuotationOfferUseCase,
   ) { }
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
@@ -200,6 +220,11 @@ export class AgendaHandler {
   }
 
   async getQuotation(id: string): Promise<GetQuotationResDto> {
+    const { userType, userTypeId } = this.requestContext;
+    // Pass artistId to usecase when user is an artist
+    if (userType === UserType.ARTIST) {
+      return this.getQuotationUseCase.execute(id, userTypeId);
+    }
     return this.getQuotationUseCase.execute(id);
   }
 
@@ -252,11 +277,7 @@ export class AgendaHandler {
 
   async markQuotationAsRead(id: string) {
     const { userType } = this.requestContext;
-    if (userType !== UserType.CUSTOMER) {
-      throw new UnauthorizedException(
-        'You dont have permission to access this resource',
-      );
-    }
+
     return this.markQuotationAsReadUseCase.execute(id, userType);
   }
 
@@ -382,12 +403,78 @@ export class AgendaHandler {
     quotationId: string,
     offerId: string,
   ): Promise<{ success: boolean; message: string }> {
-    const { userTypeId, userType } = this.requestContext;
-    if (userType !== UserType.CUSTOMER) {
+    const { userId } = this.requestContext;
+    if (!userId) throw new UnauthorizedException();
+    // Assuming only customers can accept offers
+    return this.acceptQuotationOfferUseCase.execute(quotationId, offerId, userId);
+  }
+
+  // Add the new handler method
+  async sendOfferMessage(
+    quotationId: string,
+    offerId: string,
+    dto: SendOfferMessageReqDto,
+    image?: FileInterface,
+  ): Promise<OfferMessageDto> {
+    // Implementation will call this.sendOfferMessageUseCase.execute
+    // Needs mapping from the resulting OfferMessage entity to OfferMessageDto
+    const resultMessageEntity = await this.sendOfferMessageUseCase.execute(
+      quotationId,
+      offerId,
+      dto,
+      image,
+    );
+
+    // Find the newly added message (usually the last one)
+    const newMessage = resultMessageEntity.messages?.slice(-1)[0];
+
+    if (!newMessage) {
+      // Handle error case where message wasn't added or found
+      // This shouldn't happen if the use case succeeded but good to check
+      throw new Error('Failed to retrieve sent message');
+    }
+
+    // Map the OfferMessage entity to OfferMessageDto
+    return {
+      senderId: newMessage.senderId,
+      senderType: newMessage.senderType,
+      message: newMessage.message,
+      imageUrl: newMessage.imageUrl,
+      timestamp: newMessage.timestamp,
+    };
+  }
+
+  // Add the new handler method for listing participating quotations
+  async listParticipatingQuotations(
+    // query?: ListParticipatingQuotationsQueryDto // Add query DTO if needed
+  ): Promise<ListParticipatingQuotationsResDto> {
+    const { userType, userTypeId } = this.requestContext;
+    if (userType !== UserType.ARTIST) {
       throw new UnauthorizedException(
-        'You dont have permission to access this resource',
+        'Only artists can access this resource.',
       );
     }
-    return this.acceptQuotationOfferUseCase.execute(quotationId, offerId, userTypeId);
+    // Pass the artist ID and potentially the query DTO to the use case
+    return this.listParticipatingQuotationsUseCase.execute(userTypeId /*, query */);
+  }
+
+  // Method to handle fetching a single quotation offer
+  async getQuotationOffer(
+    offerId: string,
+  ): Promise<ParticipatingQuotationOfferDto> {
+    const { userType, userTypeId } = this.requestContext;
+    
+    // Authorize access (only artist who created the offer or customer who received it)
+    // For now, we'll just check if the user is an artist, the use case will check if it's their offer
+    if (userType !== UserType.ARTIST && userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You do not have permission to access this resource',
+      );
+    }
+    
+    // If artist, pass their ID for authorization check
+    const currentArtistId = userType === UserType.ARTIST ? userTypeId : undefined;
+    
+    return this.getQuotationOfferUseCase.execute(offerId, currentArtistId);
   }
 }
