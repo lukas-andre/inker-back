@@ -5,15 +5,12 @@ import { OpenQuotationListItemDto } from '../../domain/dtos/openQuotationListIte
 
 export class ListOpenQuotationsQueryDto {
   @ApiPropertyOptional({
-    description: 'Maximum distance in KM from the artist to the customer location',
-    example: 50,
-    type: Number,
+    description: 'Maximum distance in kilometers that the artist is willing to travel',
+    example: 10
   })
   @IsOptional()
-  @Type(() => Number)
   @IsNumber()
-  @Min(1)
-  @Max(1000) // Sensible limit
+  @Type(() => Number)
   maxDistance?: number;
 
   // Add other potential filters like category, style etc.
@@ -22,7 +19,10 @@ export class ListOpenQuotationsQueryDto {
 
 export class GetOpenQuotationsResDto {
   @ApiProperty({ type: [OpenQuotationListItemDto] })
-  quotations: OpenQuotationListItemDto[];
+  items: OpenQuotationListItemDto[];
+
+  @ApiProperty({ description: 'Total number of items', example: 10 })
+  total: number;
 
   // Add pagination metadata if needed
 } 

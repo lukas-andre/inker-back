@@ -1,9 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import { QuotationOffer } from '../entities/quotationOffer.entity';
+import { QuotationOffer, QuotationOfferStatus } from '../entities/quotationOffer.entity';
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { InjectDataSource, InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { BaseComponent } from '../../../global/domain/components/base.component';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
+
+interface CreateOfferNativeParams {
+    quotationId: string;
+    artistId: string;
+    estimatedCost?: MoneyEntity;
+    estimatedDuration?: number;
+    message?: string;
+    status: QuotationOfferStatus;
+}
 
 @Injectable()
 export class QuotationOfferRepository extends BaseComponent {
@@ -64,5 +74,43 @@ export class QuotationOfferRepository extends BaseComponent {
 
         const result = await this.source.query(query);
         return result.map(row => row.offer) as QuotationOffer[];
+    }
+
+    async createOfferNative(params: CreateOfferNativeParams): Promise<{ id: string }> {
+        const {
+            quotationId,
+            artistId,
+            estimatedCost,
+            estimatedDuration,
+            message,
+            status
+        } = params;
+
+        const query = `
+            INSERT INTO quotation_offers (
+                quotation_id, 
+                artist_id, 
+                estimated_cost, 
+                estimated_duration, 
+                message, 
+                status
+            ) VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id;
+        `;
+
+        const result = await this.source.query(query, [
+            quotationId,
+            artistId,
+            JSON.stringify(estimatedCost),
+            estimatedDuration,
+            message,
+            status,
+        ]);
+
+        if (!result || result.length === 0 || !result[0].id) {
+            throw new Error('Failed to create quotation offer');
+        }
+
+        return { id: result[0].id };
     }
 } 

@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { MoneyEntity } from '../../../global/domain/models/money.model';
-import { QuotationOfferStatus } from '../../infrastructure/entities/quotationOffer.entity';
+import { QuotationOfferStatus, OfferMessage } from '../../infrastructure/entities/quotationOffer.entity';
 import { ArtistDto } from '../../../artists/domain/dtos/artist.dto'; // Assuming you have an ArtistDto
+import { OfferMessageDto } from './offerMessage.dto'; // Import OfferMessageDto for Swagger
 
 // Base DTO for Quotation Offer data
 export class QuotationOfferDto {
@@ -31,6 +32,9 @@ export class QuotationOfferDto {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiPropertyOptional({ type: [OfferMessageDto] }) // Use DTO for Swagger
+  messages?: OfferMessage[]; // Keep interface for type safety in code
 }
 
 // DTO for listing offers, potentially including artist details and distance

@@ -15,7 +15,9 @@ import { GetQuotationResDto } from '../infrastructure/dtos/getQuotationRes.dto';
 import { TattooDesignCacheRepository } from '../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository';
 import { QuotationOfferRepository } from '../infrastructure/repositories/quotationOffer.repository';
 import { QuotationType } from '../infrastructure/entities/quotation.entity';
-import { OpenQuotationOfferDto } from '../domain/dtos/openQuotationOffer.dto';
+import { QuotationOfferListItemDto } from '../domain/dtos/quotationOffer.dto';
+import { Artist } from '../../artists/infrastructure/entities/artist.entity';
+import { ArtistDto } from '../../artists/domain/dtos/artist.dto';
 
 @Injectable()
 export class GetQuotationUseCase extends BaseUseCase implements UseCase {
@@ -31,7 +33,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
     super(GetQuotationUseCase.name);
   }
 
-  async execute(id: string): Promise<GetQuotationResDto> {
+  async execute(id: string, artistId?: string): Promise<GetQuotationResDto> {
     const quotation = await this.quotationProvider.findOne({
       where: { id },
       relations: ['history'],
@@ -43,7 +45,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
 
     // Get customer data
     const customer = await this.customerProvider.findOne({ where: { id: quotation.customerId } });
-    
+
     // Get artist and location data only if artistId exists
     let artist = null;
     let location = null;
@@ -55,34 +57,86 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
     }
 
     // Get offers for OPEN quotations
-    let offers = [];
+    let offers: QuotationOfferListItemDto[] = [];
+    let hasOffered = false; // Initialize hasOffered flag
+    
     if (quotation.type === QuotationType.OPEN) {
       const quotationOffers = await this.quotationOfferRepo.findByQuotationIdsNative([id]);
-      
+
+      // Check if the artist has offered on this quotation
+      if (artistId && quotationOffers.length > 0) {
+        hasOffered = quotationOffers.some(offer => offer.artistId === artistId);
+      }
+
       if (quotationOffers.length > 0) {
-        // Get artist names for the offers
+        // Get artist details for the offers
         const offerArtistIds = [...new Set(quotationOffers.map(o => o.artistId))];
-        let artistNameMap = new Map<string, string>();
-        
+        let artistsMap = new Map<string, any>();
+
         if (offerArtistIds.length > 0) {
           const offerArtists = await this.artistProvider.find({
             where: { id: In(offerArtistIds) },
-            select: ['id', 'firstName', 'lastName'],
+            select: [
+              'id', 
+              'userId', 
+              'username', 
+              'firstName', 
+              'lastName', 
+              'profileThumbnail', 
+              'shortDescription',
+              'studioPhoto',
+              'rating',
+              'createdAt',
+              'updatedAt'
+            ],
+            relations: ['contact']
           });
-          
-          artistNameMap = new Map(offerArtists.map(a => [
-            a.id, 
-            `${a.firstName} ${a.lastName}`.trim() || 'Unknown Artist'
-          ]));
+          artistsMap = new Map(offerArtists.map((a: Artist) => [a.id, a]));
         }
-        
-        offers = quotationOffers.map(offer => ({
-          id: offer.id,
-          artistId: offer.artistId,
-          artistName: artistNameMap.get(offer.artistId) ?? 'Unknown Artist',
-          estimatedCost: offer.estimatedCost,
-          message: offer.message,
-        } as OpenQuotationOfferDto));
+
+        offers = quotationOffers.map(offer => {
+          const artistEntity = artistsMap.get(offer.artistId);
+          let artistDto: ArtistDto | undefined = undefined;
+
+          if (artistEntity) {
+            artistDto = {
+              id: artistEntity.id,
+              userId: artistEntity.userId,
+              username: artistEntity.username,
+              firstName: artistEntity.firstName,
+              lastName: artistEntity.lastName,
+              profileThumbnail: artistEntity.profileThumbnail,
+              shortDescription: artistEntity.shortDescription,
+              studioPhoto: artistEntity.studioPhoto,
+              contact: artistEntity.contact ? {
+                id: artistEntity.contact.id,
+                email: artistEntity.contact.email,
+                phone: artistEntity.contact.phone,
+                phoneCountryIsoCode: artistEntity.contact.phoneCountryIsoCode,
+                phoneDialCode: artistEntity.contact.phoneDialCode,
+                createdAt: artistEntity.contact.createdAt,
+                updatedAt: artistEntity.contact.updatedAt,
+              } : undefined,
+              rating: artistEntity.rating,
+              createdAt: artistEntity.createdAt,
+              updatedAt: artistEntity.updatedAt,
+            };
+          }
+          
+          return {
+            id: offer.id,
+            quotationId: offer.quotationId,
+            artistId: offer.artistId,
+            estimatedCost: offer.estimatedCost,
+            estimatedDuration: offer.estimatedDuration,
+            message: offer.message,
+            status: offer.status,
+            createdAt: offer.createdAt,
+            updatedAt: offer.updatedAt,
+            messages: offer.messages ?? [],
+            artist: artistDto,
+          } as QuotationOfferListItemDto
+        });
       }
     }
 
@@ -100,6 +154,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
       stencil,
       tattooDesignCache,
       offers,
+      hasOffered, // Add the hasOffered flag to the response
     };
   }
 }

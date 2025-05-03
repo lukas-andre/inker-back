@@ -1,4 +1,4 @@
-import { Column, Entity, Index, OneToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
@@ -84,7 +84,6 @@ export enum QuotationType {
 
 @Entity({ name: 'quotation' })
 export class Quotation extends BaseEntity {
-  @Index()
   @Column({ name: 'customer_id' })
   customerId: string;
 

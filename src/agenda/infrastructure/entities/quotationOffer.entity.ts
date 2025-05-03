@@ -1,7 +1,9 @@
-import { Column, Entity, Index, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { Quotation } from './quotation.entity';
+// import { User } from '../../../users/infrastructure/entities/user.entity'; // Not needed here
+// import { Artist } from '../../../artists/infrastructure/entities/artist.entity'; // Remove cross-db entity import
 
 export enum QuotationOfferStatus {
   SUBMITTED = 'SUBMITTED',
@@ -10,18 +12,32 @@ export enum QuotationOfferStatus {
   WITHDRAWN = 'WITHDRAWN',
 }
 
+// Define the structure for a single chat message
+export interface OfferMessage {
+  senderId: string; // Could be customerId or artistId
+  senderType: 'customer' | 'artist';
+  message: string;
+  imageUrl?: string; // Optional URL for an image
+  timestamp: Date;
+}
+
 @Entity({ name: 'quotation_offers' })
 export class QuotationOffer extends BaseEntity {
   @Index()
   @Column({ name: 'quotation_id' })
   quotationId: string;
 
-  @ManyToOne(() => Quotation, quotation => quotation.offers)
+  @ManyToOne(() => Quotation, quotation => quotation.offers, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'quotation_id' })
   quotation: Quotation;
 
   @Index()
   @Column({ name: 'artist_id' })
   artistId: string;
+
+  // @ManyToOne(() => Artist, { onDelete: 'CASCADE' }) // Remove Artist relation
+  // @JoinColumn({ name: 'artist_id' })
+  // artist: Artist;
 
   @Column({
     name: 'estimated_cost',
@@ -57,4 +73,7 @@ export class QuotationOffer extends BaseEntity {
     default: QuotationOfferStatus.SUBMITTED,
   })
   status: QuotationOfferStatus;
+
+  @Column({ name: 'messages', type: 'jsonb', nullable: true, default: [] })
+  messages?: OfferMessage[];
 } 

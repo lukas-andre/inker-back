@@ -16,7 +16,7 @@ import {
 } from '../../global/domain/exceptions/domain.exception';
 import { CreateQuotationOfferReqDto } from '../infrastructure/dtos/createQuotationOfferReq.dto';
 import { QuotationStatus, QuotationType } from '../infrastructure/entities/quotation.entity';
-import { QuotationOffer, QuotationOfferStatus } from '../infrastructure/entities/quotationOffer.entity';
+import { QuotationOfferStatus } from '../infrastructure/entities/quotationOffer.entity';
 import { queues } from '../../queues/queues';
 import { NewOfferReceivedJobType } from '../../queues/notifications/domain/schemas/quotationOffer.schema';
 
@@ -57,31 +57,29 @@ export class SubmitQuotationOfferUseCase extends BaseUseCase implements UseCase,
         }
 
         // 3. Check for existing offer from this artist
-        const existingOffer = await this.offerRepo.findOne({
-            where: { quotationId, artistId },
-        });
-        if (existingOffer) {
+        const existingOffer = await this.offerRepo.findByQuotationIdsNative([quotationId]);
+        if (existingOffer && existingOffer.length > 0) {
             throw new DomainConflict('Artist has already submitted an offer for this quotation');
         }
 
-        // 4. Create and Save Offer
-        const newOffer = this.offerRepo.manager.create(QuotationOffer, {
+        // 4. Create and Save Offer using native query
+        const offerResult = await this.offerRepo.createOfferNative({
             quotationId,
             artistId,
             estimatedCost: dto.estimatedCost,
-            estimatedDuration: dto.estimatedDuration,
+            estimatedDuration: dto.appointmentDuration,
             message: dto.message,
             status: QuotationOfferStatus.SUBMITTED,
         });
 
-        const savedOffer = await this.offerRepo.manager.save(newOffer);
+        const savedOfferId = offerResult.id;
 
         // 5. Dispatch Notification to Customer
         try {
             const notificationJob: NewOfferReceivedJobType = {
                 jobId: 'NEW_OFFER_RECEIVED',
                 metadata: {
-                    offerId: savedOffer.id,
+                    offerId: savedOfferId, // Use the ID from the native query result
                     quotationId: quotationId,
                     customerId: quotation.customerId,
                     artistId: artistId,
@@ -90,10 +88,10 @@ export class SubmitQuotationOfferUseCase extends BaseUseCase implements UseCase,
             };
             await this.notificationQueue.add(notificationJob);
         } catch (queueError) {
-            this.logger.error(`Failed to add NewOfferReceived notification job for offer ${savedOffer.id}: ${(queueError as Error).message}`, (queueError as Error).stack);
+            this.logger.error(`Failed to add NewOfferReceived notification job for offer ${savedOfferId}: ${(queueError as Error).message}`, (queueError as Error).stack);
             // Decide if this should be a critical failure
         }
 
-        return { id: savedOffer.id, created: true };
+        return { id: savedOfferId, created: true };
     }
 } 
