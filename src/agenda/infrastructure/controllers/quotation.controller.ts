@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
   Request,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -40,6 +41,8 @@ import { SendOfferMessageReqDto } from '../dtos/sendOfferMessageReq.dto';
 import { OfferMessageDto } from '../../domain/dtos/offerMessage.dto';
 import { ListParticipatingQuotationsResDto } from '../../domain/dtos/participatingQuotationOffer.dto';
 import { ParticipatingQuotationOfferDto } from '../../domain/dtos/participatingQuotationOffer.dto';
+import { UpdateQuotationOfferReqDto } from '../dtos/updateQuotationOfferReq.dto';
+import { UpdateOpenQuotationReqDto } from '../dtos/updateOpenQuotationReq.dto';
 
 @ApiTags('quotations')
 @Controller('quotations')
@@ -245,5 +248,33 @@ export class QuotationController {
     @Param('id') offerId: string,
   ): Promise<ParticipatingQuotationOfferDto> {
     return this.quotationHandler.getQuotationOffer(offerId);
+  }
+
+  @ApiOperation({ summary: '[Artist] Update quotation offer estimated cost and duration' })
+  @ApiOkResponse({ description: 'Quotation offer updated successfully.', type: DefaultResponseDto })
+  @ApiParam({ name: 'id', description: 'Quotation ID' })
+  @ApiParam({ name: 'offerId', description: 'Offer ID to update' })
+  @ApiBody({ type: UpdateQuotationOfferReqDto })
+  @Patch(':id/offers/:offerId')
+  async updateQuotationOffer(
+    @Param('id') quotationId: string,
+    @Param('offerId') offerId: string,
+    @Body() dto: UpdateQuotationOfferReqDto,
+  ): Promise<DefaultResponseDto> {
+    await this.quotationHandler.updateQuotationOffer(quotationId, offerId, dto);
+    return { status: DefaultResponseStatus.OK, data: 'Quotation offer updated successfully.' };
+  }
+
+  @ApiOperation({ summary: '[Customer] Actualizar cotización abierta (presupuesto, descripción, imagen generada)' })
+  @ApiOkResponse({ description: 'Cotización actualizada correctamente.', type: DefaultResponseDto })
+  @ApiParam({ name: 'id', description: 'Quotation ID' })
+  @ApiBody({ type: UpdateOpenQuotationReqDto })
+  @Patch(':id')
+  async updateOpenQuotation(
+    @Param('id') quotationId: string,
+    @Body() dto: UpdateOpenQuotationReqDto,
+  ): Promise<DefaultResponseDto> {
+    await this.quotationHandler.updateOpenQuotation(quotationId, dto);
+    return { status: DefaultResponseStatus.OK, data: 'Cotización actualizada correctamente.' };
   }
 }

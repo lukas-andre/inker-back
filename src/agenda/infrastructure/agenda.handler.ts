@@ -78,8 +78,13 @@ import { ListParticipatingQuotationsResDto } from '../domain/dtos/participatingQ
 import { GetQuotationOfferUseCase } from '../usecases/getQuotationOffer.usecase';
 import { ParticipatingQuotationOfferDto } from '../domain/dtos/participatingQuotationOffer.dto';
 import { ListCustomerOpenQuotationsUseCase } from '../usecases/listCutomerOpenQuotations.usecase';
+// Import the UpdateQuotationOfferUseCase and DTO
+import { UpdateQuotationOfferReqDto } from './dtos/updateQuotationOfferReq.dto';
+import { UpdateQuotationOfferUseCase } from '../usecases/updateQuotationOffer.usecase';
 // Potentially import Query DTO if pagination is implemented
 // import { ListParticipatingQuotationsQueryDto } from './dtos/listParticipatingQuotationsQuery.dto';
+import { UpdateOpenQuotationReqDto } from './dtos/updateOpenQuotationReq.dto';
+import { UpdateOpenQuotationUseCase } from '../usecases/updateOpenQuotation.usecase';
 
 @Injectable()
 export class AgendaHandler {
@@ -126,6 +131,10 @@ export class AgendaHandler {
     // Inject the new use case for getting a single offer
     private readonly getQuotationOfferUseCase: GetQuotationOfferUseCase,
     private readonly listCustomerOpenQuotationsUseCase: ListCustomerOpenQuotationsUseCase,
+    // Inject the new use case for updating quotation offer
+    private readonly updateQuotationOfferUseCase: UpdateQuotationOfferUseCase,
+    // Nuevo usecase para actualizar cotización abierta
+    private readonly updateOpenQuotationUseCase: UpdateOpenQuotationUseCase,
   ) { }
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
@@ -476,5 +485,35 @@ export class AgendaHandler {
     const currentArtistId = userType === UserType.ARTIST ? userTypeId : undefined;
     
     return this.getQuotationOfferUseCase.execute(offerId, currentArtistId);
+  }
+
+  // Method to handle updating a quotation offer
+  async updateQuotationOffer(
+    quotationId: string,
+    offerId: string,
+    dto: UpdateQuotationOfferReqDto,
+  ): Promise<void> {
+    const { userType, userTypeId } = this.requestContext;
+    
+    // Only artists can update their own offers
+    if (userType !== UserType.ARTIST) {
+      throw new UnauthorizedException(
+        'Only artists can update their quotation offers'
+      );
+    }
+    
+    return this.updateQuotationOfferUseCase.execute(quotationId, offerId, userTypeId, dto);
+  }
+
+  // Método para actualizar cotización abierta (customer)
+  async updateOpenQuotation(
+    quotationId: string,
+    dto: UpdateOpenQuotationReqDto,
+  ): Promise<void> {
+    const { userType, userTypeId } = this.requestContext;
+    if (userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException('Solo el customer puede actualizar su cotización abierta');
+    }
+    await this.updateOpenQuotationUseCase.execute(quotationId, userTypeId, dto);
   }
 }

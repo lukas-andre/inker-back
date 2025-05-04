@@ -12,8 +12,10 @@ import {
   Max,
   Min,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
 import { QuotationType } from '../entities/quotation.entity';
+import { MoneyDto } from '../../../global/domain/dtos/money.dto';
 
 export class CreateQuotationReqDto {
   @ApiProperty({
@@ -114,4 +116,31 @@ export class CreateQuotationReqDto {
   @Min(1)
   @Max(1000)
   readonly customerTravelRadiusKm?: number;
+
+  @ApiPropertyOptional({ type: MoneyDto, description: 'Presupuesto mínimo sugerido (solo OPEN)' })
+  @IsOptional()
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @ValidateNested()
+  @Type(() => MoneyDto)
+  readonly minBudget?: MoneyDto;
+
+  @ApiPropertyOptional({ type: MoneyDto, description: 'Presupuesto máximo sugerido (solo OPEN)' })
+  @IsOptional()
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @ValidateNested()
+  @Type(() => MoneyDto)
+  readonly maxBudget?: MoneyDto;
+
+  @ApiPropertyOptional({ type: MoneyDto, description: 'Presupuesto de referencia (solo OPEN)' })
+  @IsOptional()
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @ValidateNested()
+  @Type(() => MoneyDto)
+  readonly referenceBudget?: MoneyDto;
+
+  @ApiPropertyOptional({ description: 'ID de la imagen generada (solo OPEN)' })
+  @IsOptional()
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @IsString()
+  readonly generatedImageId?: string;
 }

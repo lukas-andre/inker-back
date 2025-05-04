@@ -156,6 +156,26 @@ export class CreateQuotationUseCase
         'NOW()'
       ];
 
+      // Agregar campos de presupuesto solo para OPEN
+      if (type === QuotationType.OPEN) {
+        if (createQuotationDto.minBudget) {
+          columns.push('min_budget');
+          values.push(JSON.stringify(createQuotationDto.minBudget));
+        }
+        if (createQuotationDto.maxBudget) {
+          columns.push('max_budget');
+          values.push(JSON.stringify(createQuotationDto.maxBudget));
+        }
+        if (createQuotationDto.referenceBudget) {
+          columns.push('reference_budget');
+          values.push(JSON.stringify(createQuotationDto.referenceBudget));
+        }
+        if (createQuotationDto.generatedImageId) {
+          columns.push('generated_image_id');
+          values.push(createQuotationDto.generatedImageId);
+        }
+      }
+
       // Filter out columns with null values specifically for OPEN type to avoid sending nulls explicitly if not needed
       // Though binding null is generally fine
       const nonNullIndices = values.map((v, i) => v !== undefined ? i : -1).filter(i => i !== -1);

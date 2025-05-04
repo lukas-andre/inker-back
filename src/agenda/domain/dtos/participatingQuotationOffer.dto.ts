@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { QuotationStatus, QuotationType } from '../../infrastructure/entities/quotation.entity';
 import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
 import { OpenQuotationOfferDto } from './openQuotationOffer.dto';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 
 /**
  * DTO for quotation data that will be nested within the ParticipatingQuotationOfferDto
@@ -27,6 +28,18 @@ export class NestedQuotationDto {
 
   @ApiPropertyOptional({ description: 'Date the quotation was last updated' })
   updatedAt: Date;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  minBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  maxBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  referenceBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ description: 'ID de la imagen generada (si existe)' })
+  generatedImageId?: string;
 }
 
 /**

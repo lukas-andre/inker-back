@@ -114,4 +114,16 @@ export class GetQuotationResDto {
 
   @ApiPropertyOptional({ description: 'Indicates if the current artist has offered on this quotation' })
   hasOffered?: boolean;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  minBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  maxBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  referenceBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ description: 'ID de la imagen generada (si existe)' })
+  generatedImageId?: string;
 }

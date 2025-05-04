@@ -292,4 +292,25 @@ export class Quotation extends BaseEntity {
 
   @OneToMany(() => QuotationOffer, offer => offer.quotation)
   offers?: QuotationOffer[];
+
+  @Column({ name: 'min_budget', type: 'jsonb', nullable: true, transformer: {
+    to: (v: MoneyEntity) => v ? v.toJSON() : null,
+    from: (v: any) => v ? new MoneyEntity(v.amount, v.currency, v.scale) : null
+  } })
+  minBudget?: MoneyEntity;
+
+  @Column({ name: 'max_budget', type: 'jsonb', nullable: true, transformer: {
+    to: (v: MoneyEntity) => v ? v.toJSON() : null,
+    from: (v: any) => v ? new MoneyEntity(v.amount, v.currency, v.scale) : null
+  } })
+  maxBudget?: MoneyEntity;
+
+  @Column({ name: 'reference_budget', type: 'jsonb', nullable: true, transformer: {
+    to: (v: MoneyEntity) => v ? v.toJSON() : null,
+    from: (v: any) => v ? new MoneyEntity(v.amount, v.currency, v.scale) : null
+  } })
+  referenceBudget?: MoneyEntity;
+
+  @Column({ name: 'generated_image_id', type: 'varchar', nullable: true })
+  generatedImageId?: string;
 }
