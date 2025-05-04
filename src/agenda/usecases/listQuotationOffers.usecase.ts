@@ -14,12 +14,12 @@ import {
 } from '../../global/domain/exceptions/domain.exception';
 import { QuotationStatus, QuotationType } from '../infrastructure/entities/quotation.entity';
 import { ListQuotationOffersResDto } from '../infrastructure/dtos/listQuotationOffersRes.dto';
-import { QuotationOfferListItemDto } from '../domain/dtos/quotationOffer.dto';
 import { calculateHaversineDistance } from '../../global/infrastructure/utils/geolocation.utils'; // Needed again
 import { ArtistLocationRepository } from '../../locations/infrastructure/database/artistLocation.repository';
 import { ArtistDto } from '../../artists/domain/dtos/artist.dto';
 import { Artist } from '../../artists/infrastructure/entities/artist.entity'; // Import Artist for type info
 import { ArtistLocation } from '../../locations/infrastructure/database/entities/artistLocation.entity';
+import { QuotationOfferListItemDto } from '../domain/dtos/quotationOffer.dto';
 
 @Injectable()
 export class ListQuotationOffersUseCase extends BaseUseCase implements UseCase {

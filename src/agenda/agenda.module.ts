@@ -60,6 +60,7 @@ import { TattooGeneratorDatabaseModule } from '../tattoo-generator/infrastructur
 import { SendOfferMessageUseCase } from './usecases/sendOfferMessage.usecase';
 import { ListParticipatingQuotationsUseCase } from './usecases/listParticipatingQuotations.usecase';
 import { GetQuotationOfferUseCase } from './usecases/getQuotationOffer.usecase';
+import { ListCustomerOpenQuotationsUseCase } from './usecases/listCutomerOpenQuotations.usecase';
 
 @Module({
   imports: [
@@ -121,6 +122,7 @@ import { GetQuotationOfferUseCase } from './usecases/getQuotationOffer.usecase';
     SendOfferMessageUseCase,
     ListParticipatingQuotationsUseCase,
     GetQuotationOfferUseCase,
+    ListCustomerOpenQuotationsUseCase
   ],
   controllers: [AgendaController, QuotationController],
   exports: [

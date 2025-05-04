@@ -77,6 +77,7 @@ import { ListParticipatingQuotationsResDto } from '../domain/dtos/participatingQ
 // Import the GetQuotationOfferUseCase
 import { GetQuotationOfferUseCase } from '../usecases/getQuotationOffer.usecase';
 import { ParticipatingQuotationOfferDto } from '../domain/dtos/participatingQuotationOffer.dto';
+import { ListCustomerOpenQuotationsUseCase } from '../usecases/listCutomerOpenQuotations.usecase';
 // Potentially import Query DTO if pagination is implemented
 // import { ListParticipatingQuotationsQueryDto } from './dtos/listParticipatingQuotationsQuery.dto';
 
@@ -124,6 +125,7 @@ export class AgendaHandler {
     private readonly listParticipatingQuotationsUseCase: ListParticipatingQuotationsUseCase,
     // Inject the new use case for getting a single offer
     private readonly getQuotationOfferUseCase: GetQuotationOfferUseCase,
+    private readonly listCustomerOpenQuotationsUseCase: ListCustomerOpenQuotationsUseCase,
   ) { }
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
@@ -366,12 +368,10 @@ export class AgendaHandler {
     query: ListOpenQuotationsQueryDto
   ): Promise<GetOpenQuotationsResDto> {
     const { userType, userTypeId } = this.requestContext;
-    if (userType !== UserType.ARTIST) {
-      throw new UnauthorizedException(
-        'You dont have permission to access this resource',
-      );
+    if (userType == UserType.ARTIST) {
+      return this.listOpenQuotationsUseCase.execute(userTypeId, query);
     }
-    return this.listOpenQuotationsUseCase.execute(userTypeId, query);
+    return this.listCustomerOpenQuotationsUseCase.execute(userTypeId, query);
   }
 
   async submitOffer(

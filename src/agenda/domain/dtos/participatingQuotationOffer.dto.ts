@@ -1,8 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { QuotationOfferListItemDto } from './quotationOffer.dto';
 import { QuotationStatus, QuotationType } from '../../infrastructure/entities/quotation.entity';
 import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { OpenQuotationOfferDto } from './openQuotationOffer.dto';
 
 /**
  * DTO for quotation data that will be nested within the ParticipatingQuotationOfferDto
@@ -34,7 +33,7 @@ export class NestedQuotationDto {
  * DTO representing a Quotation Offer from the perspective of the participating artist,
  * enriched with relevant quotation and customer details.
  */
-export class ParticipatingQuotationOfferDto extends QuotationOfferListItemDto {
+export class ParticipatingQuotationOfferDto extends OpenQuotationOfferDto {
   // Nested Quotation object instead of flattened fields
   @ApiProperty({ 
     type: () => NestedQuotationDto, 

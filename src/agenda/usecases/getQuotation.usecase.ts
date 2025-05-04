@@ -15,9 +15,9 @@ import { GetQuotationResDto } from '../infrastructure/dtos/getQuotationRes.dto';
 import { TattooDesignCacheRepository } from '../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository';
 import { QuotationOfferRepository } from '../infrastructure/repositories/quotationOffer.repository';
 import { QuotationType } from '../infrastructure/entities/quotation.entity';
-import { QuotationOfferListItemDto } from '../domain/dtos/quotationOffer.dto';
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
 import { ArtistDto } from '../../artists/domain/dtos/artist.dto';
+import { OpenQuotationOfferDto } from '../domain/dtos/openQuotationOffer.dto';
 
 @Injectable()
 export class GetQuotationUseCase extends BaseUseCase implements UseCase {
@@ -57,7 +57,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
     }
 
     // Get offers for OPEN quotations
-    let offers: QuotationOfferListItemDto[] = [];
+    let offers: OpenQuotationOfferDto[] = [];
     let hasOffered = false; // Initialize hasOffered flag
     
     if (quotation.type === QuotationType.OPEN) {
@@ -125,6 +125,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
           
           return {
             id: offer.id,
+            artistName: artistEntity.username,
             quotationId: offer.quotationId,
             artistId: offer.artistId,
             estimatedCost: offer.estimatedCost,
@@ -135,7 +136,7 @@ export class GetQuotationUseCase extends BaseUseCase implements UseCase {
             updatedAt: offer.updatedAt,
             messages: offer.messages ?? [],
             artist: artistDto,
-          } as QuotationOfferListItemDto
+          } as OpenQuotationOfferDto
         });
       }
     }

@@ -159,6 +159,7 @@ export class ListParticipatingQuotationsUseCase
       return {
         id: offer.id,
         quotationId: offer.quotationId,
+        artistName: artistDto.username,
         artistId: offer.artistId,
         estimatedCost: offer.estimatedCost as MoneyEntity | undefined,
         estimatedDuration: offer.estimatedDuration,
