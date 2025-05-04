@@ -61,6 +61,8 @@ import { SendOfferMessageUseCase } from './usecases/sendOfferMessage.usecase';
 import { ListParticipatingQuotationsUseCase } from './usecases/listParticipatingQuotations.usecase';
 import { GetQuotationOfferUseCase } from './usecases/getQuotationOffer.usecase';
 import { ListCustomerOpenQuotationsUseCase } from './usecases/listCutomerOpenQuotations.usecase';
+import { UpdateQuotationOfferUseCase } from './usecases/updateQuotationOffer.usecase';
+import { UpdateOpenQuotationUseCase } from './usecases/updateOpenQuotation.usecase';
 
 @Module({
   imports: [
@@ -122,7 +124,9 @@ import { ListCustomerOpenQuotationsUseCase } from './usecases/listCutomerOpenQuo
     SendOfferMessageUseCase,
     ListParticipatingQuotationsUseCase,
     GetQuotationOfferUseCase,
-    ListCustomerOpenQuotationsUseCase
+    ListCustomerOpenQuotationsUseCase,
+    UpdateQuotationOfferUseCase,
+    UpdateOpenQuotationUseCase
   ],
   controllers: [AgendaController, QuotationController],
   exports: [

@@ -354,6 +354,10 @@ export class QuotationRepository extends BaseComponent {
       return false;
     }
   }
+
+  async updateSimple(id: string, fields: Partial<Quotation>) {
+    return this.quotationRepository.update(id, fields);
+  }
 }
 
 const transformEstimatedCost = (
