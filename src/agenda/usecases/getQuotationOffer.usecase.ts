@@ -138,18 +138,11 @@ export class GetQuotationOfferUseCase extends BaseUseCase implements UseCase {
     return {
       // Offer details
       id: offer.id,
-      quotationId: offer.quotationId,
       artistId: offer.artistId,
       estimatedCost: offer.estimatedCost as MoneyEntity | undefined,
-      estimatedDuration: offer.estimatedDuration,
       message: offer.message,
-      status: offer.status,
-      createdAt: offer.createdAt,
-      updatedAt: offer.updatedAt,
       messages: offer.messages,
-      artist: artistDto,
-      distanceToCustomerKm: undefined, // Would need to calculate if required
-
+      artistName: artistDto.username,
       // Nested objects
       quotation: quotationDto,
       customer: customerDto,

@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { QuotationOfferListItemDto } from '../../domain/dtos/quotationOffer.dto';
 
 export class ListQuotationOffersResDto {
