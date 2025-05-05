@@ -73,6 +73,10 @@ export class ListParticipatingQuotationsUseCase
         'q.updatedAt',
         'q.customerLat',
         'q.customerLon',
+        'q.minBudget',
+        'q.maxBudget',
+        'q.referenceBudget',
+        'q.generatedImageId',
       ])
       .orderBy('offer.updatedAt', 'DESC')
       .skip(skip)

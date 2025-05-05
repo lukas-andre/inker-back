@@ -46,6 +46,11 @@ export class ListCustomerOpenQuotationsUseCase extends BaseUseCase implements Us
                 'q.customerTravelRadiusKm as "customerTravelRadiusKm"',
                 'q.createdAt as "createdAt"',
                 'q.updatedAt as "updatedAt"',
+                'q.minBudget as "minBudget"',
+                'q.maxBudget as "maxBudget"',
+                'q.referenceBudget as "referenceBudget"',
+                'q.generatedImageId as "generatedImageId"',
+                'q.tattooDesignImageUrl as "tattooDesignImageUrl"',
             ])
             .where('q.status = :status', { status: QuotationStatus.OPEN })
             .andWhere('q.type = :type', { type: QuotationType.OPEN })
