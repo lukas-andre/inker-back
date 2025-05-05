@@ -202,7 +202,7 @@ export class CreateQuotationUseCase
       quotationId = quotationResult[0].id;
 
       // 5. Upload Reference Images if provided
-      if (referenceImages && referenceImages.length > 0) {
+      if (referenceImages && referenceImages.length > 1) {
         const targetArtistId = type === QuotationType.DIRECT ? artistId : null; // Or decide a generic path for open quotes
         const multimedias = await this.multimediasService.uploadReferenceImages(
           referenceImages,

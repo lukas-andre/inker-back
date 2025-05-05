@@ -69,9 +69,14 @@ export class ListOpenQuotationsUseCase extends BaseUseCase implements UseCase {
                 'q.type as "type"',
                 'q.customerLat as "customerLat"',
                 'q.customerLon as "customerLon"',
+                'q.minBudget as "minBudget"',
+                'q.maxBudget as "maxBudget"',
+                'q.referenceBudget as "referenceBudget"',
+                'q.generatedImageId as "generatedImageId"',
                 'q.customerTravelRadiusKm as "customerTravelRadiusKm"',
                 'q.createdAt as "createdAt"',
                 'q.updatedAt as "updatedAt"',
+                'q.tattooDesignImageUrl as "tattooDesignImageUrl"',
                 // Calculate distance using PostGIS
                 // Ensure quotation table has customerLat/customerLon indexed or consider a spatial index if performance is critical
                 `ST_Distance(
