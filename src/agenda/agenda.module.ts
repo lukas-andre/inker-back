@@ -63,6 +63,7 @@ import { GetQuotationOfferUseCase } from './usecases/getQuotationOffer.usecase';
 import { ListCustomerOpenQuotationsUseCase } from './usecases/listCutomerOpenQuotations.usecase';
 import { UpdateQuotationOfferUseCase } from './usecases/updateQuotationOffer.usecase';
 import { UpdateOpenQuotationUseCase } from './usecases/updateOpenQuotation.usecase';
+import { QuotationEnrichmentService } from './domain/services/quotationEnrichment.service';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { UpdateOpenQuotationUseCase } from './usecases/updateOpenQuotation.useca
     TypeOrmModule.forFeature([AgendaUnavailableTime], AGENDA_DB_CONNECTION_NAME),
   ],
   providers: [
+    QuotationEnrichmentService,
     QuotationStateMachine,
     AgendaHandler,
     AddEventUseCase,
