@@ -30,7 +30,7 @@ import { RsvpUseCase } from './usecases/event/rsvp.usecase';
 import { UpdateEventUseCase } from './usecases/event/updateEvent.usecase';
 import { MarkQuotationAsReadUseCase } from './usecases/quotation/markQuotationAsRead.usecase';
 import { ChangeEventStatusUsecase } from './usecases/event/changeEventStatus.usecase';
-import { EventReviewIntegrationUsecase } from './usecases/integrations/eventReviewIntegration.usecase';
+import { EventReviewIntegrationUsecase } from './usecases/event/eventReviewIntegration.usecase';
 import { SyncQueueModule } from '../queues/sync/sync.queue.module';
 
 // New imports for Artist Workflow Improvements
@@ -50,20 +50,20 @@ import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
 import { AgendaUnavailableTimeRepository } from './infrastructure/repositories/agendaUnavailableTime.provider';
 import { UpdateAgendaSettingsUseCase } from './usecases/agenda/updateAgendaSettings.usecase';
 import { GetAgendaSettingsUseCase } from './usecases/agenda/getAgendaSettings.usecase';
-import { CreateAgendaEventService } from './usecases/common/createAgendaEvent.service';
+import { CreateAgendaEventService } from './domain/services/createAgendaEvent.service';
 import { UserRepositoryModule } from '../users/infrastructure/repositories/userRepository.module';
-import { SubmitQuotationOfferUseCase } from './usecases/quotation/submitQuotationOffer.usecase';
-import { ListQuotationOffersUseCase } from './usecases/quotation/listQuotationOffers.usecase';
-import { AcceptQuotationOfferUseCase } from './usecases/quotation/acceptQuotationOffer.usecase';
+import { SubmitQuotationOfferUseCase } from './usecases/offer/submitQuotationOffer.usecase';
+import { ListQuotationOffersUseCase } from './usecases/offer/listQuotationOffers.usecase';
+import { AcceptQuotationOfferUseCase } from './usecases/offer/acceptQuotationOffer.usecase';
 import { TattooGeneratorDatabaseModule } from '../tattoo-generator/infrastructure/database/tattoGeneratorDatabase.module';
-import { SendOfferMessageUseCase } from './usecases/quotation/sendOfferMessage.usecase';
-import { ListParticipatingQuotationsUseCase } from './usecases/quotation/listParticipatingQuotations.usecase';
-import { GetQuotationOfferUseCase } from './usecases/quotation/getQuotationOffer.usecase';
+import { SendOfferMessageUseCase } from './usecases/offer/sendOfferMessage.usecase';
+import { ListParticipatingQuotationsUseCase } from './usecases/openQuotation/listParticipatingQuotations.usecase';
+import { GetQuotationOfferUseCase } from './usecases/offer/getQuotationOffer.usecase';
 import { ListCustomerOpenQuotationsUseCase } from './usecases/quotation/listCutomerOpenQuotations.usecase';
-import { UpdateQuotationOfferUseCase } from './usecases/quotation/updateQuotationOffer.usecase';
-import { UpdateOpenQuotationUseCase } from './usecases/quotation/updateOpenQuotation.usecase';
+import { UpdateQuotationOfferUseCase } from './usecases/offer/updateQuotationOffer.usecase';
+import { UpdateOpenQuotationUseCase } from './usecases/openQuotation/updateOpenQuotation.usecase';
 import { QuotationEnrichmentService } from './domain/services/quotationEnrichment.service';
-import { ListOpenQuotationsUseCase } from './usecases/quotation/listOpenQuotations.usecase';
+import { ListOpenQuotationsUseCase } from './usecases/openQuotation/listOpenQuotations.usecase';
 
 @Module({
   imports: [

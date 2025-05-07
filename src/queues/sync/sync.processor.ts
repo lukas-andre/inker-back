@@ -12,7 +12,7 @@ import { ArtistRepository } from '../../artists/infrastructure/repositories/arti
 import { ReviewAvgRepository } from '../../reviews/database/repositories/reviewAvg.repository';
 import { AgendaRepository } from '../../agenda/infrastructure/repositories/agenda.repository';
 import { QuotationRepository } from '../../agenda/infrastructure/repositories/quotation.provider';
-import { CreateAgendaEventService } from '../../agenda/usecases/common/createAgendaEvent.service';
+import { CreateAgendaEventService } from '../../agenda/domain/services/createAgendaEvent.service';
 import { QuotationType } from '../../agenda/infrastructure/entities/quotation.entity';
 import { QuotationOfferStatus } from '../../agenda/infrastructure/entities/quotationOffer.entity';
 

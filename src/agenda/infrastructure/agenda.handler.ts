@@ -10,7 +10,7 @@ import { FindEventFromArtistByEventIdUseCase } from '../usecases/agenda/findEven
 import { GetQuotationUseCase } from '../usecases/quotation/getQuotation.usecase';
 import { GetQuotationsUseCase } from '../usecases/quotation/getQuotations.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
-import { EventReviewIntegrationUsecase } from '../usecases/integrations/eventReviewIntegration.usecase';
+import { EventReviewIntegrationUsecase } from '../usecases/event/eventReviewIntegration.usecase';
 import { ListEventByViewTypeUseCase } from '../usecases/event/listEventByViewType.usecase';
 import { ListEventFromArtistAgenda } from '../usecases/event/listEventFromArtistAgenda.usecase';
 import { ListEventsByArtistId } from '../usecases/event/listEventsByArtistId.usecase';
@@ -55,9 +55,9 @@ import { GetAgendaSettingsResDto } from './dtos/getAgendaSettingsRes.dto';
 import { GetAgendaSettingsUseCase } from '../usecases/agenda/getAgendaSettings.usecase';
 
 // New Use Case Imports for Open Quotations
-import { SubmitQuotationOfferUseCase } from '../usecases/quotation/submitQuotationOffer.usecase';
-import { ListQuotationOffersUseCase } from '../usecases/quotation/listQuotationOffers.usecase';
-import { AcceptQuotationOfferUseCase } from '../usecases/quotation/acceptQuotationOffer.usecase';
+import { SubmitQuotationOfferUseCase } from '../usecases/offer/submitQuotationOffer.usecase';
+import { ListQuotationOffersUseCase } from '../usecases/offer/listQuotationOffers.usecase';
+import { AcceptQuotationOfferUseCase } from '../usecases/offer/acceptQuotationOffer.usecase';
 
 // New DTO Imports for Open Quotations
 import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from './dtos/listOpenQuotationsQuery.dto';
@@ -66,25 +66,25 @@ import { ListQuotationOffersResDto } from './dtos/listQuotationOffersRes.dto';
 import { UserType } from '../../users/domain/enums/userType.enum';
 
 // Import necessary types for the new method
-import { SendOfferMessageUseCase } from '../usecases/quotation/sendOfferMessage.usecase';
+import { SendOfferMessageUseCase } from '../usecases/offer/sendOfferMessage.usecase';
 import { SendOfferMessageReqDto } from './dtos/sendOfferMessageReq.dto';
 import { OfferMessageDto } from '../domain/dtos/offerMessage.dto';
 
 // Import the new use case and DTO
-import { ListParticipatingQuotationsUseCase } from '../usecases/quotation/listParticipatingQuotations.usecase';
+import { ListParticipatingQuotationsUseCase } from '../usecases/openQuotation/listParticipatingQuotations.usecase';
 import { ListParticipatingQuotationsResDto } from '../domain/dtos/participatingQuotationOffer.dto';
 // Import the GetQuotationOfferUseCase
-import { GetQuotationOfferUseCase } from '../usecases/quotation/getQuotationOffer.usecase';
+import { GetQuotationOfferUseCase } from '../usecases/offer/getQuotationOffer.usecase';
 import { ParticipatingQuotationOfferDto } from '../domain/dtos/participatingQuotationOffer.dto';
 import { ListCustomerOpenQuotationsUseCase } from '../usecases/quotation/listCutomerOpenQuotations.usecase';
 // Import the UpdateQuotationOfferUseCase and DTO
 import { UpdateQuotationOfferReqDto } from './dtos/updateQuotationOfferReq.dto';
-import { UpdateQuotationOfferUseCase } from '../usecases/quotation/updateQuotationOffer.usecase';
+import { UpdateQuotationOfferUseCase } from '../usecases/offer/updateQuotationOffer.usecase';
 // Potentially import Query DTO if pagination is implemented
 // import { ListParticipatingQuotationsQueryDto } from './dtos/listParticipatingQuotationsQuery.dto';
 import { UpdateOpenQuotationReqDto } from './dtos/updateOpenQuotationReq.dto';
-import { UpdateOpenQuotationUseCase } from '../usecases/quotation/updateOpenQuotation.usecase';
-import { ListOpenQuotationsUseCase } from '../usecases/quotation/listOpenQuotations.usecase';
+import { UpdateOpenQuotationUseCase } from '../usecases/openQuotation/updateOpenQuotation.usecase';
+import { ListOpenQuotationsUseCase } from '../usecases/openQuotation/listOpenQuotations.usecase';
 
 @Injectable()
 export class AgendaHandler {
