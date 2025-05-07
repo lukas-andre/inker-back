@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
 import { DataSource } from 'typeorm';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 

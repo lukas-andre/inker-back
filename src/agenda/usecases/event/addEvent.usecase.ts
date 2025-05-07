@@ -16,7 +16,7 @@ import { queues } from '../../../queues/queues';
 import { AddEventReqDto } from '../../infrastructure/dtos/addEventReq.dto';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { CreateAgendaEventService } from '../common/createAgendaEvent.service';
+import { CreateAgendaEventService } from '../../domain/services/createAgendaEvent.service';
 
 @Injectable()
 export class AddEventUseCase
