@@ -2,35 +2,35 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { ReviewArtistRequestDto } from '../../reviews/dtos/reviewArtistRequest.dto';
-import { AddEventUseCase } from '../usecases/addEvent.usecase';
-import { CancelEventUseCase } from '../usecases/cancelEvent.usecase';
-import { ChangeEventStatusUsecase } from '../usecases/changeEventStatus.usecase';
-import { CreateQuotationUseCase } from '../usecases/createQuotation.usecase';
-import { FindEventFromArtistByEventIdUseCase } from '../usecases/findEventFromArtistByEventId.usecase';
-import { GetQuotationUseCase } from '../usecases/getQuotation.usecase';
-import { GetQuotationsUseCase } from '../usecases/getQuotations.usecase';
+import { AddEventUseCase } from '../usecases/event/addEvent.usecase';
+import { CancelEventUseCase } from '../usecases/event/cancelEvent.usecase';
+import { ChangeEventStatusUsecase } from '../usecases/event/changeEventStatus.usecase';
+import { CreateQuotationUseCase } from '../usecases/quotation/createQuotation.usecase';
+import { FindEventFromArtistByEventIdUseCase } from '../usecases/agenda/findEventFromArtistByEventId.usecase';
+import { GetQuotationUseCase } from '../usecases/quotation/getQuotation.usecase';
+import { GetQuotationsUseCase } from '../usecases/quotation/getQuotations.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
 import { EventReviewIntegrationUsecase } from '../usecases/integrations/eventReviewIntegration.usecase';
-import { ListEventByViewTypeUseCase } from '../usecases/listEventByViewType.usecase';
-import { ListEventFromArtistAgenda } from '../usecases/listEventFromArtistAgenda.usecase';
-import { ListEventsByArtistId } from '../usecases/listEventsByArtistId.usecase';
-import { MarkEventAsDoneUseCase } from '../usecases/markEventAsDone.usecase';
+import { ListEventByViewTypeUseCase } from '../usecases/event/listEventByViewType.usecase';
+import { ListEventFromArtistAgenda } from '../usecases/event/listEventFromArtistAgenda.usecase';
+import { ListEventsByArtistId } from '../usecases/event/listEventsByArtistId.usecase';
+import { MarkEventAsDoneUseCase } from '../usecases/event/markEventAsDone.usecase';
 import { ProcessArtistActionUseCase } from '../usecases/quotation/processArtistAction.usecase';
 import { ProcessCustomerActionUseCase } from '../usecases/quotation/processCustomerAction.usecase';
-import { RsvpUseCase } from '../usecases/rsvp.usecase';
-import { UpdateEventUseCase } from '../usecases/updateEvent.usecase';
+import { RsvpUseCase } from '../usecases/event/rsvp.usecase';
+import { UpdateEventUseCase } from '../usecases/event/updateEvent.usecase';
 import { MarkQuotationAsReadUseCase } from '../usecases/quotation/markQuotationAsRead.usecase';
 
 // New imports for Artist Workflow Improvements
-import { UpdateAgendaSettingsUseCase } from '../usecases/updateAgendaSettings.usecase';
-import { SetWorkingHoursUseCase } from '../usecases/setWorkingHours.usecase';
-import { CreateUnavailableTimeUseCase } from '../usecases/createUnavailableTime.usecase';
-import { GetUnavailableTimesUseCase } from '../usecases/getUnavailableTimes.usecase';
-import { DeleteUnavailableTimeUseCase } from '../usecases/deleteUnavailableTime.usecase';
-import { RescheduleEventUseCase } from '../usecases/rescheduleEvent.usecase';
-import { UpdateEventNotesUseCase } from '../usecases/updateEventNotes.usecase';
-import { GetArtistAvailabilityUseCase } from '../usecases/getArtistAvailability.usecase';
-import { GetSuggestedTimeSlotsUseCase } from '../usecases/getSuggestedTimeSlots.usecase';
+import { UpdateAgendaSettingsUseCase } from '../usecases/agenda/updateAgendaSettings.usecase';
+import { SetWorkingHoursUseCase } from '../usecases/agenda/setWorkingHours.usecase';
+import { CreateUnavailableTimeUseCase } from '../usecases/agenda/createUnavailableTime.usecase';
+import { GetUnavailableTimesUseCase } from '../usecases/agenda/getUnavailableTimes.usecase';
+import { DeleteUnavailableTimeUseCase } from '../usecases/agenda/deleteUnavailableTime.usecase';
+import { RescheduleEventUseCase } from '../usecases/event/rescheduleEvent.usecase';
+import { UpdateEventNotesUseCase } from '../usecases/event/updateEventNotes.usecase';
+import { GetArtistAvailabilityUseCase } from '../usecases/agenda/getArtistAvailability.usecase';
+import { GetSuggestedTimeSlotsUseCase } from '../usecases/agenda/getSuggestedTimeSlots.usecase';
 import { SchedulingService, AvailabilityCalendar, TimeSlot } from '../services/scheduling.service';
 import { AgendaUnavailableTime } from './entities/agendaUnavailableTime.entity';
 
@@ -52,13 +52,12 @@ import { UpdateEventNotesReqDto } from './dtos/updateEventNotesReq.dto';
 import { ArtistAvailabilityQueryDto } from './dtos/artistAvailabilityQuery.dto';
 import { UpdateAgendaSettingsReqDto } from './dtos/updateAgendaSettingsReq.dto';
 import { GetAgendaSettingsResDto } from './dtos/getAgendaSettingsRes.dto';
-import { GetAgendaSettingsUseCase } from '../usecases/getAgendaSettings.usecase';
+import { GetAgendaSettingsUseCase } from '../usecases/agenda/getAgendaSettings.usecase';
 
 // New Use Case Imports for Open Quotations
-import { ListOpenQuotationsUseCase } from '../usecases/listOpenQuotations.usecase';
-import { SubmitQuotationOfferUseCase } from '../usecases/submitQuotationOffer.usecase';
-import { ListQuotationOffersUseCase } from '../usecases/listQuotationOffers.usecase';
-import { AcceptQuotationOfferUseCase } from '../usecases/acceptQuotationOffer.usecase';
+import { SubmitQuotationOfferUseCase } from '../usecases/quotation/submitQuotationOffer.usecase';
+import { ListQuotationOffersUseCase } from '../usecases/quotation/listQuotationOffers.usecase';
+import { AcceptQuotationOfferUseCase } from '../usecases/quotation/acceptQuotationOffer.usecase';
 
 // New DTO Imports for Open Quotations
 import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from './dtos/listOpenQuotationsQuery.dto';
@@ -67,24 +66,25 @@ import { ListQuotationOffersResDto } from './dtos/listQuotationOffersRes.dto';
 import { UserType } from '../../users/domain/enums/userType.enum';
 
 // Import necessary types for the new method
-import { SendOfferMessageUseCase } from '../usecases/sendOfferMessage.usecase';
+import { SendOfferMessageUseCase } from '../usecases/quotation/sendOfferMessage.usecase';
 import { SendOfferMessageReqDto } from './dtos/sendOfferMessageReq.dto';
 import { OfferMessageDto } from '../domain/dtos/offerMessage.dto';
 
 // Import the new use case and DTO
-import { ListParticipatingQuotationsUseCase } from '../usecases/listParticipatingQuotations.usecase';
+import { ListParticipatingQuotationsUseCase } from '../usecases/quotation/listParticipatingQuotations.usecase';
 import { ListParticipatingQuotationsResDto } from '../domain/dtos/participatingQuotationOffer.dto';
 // Import the GetQuotationOfferUseCase
-import { GetQuotationOfferUseCase } from '../usecases/getQuotationOffer.usecase';
+import { GetQuotationOfferUseCase } from '../usecases/quotation/getQuotationOffer.usecase';
 import { ParticipatingQuotationOfferDto } from '../domain/dtos/participatingQuotationOffer.dto';
-import { ListCustomerOpenQuotationsUseCase } from '../usecases/listCutomerOpenQuotations.usecase';
+import { ListCustomerOpenQuotationsUseCase } from '../usecases/quotation/listCutomerOpenQuotations.usecase';
 // Import the UpdateQuotationOfferUseCase and DTO
 import { UpdateQuotationOfferReqDto } from './dtos/updateQuotationOfferReq.dto';
-import { UpdateQuotationOfferUseCase } from '../usecases/updateQuotationOffer.usecase';
+import { UpdateQuotationOfferUseCase } from '../usecases/quotation/updateQuotationOffer.usecase';
 // Potentially import Query DTO if pagination is implemented
 // import { ListParticipatingQuotationsQueryDto } from './dtos/listParticipatingQuotationsQuery.dto';
 import { UpdateOpenQuotationReqDto } from './dtos/updateOpenQuotationReq.dto';
-import { UpdateOpenQuotationUseCase } from '../usecases/updateOpenQuotation.usecase';
+import { UpdateOpenQuotationUseCase } from '../usecases/quotation/updateOpenQuotation.usecase';
+import { ListOpenQuotationsUseCase } from '../usecases/quotation/listOpenQuotations.usecase';
 
 @Injectable()
 export class AgendaHandler {
@@ -412,10 +412,13 @@ export class AgendaHandler {
     quotationId: string,
     offerId: string,
   ): Promise<{ success: boolean; message: string }> {
-    const { userId } = this.requestContext;
-    if (!userId) throw new UnauthorizedException();
-    // Assuming only customers can accept offers
-    return this.acceptQuotationOfferUseCase.execute(quotationId, offerId, userId);
+    const { userTypeId, userType } = this.requestContext;
+    if (userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(
+        'You dont have permission to access this resource',
+      );
+    }
+    return this.acceptQuotationOfferUseCase.execute(quotationId, offerId, userTypeId);
   }
 
   // Add the new handler method

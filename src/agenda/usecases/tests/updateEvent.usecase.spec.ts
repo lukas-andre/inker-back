@@ -14,7 +14,7 @@ import { Agenda } from '../../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { UpdateEventUseCase } from '../updateEvent.usecase';
+import { UpdateEventUseCase } from '../event/updateEvent.usecase';
 
 describe('UpdateEventUseCase', () => {
   let useCase: UpdateEventUseCase;

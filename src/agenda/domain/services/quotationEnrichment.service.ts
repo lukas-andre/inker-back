@@ -1,19 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { In } from 'typeorm';
-import { Quotation } from '../../infrastructure/entities/quotation.entity';
-import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
-import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
-import { StencilRepository } from '../../../artists/infrastructure/repositories/stencil.repository';
-import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
-import { QuotationOfferRepository } from '../../infrastructure/repositories/quotationOffer.repository';
-import { TattooDesignCacheRepository } from '../../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository';
-import { GetQuotationResDto } from '../../infrastructure/dtos/getQuotationRes.dto';
-import { OpenQuotationOfferDto } from '../dtos/openQuotationOffer.dto';
-import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
-import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
-import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
-import { TattooDesignCacheEntity } from '../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
-import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
+import { Injectable } from "@nestjs/common";
+import { In } from "typeorm";
+import { ArtistDto } from "../../../artists/domain/dtos/artist.dto";
+import { Stencil } from "../../../artists/infrastructure/entities/stencil.entity";
+import { ArtistRepository } from "../../../artists/infrastructure/repositories/artist.repository";
+import { StencilRepository } from "../../../artists/infrastructure/repositories/stencil.repository";
+import { CustomerDto } from "../../../customers/domain/dtos/customer.dto";
+import { CustomerRepository } from "../../../customers/infrastructure/providers/customer.repository";
+import { ArtistLocationRepository } from "../../../locations/infrastructure/database/artistLocation.repository";
+import { ArtistLocation } from "../../../locations/infrastructure/database/entities/artistLocation.entity";
+import { TattooDesignCacheEntity } from "../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity";
+import { TattooDesignCacheRepository } from "../../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository";
+import { GetQuotationResDto } from "../../infrastructure/dtos/getQuotationRes.dto";
+import { Quotation } from "../../infrastructure/entities/quotation.entity";
+import { QuotationOfferRepository } from "../../infrastructure/repositories/quotationOffer.repository";
+import { OpenQuotationOfferDto } from "../dtos/openQuotationOffer.dto";
 
 export interface QuotationEnrichmentOptions {
   includeOffers?: boolean;
@@ -22,7 +22,8 @@ export interface QuotationEnrichmentOptions {
   includeStencil?: boolean;
   includeLocation?: boolean;
   includeTattooDesignCache?: boolean;
-  // ...otros flags según necesidades
+  includeHasOffered?: boolean;
+  currentArtistId?: string;
 }
 
 @Injectable()
@@ -34,7 +35,7 @@ export class QuotationEnrichmentService {
     private readonly locationRepo: ArtistLocationRepository,
     private readonly offerRepo: QuotationOfferRepository,
     private readonly tattooDesignCacheRepo: TattooDesignCacheRepository,
-  ) {}
+  ) { }
 
   async enrichQuotations(
     quotations: Quotation[],
@@ -84,6 +85,16 @@ export class QuotationEnrichmentService {
       });
     }
 
+    // Calcular hasOffered si corresponde
+    let artistOfferMap = new Map<string, boolean>();
+    if (options.includeHasOffered && options.currentArtistId && offers.length > 0) {
+      for (const offer of offers) {
+        if (offer.artistId === options.currentArtistId) {
+          artistOfferMap.set(offer.quotationId, true);
+        }
+      }
+    }
+
     // 5. Mapear cada quotation a GetQuotationResDto
     return quotations.map(q => {
       const dto: GetQuotationResDto = {
@@ -94,6 +105,7 @@ export class QuotationEnrichmentService {
         tattooDesignCache: options.includeTattooDesignCache && q.tattooDesignCacheId ? tattooDesignCacheMap.get(q.tattooDesignCacheId) : undefined,
         location: options.includeLocation && q.artistId ? locationMap.get(q.artistId) : undefined,
         offers: options.includeOffers ? offersMap.get(q.id) || [] : undefined,
+        hasOffered: options.includeHasOffered && options.currentArtistId ? !!artistOfferMap.get(q.id) : undefined,
       };
       return dto;
     });

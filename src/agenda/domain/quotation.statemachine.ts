@@ -18,7 +18,7 @@ export class QuotationStateMachine
     [QuotationStatus.ACCEPTED]: [],
     [QuotationStatus.REJECTED]: [],
     [QuotationStatus.CANCELED]: [],
-    [QuotationStatus.OPEN]: [QuotationStatus.QUOTED, QuotationStatus.CANCELED],
+    [QuotationStatus.OPEN]: [QuotationStatus.QUOTED, QuotationStatus.CANCELED, QuotationStatus.ACCEPTED],
   };
 
   getCurrentState(quotation: Quotation): QuotationStatus {
