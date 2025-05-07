@@ -19,6 +19,9 @@ export class QuotationOfferDto {
   estimatedCost?: MoneyEntity;
 
   @ApiPropertyOptional()
+  estimatedDate?: Date;
+  
+  @ApiPropertyOptional()
   estimatedDuration?: number; // in minutes
 
   @ApiPropertyOptional()

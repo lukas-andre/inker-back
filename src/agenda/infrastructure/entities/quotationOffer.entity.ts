@@ -60,6 +60,9 @@ export class QuotationOffer extends BaseEntity {
   })
   estimatedCost?: MoneyEntity;
 
+  @Column({ name: 'estimated_date', nullable: true })
+  estimatedDate?: Date;
+
   // in minutes
   @Column({ name: 'estimated_duration', nullable: true })
   estimatedDuration?: number;

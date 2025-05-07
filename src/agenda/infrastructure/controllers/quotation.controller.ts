@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   Request,
   Patch,
+  UploadedFiles,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,7 +24,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FileFastifyInterceptor } from 'fastify-file-interceptor';
+import { FileFastifyInterceptor, FilesFastifyInterceptor } from 'fastify-file-interceptor';
 import { DefaultResponseDto, DefaultResponseStatus } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
@@ -60,9 +61,9 @@ export class QuotationController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateQuotationReqDto })
   @Post()
-  @UseInterceptors(FileFastifyInterceptor('files[]', 10))
+  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
   async createQuotation(
-    @UploadedFile() referenceImages: FileInterface[],
+    @UploadedFiles() referenceImages: FileInterface[],
     @Body() dto: CreateQuotationReqDto,
   ): Promise<any> {
     return this.quotationHandler.createQuotation(dto, referenceImages);

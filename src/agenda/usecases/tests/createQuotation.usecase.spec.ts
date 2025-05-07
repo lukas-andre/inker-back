@@ -18,7 +18,7 @@ import {
 } from '../../infrastructure/entities/quotation.entity';
 import { QuotationHistory } from '../../infrastructure/entities/quotationHistory.entity';
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
-import { CreateQuotationUseCase } from '../createQuotation.usecase';
+import { CreateQuotationUseCase } from '../quotation/createQuotation.usecase';
 
 describe('CreateQuotationUseCase', () => {
   let createQuotationUseCase: CreateQuotationUseCase;

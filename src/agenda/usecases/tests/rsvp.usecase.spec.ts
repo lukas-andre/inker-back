@@ -14,7 +14,7 @@ import { queues } from '../../../queues/queues';
 import { Agenda } from '../../infrastructure/entities/agenda.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaInvitationRepository } from '../../infrastructure/repositories/agendaInvitation.provider';
-import { RsvpUseCase } from '../rsvp.usecase';
+import { RsvpUseCase } from '../event/rsvp.usecase';
 
 describe('RsvpUseCase', () => {
   let useCase: RsvpUseCase;

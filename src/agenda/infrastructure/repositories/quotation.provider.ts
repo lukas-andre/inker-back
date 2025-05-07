@@ -11,6 +11,7 @@ import {
   EntityManager,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsRelations,
   Repository,
 } from 'typeorm';
 
@@ -79,8 +80,8 @@ export class QuotationRepository extends BaseComponent {
     return result.exists;
   }
 
-  async findById(id: string) {
-    return this.quotationRepository.findOne({ where: { id } });
+  async findById(id: string, relations?: FindOptionsRelations<Quotation>) {
+    return this.quotationRepository.findOne({ where: { id }, relations });
   }
 
   async find(options: FindManyOptions<Quotation>) {

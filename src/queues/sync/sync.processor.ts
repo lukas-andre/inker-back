@@ -13,6 +13,8 @@ import { ReviewAvgRepository } from '../../reviews/database/repositories/reviewA
 import { AgendaRepository } from '../../agenda/infrastructure/repositories/agenda.repository';
 import { QuotationRepository } from '../../agenda/infrastructure/repositories/quotation.provider';
 import { CreateAgendaEventService } from '../../agenda/usecases/common/createAgendaEvent.service';
+import { QuotationType } from '../../agenda/infrastructure/entities/quotation.entity';
+import { QuotationOfferStatus } from '../../agenda/infrastructure/entities/quotationOffer.entity';
 
 @Processor(queues.sync.name)
 export class SyncProcessor extends BaseComponent {
@@ -63,7 +65,13 @@ export class SyncProcessor extends BaseComponent {
 
     const quotation = await this.quotationProvider.findById(
       data.metadata.quotationId,
+      {
+        offers: true
+      }
     );
+
+    const offer = quotation?.offers?.find(offer => offer.status === QuotationOfferStatus.ACCEPTED && offer.artistId === data.metadata.artistId);
+
     if (!quotation) {
       this.logger.error(
         `Quotation not found for id ${data.metadata.quotationId}`,
@@ -79,12 +87,23 @@ export class SyncProcessor extends BaseComponent {
       return;
     }
 
-    if (!quotation.appointmentDate || !quotation.appointmentDuration) {
+    if (quotation.type !== QuotationType.OPEN && (!quotation.appointmentDate || !quotation.appointmentDuration)) {
       this.logger.error(
         `Quotation ${quotation.id} missing appointment details`,
       );
       return;
     }
+
+    if (quotation.type === QuotationType.OPEN && (!offer.estimatedDate || !offer.estimatedDuration)) {
+      this.logger.error(
+        `Quotation ${quotation.id} missing offer details`,
+      );
+      return;
+    }
+
+    const estimatedDate = quotation.type === QuotationType.OPEN ? offer.estimatedDate : quotation.appointmentDate;
+    const estimatedDuration = quotation.type === QuotationType.OPEN ? offer.estimatedDuration : quotation.appointmentDuration;
+
 
     // Check for existing event to prevent duplicates (do this before using the service)
     const existingEvent = await this.agendaProvider.source.query(
@@ -101,8 +120,8 @@ export class SyncProcessor extends BaseComponent {
 
     // Calculate end date based on appointment duration
     const endDate = new Date(
-      quotation.appointmentDate.getTime() +
-        quotation.appointmentDuration * 60 * 1000,
+      estimatedDate.getTime() +
+      estimatedDuration * 60 * 1000,
     );
 
     // Use our common event creation service to create the event with history
@@ -113,7 +132,7 @@ export class SyncProcessor extends BaseComponent {
       'Appointment from Quotation', // Title
       quotation.description || 'Appointment details', // Info
       '#000000', // Color
-      quotation.appointmentDate,
+      estimatedDate,
       endDate,
       quotation.lastUpdatedBy, // Using whoever last updated the quotation as the creator
     );

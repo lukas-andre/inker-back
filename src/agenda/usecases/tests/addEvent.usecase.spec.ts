@@ -9,7 +9,7 @@ import {
 import { AddEventReqDto } from '../../infrastructure/dtos/addEventReq.dto';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { AddEventUseCase } from '../addEvent.usecase';
+import { AddEventUseCase } from '../event/addEvent.usecase';
 
 describe('AddEventUseCase', () => {
   let useCase: AddEventUseCase;

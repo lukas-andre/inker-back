@@ -10,6 +10,7 @@ interface CreateOfferNativeParams {
     quotationId: string;
     artistId: string;
     estimatedCost?: MoneyEntity;
+    estimatedDate?: Date;
     estimatedDuration?: number;
     message?: string;
     status: QuotationOfferStatus;
@@ -81,6 +82,7 @@ export class QuotationOfferRepository extends BaseComponent {
             quotationId,
             artistId,
             estimatedCost,
+            estimatedDate,
             estimatedDuration,
             message,
             status
@@ -91,10 +93,11 @@ export class QuotationOfferRepository extends BaseComponent {
                 quotation_id, 
                 artist_id, 
                 estimated_cost, 
+                estimated_date,
                 estimated_duration, 
                 message, 
                 status
-            ) VALUES ($1, $2, $3, $4, $5, $6)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id;
         `;
 
@@ -102,6 +105,7 @@ export class QuotationOfferRepository extends BaseComponent {
             quotationId,
             artistId,
             JSON.stringify(estimatedCost),
+            estimatedDate,
             estimatedDuration,
             message,
             status,

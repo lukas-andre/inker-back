@@ -14,7 +14,7 @@ import { Agenda } from '../../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { CancelEventUseCase } from '../cancelEvent.usecase';
+import { CancelEventUseCase } from '../event/cancelEvent.usecase';
 
 describe('CancelEventUseCase', () => {
   let useCase: CancelEventUseCase;
