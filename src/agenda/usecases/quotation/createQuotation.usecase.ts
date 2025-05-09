@@ -86,7 +86,7 @@ export class CreateQuotationUseCase
       if (tattooDesignCacheId && !tattooDesignImageUrl) {
         throw new DomainBadRule('tattooDesignImageUrl is required when tattooDesignCacheId is provided');
       }
-      if (!tattooDesignCacheId && tattooDesignImageUrl) {
+      if (!tattooDesignImageUrl) {
         throw new DomainBadRule('tattooDesignCacheId is required when tattooDesignImageUrl is provided');
       }
     }
@@ -107,12 +107,12 @@ export class CreateQuotationUseCase
       if (type !== QuotationType.OPEN) {
         throw new DomainBadRule('tattooDesignCacheId is only allowed for OPEN quotations');
       }
-      const tattooDesign = await this.tattooDesignCacheProvider.findById(tattooDesignCacheId);
+      let tattooDesign = await this.tattooDesignCacheProvider.findById(tattooDesignCacheId);
       if (!tattooDesign) {
-        throw new DomainNotFound('Tattoo Design Cache not found');
-      }
-      if (!tattooDesign.imageUrls.includes(tattooDesignImageUrl)) {
-        throw new DomainNotFound(`Image URL ${tattooDesignImageUrl} not found in the specified Tattoo Design Cache`);
+        tattooDesign = await this.tattooDesignCacheProvider.findByImageUrl(tattooDesignImageUrl);
+        if (!tattooDesign) {
+          throw new DomainNotFound('Tattoo Design Cache not found');
+        }
       }
     }
 

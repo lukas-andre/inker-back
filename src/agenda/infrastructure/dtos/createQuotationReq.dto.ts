@@ -56,11 +56,6 @@ export class CreateQuotationReqDto {
     example: 'cluv123abc...',
     description: 'Tattoo Design Cache ID (optional) - Reference to a specific AI-generated design. Required if tattooDesignImageUrl is provided. Only valid for OPEN type quotations. Cannot be used with stencilId.',
   })
-  @ValidateIf(o => o.type === QuotationType.OPEN && (o.tattooDesignCacheId || o.tattooDesignImageUrl))
-  @IsNotEmpty({ message: 'tattooDesignCacheId is required if tattooDesignImageUrl is provided' })
-  @ValidateIf(o => !o.stencilId || !o.tattooDesignCacheId, {
-    message: 'stencilId and tattooDesignCacheId cannot both be provided',
-  })
   @IsString()
   @IsOptional()
   readonly tattooDesignCacheId?: string;

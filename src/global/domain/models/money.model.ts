@@ -5,7 +5,7 @@ export class MoneyEntity implements MoneyInterface {
   currency: string;
   scale: number;
 
-  constructor(amount?: number, currency: string = 'USD', scale: number = 2) {
+  constructor(amount?: number, currency: string = 'CLP', scale: number = 1) {
     this.amount = amount || 0;
     this.currency = currency;
     this.scale = scale;
@@ -13,8 +13,8 @@ export class MoneyEntity implements MoneyInterface {
 
   static fromFloat(
     amount: number,
-    currency: string = 'USD',
-    scale: number = 2,
+    currency: string = 'CLP',
+    scale: number = 1,
   ): MoneyEntity {
     return new MoneyEntity(
       Math.round(amount * Math.pow(10, scale)),

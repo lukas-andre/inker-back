@@ -88,6 +88,15 @@ export class TattooDesignCacheRepository {
     }
   }
 
+  async findByImageUrl(imageUrl: string): Promise<TattooDesignCacheEntity | null> {
+    const query = `
+      SELECT * FROM tattoo_design_cache 
+      WHERE image_urls @> $1;
+    `;
+    const result = await this.repository.query(query, [imageUrl]);
+    return result.length > 0 ? result[0] : null;
+  }
+
   async findById(id: string): Promise<TattooDesignCacheEntity | null> {
     try {
       const query = `
