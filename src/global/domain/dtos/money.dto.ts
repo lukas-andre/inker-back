@@ -6,8 +6,8 @@ export class MoneyDto extends MoneyEntity {
   amount: number;
 
   @IsString()
-  currency: string = 'USD';
+  currency: string = 'CLP';
 
   @IsNumber()
-  scale: number = 2;
+  scale: number = 1;
 }

@@ -53,7 +53,7 @@ export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'order_position', default: 0 })
   orderPosition: number;
 
-  @Column({ name: 'price', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({ name: 'price', type: 'decimal', precision: 10, scale: 1, nullable: true })
   price?: number;
 
   @Column({
