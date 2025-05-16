@@ -29,6 +29,8 @@ import { NotificationStorageService } from '../../../notifications/services/noti
 import { NewOfferReceivedJob } from './jobs/quotationOffers/newOfferReceived.job';
 import { OfferAcceptedJob } from './jobs/quotationOffers/offerAccepted.job';
 import { OfferRejectedJob } from './jobs/quotationOffers/offerRejected.job';
+import { PenaltyAppliedNotificationJob } from './jobs/penaltyAppliedNotification.job';
+import { PENALTY_APPLIED_NOTIFICATION_V1 } from '../domain/schemas/penaltyNotification.schema';
 
 type NotificationJobConstructor = new (
   emailNotificationService: EmailNotificationService,
@@ -67,6 +69,8 @@ export class NotificationJobRegistry {
     this.jobMap.set('OFFER_REJECTED', OfferRejectedJob);
 
     this.jobMap.set('ACCOUNT_VERIFICATION_CODE', VerificationCodeSentJob);
+
+    this.jobMap.set(PENALTY_APPLIED_NOTIFICATION_V1, PenaltyAppliedNotificationJob);
   }
 
   getJobConstructor(jobId: JobTypeKey): NotificationJobConstructor | undefined {

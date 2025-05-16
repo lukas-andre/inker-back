@@ -14,7 +14,6 @@ import { AgendaController } from './infrastructure/controllers/agenda.controller
 import { QuotationController } from './infrastructure/controllers/quotation.controller';
 import { AgendaRepositoryModule } from './infrastructure/repositories/agendaRepository.module';
 import { AddEventUseCase } from './usecases/event/addEvent.usecase';
-import { CancelEventUseCase } from './usecases/event/cancelEvent.usecase';
 import { CreateQuotationUseCase } from './usecases/quotation/createQuotation.usecase';
 import { FindEventFromArtistByEventIdUseCase } from './usecases/agenda/findEventFromArtistByEventId.usecase';
 import { GetQuotationUseCase } from './usecases/quotation/getQuotation.usecase';
@@ -64,6 +63,14 @@ import { UpdateQuotationOfferUseCase } from './usecases/offer/updateQuotationOff
 import { UpdateOpenQuotationUseCase } from './usecases/openQuotation/updateOpenQuotation.usecase';
 import { QuotationEnrichmentService } from './domain/services/quotationEnrichment.service';
 import { ListOpenQuotationsUseCase } from './usecases/openQuotation/listOpenQuotations.usecase';
+import { EventActionEngineService } from './domain/services';
+
+// Imports for Cancellation Penalty System
+import { CancellationPenalty } from './infrastructure/entities/cancellationPenalty.entity';
+import { CancellationPenaltyRepository } from './infrastructure/repositories/cancellationPenalty.repository';
+import { PenaltyCalculationService } from './domain/services/penaltyCalculation.service';
+import { CancelEventAndApplyPenaltyUseCase } from './usecases/agenda/cancelEventAndApplyPenalty.usecase';
+import { PenaltyQueuesModule } from '../queues/penalty/penaltyQueues.module';
 
 @Module({
   imports: [
@@ -76,18 +83,20 @@ import { ListOpenQuotationsUseCase } from './usecases/openQuotation/listOpenQuot
     ReviewRepositoryModule,
     MultimediasModule,
     NotificationQueueModule,
+    PenaltyQueuesModule,
     LocationRepositoryModule,
     TattooGeneratorDatabaseModule,
     forwardRef(() => SyncQueueModule),
-    TypeOrmModule.forFeature([AgendaUnavailableTime], AGENDA_DB_CONNECTION_NAME),
+    TypeOrmModule.forFeature([
+        AgendaUnavailableTime, 
+        CancellationPenalty
+    ], AGENDA_DB_CONNECTION_NAME),
   ],
   providers: [
     QuotationEnrichmentService,
     QuotationStateMachine,
     AgendaHandler,
     AddEventUseCase,
-    UpdateEventUseCase,
-    CancelEventUseCase,
     ListEventByViewTypeUseCase,
     FindEventFromArtistByEventIdUseCase,
     MarkEventAsDoneUseCase,
@@ -103,9 +112,7 @@ import { ListOpenQuotationsUseCase } from './usecases/openQuotation/listOpenQuot
     ListEventsByArtistId,
     ChangeEventStatusUsecase,
     EventReviewIntegrationUsecase,
-    // Shared services
     CreateAgendaEventService,
-    // New services and use cases for Artist Workflow Improvements
     AgendaSettingsService,
     SchedulingService,
     SetWorkingHoursUseCase,
@@ -128,7 +135,13 @@ import { ListOpenQuotationsUseCase } from './usecases/openQuotation/listOpenQuot
     GetQuotationOfferUseCase,
     ListCustomerOpenQuotationsUseCase,
     UpdateQuotationOfferUseCase,
-    UpdateOpenQuotationUseCase
+    UpdateOpenQuotationUseCase,
+    EventActionEngineService,
+
+    // Providers for Cancellation Penalty System
+    CancellationPenaltyRepository,
+    PenaltyCalculationService,
+    CancelEventAndApplyPenaltyUseCase,
   ],
   controllers: [AgendaController, QuotationController],
   exports: [

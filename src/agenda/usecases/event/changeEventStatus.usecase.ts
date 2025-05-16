@@ -18,6 +18,7 @@ import { AgendaEventRepository } from '../../infrastructure/repositories/agendaE
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { queues } from '../../../queues/queues';
+import { IStatusLogEntry, UserType as DomainUserType } from '../../infrastructure/entities/agendaEvent.entity';
 
 @Injectable()
 export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
@@ -34,58 +35,89 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
   async execute(
     agendaId: string,
     eventId: string,
-    { status, notes }: ChangeEventStatusReqDto,
+    { status, reason, notes, newStartDate, newEndDate }: ChangeEventStatusReqDto,
   ): Promise<void> {
-    const { isNotArtist, userTypeId, userId } = this.requestContext;
+    const { userTypeId: roleSpecificId, userId: authenticatedUserId, isNotArtist } = this.requestContext;
 
-    if (isNotArtist) {
-      throw new DomainUnProcessableEntity(ARTIST_NOT_AUTHORIZED);
-    }
-
-    // Check if the agenda belongs to the artist
-    const agenda = await this.agendaProvider.findOne({
-      where: { id: agendaId, artistId: userTypeId },
-    });
-
-    if (!agenda) {
-      throw new DomainUnProcessableEntity(ARTIST_NOT_AUTHORIZED);
-    }
-
-    // Get current event
+    // Get current event with its agenda to access artistId and customerId
     const event = await this.agendaEventProvider.findOne({
-      where: { id: eventId, agenda: { id: agendaId } },
+      where: { id: eventId }, 
+      relations: ['agenda'],
     });
 
     if (!event) {
       throw new DomainUnProcessableEntity('Event not found');
     }
+    
+    // Ensure the event belongs to the provided agendaId
+    if (event.agenda.id !== agendaId) {
+        throw new DomainUnProcessableEntity('Event does not belong to the specified agenda.');
+    }
+
+    const eventArtistId = event.agenda.artistId;
+    const eventCustomerId = event.customerId;
+
+    let authorized = false;
+    if (status === AgendaEventStatus.CANCELED || status === AgendaEventStatus.RESCHEDULED) {
+      // For CANCELED or RESCHEDULED, either the artist or the customer of the event is authorized.
+      if (!isNotArtist && roleSpecificId === eventArtistId) {
+        authorized = true;
+      } else if (isNotArtist && eventCustomerId && roleSpecificId === eventCustomerId) {
+        authorized = true;
+      }
+    } else { // For other statuses, only the event's artist is authorized
+      if (!isNotArtist && roleSpecificId === eventArtistId) {
+        authorized = true;
+      }
+    }
+
+    if (!authorized) {
+      if (status === AgendaEventStatus.CANCELED || status === AgendaEventStatus.RESCHEDULED) {
+        // More generic message for failed cancellation/reschedule authorization
+        throw new DomainUnProcessableEntity(
+          `User ${authenticatedUserId} is not authorized to ${status.toLowerCase()} this event.`
+        );
+      } else {
+        throw new DomainUnProcessableEntity(ARTIST_NOT_AUTHORIZED);
+      }
+    }
 
     // Validate the transition
     this.validateTransition(event.status, status);
 
-    // Create event history record
-    await this.agendaEventProvider.createEventHistoryWithNativeQuery(
-      eventId,
-      {
-        title: event.title,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        color: event.color,
-        info: notes || event.info,
-        notification: event.notification,
-        done: event.done,
-        cancelationReason: event.cancelationReason,
-        status: event.status,
-      },
-      userId,
-    );
+    // Update event status and log
+    const currentUserRole: DomainUserType = isNotArtist ? 'customer' : 'artist';
 
-    // Update event status
-    await this.agendaEventProvider.updateEventStatus(eventId, agendaId, status);
+    // Apply new dates if provided (typically for rescheduling)
+    if (newStartDate) {
+      event.startDate = newStartDate;
+    }
+    if (newEndDate) {
+      event.endDate = newEndDate;
+    }
+
+    const newLogEntry: IStatusLogEntry = {
+      status,
+      timestamp: new Date(),
+      actor: {
+        userId: authenticatedUserId,
+        roleId: roleSpecificId,
+        role: currentUserRole,
+      },
+      reason: reason || undefined,
+      notes: notes || undefined,
+    };
+
+    event.status = status;
+    event.statusLog = event.statusLog ? [...event.statusLog, newLogEntry] : [newLogEntry];
+    
+    // Instead of updateEventStatus, we now save the modified event entity
+    // which includes the new status and the updated statusLog.
+    await this.agendaEventProvider.save(event);
 
     // Notify customer about status change
     if (event.customerId) {
-      await this.notifyCustomer(event.customerId, eventId, status);
+      await this.notifyCustomer(event.customerId, eventId, status, eventArtistId);
     }
   }
 
@@ -139,10 +171,11 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
     customerId: string,
     eventId: string,
     status: AgendaEventStatus,
+    artistIdForNotification: string, // Added parameter for event's artistId
   ): Promise<void> {
     try {
-      // Get artist ID from the request context
-      const { userTypeId: artistId } = this.requestContext;
+      // Get artist ID from the request context - REMOVED
+      // const { userTypeId: artistId } = this.requestContext; 
       
       // Choose the appropriate notification message based on status
       let message: string;
@@ -178,7 +211,7 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
           metadata: {
             eventId,
             customerId,
-            artistId,
+            artistId: artistIdForNotification, // Use passed artistIdForNotification
             status,
             message,
           },

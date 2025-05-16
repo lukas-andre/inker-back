@@ -14,6 +14,9 @@ import { ArtistRepository } from '../../../artists/infrastructure/repositories/a
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 import { QuotationEnrichmentService } from '../../domain/services/quotationEnrichment.service';
 import { GetQuotationResDto } from '../../infrastructure/dtos/getQuotationRes.dto';
+import { EventActionEngineService } from '../../domain/services/eventActionEngine.service';
+import { Quotation } from '../../infrastructure/entities/quotation.entity';
+import { QuotationOffer } from '../../infrastructure/entities/quotationOffer.entity';
 
 @Injectable()
 export class FindEventFromArtistByEventIdUseCase
@@ -27,6 +30,7 @@ export class FindEventFromArtistByEventIdUseCase
     private readonly artistProvider: ArtistRepository,
     private readonly quotationRepository: QuotationRepository,
     private readonly quotationEnrichmentService: QuotationEnrichmentService,
+    private readonly eventActionEngine: EventActionEngineService,
   ) {
     super(FindEventFromArtistByEventIdUseCase.name);
   }
@@ -38,6 +42,7 @@ export class FindEventFromArtistByEventIdUseCase
     event: AgendaEvent;
     location: ArtistLocation;
     quotation: GetQuotationResDto | null;
+    actions: any;
   }> {
     const existsAgenda = await this.agendaProvider.findOne({
       where: {
@@ -50,10 +55,10 @@ export class FindEventFromArtistByEventIdUseCase
     }
 
     const [event, location] = await Promise.all([
-      this.agendaEventProvider.findEventByAgendaIdAndEventId(
-        existsAgenda.id,
-        eventId,
-      ),
+      this.agendaEventProvider.findOne({
+        where: { id: eventId, agenda: { id: existsAgenda.id } },
+        relations: ['agenda'],
+      }),
       this.artistLocationProvider.findByArtistId(artistId),
     ]);
 
@@ -66,11 +71,13 @@ export class FindEventFromArtistByEventIdUseCase
     }
 
     let enrichedQuotation: GetQuotationResDto | null = null;
+    let quotationEntity: Quotation | undefined;
+    let offerEntity: QuotationOffer | undefined;
     if (event.quotationId) {
-      const quotation = await this.quotationRepository.findById(event.quotationId);
-      if (quotation) {
+      quotationEntity = await this.quotationRepository.findById(event.quotationId);
+      if (quotationEntity) {
         const [enriched] = await this.quotationEnrichmentService.enrichQuotations([
-          quotation
+          quotationEntity
         ], {
           includeOffers: true,
           includeCustomer: true,
@@ -80,13 +87,23 @@ export class FindEventFromArtistByEventIdUseCase
           includeTattooDesignCache: true,
         });
         enrichedQuotation = enriched || null;
+        offerEntity = quotationEntity.offers?.[0];
       }
     }
+
+    const actions = await this.eventActionEngine.getAvailableActions({
+      userId: artistId,
+      userType: 'artist',
+      event,
+      quotation: quotationEntity,
+      offer: offerEntity,
+    });
 
     return {
       event,
       location: location[0],
       quotation: enrichedQuotation,
+      actions,
     };
   }
 
@@ -95,7 +112,10 @@ export class FindEventFromArtistByEventIdUseCase
     eventId: string,
   ): Promise<{
     event: AgendaEvent;
+    artist: any;
     location: ArtistLocation;
+    quotation: GetQuotationResDto | null;
+    actions: any;
   }> {
     // Find the event first with agenda relation
     const event = await this.agendaEventProvider.findOne({
@@ -121,7 +141,7 @@ export class FindEventFromArtistByEventIdUseCase
     }
     
     // Get the artist location
-    const location = await this.artistLocationProvider.findById(agenda.artistId);
+    const location = await this.artistLocationProvider.findByArtistId(agenda.artistId);
 
     const artist = await this.artistProvider.findOne({
       where: { id: agenda.artistId },
@@ -135,10 +155,43 @@ export class FindEventFromArtistByEventIdUseCase
     if (!location) {
       this.logger.warn('Location not found');
     }
+
+    let enrichedQuotation: GetQuotationResDto | null = null;
+    let quotationEntity: Quotation | undefined;
+    let offerEntity: QuotationOffer | undefined;
+    if (event.quotationId) {
+      quotationEntity = await this.quotationRepository.findById(event.quotationId);
+      if (quotationEntity) {
+        const [enriched] = await this.quotationEnrichmentService.enrichQuotations([
+          quotationEntity
+        ], {
+          includeOffers: true,
+          includeCustomer: true,
+          includeArtist: false,
+          includeStencil: true,
+          includeLocation: true,
+          includeTattooDesignCache: true,
+        });
+        enrichedQuotation = enriched || null;
+        offerEntity = quotationEntity.offers?.[0];
+      }
+    }
+
+    // Obtener acciones disponibles para el customer
+    const actions = await this.eventActionEngine.getAvailableActions({
+      userId: customerId,
+      userType: 'customer',
+      event,
+      quotation: quotationEntity,
+      offer: offerEntity,
+    });
     
     return {
-      event: { ...event, artist } as any,
-      location,
+      event,
+      artist,
+      location: location[0],
+      quotation: enrichedQuotation,
+      actions,
     };
   }
 }

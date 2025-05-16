@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
-import { DataSource } from 'typeorm';
-import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
+import {
+  AgendaEvent,
+  IStatusLogEntry,
+  UserType,
+} from '../../infrastructure/entities/agendaEvent.entity';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 
 export interface CreateEventParams {
   // Event details
@@ -29,7 +33,8 @@ export interface CreateEventResult {
 @Injectable()
 export class CreateAgendaEventService extends BaseComponent {
   constructor(
-    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventRepository: AgendaEventRepository,
+    private readonly agendaRepository: AgendaRepository,
   ) {
     super(CreateAgendaEventService.name);
   }
@@ -42,7 +47,7 @@ export class CreateAgendaEventService extends BaseComponent {
     let transactionIsOK = false;
     let eventId: string = null;
 
-    const queryRunner = this.agendaProvider.source.createQueryRunner();
+    const queryRunner = this.agendaRepository.source.createQueryRunner();
 
     try {
       await queryRunner.connect();
@@ -135,19 +140,108 @@ export class CreateAgendaEventService extends BaseComponent {
     color: string,
     startDate: Date,
     endDate: Date,
-    createdBy: string,
-  ): Promise<CreateEventResult> {
-    return this.createEventWithHistory({
-      agendaId,
-      title,
-      info,
-      color,
-      startDate,
-      endDate,
-      notification: false,
-      customerId,
-      quotationId,
-      createdBy,
-    });
+  ): Promise<{ eventId: string; transactionIsOK: boolean }> {
+    const queryRunner = this.agendaRepository.source.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    let eventId = '';
+    let transactionIsOK = false;
+
+    try {
+      const initialStatusLogEntry: IStatusLogEntry = {
+        status: AgendaEventStatus.SCHEDULED,
+        timestamp: new Date(),
+        actor: {
+          userId: 'system_sync_processor',
+          roleId: quotationId,
+          role: 'system',
+        },
+        notes: 'Event created from quotation by system.',
+      };
+
+      const eventToCreate = this.agendaEventRepository.repo.create({
+        agenda: { id: agendaId },
+        quotationId,
+        customerId,
+        title,
+        info,
+        color,
+        startDate,
+        endDate,
+        status: AgendaEventStatus.SCHEDULED,
+        statusLog: [initialStatusLogEntry],
+      });
+
+      const savedEvent = await queryRunner.manager.save(AgendaEvent, eventToCreate);
+      eventId = savedEvent.id;
+      
+      await queryRunner.commitTransaction();
+      transactionIsOK = true;
+      this.logger.log(`Created event with ID ${eventId} from quotation with initial system status log.`);
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Failed to create event from quotation with initial status log', error);
+      transactionIsOK = false;
+    } finally {
+      await queryRunner.release();
+    }
+
+    return { eventId, transactionIsOK };
+  }
+
+  async createDirectEvent(
+    agendaId: string,
+    customerId: string | null,
+    title: string,
+    info: string,
+    color: string,
+    startDate: Date,
+    endDate: Date,
+    actor: { userId: string; roleId: string; role: UserType },
+    initialStatus: AgendaEventStatus = AgendaEventStatus.SCHEDULED,
+    notes?: string,
+  ): Promise<{ eventId: string; transactionIsOK: boolean }> {
+    const queryRunner = this.agendaRepository.source.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let eventId = '';
+    let transactionIsOK = false;
+
+    try {
+      const initialLogEntry: IStatusLogEntry = {
+        status: initialStatus,
+        timestamp: new Date(),
+        actor: actor,
+        notes: notes || 'Event created directly.',
+      };
+
+      const eventToCreate = this.agendaEventRepository.repo.create({
+        agenda: { id: agendaId },
+        customerId,
+        title,
+        info,
+        color,
+        startDate,
+        endDate,
+        status: initialStatus,
+        statusLog: [initialLogEntry],
+      });
+      
+      const savedEvent = await queryRunner.manager.save(AgendaEvent, eventToCreate);
+      eventId = savedEvent.id;
+
+      await queryRunner.commitTransaction();
+      transactionIsOK = true;
+      this.logger.log(`Created direct event with ID ${eventId} with initial status log by actor: ${actor.userId} (${actor.role})`);
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Failed to create direct event with initial status log', error);
+      transactionIsOK = false;
+    } finally {
+      await queryRunner.release();
+    }
+    return { eventId, transactionIsOK };
   }
 }

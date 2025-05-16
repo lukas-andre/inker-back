@@ -9,5 +9,5 @@ export class MoneyDto extends MoneyEntity {
   currency: string = 'CLP';
 
   @IsNumber()
-  scale: number = 1;
+  scale: number = 0;
 }
