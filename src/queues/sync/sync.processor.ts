@@ -134,7 +134,6 @@ export class SyncProcessor extends BaseComponent {
       '#000000', // Color
       estimatedDate,
       endDate,
-      quotation.lastUpdatedBy, // Using whoever last updated the quotation as the creator
     );
 
     if (!result.transactionIsOK) {

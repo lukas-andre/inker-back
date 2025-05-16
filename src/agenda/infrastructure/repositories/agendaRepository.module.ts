@@ -15,6 +15,7 @@ import { AgendaInvitationRepository } from './agendaInvitation.provider';
 import { QuotationRepository } from './quotation.provider';
 import { QuotationOfferRepository } from './quotationOffer.repository';
 import { QuotationOffer } from '../entities/quotationOffer.entity';
+import { CancellationPenaltyRepository } from './cancellationPenalty.repository';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { QuotationOffer } from '../entities/quotationOffer.entity';
     AgendaInvitationRepository,
     QuotationRepository,
     QuotationOfferRepository,
+    CancellationPenaltyRepository,
   ],
   exports: [
     AgendaRepository,
@@ -36,6 +38,7 @@ import { QuotationOffer } from '../entities/quotationOffer.entity';
     AgendaInvitationRepository,
     QuotationRepository,
     QuotationOfferRepository,
+    CancellationPenaltyRepository,
   ],
 })
 export class AgendaRepositoryModule {}

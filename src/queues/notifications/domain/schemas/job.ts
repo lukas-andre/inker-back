@@ -21,6 +21,7 @@ import {
 
 import { SendVerificationCodeJobSchema } from './codes';
 import { NewOfferReceivedJobSchema, OfferAcceptedJobSchema, OfferRejectedJobSchema } from './quotationOffer.schema';
+import { PenaltyAppliedNotificationV1JobSchema } from './penaltyNotification.schema';
 
 export const JobSchema = z.union([
   // Agenda
@@ -46,6 +47,8 @@ export const JobSchema = z.union([
   NewOfferReceivedJobSchema,
   OfferAcceptedJobSchema,
   OfferRejectedJobSchema,
+  // Penalty Notifications
+  PenaltyAppliedNotificationV1JobSchema,
 ]);
 
 export type JobType = z.infer<typeof JobSchema>;

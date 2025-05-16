@@ -37,7 +37,7 @@ export class AgendaEventCanceledJob implements NotificationJob {
       googleMapsLink: getGoogleMapsLink(location.lat, location.lng),
       eventDate: agendaEvent.startDate,
       eventName: agendaEvent.title,
-      cancelationReason: agendaEvent.cancelationReason,
+      // cancelationReason: agendaEvent.cancelationReason,
       mailId: 'EVENT_CANCELED',
     };
     await this.emailNotificationService.sendEmail(agendaEventCanceledEmailData);

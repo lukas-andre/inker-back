@@ -308,45 +308,6 @@ export class AgendaEventRepository extends BaseComponent {
     }
   }
 
-  async createEventHistoryWithNativeQuery(
-    eventId: string,
-    previousEventData: Partial<AgendaEvent>,
-    updatedBy: string,
-  ): Promise<void> {
-    try {
-      await this.agendaEventRepository.query(
-        `INSERT INTO agenda_event_history (event_id, title, start_date, end_date, color, info, notification, done, cancelation_reason, recorded_at, updated_by)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)`,
-        [
-          eventId,
-          previousEventData.title,
-          previousEventData.startDate,
-          previousEventData.endDate,
-          previousEventData.color,
-          previousEventData.info,
-          previousEventData.notification,
-          previousEventData.done,
-          previousEventData.cancelationReason,
-          updatedBy,
-        ],
-      );
-    } catch (error) {
-      throw new DBServiceCreateException(
-        this,
-        'Trouble creating event history with native query',
-        error,
-      );
-    }
-  }
-
-  async findMostRecentHistoryRecord(eventId: string): Promise<AgendaEvent> {
-    return this.agendaEventRepository
-      .createQueryBuilder('agenda_event_history')
-      .where('event_id = :eventId', { eventId })
-      .orderBy('recorded_at', 'DESC')
-      .getOne();
-  }
-
   async findByArtistId(agendaId: string): Promise<AgendaEvent[]> {
     return this.agendaEventRepository
       .createQueryBuilder('agenda_event')

@@ -22,6 +22,7 @@ import {
   OfferAcceptedJobSchema,
   OfferRejectedJobSchema,
 } from './schemas/quotationOffer.schema';
+import { PenaltyAppliedNotificationV1JobSchema, PENALTY_APPLIED_NOTIFICATION_V1 } from './schemas/penaltyNotification.schema';
 
 export const JobTypeSchemaRegistry = {
   EVENT_CREATED: AgendaEventCreatedJobSchema,
@@ -42,6 +43,7 @@ export const JobTypeSchemaRegistry = {
   OFFER_ACCEPTED: OfferAcceptedJobSchema,
   OFFER_REJECTED: OfferRejectedJobSchema,
   ACCOUNT_VERIFICATION_CODE: SendVerificationCodeJobSchema,
+  [PENALTY_APPLIED_NOTIFICATION_V1]: PenaltyAppliedNotificationV1JobSchema,
 };
 
 // export jobtype keys

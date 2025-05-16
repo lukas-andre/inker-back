@@ -20,6 +20,7 @@ import { S3Client } from './infrastructure/clients/s3.client';
 import { SMSClient } from './infrastructure/clients/sms.client';
 import { RequestContextService } from './infrastructure/services/requestContext.service';
 import { UniqueIdService } from './infrastructure/services/uniqueId.service';
+import { DomainEventsService } from './domain/events/domainEvents.service';
 
 @Global()
 @Module({
@@ -53,7 +54,7 @@ import { UniqueIdService } from './infrastructure/services/uniqueId.service';
     }),
   ],
   controllers: [],
-  providers: [BaseHandler, S3Client, SMSClient, RequestContextService, UniqueIdService],
+  providers: [BaseHandler, S3Client, SMSClient, RequestContextService, UniqueIdService, DomainEventsService],
   exports: [
     ConfigModule,
     S3Client,
@@ -61,6 +62,7 @@ import { UniqueIdService } from './infrastructure/services/uniqueId.service';
     JwtModule,
     RequestContextService,
     UniqueIdService,
+    DomainEventsService
   ],
 })
 export class GlobalModule {

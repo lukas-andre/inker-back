@@ -64,6 +64,7 @@ import { UpdateAgendaSettingsReqDto } from '../dtos/updateAgendaSettingsReq.dto'
 import { GetAgendaSettingsResDto } from '../dtos/getAgendaSettingsRes.dto';
 import { AgendaUnavailableTime } from '../entities/agendaUnavailableTime.entity';
 import { AvailabilityCalendar, SchedulingService, TimeSlot } from '../../services/scheduling.service';
+import { CancelEventReqDto } from '../dtos/cancelEventReq.dto';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -99,15 +100,16 @@ export class AgendaController {
   @ApiOperation({ summary: 'Cancel event' })
   @HttpCode(200)
   @ApiOkResponse({ description: 'Event canceled successful.', type: undefined })
-  @ApiConflictResponse({ description: 'Invalid Dates.' })
-  @ApiParam({ name: 'agendaId', required: true, type: Number })
-  @ApiParam({ name: 'eventId', required: true, type: Number })
+  @ApiConflictResponse({ description: 'Invalid Dates. Event may not be cancellable in its current state or due to policies.' })
+  @ApiParam({ name: 'agendaId', required: true, type: String, description: "The ID of the agenda (UUID format). Note: This parameter may be deprecated or implicitly derived in future versions if cancellation primarily relies on eventId and authenticated user context." })
+  @ApiParam({ name: 'eventId', required: true, type: String, description: "The ID of the event to cancel (UUID format)." })
   @Delete(':agendaId/event/:eventId')
   async cancelEvent(
     @Param('agendaId') agendaId: string,
     @Param('eventId') eventId: string,
+    @Body() cancelEventReqDto: CancelEventReqDto,
   ): Promise<any> {
-    return this.agendaHandler.handleCancelEvent(eventId, agendaId);
+    return this.agendaHandler.handleCancelEvent(eventId, agendaId, cancelEventReqDto.reason);
   }
 
   @ApiOperation({ summary: 'List events for week/day' })

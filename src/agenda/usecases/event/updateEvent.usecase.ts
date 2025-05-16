@@ -11,9 +11,10 @@ import { AgendaEventUpdatedJobType } from '../../../queues/notifications/domain/
 import { queues } from '../../../queues/queues';
 import { UpdateEventReqDto } from '../../infrastructure/dtos/updateEventReq.dto';
 import { Agenda } from '../../infrastructure/entities/agenda.entity';
-import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
+import { AgendaEvent, IStatusLogEntry, UserType as DomainUserType } from '../../infrastructure/entities/agendaEvent.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 
 @Injectable()
 export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
@@ -22,6 +23,7 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
     private readonly agendaEventProvider: AgendaEventRepository,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
+    private readonly requestContextService: RequestContextService,
   ) {
     super(UpdateEventUseCase.name);
   }
@@ -59,11 +61,49 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
       throw new DomainConflict('Already exists event in current date range');
     }
 
-    await this.agendaEventProvider.createEventHistoryWithNativeQuery(
-      event.id,
-      event,
-      existsAgenda.artistId,
-    );
+    const { userId: authenticatedUserId, userTypeId: roleSpecificId, isNotArtist } = this.requestContextService;
+    const currentUserRole: DomainUserType = isNotArtist ? 'customer' : 'artist';
+
+    let updateNotes = 'Event details updated.';
+    const changes: string[] = [];
+
+    if (updateEventReqDto.title && updateEventReqDto.title !== event.title) {
+      changes.push(`title from "${event.title}" to "${updateEventReqDto.title}"`);
+    }
+    if (updateEventReqDto.info && updateEventReqDto.info !== event.info) {
+      changes.push(`info from "${event.info}" to "${updateEventReqDto.info}"`);
+    }
+    if (updateEventReqDto.color && updateEventReqDto.color !== event.color) {
+      changes.push(`color from "${event.color}" to "${updateEventReqDto.color}"`);
+    }
+    const newEndDate = new Date(updateEventReqDto.end);
+    if (updateEventReqDto.end && newEndDate.getTime() !== event.endDate.getTime()) {
+      changes.push(`endDate from "${event.endDate.toISOString()}" to "${newEndDate.toISOString()}"`);
+    }
+    const newStartDate = new Date(updateEventReqDto.start);
+    if (updateEventReqDto.start && newStartDate.getTime() !== event.startDate.getTime()) {
+      changes.push(`startDate from "${event.startDate.toISOString()}" to "${newStartDate.toISOString()}"`);
+    }
+    if (typeof updateEventReqDto.notification === 'boolean' && updateEventReqDto.notification !== event.notification) {
+      changes.push(`notification from "${event.notification}" to "${updateEventReqDto.notification}"`);
+    }
+
+    if (changes.length > 0) {
+      updateNotes = `Event details updated: ${changes.join('; ')}.`;
+    }
+
+    const updateLogEntry: IStatusLogEntry = {
+      status: event.status,
+      timestamp: new Date(),
+      actor: {
+        userId: authenticatedUserId,
+        roleId: roleSpecificId,
+        role: currentUserRole,
+      },
+      notes: updateNotes,
+    };
+
+    event.statusLog = event.statusLog ? [...event.statusLog, updateLogEntry] : [updateLogEntry];
 
     event.title = updateEventReqDto.title || event.title;
     event.info = updateEventReqDto.info || event.info;

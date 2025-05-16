@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { ReviewArtistRequestDto } from '../../reviews/dtos/reviewArtistRequest.dto';
 import { AddEventUseCase } from '../usecases/event/addEvent.usecase';
-import { CancelEventUseCase } from '../usecases/event/cancelEvent.usecase';
+import { CancelEventAndApplyPenaltyUseCase } from '../usecases/agenda/cancelEventAndApplyPenalty.usecase';
 import { ChangeEventStatusUsecase } from '../usecases/event/changeEventStatus.usecase';
 import { CreateQuotationUseCase } from '../usecases/quotation/createQuotation.usecase';
 import { FindEventFromArtistByEventIdUseCase } from '../usecases/agenda/findEventFromArtistByEventId.usecase';
@@ -63,7 +63,8 @@ import { AcceptQuotationOfferUseCase } from '../usecases/offer/acceptQuotationOf
 import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from './dtos/listOpenQuotationsQuery.dto';
 import { CreateQuotationOfferReqDto } from './dtos/createQuotationOfferReq.dto';
 import { ListQuotationOffersResDto } from './dtos/listQuotationOffersRes.dto';
-import { UserType } from '../../users/domain/enums/userType.enum';
+import { UserType as RequestContextUserType } from '../../users/domain/enums/userType.enum';
+import { UserType as ActionEngineUserType } from '../domain/services/eventActionEngine.service';
 
 // Import necessary types for the new method
 import { SendOfferMessageUseCase } from '../usecases/offer/sendOfferMessage.usecase';
@@ -85,13 +86,16 @@ import { UpdateQuotationOfferUseCase } from '../usecases/offer/updateQuotationOf
 import { UpdateOpenQuotationReqDto } from './dtos/updateOpenQuotationReq.dto';
 import { UpdateOpenQuotationUseCase } from '../usecases/openQuotation/updateOpenQuotation.usecase';
 import { ListOpenQuotationsUseCase } from '../usecases/openQuotation/listOpenQuotations.usecase';
+import { EventActionsResultDto } from '../domain/dtos/eventActionsResult.dto';
 
 @Injectable()
 export class AgendaHandler {
+  private readonly logger = new Logger(AgendaHandler.name);
+
   constructor(
     private readonly addEventUseCase: AddEventUseCase,
-    private readonly updateEventUseCase: UpdateEventUseCase,
-    private readonly cancelEventUseCase: CancelEventUseCase,
+    // private readonly updateEventUseCase: UpdateEventUseCase,
+    private readonly cancelEventAndApplyPenaltyUseCase: CancelEventAndApplyPenaltyUseCase,
     private readonly listEventByViewTypeUseCase: ListEventByViewTypeUseCase,
     private readonly findEventByAgendaIdAndEventIdUseCase: FindEventFromArtistByEventIdUseCase,
     private readonly markEventAsDoneUseCase: MarkEventAsDoneUseCase,
@@ -142,11 +146,28 @@ export class AgendaHandler {
   }
 
   async handleUpdateEvent(dto: UpdateEventReqDto, id: string): Promise<any> {
-    return this.updateEventUseCase.execute(dto, id);
+    // return this.updateEventUseCase.execute(dto, id);
   }
 
-  async handleCancelEvent(eventId: string, agendaId: string): Promise<any> {
-    return this.cancelEventUseCase.execute(eventId, agendaId);
+  async handleCancelEvent(eventId: string, agendaId: string, reason: string): Promise<any> {
+    const { userTypeId, userType: contextUserType } = this.requestContext;
+
+    let mappedUserType: ActionEngineUserType;
+    if (contextUserType === RequestContextUserType.ARTIST) {
+      mappedUserType = 'artist';
+    } else if (contextUserType === RequestContextUserType.CUSTOMER) {
+      mappedUserType = 'customer';
+    } else {
+      this.logger.error(`User type ${contextUserType} from request context is not supported for direct event cancellation with penalty.`);
+      throw new BadRequestException('Admins or other user types cannot directly cancel events through this flow. Please use an appropriate administrative tool or cancel on behalf of a user.');
+    }
+
+    return this.cancelEventAndApplyPenaltyUseCase.execute(
+      eventId,
+      userTypeId,
+      mappedUserType,
+      reason,
+    );
   }
 
   async handleListEventByViewType(
@@ -161,7 +182,16 @@ export class AgendaHandler {
     return this.listEventFromArtistAgenda.execute(userTypeId, userType, status);
   }
 
-  async handleGetEventByEventId(eventId: string): Promise<any> {
+  /**
+   * Get event by eventId for artist
+   * @returns { event, location, quotation, actions: EventActionsResultDto }
+   */
+  async handleGetEventByEventId(eventId: string): Promise<{
+    event: any;
+    location: any;
+    quotation: any;
+    actions: EventActionsResultDto;
+  }> {
     const { isNotArtist, userTypeId } = this.requestContext;
     if (isNotArtist) {
       throw new UnauthorizedException(
@@ -174,7 +204,17 @@ export class AgendaHandler {
     );
   }
 
-  async handleGetCustomerEventByEventId(eventId: string): Promise<any> {
+  /**
+   * Get event by eventId for customer
+   * @returns { event, artist, location, quotation, actions: EventActionsResultDto }
+   */
+  async handleGetCustomerEventByEventId(eventId: string): Promise<{
+    event: any;
+    artist: any;
+    location: any;
+    quotation: any;
+    actions: EventActionsResultDto;
+  }> {
     const { isNotCustomer, userTypeId } = this.requestContext;
     if (isNotCustomer) {
       throw new UnauthorizedException(
@@ -233,7 +273,7 @@ export class AgendaHandler {
   async getQuotation(id: string): Promise<GetQuotationResDto> {
     const { userType, userTypeId } = this.requestContext;
     // Pass artistId to usecase when user is an artist
-    if (userType === UserType.ARTIST) {
+    if (userType === RequestContextUserType.ARTIST) {
       return this.getQuotationUseCase.execute(id, userTypeId);
     }
     return this.getQuotationUseCase.execute(id);
@@ -252,7 +292,7 @@ export class AgendaHandler {
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {
     const { userTypeId, userType } = this.requestContext;
-    if (userType !== UserType.ARTIST) {
+    if (userType !== RequestContextUserType.ARTIST) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
@@ -270,7 +310,7 @@ export class AgendaHandler {
     customerActionDto: CustomerQuotationActionDto,
   ) {
     const { userTypeId, userType } = this.requestContext;
-    if (userType !== UserType.CUSTOMER) {
+    if (userType !== RequestContextUserType.CUSTOMER) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
@@ -377,7 +417,7 @@ export class AgendaHandler {
     query: ListOpenQuotationsQueryDto
   ): Promise<GetOpenQuotationsResDto> {
     const { userType, userTypeId } = this.requestContext;
-    if (userType == UserType.ARTIST) {
+    if (userType == RequestContextUserType.ARTIST) {
       return this.listOpenQuotationsUseCase.execute(userTypeId, query);
     }
     return this.listCustomerOpenQuotationsUseCase.execute(userTypeId, query);
@@ -388,7 +428,7 @@ export class AgendaHandler {
     dto: CreateQuotationOfferReqDto
   ): Promise<{ id: string; created: boolean }> {
     const { userTypeId, userType } = this.requestContext;
-    if (userType !== UserType.ARTIST) {
+    if (userType !== RequestContextUserType.ARTIST) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
@@ -400,7 +440,7 @@ export class AgendaHandler {
     quotationId: string,
   ): Promise<ListQuotationOffersResDto> {
     const { userTypeId, userType } = this.requestContext;
-    if (userType !== UserType.CUSTOMER) {
+    if (userType !== RequestContextUserType.CUSTOMER) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
@@ -413,7 +453,7 @@ export class AgendaHandler {
     offerId: string,
   ): Promise<{ success: boolean; message: string }> {
     const { userTypeId, userType } = this.requestContext;
-    if (userType !== UserType.CUSTOMER) {
+    if (userType !== RequestContextUserType.CUSTOMER) {
       throw new UnauthorizedException(
         'You dont have permission to access this resource',
       );
@@ -461,7 +501,7 @@ export class AgendaHandler {
     // query?: ListParticipatingQuotationsQueryDto // Add query DTO if needed
   ): Promise<ListParticipatingQuotationsResDto> {
     const { userType, userTypeId } = this.requestContext;
-    if (userType !== UserType.ARTIST) {
+    if (userType !== RequestContextUserType.ARTIST) {
       throw new UnauthorizedException(
         'Only artists can access this resource.',
       );
@@ -475,18 +515,18 @@ export class AgendaHandler {
     offerId: string,
   ): Promise<ParticipatingQuotationOfferDto> {
     const { userType, userTypeId } = this.requestContext;
-    
+
     // Authorize access (only artist who created the offer or customer who received it)
     // For now, we'll just check if the user is an artist, the use case will check if it's their offer
-    if (userType !== UserType.ARTIST && userType !== UserType.CUSTOMER) {
+    if (userType !== RequestContextUserType.ARTIST && userType !== RequestContextUserType.CUSTOMER) {
       throw new UnauthorizedException(
         'You do not have permission to access this resource',
       );
     }
-    
+
     // If artist, pass their ID for authorization check
-    const currentArtistId = userType === UserType.ARTIST ? userTypeId : undefined;
-    
+    const currentArtistId = userType === RequestContextUserType.ARTIST ? userTypeId : undefined;
+
     return this.getQuotationOfferUseCase.execute(offerId, currentArtistId);
   }
 
@@ -497,14 +537,14 @@ export class AgendaHandler {
     dto: UpdateQuotationOfferReqDto,
   ): Promise<void> {
     const { userType, userTypeId } = this.requestContext;
-    
+
     // Only artists can update their own offers
-    if (userType !== UserType.ARTIST) {
+    if (userType !== RequestContextUserType.ARTIST) {
       throw new UnauthorizedException(
         'Only artists can update their quotation offers'
       );
     }
-    
+
     return this.updateQuotationOfferUseCase.execute(quotationId, offerId, userTypeId, dto);
   }
 
@@ -514,7 +554,7 @@ export class AgendaHandler {
     dto: UpdateOpenQuotationReqDto,
   ): Promise<void> {
     const { userType, userTypeId } = this.requestContext;
-    if (userType !== UserType.CUSTOMER) {
+    if (userType !== RequestContextUserType.CUSTOMER) {
       throw new UnauthorizedException('Solo el customer puede actualizar su cotización abierta');
     }
     await this.updateOpenQuotationUseCase.execute(quotationId, userTypeId, dto);
