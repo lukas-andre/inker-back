@@ -3,7 +3,7 @@ import { RequestContextService } from '../../global/infrastructure/services/requ
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { ReviewArtistRequestDto } from '../../reviews/dtos/reviewArtistRequest.dto';
 import { AddEventUseCase } from '../usecases/event/addEvent.usecase';
-import { CancelEventAndApplyPenaltyUseCase } from '../usecases/agenda/cancelEventAndApplyPenalty.usecase';
+import { CancelEventAndApplyPenaltyUseCase } from '../usecases/event/cancelEventAndApplyPenalty.usecase';
 import { ChangeEventStatusUsecase } from '../usecases/event/changeEventStatus.usecase';
 import { CreateQuotationUseCase } from '../usecases/quotation/createQuotation.usecase';
 import { FindEventFromArtistByEventIdUseCase } from '../usecases/agenda/findEventFromArtistByEventId.usecase';

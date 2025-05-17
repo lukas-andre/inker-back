@@ -54,7 +54,6 @@ export enum AgendaEventTransition {
     CONFIRM = 'confirm',
     REJECT = 'reject',
     CANCEL = 'cancel',
-    // SCHEDULE = 'schedule', // This transition might still be used to move to CONFIRMED
     INITIAL_SCHEDULE = 'initial_schedule', // Use if a distinct scheduling event is needed post-confirmation or payment
     START_SESSION = 'start_session',
     COMPLETE_SESSION = 'complete_session',
@@ -64,7 +63,7 @@ export enum AgendaEventTransition {
     ADD_REVIEW = 'add_review',
     START_AFTERCARE = 'start_aftercare',
     OPEN_DISPUTE = 'open_dispute',
-    RESCHEDULE = 'reschedule', // Explicit event for rescheduling
+    RESCHEDULE = 'reschedule',
     MARK_PAYMENT_PENDING = 'mark_payment_pending',
 }
 

@@ -69,7 +69,7 @@ import { EventActionEngineService } from './domain/services';
 import { CancellationPenalty } from './infrastructure/entities/cancellationPenalty.entity';
 import { CancellationPenaltyRepository } from './infrastructure/repositories/cancellationPenalty.repository';
 import { PenaltyCalculationService } from './domain/services/penaltyCalculation.service';
-import { CancelEventAndApplyPenaltyUseCase } from './usecases/agenda/cancelEventAndApplyPenalty.usecase';
+import { CancelEventAndApplyPenaltyUseCase } from './usecases/event/cancelEventAndApplyPenalty.usecase';
 import { PenaltyQueuesModule } from '../queues/penalty/penaltyQueues.module';
 import { EventStateMachineService } from './domain/services/eventStateMachine.service';
 
