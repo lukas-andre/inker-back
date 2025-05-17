@@ -65,6 +65,8 @@ import { GetAgendaSettingsResDto } from '../dtos/getAgendaSettingsRes.dto';
 import { AgendaUnavailableTime } from '../entities/agendaUnavailableTime.entity';
 import { AvailabilityCalendar, SchedulingService, TimeSlot } from '../../services/scheduling.service';
 import { CancelEventReqDto } from '../dtos/cancelEventReq.dto';
+import { SendEventMessageReqDto } from 'src/agenda/infrastructure/dtos/sendEventMessageReq.dto';
+import { EventMessageDto } from '../dtos/eventMessage.dto';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -507,5 +509,44 @@ export class AgendaController {
     @Param('eventId', AgendaEventIdPipe) eventId: string,
   ): Promise<DefaultResponseDto> {
     return this.agendaHandler.handleRsvp(agendaId, eventId, false);
+  }
+
+  @ApiOperation({ summary: 'Send a message to an event chat' })
+  @ApiOkResponse({ description: 'Message sent successfully.', type: DefaultResponseDto })
+  @ApiNotFoundResponse({ description: 'Event or Agenda not found.' })
+  @ApiBadRequestResponse({ description: 'User not authorized or invalid event state for sending messages.' })
+  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID containing the event' })
+  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to send message to' })
+  @Post(':agendaId/event/:eventId/message')
+  @UseInterceptors(FilesFastifyInterceptor('imageFile', 1))
+  @HttpCode(200)
+  async sendEventMessage(
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
+    @Body() sendEventMessageReqDto: SendEventMessageReqDto,
+    @UploadedFiles() imageFile?: FileInterface[],
+  ): Promise<any> {
+    const file = imageFile && imageFile.length > 0 ? imageFile[0] : undefined;
+    return this.agendaHandler.handleSendEventMessage(
+      agendaId,
+      eventId,
+      sendEventMessageReqDto,
+      file,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get messages for an event chat' })
+  @ApiOkResponse({ description: 'Messages retrieved successfully.', type: [EventMessageDto] })
+  @ApiNotFoundResponse({ description: 'Event or Agenda not found.' })
+  @ApiBadRequestResponse({ description: 'User not authorized to view messages.' })
+  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID containing the event' })
+  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to retrieve messages from' })
+  @Get(':agendaId/event/:eventId/messages')
+  @HttpCode(200)
+  async getEventMessages(
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
+  ): Promise<EventMessageDto[]> {
+    return this.agendaHandler.handleGetEventMessages(agendaId, eventId);
   }
 }

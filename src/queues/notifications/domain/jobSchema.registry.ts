@@ -4,6 +4,7 @@ import {
   AgendaEventReminderJobSchema,
   AgendaEventStatusChangedJobSchema,
   AgendaEventUpdatedJobSchema,
+  NewEventMessageJobSchema,
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,
   RsvpUnschedulableJobSchema,
@@ -44,6 +45,7 @@ export const JobTypeSchemaRegistry = {
   OFFER_REJECTED: OfferRejectedJobSchema,
   ACCOUNT_VERIFICATION_CODE: SendVerificationCodeJobSchema,
   [PENALTY_APPLIED_NOTIFICATION_V1]: PenaltyAppliedNotificationV1JobSchema,
+  NEW_EVENT_MESSAGE: NewEventMessageJobSchema,
 };
 
 // export jobtype keys

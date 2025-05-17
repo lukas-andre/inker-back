@@ -149,10 +149,10 @@ export class EventActionEngineService {
     
     // Quotation related actions - set to false as per "excluding quotation-specific actions"
     // If these are ever needed, their specific logic should be added.
-    const canAcceptOffer = false;
-    reasons.canAcceptOffer = "Offer actions are handled separately from event actions.";
-    const canRejectOffer = false;
-    reasons.canRejectOffer = "Offer actions are handled separately from event actions.";
+    // const canAcceptOffer = false; // Removed
+    // reasons.canAcceptOffer = "Offer actions are handled separately from event actions."; // Removed
+    // const canRejectOffer = false; // Removed
+    // reasons.canRejectOffer = "Offer actions are handled separately from event actions."; // Removed
     const canAppeal = false;
     reasons.canAppeal = "Appeal actions are handled separately from event actions.";
 
@@ -163,8 +163,8 @@ export class EventActionEngineService {
       canSendMessage,
       canAddWorkEvidence,
       canLeaveReview,
-      canAcceptOffer,
-      canRejectOffer,
+      // canAcceptOffer, // Removed
+      // canRejectOffer, // Removed
       canAppeal,
       reasons,
     };

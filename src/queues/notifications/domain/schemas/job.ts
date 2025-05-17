@@ -6,6 +6,7 @@ import {
   AgendaEventReminderJobSchema,
   AgendaEventStatusChangedJobSchema,
   AgendaEventUpdatedJobSchema,
+  NewEventMessageJobSchema,
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,
   RsvpUnschedulableJobSchema,
@@ -49,6 +50,8 @@ export const JobSchema = z.union([
   OfferRejectedJobSchema,
   // Penalty Notifications
   PenaltyAppliedNotificationV1JobSchema,
+  // New Event Message Notification
+  NewEventMessageJobSchema,
 ]);
 
 export type JobType = z.infer<typeof JobSchema>;
