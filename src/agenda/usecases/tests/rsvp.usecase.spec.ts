@@ -1,27 +1,29 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { getQueueToken } from '@nestjs/bull';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Queue } from 'bull';
 
-import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
 import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
-import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
-import {
-  RsvpAcceptedJobType,
-  RsvpDeclinedJobType,
-} from '../../../queues/notifications/domain/schemas/agenda';
-import { queues } from '../../../queues/queues';
-import { Agenda } from '../../infrastructure/entities/agenda.entity';
+import { DomainNotFound, DomainUnProcessableEntity } from '../../../global/domain/exceptions/domain.exception';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
-import { AgendaInvitationRepository } from '../../infrastructure/repositories/agendaInvitation.provider';
 import { RsvpUseCase } from '../event/rsvp.usecase';
+
+import { ChangeEventStatusUsecase } from '../event/changeEventStatus.usecase';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
+import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
+import { getQueueToken } from '@nestjs/bull';
+import { queues } from '../../../queues/queues';
 
 describe('RsvpUseCase', () => {
   let useCase: RsvpUseCase;
-  let agendaProvider: DeepMocked<AgendaRepository>;
-  let agendaInvitationProvider: DeepMocked<AgendaInvitationRepository>;
-  let customerProvider: DeepMocked<CustomerRepository>;
-  let notificationQueue: DeepMocked<Queue>;
+  let changeEventStatusUsecase: DeepMocked<ChangeEventStatusUsecase>;
+  let agendaEventProvider: DeepMocked<AgendaEventRepository>;
+  let requestContextService: DeepMocked<RequestContextService>;
+
+  const mockCustomerId = 'cust-uuid-123';
+  const mockAgendaId = 'agenda-uuid-456';
+  const mockEventId = 'event-uuid-789';
+  const mockAuthenticatedUserId = 'auth-user-uuid';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,25 +34,32 @@ describe('RsvpUseCase', () => {
           useValue: createMock<AgendaRepository>(),
         },
         {
-          provide: AgendaInvitationRepository,
-          useValue: createMock<AgendaInvitationRepository>(),
-        },
-        {
           provide: CustomerRepository,
           useValue: createMock<CustomerRepository>(),
         },
         {
-          provide: getQueueToken(queues.notification.name),
-          useValue: createMock<Queue>(),
+          provide: ChangeEventStatusUsecase,
+          useValue: createMock<ChangeEventStatusUsecase>(),
+        },
+        {
+          provide: AgendaEventRepository,
+          useValue: createMock<AgendaEventRepository>(),
+        },
+        {
+          provide: RequestContextService,
+          useValue: createMock<RequestContextService>(),
         },
       ],
     }).compile();
 
     useCase = module.get<RsvpUseCase>(RsvpUseCase);
-    agendaProvider = module.get(AgendaRepository);
-    agendaInvitationProvider = module.get(AgendaInvitationRepository);
-    customerProvider = module.get(CustomerRepository);
-    notificationQueue = module.get(getQueueToken(queues.notification.name));
+    changeEventStatusUsecase = module.get(ChangeEventStatusUsecase);
+    agendaEventProvider = module.get(AgendaEventRepository);
+    requestContextService = module.get(RequestContextService);
+
+    requestContextService.userId = mockAuthenticatedUserId;
+    requestContextService.userTypeId = mockCustomerId;
+    requestContextService.isNotArtist = true;
   });
 
   it('should throw DomainNotFound if agenda does not exist', async () => {
@@ -59,6 +68,7 @@ describe('RsvpUseCase', () => {
     const eventId = 1;
     const willAttend = true;
 
+    const agendaProvider = module.get(AgendaRepository);
     agendaProvider.findById.mockResolvedValueOnce(undefined);
 
     await expect(
@@ -73,7 +83,9 @@ describe('RsvpUseCase', () => {
     const willAttend = true;
     const mockAgenda = { id: 1, artistId: 1 } as Agenda;
 
+    const agendaProvider = module.get(AgendaRepository);
     agendaProvider.findById.mockResolvedValueOnce(mockAgenda);
+    const customerProvider = module.get(CustomerRepository);
     customerProvider.findById.mockResolvedValueOnce(undefined);
 
     await expect(
@@ -98,15 +110,19 @@ describe('RsvpUseCase', () => {
       notificationTypeId: 'EMAIL',
     };
 
+    const agendaProvider = module.get(AgendaRepository);
     agendaProvider.findById.mockResolvedValueOnce(mockAgenda);
+    const customerProvider = module.get(CustomerRepository);
     customerProvider.findById.mockResolvedValueOnce(mockCustomer);
 
     await useCase.execute(customerId, agendaId, eventId, willAttend);
 
+    const agendaInvitationProvider = module.get(AgendaInvitationRepository);
     expect(agendaInvitationProvider.updateStatus).toHaveBeenCalledWith(
       eventId,
       'accepted',
     );
+    const notificationQueue = module.get(getQueueToken(queues.notification.name));
     expect(notificationQueue.add).toHaveBeenCalledWith(mockQueueMessage);
   });
 
@@ -127,15 +143,81 @@ describe('RsvpUseCase', () => {
       notificationTypeId: 'EMAIL',
     };
 
+    const agendaProvider = module.get(AgendaRepository);
     agendaProvider.findById.mockResolvedValueOnce(mockAgenda);
+    const customerProvider = module.get(CustomerRepository);
     customerProvider.findById.mockResolvedValueOnce(mockCustomer);
 
     await useCase.execute(customerId, agendaId, eventId, willAttend);
 
+    const agendaInvitationProvider = module.get(AgendaInvitationRepository);
     expect(agendaInvitationProvider.updateStatus).toHaveBeenCalledWith(
       eventId,
       'rejected',
     );
+    const notificationQueue = module.get(getQueueToken(queues.notification.name));
     expect(notificationQueue.add).toHaveBeenCalledWith(mockQueueMessage);
+  });
+
+  it('should call ChangeEventStatusUsecase with CONFIRM action when willAttend is true', async () => {
+    const mockEvent = { id: mockEventId, customerId: mockCustomerId } as AgendaEvent;
+    agendaEventProvider.findOne.mockResolvedValueOnce(mockEvent);
+
+    await useCase.execute(mockAgendaId, mockEventId, true);
+
+    expect(agendaEventProvider.findOne).toHaveBeenCalledWith({
+        where: { id: mockEventId, agenda: { id: mockAgendaId } },
+        select: ['id', 'customerId']
+    });
+    expect(changeEventStatusUsecase.execute).toHaveBeenCalledWith(
+      mockAgendaId,
+      mockEventId,
+      { eventAction: AgendaEventTransition.CONFIRM },
+    );
+  });
+
+  it('should call ChangeEventStatusUsecase with REJECT action when willAttend is false', async () => {
+    const mockEvent = { id: mockEventId, customerId: mockCustomerId } as AgendaEvent;
+    agendaEventProvider.findOne.mockResolvedValueOnce(mockEvent);
+    
+    await useCase.execute(mockAgendaId, mockEventId, false);
+
+    expect(agendaEventProvider.findOne).toHaveBeenCalledWith({
+        where: { id: mockEventId, agenda: { id: mockAgendaId } },
+        select: ['id', 'customerId']
+    });
+    expect(changeEventStatusUsecase.execute).toHaveBeenCalledWith(
+      mockAgendaId,
+      mockEventId,
+      { eventAction: AgendaEventTransition.REJECT },
+    );
+  });
+
+  it('should throw DomainUnProcessableEntity if RequestContext indicates an artist', async () => {
+    requestContextService.isNotArtist = false;
+
+    await expect(
+      useCase.execute(mockAgendaId, mockEventId, true),
+    ).rejects.toThrow(DomainUnProcessableEntity);
+    expect(changeEventStatusUsecase.execute).not.toHaveBeenCalled();
+  });
+
+  it('should throw DomainNotFound if event is not found', async () => {
+    agendaEventProvider.findOne.mockResolvedValueOnce(undefined);
+
+    await expect(
+      useCase.execute(mockAgendaId, mockEventId, true),
+    ).rejects.toThrow(DomainNotFound);
+    expect(changeEventStatusUsecase.execute).not.toHaveBeenCalled();
+  });
+
+  it('should throw DomainUnProcessableEntity if event.customerId does not match authenticated customerId', async () => {
+    const mockEventWithDifferentCustomer = { id: mockEventId, customerId: 'other-cust-uuid' } as AgendaEvent;
+    agendaEventProvider.findOne.mockResolvedValueOnce(mockEventWithDifferentCustomer);
+
+    await expect(
+      useCase.execute(mockAgendaId, mockEventId, true),
+    ).rejects.toThrow(DomainUnProcessableEntity);
+    expect(changeEventStatusUsecase.execute).not.toHaveBeenCalled();
   });
 });

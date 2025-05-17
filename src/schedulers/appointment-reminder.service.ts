@@ -5,7 +5,7 @@ import { AgendaEvent } from '../agenda/infrastructure/entities/agendaEvent.entit
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { queues } from '../queues/queues';
-import { Between } from 'typeorm';
+import { Between, In } from 'typeorm';
 import { AgendaEventStatus } from '../agenda/domain/enum/agendaEventStatus.enum';
 
 @Injectable()
@@ -64,7 +64,7 @@ export class AppointmentReminderService {
       const upcomingEvents = await this.agendaEventProvider.find({
         where: {
           startDate: Between(startDate, endDate),
-          status: AgendaEventStatus.SCHEDULED,
+          status: In([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED]),
         },
         relations: ['agenda'],
       });

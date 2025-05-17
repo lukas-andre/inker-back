@@ -31,10 +31,7 @@ import {
 } from '../../../users/domain/errors/codes';
 import { Agenda } from '../entities/agenda.entity';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
-import {
-  AgendaInvitation,
-  AgendaInvitationStatus,
-} from '../entities/agendaInvitation.entity';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 
 export interface ArtistAgendaAndEventRelatedToCustomerResult {
   id: string;
@@ -225,9 +222,10 @@ export class AgendaRepository extends BaseComponent {
     await queryRunner.startTransaction();
 
     try {
+      const initialStatus = AgendaEventStatus.PENDING_CONFIRMATION;
       const createEventSql = `
-        INSERT INTO agenda_event (agenda_id, title, info, color, "end_date", "start_date", notification, customer_id, done, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, false, NOW(), NOW())
+        INSERT INTO agenda_event (agenda_id, title, info, color, "end_date", "start_date", notification, customer_id, status, done, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, false, NOW(), NOW())
         RETURNING id;
       `;
 
@@ -240,25 +238,12 @@ export class AgendaRepository extends BaseComponent {
         event.start,
         event.notification,
         event.customerId,
+        initialStatus,
       ];
       const eventResult = await queryRunner.query(createEventSql, eventParams);
-
       eventId = eventResult[0].id;
 
-      const createInvitationSql = `
-        INSERT INTO agenda_invitation (event_id, invitee_id, status, updated_at)
-        VALUES ($1, $2, $3, NOW());
-      `;
-
-      const invitationParams = [
-        eventId,
-        event.customerId,
-        AgendaInvitationStatus.pending,
-      ];
-      await queryRunner.query(createInvitationSql, invitationParams);
-
       await queryRunner.commitTransaction();
-
       transactionIsOK = true;
     } catch (error) {
       this.logger.error(error);

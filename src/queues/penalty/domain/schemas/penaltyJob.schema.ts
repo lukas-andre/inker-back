@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { PenaltyStatus, PenaltyType } from '../../../../agenda/domain/enum';
-
+import { UserType } from '../../../../users/domain/enums/userType.enum';
 // Corresponds to PenaltyUserRole in cancellationPenalty.entity.ts
 const PenaltyUserRoleSchema = z.union([
-  z.literal('artist'),
-  z.literal('customer'),
+  z.literal(UserType.ARTIST),
+  z.literal(UserType.CUSTOMER),
 ]);
 
 // Corresponds to CancellationPenaltyMetadata in cancellationPenalty.entity.ts

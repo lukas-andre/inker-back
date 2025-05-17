@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { Quotation, QuotationStatus } from '../../infrastructure/entities/quotation.entity';
-import { QuotationOffer, QuotationOfferStatus } from '../../infrastructure/entities/quotationOffer.entity';
+import { Quotation} from '../../infrastructure/entities/quotation.entity';
+import { QuotationOffer  } from '../../infrastructure/entities/quotationOffer.entity';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
 import { TattooDesignCacheEntity } from '../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
 import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
 import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
 import { EventActionsResultDto } from '../dtos/eventActionsResult.dto';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
-export type UserType = 'artist' | 'customer';
 
 export interface EventActionContext {
   userId: string;
@@ -47,8 +47,8 @@ export class EventActionEngineService {
     
     // isArtist and isCustomer determination needs to be robust.
     // Assuming ctx.event.agenda.artistId and ctx.event.customerId are available and correct.
-    const isArtist = userType === 'artist' && userId === artistIdFromAgenda;
-    const isCustomer = userType === 'customer' && userId === event.customerId;
+    const isArtist = userType === UserType.ARTIST && userId === artistIdFromAgenda;
+    const isCustomer = userType === UserType.CUSTOMER && userId === event.customerId;
 
     const reasons: Record<string, string> = {};
     let canEdit = false;
@@ -59,10 +59,10 @@ export class EventActionEngineService {
     let canLeaveReview = false;
 
     // --- canEdit ---
-    if (isArtist && [AgendaEventStatus.SCHEDULED, AgendaEventStatus.RESCHEDULED].includes(event.status)) {
+    if (isArtist && [AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED].includes(event.status)) {
       canEdit = true;
     } else {
-      reasons.canEdit = "Only artists can modify event details during the scheduled or rescheduled phase.";
+      reasons.canEdit = "Only artists can modify event details during the confirmed or rescheduled phase.";
     }
 
     // --- canCancel ---
@@ -82,7 +82,7 @@ export class EventActionEngineService {
     }
 
     // --- canReschedule ---
-    if (event.status === AgendaEventStatus.SCHEDULED) {
+    if ([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED].includes(event.status)) { 
       if (isArtist) {
         canReschedule = true;
       } else if (isCustomer && hoursTillAppointment >= 48) {
@@ -91,24 +91,25 @@ export class EventActionEngineService {
         reasons.canReschedule = "Customers require at least 48 hours notice to reschedule.";
       }
     } else {
-      reasons.canReschedule = "Rescheduling is only allowed for events in the 'scheduled' state.";
+      reasons.canReschedule = "Rescheduling is only allowed for events in the 'confirmed' or 'rescheduled' state.";
     }
-    if (!canReschedule && !reasons.canReschedule) { // Generic reason if no specific one set
+    if (!canReschedule && !reasons.canReschedule) {
         reasons.canReschedule = "Rescheduling not permitted for this user or event state.";
     }
 
 
     // --- canSendMessage ---
     if ([
-      AgendaEventStatus.SCHEDULED,
+      AgendaEventStatus.CONFIRMED, 
       AgendaEventStatus.IN_PROGRESS,
       AgendaEventStatus.WAITING_FOR_PHOTOS,
-      AgendaEventStatus.PENDING_CONFIRMATION, // Added based on likely intent for communication
-      AgendaEventStatus.AFTERCARE_PERIOD    // Added based on likely intent for communication
+      AgendaEventStatus.PENDING_CONFIRMATION, 
+      AgendaEventStatus.RESCHEDULED,
+      AgendaEventStatus.AFTERCARE_PERIOD
     ].includes(event.status)) {
       canSendMessage = true;
     } else {
-      reasons.canSendMessage = "Messaging is disabled for events not in an active communication phase (e.g., scheduled, in progress, pending confirmation, waiting for photos, aftercare).";
+      reasons.canSendMessage = "Messaging is disabled for events not in an active communication phase (e.g., confirmed, in progress, pending confirmation, rescheduled, waiting for photos, aftercare).";
     }
 
     // --- canAddWorkEvidence ---

@@ -3,6 +3,7 @@ import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
 import { PenaltyType, PenaltyStatus } from '../enum'; // Corrected path to barrel file
 import { CancellationPenaltyMetadata, PenaltyUserRole } from '../../infrastructure/entities/cancellationPenalty.entity';
 import { ConfigService } from '@nestjs/config';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
 export interface CalculatedPenalty {
   type: PenaltyType;
@@ -47,7 +48,7 @@ export class PenaltyCalculationService {
     let reputationPoints: number | null = null;
 
     // MVP Rules based on your provided matrix (simplified)
-    if (cancellingUserRole === 'customer') {
+    if (cancellingUserRole === UserType.CUSTOMER) {
       // Customer cancellation rules
       if (hoursTillAppointment < 24) {
         penaltyType = PenaltyType.FIXED_FEE; // Example: fixed fee
@@ -64,7 +65,7 @@ export class PenaltyCalculationService {
         this.logger.log('Customer cancelling > 48h. No penalty.');
         return null;
       }
-    } else if (cancellingUserRole === 'artist') {
+    } else if (cancellingUserRole === UserType.ARTIST) {
       // Artist cancellation rules
       const quotationValue = await this.getQuotationValue(event.quotationId);
       if (hoursTillAppointment < 2) { // Very short notice

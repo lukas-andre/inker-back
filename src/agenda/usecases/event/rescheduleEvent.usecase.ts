@@ -12,6 +12,7 @@ import { queues } from '../../../queues/queues';
 import { SchedulingService } from '../../services/scheduling.service';
 import { ChangeEventStatusUsecase } from './changeEventStatus.usecase';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
+import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
 
 @Injectable()
 export class RescheduleEventUseCase {
@@ -98,29 +99,10 @@ export class RescheduleEventUseCase {
 
     // Call ChangeEventStatusUsecase to handle date updates, status change, and logging
     await this.changeEventStatusUsecase.execute(agendaId, eventId, {
-      status: AgendaEventStatus.RESCHEDULED,
       reason: dto.reason,
       newStartDate: dto.newStartDate,
       newEndDate: dto.newEndDate,
+      eventAction: AgendaEventTransition.RESCHEDULE,
     });
-
-    // Queue specific notification for reschedule
-    // event.customerId should be from the initially fetched event which is still valid
-    // artistId is also from the fetched event.agenda
-    if (event.customerId) {
-      await this.notificationQueue.add({
-        jobId: 'EVENT_RESCHEDULED',
-        metadata: {
-          eventId,
-          artistId, // This was from event.agenda.artistId
-          customerId: event.customerId,
-          oldStartDate: oldStartDate, // Use the stored old start date
-          newStartDate: dto.newStartDate,
-          reason: dto.reason,
-        },
-      });
-    }
-    // No explicit transaction commit/rollback/release needed here anymore,
-    // as ChangeEventStatusUsecase handles the save.
   }
 }

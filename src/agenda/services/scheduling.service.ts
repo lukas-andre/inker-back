@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
+import { Between, MoreThanOrEqual, LessThanOrEqual, In } from 'typeorm';
 import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 import { AgendaUnavailableTimeRepository } from '../infrastructure/repositories/agendaUnavailableTime.provider';
@@ -62,7 +62,7 @@ export class SchedulingService {
         agenda: { id: agenda.id },
         startDate: MoreThanOrEqual(startDate),
         endDate: LessThanOrEqual(endDate),
-        status: AgendaEventStatus.SCHEDULED,
+        status: In([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED]),
       },
     });
 
@@ -294,7 +294,7 @@ export class SchedulingService {
       where: {
         agenda: { id: agenda.id },
         startDate: Between(startTime, endTime),
-        status: AgendaEventStatus.SCHEDULED,
+        status: In([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED]),
       },
     });
 
@@ -420,7 +420,7 @@ export class SchedulingService {
           where: {
             agenda: { id: agenda.id },
             startDate: Between(windowStart, windowEnd),
-            status: AgendaEventStatus.SCHEDULED,
+            status: In([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED]),
           },
         });
 
