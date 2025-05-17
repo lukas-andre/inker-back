@@ -7,13 +7,12 @@ import { ReviewReactionEnum } from './reviews.controller';
 
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
-import { RatingArtistUsecase } from './usecases/ratingArtist.usecase';
 import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
+import { DomainForbidden } from '../global/domain/exceptions/domain.exception';
 
 @Injectable()
 export class ReviewHandler extends BaseHandler {
   constructor(
-    private readonly ratingArtistUseCase: RatingArtistUsecase,
     private readonly reactToReviewUseCase: ReactToReviewUsecase,
     private readonly getReviewsFromArtistUsecase: GetReviewsFromArtistUsecase,
     private readonly requestService: RequestContextService,
@@ -28,7 +27,9 @@ export class ReviewHandler extends BaseHandler {
     userId: string,
     body: ReviewArtistRequestDto,
   ) {
-    return this.ratingArtistUseCase.execute(artistId, eventId, userId, body);
+    // return this.ratingArtistUseCase.execute(artistId, eventId, userId, body);
+
+    throw new DomainForbidden('DEPRECATED please use EventReviewIntegrationUsecase instead');
   }
 
   async reactToReview(

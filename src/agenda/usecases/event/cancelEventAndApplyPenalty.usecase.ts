@@ -10,7 +10,7 @@ import { PenaltyUserRole } from '../../infrastructure/entities/cancellationPenal
 import { DomainNotFound, DomainBadRule, DomainConflict } from '../../../global/domain/exceptions/domain.exception';
 import { queues } from '../../../queues/queues';
 import { PROCESS_PENALTY_V1, ProcessPenaltyV1Job } from '../../../queues/penalty/domain/schemas/penaltyJob.schema';
-import { ChangeEventStatusUsecase } from '../event/changeEventStatus.usecase';
+import { ChangeEventStatusUsecase } from './changeEventStatus.usecase';
 import { CancellationPenalty } from '../../infrastructure/entities/cancellationPenalty.entity';
 import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
 import { UserType } from '../../../users/domain/enums/userType.enum';

@@ -1,7 +1,14 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 import { UpdateEventNotesReqDto } from '../../infrastructure/dtos/updateEventNotesReq.dto';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { EventActionEngineService } from '../../domain/services/eventActionEngine.service';
+import { UserType } from '../../../users/domain/enums/userType.enum';
+import { IStatusLogEntry, AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
+import { DomainForbidden, DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
+import { EventActionsResultDto } from '../../domain/dtos';
+
 
 @Injectable()
 export class UpdateEventNotesUseCase {
@@ -10,6 +17,8 @@ export class UpdateEventNotesUseCase {
   constructor(
     private readonly agendaProvider: AgendaRepository,
     private readonly agendaEventProvider: AgendaEventRepository,
+    private readonly requestContextService: RequestContextService,
+    private readonly eventActionEngineService: EventActionEngineService,
   ) {}
 
   async execute(
@@ -19,23 +28,51 @@ export class UpdateEventNotesUseCase {
   ): Promise<void> {
     this.logger.log(`Updating notes for event ${eventId} in agenda ${agendaId}`);
 
-    // Verify event exists and belongs to the agenda
+    const { userId, userTypeId, isNotArtist, userType: actorUserTypeEnum } = this.requestContextService;
+    const actorRoleForLog: UserType = isNotArtist ? UserType.CUSTOMER : UserType.ARTIST;
+    
+    const actor = {
+        userId,
+        roleId: userTypeId,
+        role: actorRoleForLog, 
+    };
+
     const event = await this.agendaEventProvider.findOne({
-      where: { id: eventId },
+      where: { id: eventId, agenda: { id: agendaId } },
       relations: ['agenda'],
     });
 
     if (!event) {
-      throw new NotFoundException(`Event with ID ${eventId} not found`);
+      throw new DomainNotFound(`Event with ID ${eventId} not found or does not belong to agenda ${agendaId}`);
     }
 
-    if (event.agenda.id !== agendaId) {
-      throw new BadRequestException(`Event ${eventId} does not belong to agenda ${agendaId}`);
-    }
-
-    // Update the event notes
-    await this.agendaEventProvider.update(eventId, {
-      notes: dto.notes,
+    const availableActions: EventActionsResultDto = await this.eventActionEngineService.getAvailableActions({
+        event,
+        userId: userId,
+        userType: actorUserTypeEnum,
     });
+
+    if (!availableActions.canEdit) { 
+      throw new DomainForbidden('User is not authorized to update notes for this event.');
+    }
+
+    const oldNotes = event.notes;
+    event.notes = dto.notes;
+
+    const logEntry: IStatusLogEntry = {
+      status: event.status,
+      timestamp: new Date(),
+      actor: {
+        userId: actor.userId,
+        roleId: actor.roleId,
+        role: actor.role,
+      },
+      notes: `Event notes updated. Previous: "${oldNotes || ''}". New: "${dto.notes || ''}".`,
+    };
+
+    event.statusLog = event.statusLog ? [...event.statusLog, logEntry] : [logEntry];
+
+    await this.agendaEventProvider.save(event); 
+    this.logger.log(`Notes updated for event ${eventId} and status log appended.`);
   }
 }
