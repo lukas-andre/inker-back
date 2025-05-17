@@ -14,6 +14,8 @@ import { AgendaEventTransition } from '../../domain/services/eventStateMachine.s
 
 import { Agenda } from './agenda.entity';
 import { UserType } from '../../../users/domain/enums/userType.enum';
+import { Quotation } from './quotation.entity';
+import { Review } from '../../../reviews/database/entities/review.entity';
 
 export interface IStatusLogEntry {
   status: AgendaEventStatus;
@@ -38,6 +40,15 @@ export interface IRescheduleLogEntry {
   newStartDate: Date;       // The new start date set by this reschedule
   newEndDate?: Date;      // The new end date set by this reschedule
   reason?: string;           // Reason for rescheduling, if provided
+}
+
+// Define the structure for a single event message
+export interface EventMessage {
+  senderId: string; // Could be customerId or artistId
+  senderType: 'customer' | 'artist';
+  message: string;
+  imageUrl?: string; // Optional URL for an image
+  timestamp: Date;
 }
 
 @Entity()
@@ -109,12 +120,9 @@ export class AgendaEvent extends BaseEntity {
   @Column({ name: 'review_id', type: 'uuid', nullable: true })
   reviewId: string | null;
 
-  // Property to store the history of reschedule attempts
-  // The EventStateMachineService.ts relies on this field with the IRescheduleLogEntry structure.
-  // The getOriginal('startDate') method used in EventStateMachineService.ts for previousStartDate/previousEndDate
-  // is a placeholder. You'll need to implement a way to get the values before they are updated,
-  // e.g., by fetching the entity fresh, passing original values in the state machine context payload,
-  // or if your BaseEntity or a subscriber provides such functionality.
   @Column('jsonb', { name: 'reschedule_log', nullable: true })
   rescheduleLog: IRescheduleLogEntry[];
+
+  @Column({ name: 'messages', type: 'jsonb', nullable: true, default: [] })
+  messages?: EventMessage[];
 }

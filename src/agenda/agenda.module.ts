@@ -72,6 +72,8 @@ import { PenaltyCalculationService } from './domain/services/penaltyCalculation.
 import { CancelEventAndApplyPenaltyUseCase } from './usecases/event/cancelEventAndApplyPenalty.usecase';
 import { PenaltyQueuesModule } from '../queues/penalty/penaltyQueues.module';
 import { EventStateMachineService } from './domain/services/eventStateMachine.service';
+import { SendEventMessageUseCase } from './usecases/event/sendEventMessage.usecase';
+import { GetEventMessagesUseCase } from './usecases/event/getEventMessages.usecase';
 
 @Module({
   imports: [
@@ -144,6 +146,8 @@ import { EventStateMachineService } from './domain/services/eventStateMachine.se
     PenaltyCalculationService,
     CancelEventAndApplyPenaltyUseCase,
     EventStateMachineService,
+    SendEventMessageUseCase,
+    GetEventMessagesUseCase,
   ],
   controllers: [AgendaController, QuotationController],
   exports: [

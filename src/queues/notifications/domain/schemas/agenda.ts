@@ -1,6 +1,16 @@
 import { z } from 'zod';
-
-import { NotificationTypeSchema } from './notification';
+import { UserType } from '../../../../users/domain/enums/userType.enum';
+import { NotificationTypeEmail, NotificationTypeEmailAndPush, NotificationTypePush } from './notification';
+export const EVENT_STATUS_CHANGED = 'EVENT_STATUS_CHANGED' as const;
+export const EVENT_REMINDER = 'EVENT_REMINDER' as const;
+export const EVENT_CONFIRMED_BY_CUSTOMER = 'EVENT_CONFIRMED_BY_CUSTOMER' as const;
+export const EVENT_REJECTED_BY_CUSTOMER = 'EVENT_REJECTED_BY_CUSTOMER' as const;
+export const EVENT_RESCHEDULED_BY_ARTIST = 'EVENT_RESCHEDULED_BY_ARTIST' as const;
+export const EVENT_RESCHEDULED_BY_CUSTOMER = 'EVENT_RESCHEDULED_BY_CUSTOMER' as const;
+export const RSVP_ACCEPTED = 'RSVP_ACCEPTED' as const;
+export const RSVP_DECLINED = 'RSVP_DECLINED' as const;
+export const RSVP_UNSCHEDULABLE = 'RSVP_UNSCHEDULABLE' as const;
+export const NewEventMessageJobId = 'NEW_EVENT_MESSAGE' as const;
 
 export const AgendaJobIdSchema = z.enum([
   'EVENT_CREATED',
@@ -11,12 +21,15 @@ export const AgendaJobIdSchema = z.enum([
   'RSVP_ACCEPTED',
   'RSVP_DECLINED',
   'RSVP_UNSCHEDULABLE',
+  'EVENT_RESCHEDULED_BY_ARTIST',
+  'EVENT_RESCHEDULED_BY_CUSTOMER',
+  NewEventMessageJobId,
 ]);
 export type AgendaJobIdType = z.infer<typeof AgendaJobIdSchema>;
 
 const AgendaJobSchema = z.object({
   jobId: AgendaJobIdSchema,
-  notificationTypeId: NotificationTypeSchema,
+  notificationTypeId: z.enum([NotificationTypePush, NotificationTypeEmail, NotificationTypeEmailAndPush]),
   metadata: z.object({
     customerId: z.string(),
     eventId: z.string(),
@@ -96,6 +109,31 @@ export type AgendaEventStatusChangedJobType = z.infer<
   typeof AgendaEventStatusChangedJobSchema
 >;
 
+const EventRescheduledByArtistJobSchema = AgendaJobSchema.extend({
+  jobId: z.literal(EVENT_RESCHEDULED_BY_ARTIST),
+});
+export type EventRescheduledByArtistJob = z.infer<typeof EventRescheduledByArtistJobSchema>;
+
+const EventRescheduledByCustomerJobSchema = AgendaJobSchema.extend({
+  jobId: z.literal(EVENT_RESCHEDULED_BY_CUSTOMER),
+});
+export type EventRescheduledByCustomerJob = z.infer<typeof EventRescheduledByCustomerJobSchema>;
+
+ const NewEventMessageJobSchema = z.object({
+  jobId: z.literal(NewEventMessageJobId),
+  notificationTypeId: z.literal(NotificationTypePush),
+  metadata: z.object({
+    eventId: z.string().uuid(),
+    agendaId: z.string().uuid(),
+    senderId: z.string(),
+    senderUserType: z.nativeEnum(UserType),
+    receiverUserTypeId: z.string(),
+    messageSnippet: z.string().max(100).describe("First 100 characters of the message"),
+    senderName: z.string().optional().describe("Name of the message sender, if available"),
+  }),
+});
+export type NewEventMessageJob = z.infer<typeof NewEventMessageJobSchema>;
+
 export {
   AgendaEventCreatedJobSchema,
   AgendaEventCanceledJobSchema,
@@ -105,4 +143,7 @@ export {
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,
   RsvpUnschedulableJobSchema,
+  EventRescheduledByArtistJobSchema,
+  EventRescheduledByCustomerJobSchema,
+  NewEventMessageJobSchema,
 };

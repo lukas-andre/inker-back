@@ -2,8 +2,6 @@ export class EventActionsResultDto {
   canEdit: boolean;
   canCancel: boolean;
   canSendMessage: boolean;
-  canAcceptOffer: boolean;
-  canRejectOffer: boolean;
   canAppeal: boolean;
   canReschedule: boolean;
   canAddWorkEvidence: boolean;

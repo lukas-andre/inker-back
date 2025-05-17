@@ -81,11 +81,14 @@ import { ListCustomerOpenQuotationsUseCase } from '../usecases/quotation/listCut
 import { UpdateQuotationOfferReqDto } from './dtos/updateQuotationOfferReq.dto';
 import { UpdateQuotationOfferUseCase } from '../usecases/offer/updateQuotationOffer.usecase';
 // Potentially import Query DTO if pagination is implemented
-// import { ListParticipatingQuotationsQueryDto } from './dtos/listParticipatingQuotationsQuery.dto';
 import { UpdateOpenQuotationReqDto } from './dtos/updateOpenQuotationReq.dto';
 import { UpdateOpenQuotationUseCase } from '../usecases/openQuotation/updateOpenQuotation.usecase';
 import { ListOpenQuotationsUseCase } from '../usecases/openQuotation/listOpenQuotations.usecase';
 import { EventActionsResultDto } from '../domain/dtos/eventActionsResult.dto';
+import { SendEventMessageReqDto } from './dtos/sendEventMessageReq.dto';
+import { EventMessageDto } from './dtos/eventMessage.dto';
+import { SendEventMessageUseCase } from '../usecases/event/sendEventMessage.usecase';
+import { GetEventMessagesUseCase } from '../usecases/event/getEventMessages.usecase';
 
 @Injectable()
 export class AgendaHandler {
@@ -138,7 +141,11 @@ export class AgendaHandler {
     private readonly updateQuotationOfferUseCase: UpdateQuotationOfferUseCase,
     // Nuevo usecase para actualizar cotización abierta
     private readonly updateOpenQuotationUseCase: UpdateOpenQuotationUseCase,
-  ) { }
+    private readonly sendEventMessageUseCase: SendEventMessageUseCase,
+    private readonly getEventMessagesUseCase: GetEventMessagesUseCase,
+  ) {
+    this.logger.log('Initializing AgendaHandler');
+  }
 
   async handleAddEvent(dto: AddEventReqDto): Promise<any> {
     return this.addEventUseCase.execute(dto);
@@ -150,7 +157,6 @@ export class AgendaHandler {
 
   async handleCancelEvent(eventId: string, agendaId: string, reason: string): Promise<any> {
     const { userTypeId, userType } = this.requestContext;
-
 
     return this.cancelEventAndApplyPenaltyUseCase.execute(
       eventId,
@@ -547,5 +553,28 @@ export class AgendaHandler {
       throw new UnauthorizedException('Solo el customer puede actualizar su cotización abierta');
     }
     await this.updateOpenQuotationUseCase.execute(quotationId, userTypeId, dto);
+  }
+
+  async handleSendEventMessage(
+    agendaId: string, // Though likely not directly used by use case if eventId is sufficient
+    eventId: string,
+    dto: SendEventMessageReqDto,
+    imageFile?: FileInterface,
+  ): Promise<any> { // Update response type as per use case
+    this.logger.log(
+      `Handling send event message for event ${eventId} in agenda ${agendaId}`,
+    );
+    return this.sendEventMessageUseCase.execute(eventId, dto, imageFile);
+  }
+
+  async handleGetEventMessages(
+    agendaId: string, // May not be directly used if eventId is sufficient and globally unique
+    eventId: string,
+  ): Promise<EventMessageDto[]> { 
+    this.logger.log(
+      `Handling get event messages for event ${eventId} in agenda ${agendaId}`,
+    );
+    // The use case will handle authorization based on the user in context and the event itself.
+    return this.getEventMessagesUseCase.execute(eventId);
   }
 }
