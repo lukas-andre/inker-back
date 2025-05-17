@@ -11,12 +11,14 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { AgendaEventcreatedJobType } from '../../../queues/notifications/domain/schemas/agenda';
 import { queues } from '../../../queues/queues';
 import { AddEventReqDto } from '../../infrastructure/dtos/addEventReq.dto';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 import { CreateAgendaEventService } from '../../domain/services/createAgendaEvent.service';
+import { EventStateMachineService, AgendaEventTransition, StateMachineContext } from '../../domain/services/eventStateMachine.service';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
 @Injectable()
 export class AddEventUseCase
@@ -28,6 +30,7 @@ export class AddEventUseCase
     private readonly agendaEventProvider: AgendaEventRepository,
     private readonly customerProvider: CustomerRepository,
     private readonly createAgendaEventService: CreateAgendaEventService,
+    private readonly eventStateMachineService: EventStateMachineService,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
@@ -66,43 +69,60 @@ export class AddEventUseCase
       throw new DomainBadRule('Already exists event in current date range');
     }
 
-    // Use the centralized event creation service
-    const result = await this.createAgendaEventService.createEventWithHistory({
-      agendaId: existsAgenda.id,
-      title: addEventDto.title,
-      info: addEventDto.info,
-      color: addEventDto.color,
-      startDate: addEventDto.start,
-      endDate: addEventDto.end,
-      notification: addEventDto.notification,
-      customerId: existsCustomer.id,
-      createdBy: existsAgenda.artistId, // Using artist ID as creator
-    });
+    const result = await this.createAgendaEventService.createDirectEvent(
+      existsAgenda.id,
+      existsCustomer.id,
+      addEventDto.title,
+      addEventDto.info,
+      addEventDto.color,
+      new Date(addEventDto.start),
+      new Date(addEventDto.end),
+      { 
+        userId: existsAgenda.artistId,
+        roleId: existsAgenda.artistId, 
+        role: UserType.ARTIST 
+      },
+      AgendaEventStatus.CREATED,
+      'Event created directly by artist via AddEventUseCase.'
+    );
 
     if (!result.transactionIsOK || !result.eventId) {
       throw new DomainBadRule('Error creating event');
     }
     
-    // Send notification
-    const queueMessage: AgendaEventcreatedJobType = {
-      jobId: 'EVENT_CREATED',
-      metadata: {
-        eventId: result.eventId,
-        artistId: existsAgenda.artistId,
-        customerId: existsCustomer.id,
+    const eventEntity = await this.agendaEventProvider.repo.findOne({
+      where: { id: result.eventId },
+      relations: ['agenda'],
+    });
+    
+    if (!eventEntity) {
+      this.logger.error(`Failed to find newly created event ${result.eventId} for state transition.`);
+      throw new DomainNotFound('Newly created event not found for state transition');
+    }
+
+    const eventContext: StateMachineContext = {
+      eventEntity: eventEntity,
+      actor: {
+        userId: existsAgenda.artistId,
+        roleId: existsAgenda.artistId,
+        role: UserType.ARTIST,
       },
-      notificationTypeId: 'EMAIL',
+      payload: {
+        notes: 'Event created directly by artist; confirmation automatically requested.',
+      }
     };
 
     try {
-      const job = await this.notificationQueue.add(queueMessage);
-      this.logger.log({
-        message: 'Event published to notification queue',
-        data: queueMessage,
-        job,
-      });
+      const newStatus = await this.eventStateMachineService.transition(
+        AgendaEventStatus.CREATED,
+        AgendaEventTransition.REQUEST_CONFIRMATION,
+        eventContext,
+      );
+      this.logger.log(`Event ${result.eventId} transitioned from CREATED to ${newStatus} via request_confirmation.`);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`Error transitioning event ${result.eventId} after creation:`, error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error during state transition';
+      throw new DomainBadRule(`Error transitioning event to pending confirmation: ${errorMessage}`);
     }
   }
 }

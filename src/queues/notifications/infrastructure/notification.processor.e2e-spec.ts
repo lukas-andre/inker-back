@@ -7,7 +7,6 @@ import { DataSource, Repository } from 'typeorm';
 
 import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../../../agenda/infrastructure/entities/agendaEvent.entity';
-import { AgendaInvitation } from '../../../agenda/infrastructure/entities/agendaInvitation.entity';
 import { AgendaRepository } from '../../../agenda/infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
@@ -45,7 +44,6 @@ describe('NotificationProcessor E2E', () => {
   let notificationProcessor: NotificationProcessor;
   const agendaToken = getRepositoryToken(Agenda);
   const agendaEventToken = getRepositoryToken(AgendaEvent);
-  const agendaInvitationToken = getRepositoryToken(AgendaInvitation);
   const artistToken = getRepositoryToken(Artist);
   const contactToken = getRepositoryToken(Contact);
   const customerToken = getRepositoryToken(Customer);
@@ -79,7 +77,7 @@ describe('NotificationProcessor E2E', () => {
           password: process.env.DB_PASSWORD || 'root',
           port: parseInt(process.env.DB_PORT, 10),
           name: AGENDA_DB_CONNECTION_NAME,
-          entities: [Agenda, AgendaEvent, AgendaInvitation],
+          entities: [Agenda, AgendaEvent],
           synchronize: true,
           dropSchema: true,
           logging,
@@ -128,7 +126,7 @@ describe('NotificationProcessor E2E', () => {
           keepConnectionAlive: true,
         }),
         TypeOrmModule.forFeature(
-          [Agenda, AgendaEvent, AgendaInvitation],
+          [Agenda, AgendaEvent],
           AGENDA_DB_CONNECTION_NAME,
         ),
         TypeOrmModule.forFeature([Artist, Contact], ARTIST_DB_CONNECTION_NAME),
@@ -149,10 +147,6 @@ describe('NotificationProcessor E2E', () => {
         },
         {
           provide: agendaEventToken,
-          useClass: Repository,
-        },
-        {
-          provide: agendaInvitationToken,
           useClass: Repository,
         },
         {

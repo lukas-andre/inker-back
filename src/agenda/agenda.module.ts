@@ -71,6 +71,7 @@ import { CancellationPenaltyRepository } from './infrastructure/repositories/can
 import { PenaltyCalculationService } from './domain/services/penaltyCalculation.service';
 import { CancelEventAndApplyPenaltyUseCase } from './usecases/agenda/cancelEventAndApplyPenalty.usecase';
 import { PenaltyQueuesModule } from '../queues/penalty/penaltyQueues.module';
+import { EventStateMachineService } from './domain/services/eventStateMachine.service';
 
 @Module({
   imports: [
@@ -142,6 +143,7 @@ import { PenaltyQueuesModule } from '../queues/penalty/penaltyQueues.module';
     CancellationPenaltyRepository,
     PenaltyCalculationService,
     CancelEventAndApplyPenaltyUseCase,
+    EventStateMachineService,
   ],
   controllers: [AgendaController, QuotationController],
   exports: [

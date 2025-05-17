@@ -7,15 +7,13 @@ import { CancellationPenaltyRepository } from '../../infrastructure/repositories
 import { PenaltyCalculationService, CalculatedPenalty } from '../../domain/services/penaltyCalculation.service';
 import { AgendaEventStatus } from '../../domain/enum';
 import { PenaltyUserRole } from '../../infrastructure/entities/cancellationPenalty.entity';
-import { UserType } from '../../domain/services/eventActionEngine.service';
-import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { DomainEventsService } from '../../../global/domain/events/domainEvents.service';
-import { PenaltyAppliedEvent } from '../../domain/events/penaltyApplied.event';
 import { DomainNotFound, DomainBadRule, DomainConflict } from '../../../global/domain/exceptions/domain.exception';
 import { queues } from '../../../queues/queues';
 import { PROCESS_PENALTY_V1, ProcessPenaltyV1Job } from '../../../queues/penalty/domain/schemas/penaltyJob.schema';
 import { ChangeEventStatusUsecase } from '../event/changeEventStatus.usecase';
 import { CancellationPenalty } from '../../infrastructure/entities/cancellationPenalty.entity';
+import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
 export interface CancelEventAndApplyPenaltyCommand {
   eventId: string;
@@ -64,8 +62,8 @@ export class CancelEventAndApplyPenaltyUseCase extends BaseUseCase implements Us
 
     const eventArtistId = event.agenda?.artistId;
     if (
-      (cancelerType === 'artist' && eventArtistId !== cancelerId) ||
-      (cancelerType === 'customer' && event.customerId !== cancelerId)
+      (cancelerType === UserType.ARTIST && eventArtistId !== cancelerId) ||
+      (cancelerType === UserType.CUSTOMER && event.customerId !== cancelerId)
     ) {
       throw new DomainBadRule('User not authorized to cancel this event');
     }
@@ -79,7 +77,7 @@ export class CancelEventAndApplyPenaltyUseCase extends BaseUseCase implements Us
     let savedPenalty: CancellationPenalty | null = null;
 
     if (calculatedPenalty) {
-      const userIdToPenalize = (calculatedPenalty.metadata.userRole === 'artist') ? eventArtistId : event.customerId;
+      const userIdToPenalize = (calculatedPenalty.metadata.userRole === UserType.ARTIST) ? eventArtistId : event.customerId;
       if (!userIdToPenalize) {
         this.logger.error(`Could not determine userIdToPenalize for event ${eventId}. Role: ${calculatedPenalty.metadata.userRole}`);
         throw new DomainBadRule('Error determining user to penalize.');
@@ -131,9 +129,9 @@ export class CancelEventAndApplyPenaltyUseCase extends BaseUseCase implements Us
       event.agenda.id,
       event.id,
       {
-        status: AgendaEventStatus.CANCELED,
         reason: reason,
         notes: notes,
+        eventAction: AgendaEventTransition.CANCEL,
       },
     );
     

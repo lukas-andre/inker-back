@@ -63,8 +63,7 @@ import { AcceptQuotationOfferUseCase } from '../usecases/offer/acceptQuotationOf
 import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from './dtos/listOpenQuotationsQuery.dto';
 import { CreateQuotationOfferReqDto } from './dtos/createQuotationOfferReq.dto';
 import { ListQuotationOffersResDto } from './dtos/listQuotationOffersRes.dto';
-import { UserType as RequestContextUserType } from '../../users/domain/enums/userType.enum';
-import { UserType as ActionEngineUserType } from '../domain/services/eventActionEngine.service';
+import { UserType as RequestContextUserType, UserType } from '../../users/domain/enums/userType.enum';
 
 // Import necessary types for the new method
 import { SendOfferMessageUseCase } from '../usecases/offer/sendOfferMessage.usecase';
@@ -150,22 +149,13 @@ export class AgendaHandler {
   }
 
   async handleCancelEvent(eventId: string, agendaId: string, reason: string): Promise<any> {
-    const { userTypeId, userType: contextUserType } = this.requestContext;
+    const { userTypeId, userType } = this.requestContext;
 
-    let mappedUserType: ActionEngineUserType;
-    if (contextUserType === RequestContextUserType.ARTIST) {
-      mappedUserType = 'artist';
-    } else if (contextUserType === RequestContextUserType.CUSTOMER) {
-      mappedUserType = 'customer';
-    } else {
-      this.logger.error(`User type ${contextUserType} from request context is not supported for direct event cancellation with penalty.`);
-      throw new BadRequestException('Admins or other user types cannot directly cancel events through this flow. Please use an appropriate administrative tool or cancel on behalf of a user.');
-    }
 
     return this.cancelEventAndApplyPenaltyUseCase.execute(
       eventId,
       userTypeId,
-      mappedUserType,
+      userType,
       reason,
     );
   }
@@ -258,8 +248,7 @@ export class AgendaHandler {
     eventId: string,
     willAttend: boolean,
   ): Promise<any> {
-    const { userTypeId } = this.requestContext;
-    return this.rsvpUseCase.execute(userTypeId, agendaId, eventId, willAttend);
+    return this.rsvpUseCase.execute(agendaId, eventId, willAttend);
   }
 
   async createQuotation(

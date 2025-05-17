@@ -2,16 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, IsDate } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
 
 export class ChangeEventStatusReqDto {
   @ApiProperty({
-    description: 'The new status for the event',
-    example: AgendaEventStatus.IN_PROGRESS,
-    enum: AgendaEventStatus,
+    description: 'The action to perform on the event, triggering a state transition',
+    example: AgendaEventTransition.START_SESSION,
+    enum: AgendaEventTransition,
   })
-  @IsEnum(AgendaEventStatus)
-  status: AgendaEventStatus;
+  @IsEnum(AgendaEventTransition)
+  eventAction: AgendaEventTransition;
 
   @ApiProperty({
     description: 'The specific reason for the status change (e.g., reason for reschedule/cancellation)',

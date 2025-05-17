@@ -259,24 +259,21 @@ export class AgendaController {
     );
   }
 
-  @ApiOperation({ summary: 'RSVP for an event' })
-  @HttpCode(200)
-  @ApiOkResponse({ description: 'RSVP successful.', type: undefined })
-  @ApiConflictResponse({ description: 'RSVP failed.' })
-  @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
-  @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
-  @ApiQuery({
-    name: 'willAttend',
-    required: true,
-    type: Boolean,
-    example: true,
+  @ApiOperation({ 
+    summary: 'RSVP to an event (Deprecated)',
+    description: 'Use POST /:agendaId/events/:eventId/confirm or POST /:agendaId/events/:eventId/reject instead.'
   })
-  @Post(':agendaId/event/:eventId/rsvp')
+  @ApiOkResponse({ description: 'RSVP processed.', type: DefaultResponseDto })
+  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID' })
+  @ApiParam({ name: 'eventId', required: true, description: 'Event ID' })
+  @ApiQuery({ name: 'willAttend', required: true, type: Boolean, description: 'True to accept, false to decline' })
+  @Put(':agendaId/event/:eventId/rsvp')
   async rsvp(
     @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Query('willAttend', ParseBoolPipe) willAttend: boolean,
-  ): Promise<any> {
+  ): Promise<DefaultResponseDto> {
+    this.logger.warn(`Deprecated RSVP endpoint was called for event ${eventId}`);
     return this.agendaHandler.handleRsvp(agendaId, eventId, willAttend);
   }
 
@@ -480,5 +477,35 @@ export class AgendaController {
     @Body() updateAgendaSettingsReqDto: UpdateAgendaSettingsReqDto,
   ): Promise<void> {
     return this.agendaHandler.handleUpdateAgendaSettings(agendaId, updateAgendaSettingsReqDto);
+  }
+
+  @ApiOperation({ summary: 'Confirm an event invitation' })
+  @ApiOkResponse({ description: 'Event confirmed successfully.', type: DefaultResponseDto })
+  @ApiNotFoundResponse({ description: 'Event or Agenda not found.' })
+  @ApiBadRequestResponse({ description: 'User not authorized or invalid event state for confirmation.' })
+  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID containing the event' })
+  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to confirm' })
+  @Post(':agendaId/events/:eventId/confirm')
+  @HttpCode(200)
+  async confirmEvent(
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
+  ): Promise<DefaultResponseDto> {
+    return this.agendaHandler.handleRsvp(agendaId, eventId, true); 
+  }
+
+  @ApiOperation({ summary: 'Reject an event invitation' })
+  @ApiOkResponse({ description: 'Event rejected successfully.', type: DefaultResponseDto })
+  @ApiNotFoundResponse({ description: 'Event or Agenda not found.' })
+  @ApiBadRequestResponse({ description: 'User not authorized or invalid event state for rejection.' })
+  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID containing the event' })
+  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to reject' })
+  @Post(':agendaId/events/:eventId/reject')
+  @HttpCode(200)
+  async rejectEvent(
+    @Param('agendaId', AgendaIdPipe) agendaId: string,
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
+  ): Promise<DefaultResponseDto> {
+    return this.agendaHandler.handleRsvp(agendaId, eventId, false);
   }
 }

@@ -17,6 +17,7 @@ import { GetQuotationResDto } from '../../infrastructure/dtos/getQuotationRes.dt
 import { EventActionEngineService } from '../../domain/services/eventActionEngine.service';
 import { Quotation } from '../../infrastructure/entities/quotation.entity';
 import { QuotationOffer } from '../../infrastructure/entities/quotationOffer.entity';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
 @Injectable()
 export class FindEventFromArtistByEventIdUseCase
@@ -93,7 +94,7 @@ export class FindEventFromArtistByEventIdUseCase
 
     const actions = await this.eventActionEngine.getAvailableActions({
       userId: artistId,
-      userType: 'artist',
+      userType: UserType.ARTIST,
       event,
       quotation: quotationEntity,
       offer: offerEntity,
@@ -180,7 +181,7 @@ export class FindEventFromArtistByEventIdUseCase
     // Obtener acciones disponibles para el customer
     const actions = await this.eventActionEngine.getAvailableActions({
       userId: customerId,
-      userType: 'customer',
+      userType: UserType.CUSTOMER,
       event,
       quotation: quotationEntity,
       offer: offerEntity,

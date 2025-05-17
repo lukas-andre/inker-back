@@ -6,9 +6,10 @@ import {
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { PenaltyStatus, PenaltyType } from '../../domain/enum';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
 
-export type PenaltyUserRole = 'artist' | 'customer';
+export type PenaltyUserRole = UserType.ARTIST | UserType.CUSTOMER;
 
 export interface CancellationPenaltyMetadata {
   cancellationTime: Date;

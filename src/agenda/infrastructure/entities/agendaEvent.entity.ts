@@ -5,23 +5,15 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
-  OneToOne,
 } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
 
 import { Agenda } from './agenda.entity';
-import { AgendaInvitation } from './agendaInvitation.entity';
-
-// Assuming UserType can be imported or is defined globally/similarly to EventActionEngineService
-// If not, we might need: export type UserType = 'artist' | 'customer' | 'system';
-// For now, let's assume it will be resolved or defined in a shared types file.
-// For the purpose of this edit, I'll define it locally if not found, but ideally it's shared.
-import { UserType as EngineUserType } from '../../domain/services/eventActionEngine.service'; // Attempt to import
-export type UserType = EngineUserType | 'system'; // Extend UserType to include 'system'
+import { UserType } from '../../../users/domain/enums/userType.enum';
 
 export interface IStatusLogEntry {
   status: AgendaEventStatus;
@@ -33,6 +25,19 @@ export interface IStatusLogEntry {
   };
   reason?: string;
   notes?: string;
+  action?: AgendaEventTransition;
+}
+
+// Define the interface for reschedule log entries
+export interface IRescheduleLogEntry {
+  timestamp: Date;
+  actorId: string;          // The global user ID from auth system (e.g., Keycloak ID)
+  actorRole: UserType;      // 'artist' | 'customer' | 'system'
+  previousStartDate?: Date; // The start date before this specific reschedule
+  previousEndDate?: Date;   // The end date before this specific reschedule
+  newStartDate: Date;       // The new start date set by this reschedule
+  newEndDate?: Date;      // The new end date set by this reschedule
+  reason?: string;           // Reason for rescheduling, if provided
 }
 
 @Entity()
@@ -72,15 +77,12 @@ export class AgendaEvent extends BaseEntity {
 
   @Column({
     type: 'varchar',
-    default: AgendaEventStatus.SCHEDULED,
+    default: AgendaEventStatus.CREATED,
   })
   status: AgendaEventStatus;
 
   @Column('jsonb', { nullable: true, name: 'work_evidence' })
   workEvidence: MultimediasMetadataInterface;
-
-  @OneToOne(() => AgendaInvitation, agendaInvitation => agendaInvitation.event)
-  agendaInvitation: AgendaInvitation;
 
   @Column({ name: 'notes', type: 'text', nullable: true })
   notes: string;
@@ -106,4 +108,13 @@ export class AgendaEvent extends BaseEntity {
 
   @Column({ name: 'review_id', type: 'uuid', nullable: true })
   reviewId: string | null;
+
+  // Property to store the history of reschedule attempts
+  // The EventStateMachineService.ts relies on this field with the IRescheduleLogEntry structure.
+  // The getOriginal('startDate') method used in EventStateMachineService.ts for previousStartDate/previousEndDate
+  // is a placeholder. You'll need to implement a way to get the values before they are updated,
+  // e.g., by fetching the entity fresh, passing original values in the state machine context payload,
+  // or if your BaseEntity or a subscriber provides such functionality.
+  @Column('jsonb', { name: 'reschedule_log', nullable: true })
+  rescheduleLog: IRescheduleLogEntry[];
 }

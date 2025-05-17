@@ -1,111 +1,71 @@
-import { InjectQueue } from '@nestjs/bull';
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Queue } from 'bull';
 
 import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
-import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
+import { DomainNotFound, DomainUnProcessableEntity } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
-import {
-  RsvpAcceptedJobType,
-  RsvpDeclinedJobType,
-  RsvpJobType,
-} from '../../../queues/notifications/domain/schemas/agenda';
-import { queues } from '../../../queues/queues';
-import { AgendaInvitationStatusEnum } from '../../infrastructure/entities/agendaInvitation.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
-import { AgendaInvitationRepository } from '../../infrastructure/repositories/agendaInvitation.provider';
+import { ChangeEventStatusUsecase } from './changeEventStatus.usecase';
+import { ChangeEventStatusReqDto } from '../../infrastructure/dtos/changeEventStatusReq.dto';
+import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 
 @Injectable()
 export class RsvpUseCase
   extends BaseUseCase
-  implements UseCase, OnModuleDestroy
+  implements UseCase
 {
   constructor(
     private readonly agendaProvider: AgendaRepository,
-    private readonly agendaInvitationProvider: AgendaInvitationRepository,
     private readonly customerProvider: CustomerRepository,
-    @InjectQueue(queues.notification.name)
-    private readonly notificationQueue: Queue,
+    private readonly changeEventStatusUsecase: ChangeEventStatusUsecase,
+    private readonly agendaEventProvider: AgendaEventRepository,
+    private readonly requestContext: RequestContextService,
   ) {
     super(RsvpUseCase.name);
   }
 
-  async onModuleDestroy() {
-    await this.notificationQueue.close();
-  }
-
   async execute(
-    customerId: string,
     agendaId: string,
     eventId: string,
     willAttend: boolean,
   ): Promise<DefaultResponseDto> {
-    const existsAgenda = await this.agendaProvider.findById(agendaId);
+    const authenticatedUserId = this.requestContext.userId;
+    const authenticatedUserSpecificId = this.requestContext.userTypeId;
 
-    if (!existsAgenda) {
-      throw new DomainNotFound('Agenda not found');
+    if (this.requestContext.isNotArtist === false) {
+      throw new DomainUnProcessableEntity('RSVP action must be performed by a customer.');
+    }
+    const customerId = authenticatedUserSpecificId;
+
+    const event = await this.agendaEventProvider.findOne({
+      where: { id: eventId, agenda: { id: agendaId } },
+      select: ['id', 'customerId']
+    });
+
+    if (!event) {
+      throw new DomainNotFound('Event not found or does not belong to the specified agenda.');
     }
 
-    const existsCustomer = await this.customerProvider.findById(customerId);
-
-    if (!existsCustomer) {
-      throw new DomainNotFound('Customer not found');
+    if (event.customerId !== customerId) {
+      throw new DomainUnProcessableEntity('RSVP action not authorized for this customer/event combination.');
     }
 
-    const status: AgendaInvitationStatusEnum = willAttend
-      ? 'accepted'
-      : 'rejected';
+    const eventAction = willAttend
+      ? AgendaEventTransition.CONFIRM
+      : AgendaEventTransition.REJECT;
 
-    await this.agendaInvitationProvider.updateStatus(eventId, status);
+    const changeStatusDto: ChangeEventStatusReqDto = {
+      eventAction,
+    };
 
-    const queueMessage = createQueueMessage(
-      willAttend,
-      eventId,
-      existsAgenda.artistId,
-      customerId,
-    );
-
-    try {
-      const job = await this.notificationQueue.add(queueMessage);
-      this.logger.log({
-        message: 'Event published to notification queue',
-        data: queueMessage,
-        job,
-      });
-    } catch (error) {
-      this.logger.error(error);
-    }
+    await this.changeEventStatusUsecase.execute(agendaId, eventId, changeStatusDto);
 
     return DefaultResponse.ok;
   }
-}
-
-function createQueueMessage(
-  willAttend: boolean,
-  eventId: string,
-  artistId: string,
-  customerId: string,
-): RsvpJobType {
-  const jobId: 'RSVP_ACCEPTED' | 'RSVP_DECLINED' = willAttend
-    ? 'RSVP_ACCEPTED'
-    : 'RSVP_DECLINED';
-
-  if (willAttend) {
-    return {
-      jobId,
-      metadata: { eventId, artistId, customerId },
-      notificationTypeId: 'EMAIL',
-    } as RsvpAcceptedJobType;
-  }
-
-  return {
-    jobId,
-    metadata: { eventId, artistId, customerId },
-    notificationTypeId: 'EMAIL',
-  } as RsvpDeclinedJobType;
 }
