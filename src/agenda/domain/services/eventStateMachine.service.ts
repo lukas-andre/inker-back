@@ -27,6 +27,7 @@ export interface StateMachineContext {
         // Add a field to track reschedule attempts if necessary for guards
         // This is illustrative; actual tracking might be on the entity itself
         // rescheduleAttempts?: { timestamp: Date; actorType: UserType }[]; 
+        areConsentsSigned?: boolean;
         [key: string]: any;
     };
     [key: string]: any;
@@ -135,6 +136,22 @@ export class EventStateMachineService extends BaseComponent {
             this.logger.warn(`Reschedule limit (3 in 7 days) reached for event ${event.id} by actor ${context.actor.userId}`);
             return false;
         }
+        return true;
+    }
+
+    private async hasRequiredConsentsSignedGuard(context: StateMachineContext): Promise<boolean> {
+        // This guard relies on the calling use case to populate 'areConsentsSigned' in the payload.
+        // The use case is responsible for determining if consents are required and if they are signed.
+        if (context.payload?.areConsentsSigned === undefined) {
+            this.logger.warn(`Consent check skipped for event ${context.eventEntity.id}: 'areConsentsSigned' not provided in context.payload. Assuming not required or handled externally.`);
+            return true; // Or false, depending on default policy if not provided. Let's assume true if not specified.
+        }
+
+        if (!context.payload.areConsentsSigned) {
+            this.logger.warn(`Confirmation prevented for event ${context.eventEntity.id}: Required consents are not signed.`);
+            return false;
+        }
+        this.logger.log(`Consent check passed for event ${context.eventEntity.id}.`);
         return true;
     }
 
@@ -408,6 +425,7 @@ export class EventStateMachineService extends BaseComponent {
                 transitions: {
                     [AgendaEventTransition.CONFIRM]: {
                         target: AgendaEventStatus.CONFIRMED,
+                        guards: [this.hasRequiredConsentsSignedGuard.bind(this)],
                         // actions: [async (event, context) => console.log('Action: Notify confirmation')]
                     },
                     [AgendaEventTransition.REJECT]: { // Reject should lead to CANCELED

@@ -6,5 +6,7 @@ export class EventActionsResultDto {
   canReschedule: boolean;
   canAddWorkEvidence: boolean;
   canLeaveReview: boolean;
+  canConfirmEvent: boolean;
+  canRejectEvent: boolean;
   reasons?: Record<string, string>;
 } 

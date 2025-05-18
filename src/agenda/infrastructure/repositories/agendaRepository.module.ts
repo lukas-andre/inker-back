@@ -14,11 +14,14 @@ import { QuotationRepository } from './quotation.provider';
 import { QuotationOfferRepository } from './quotationOffer.repository';
 import { QuotationOffer } from '../entities/quotationOffer.entity';
 import { CancellationPenaltyRepository } from './cancellationPenalty.repository';
+import { FormTemplateEntity } from '../entities/formTemplate.entity';
+import { SignedConsentEntity } from '../entities/signedConsent.entity';
+
 
 @Module({
   imports: [
     TypeOrmModule.forFeature(
-      [Agenda, AgendaEvent, Quotation, QuotationHistory, QuotationOffer],
+      [Agenda, AgendaEvent, Quotation, QuotationHistory, QuotationOffer, FormTemplateEntity, SignedConsentEntity],
       AGENDA_DB_CONNECTION_NAME,
     ),
   ],
