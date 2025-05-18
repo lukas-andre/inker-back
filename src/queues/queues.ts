@@ -27,4 +27,7 @@ export const queues = {
     attempts: 3,
     port: 6379,
   },
+  pdfGeneration: {
+    name: 'pdf-generation',
+  },
 };

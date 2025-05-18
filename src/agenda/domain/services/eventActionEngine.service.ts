@@ -48,7 +48,7 @@ export class EventActionEngineService {
     // isArtist and isCustomer determination needs to be robust.
     // Assuming ctx.event.agenda.artistId and ctx.event.customerId are available and correct.
     const isArtist = userType === UserType.ARTIST && userId === artistIdFromAgenda;
-    const isCustomer = userType === UserType.CUSTOMER && userId === event.customerId;
+    const isCustomer = userType === UserType.CUSTOMER && userId === event.customerId;  
 
     const reasons: Record<string, string> = {};
     let canEdit = false;
@@ -57,6 +57,8 @@ export class EventActionEngineService {
     let canSendMessage = false;
     let canAddWorkEvidence = false;
     let canLeaveReview = false;
+    let canConfirmEvent = false;
+    let canRejectEvent = false;
 
     // --- canEdit ---
     if (isArtist && [AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED].includes(event.status)) {
@@ -146,6 +148,18 @@ export class EventActionEngineService {
         reasons.canLeaveReview = "A review has already been submitted for this event.";
       }
     }
+
+    // --- canConfirmEvent & canRejectEvent ---
+    if (event.status === AgendaEventStatus.PENDING_CONFIRMATION) {
+      // These actions are generally possible if the event is PENDING_CONFIRMATION.
+      // The specific use cases/controllers for confirm/reject actions
+      // should verify if the current user is the one expected to perform the action.
+      canConfirmEvent = true;
+      canRejectEvent = true;
+    } else {
+      reasons.canConfirmEvent = "Event confirmation is only available when the event is pending confirmation.";
+      reasons.canRejectEvent = "Event rejection is only available when the event is pending confirmation.";
+    }
     
     // Quotation related actions - set to false as per "excluding quotation-specific actions"
     // If these are ever needed, their specific logic should be added.
@@ -165,6 +179,8 @@ export class EventActionEngineService {
       canLeaveReview,
       // canAcceptOffer, // Removed
       // canRejectOffer, // Removed
+      canConfirmEvent,
+      canRejectEvent,
       canAppeal,
       reasons,
     };

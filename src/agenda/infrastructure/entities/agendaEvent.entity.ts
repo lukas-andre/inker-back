@@ -5,6 +5,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
@@ -14,8 +15,7 @@ import { AgendaEventTransition } from '../../domain/services/eventStateMachine.s
 
 import { Agenda } from './agenda.entity';
 import { UserType } from '../../../users/domain/enums/userType.enum';
-import { Quotation } from './quotation.entity';
-import { Review } from '../../../reviews/database/entities/review.entity';
+import { SignedConsentEntity } from './signedConsent.entity';
 
 export interface IStatusLogEntry {
   status: AgendaEventStatus;
@@ -125,4 +125,7 @@ export class AgendaEvent extends BaseEntity {
 
   @Column({ name: 'messages', type: 'jsonb', nullable: true, default: [] })
   messages?: EventMessage[];
+
+  @OneToMany(() => SignedConsentEntity, consent => consent.event, { cascade: true })
+  consents: SignedConsentEntity[];
 }
