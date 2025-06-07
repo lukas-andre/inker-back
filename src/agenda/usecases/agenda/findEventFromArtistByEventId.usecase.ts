@@ -18,6 +18,8 @@ import { EventActionEngineService } from '../../domain/services/eventActionEngin
 import { Quotation } from '../../infrastructure/entities/quotation.entity';
 import { QuotationOffer } from '../../infrastructure/entities/quotationOffer.entity';
 import { UserType } from '../../../users/domain/enums/userType.enum';
+import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
+import { EventActionsResultDto } from '../../domain/dtos';
 
 @Injectable()
 export class FindEventFromArtistByEventIdUseCase
@@ -42,8 +44,9 @@ export class FindEventFromArtistByEventIdUseCase
   ): Promise<{
     event: AgendaEvent;
     location: ArtistLocation;
+    artist: Artist;
     quotation: GetQuotationResDto | null;
-    actions: any;
+    actions: EventActionsResultDto;
   }> {
     const existsAgenda = await this.agendaProvider.findOne({
       where: {
@@ -55,12 +58,16 @@ export class FindEventFromArtistByEventIdUseCase
       throw new DomainNotFound('Agenda not found');
     }
 
-    const [event, location] = await Promise.all([
+    const [event, location, artist] = await Promise.all([
       this.agendaEventProvider.findOne({
         where: { id: eventId, agenda: { id: existsAgenda.id } },
         relations: ['agenda'],
       }),
       this.artistLocationProvider.findByArtistId(artistId),
+      this.artistProvider.findOne({
+        where: { id: artistId },
+        relations: ['contact']
+      }),
     ]);
 
     if (!event) {
@@ -102,6 +109,7 @@ export class FindEventFromArtistByEventIdUseCase
 
     return {
       event,
+      artist,
       location: location[0],
       quotation: enrichedQuotation,
       actions,
@@ -113,10 +121,10 @@ export class FindEventFromArtistByEventIdUseCase
     eventId: string,
   ): Promise<{
     event: AgendaEvent;
-    artist: any;
+    artist: Artist;
     location: ArtistLocation;
     quotation: GetQuotationResDto | null;
-    actions: any;
+    actions: EventActionsResultDto;
   }> {
     // Find the event first with agenda relation
     const event = await this.agendaEventProvider.findOne({

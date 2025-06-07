@@ -24,6 +24,7 @@ import { TattooGeneratorModule } from './tattoo-generator/tattooGenerator.module
 import { UsersModule } from './users/users.module';
 import { SyncQueueModule } from './queues/sync/sync.queue.module';
 import { PenaltyQueuesModule } from './queues/penalty/penaltyQueues.module';
+import { ConsentModule } from './consent-module/consent.module';
 @Module({
   imports: [
     BullModule.forRoot({
@@ -58,6 +59,7 @@ import { PenaltyQueuesModule } from './queues/penalty/penaltyQueues.module';
     SyncQueueModule,
     PenaltyQueuesModule,
     SchedulerModule,
+    ConsentModule
   ],
   providers: [ChatGateway, AlertGateway, ModulesContainer],
 })

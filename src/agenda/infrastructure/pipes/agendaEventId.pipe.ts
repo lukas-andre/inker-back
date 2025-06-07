@@ -27,14 +27,6 @@ export class AgendaEventIdPipe
       return value;
     }
 
-    const object = plainToClass(metatype, value);
-
-    const errors = await validate(object);
-    if (errors.length > 0) {
-      this.logger.log({ errors });
-      throw new BadRequestException(AGENDA_EVENT_ID_PIPE_FAILED);
-    }
-
     if (!(await this.agendaEventRepository.exists(value))) {
       throw new NotFoundException(AGENDA_EVENT_NOT_EXISTS);
     }

@@ -32,6 +32,10 @@ export class SignedConsentRepository implements ISignedConsentRepository {
     return this.repository.find({ where: { userId }, order: { signedAt: 'DESC' } });
   }
 
+  async findByTemplateId(templateId: string): Promise<SignedConsentEntity[]> {
+    return this.repository.find({ where: { formTemplateId: templateId }, order: { signedAt: 'DESC' } });
+  }
+
   // You might also need a method to find a specific consent for an event and user
   async findByEventAndUser(eventId: string, userId: string): Promise<SignedConsentEntity | null> {
     return this.repository.findOne({ where: { eventId, userId } });

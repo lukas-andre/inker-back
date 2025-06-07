@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { FormTemplateEntity } from '../../../agenda/infrastructure/entities/formTemplate.entity';
 import { IFormTemplateRepository } from '../../domain/interfaces/form-template-repository.interface';
 import { CreateFormTemplateDto } from '../../domain/dtos/create-form-template.dto';
+import { UpdateFormTemplateDto } from '../../domain/dtos/update-form-template.dto';
 import { ConsentType } from '../../../agenda/domain/enum/consentType.enum';
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 
@@ -38,5 +39,30 @@ export class FormTemplateRepository implements IFormTemplateRepository {
   // Example for a more specific finder, e.g., by artist and type
   async findByArtistAndType(artistId: string, consentType: ConsentType): Promise<FormTemplateEntity | null> {
     return this.repository.findOne({ where: { artistId, consentType, isActive: true }, order: { version: 'DESC' } });
+  }
+
+  async update(id: string, updateDto: UpdateFormTemplateDto): Promise<FormTemplateEntity | null> {
+    const existingTemplate = await this.findById(id);
+    if (!existingTemplate) {
+      return null;
+    }
+
+    await this.repository.update(id, updateDto);
+    return this.findById(id);
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const result = await this.repository.delete(id);
+    return result.affected > 0;
+  }
+
+  async updateStatus(id: string, isActive: boolean): Promise<FormTemplateEntity | null> {
+    const existingTemplate = await this.findById(id);
+    if (!existingTemplate) {
+      return null;
+    }
+
+    await this.repository.update(id, { isActive });
+    return this.findById(id);
   }
 } 

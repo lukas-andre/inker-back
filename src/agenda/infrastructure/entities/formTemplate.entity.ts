@@ -48,19 +48,20 @@ export class FormTemplateEntity {
     type: 'enum',
     enum: ConsentType,
     enumName: 'consent_type_enum',
+    name: 'consent_type',
     default: ConsentType.GENERAL_TERMS,
   })
   consentType: ConsentType;
 
-  @Column('uuid')
+  @Column({ type: 'uuid', name: 'artist_id' })
   artistId: string;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
 
-  @CreateDateColumn({ type: 'timestamp with time zone' })
+  @CreateDateColumn({ type: 'timestamp with time zone', name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp with time zone' })
+  @UpdateDateColumn({ type: 'timestamp with time zone', name: 'updated_at' })
   updatedAt: Date;
 } 
