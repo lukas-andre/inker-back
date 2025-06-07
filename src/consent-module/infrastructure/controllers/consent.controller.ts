@@ -1,10 +1,15 @@
-import { Controller, Post, Body, Param, Get, UseGuards, Req, Ip, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, UseGuards, Req, Ip, HttpException, HttpStatus, Put, Delete, Patch } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { CreateFormTemplateDto } from '../../domain/dtos/create-form-template.dto';
+import { UpdateFormTemplateDto } from '../../domain/dtos/update-form-template.dto';
+import { UpdateTemplateStatusDto } from '../../domain/dtos/update-template-status.dto';
 import { SignConsentDto } from '../../domain/dtos/sign-consent.dto';
 import { FormTemplateDto } from '../../domain/dtos/form-template.dto';
 import { SignedConsentDto } from '../../domain/dtos/signed-consent.dto';
 import { CreateTemplateUseCase } from '../../usecases/create-template.usecase';
+import { UpdateTemplateUseCase } from '../../usecases/update-template.usecase';
+import { DeleteTemplateUseCase } from '../../usecases/delete-template.usecase';
+import { UpdateTemplateStatusUseCase } from '../../usecases/update-template-status.usecase';
 import { GetTemplateUseCase } from '../../usecases/get-template.usecase';
 import { SignConsentUseCase } from '../../usecases/sign-consent.usecase';
 import { UserType } from '../../../users/domain/enums/userType.enum'; // Corrected path
@@ -12,11 +17,12 @@ import { Request } from 'express';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { RolesGuard } from '../../../global/infrastructure/guards/roles.guard';
 import { Roles } from '../../../global/infrastructure/decorators/roles.decorator';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 
 interface AuthenticatedRequest extends Request {
-  user: { 
-    id: string; 
-    artistId?: string; 
+  user: {
+    id: string;
+    artistId?: string;
     userType: UserType;
   };
 }
@@ -26,9 +32,13 @@ interface AuthenticatedRequest extends Request {
 export class ConsentController {
   constructor(
     private readonly createTemplateUseCase: CreateTemplateUseCase,
+    private readonly updateTemplateUseCase: UpdateTemplateUseCase,
+    private readonly deleteTemplateUseCase: DeleteTemplateUseCase,
+    private readonly updateTemplateStatusUseCase: UpdateTemplateStatusUseCase,
     private readonly getTemplateUseCase: GetTemplateUseCase,
     private readonly signConsentUseCase: SignConsentUseCase,
-  ) {}
+    private readonly contextService: RequestContextService,
+  ) { }
 
   @Post('templates')
   @UseGuards(AuthGuard, RolesGuard)
@@ -43,11 +53,16 @@ export class ConsentController {
     @Body() createFormTemplateDto: CreateFormTemplateDto,
     @Req() req: AuthenticatedRequest,
   ): Promise<FormTemplateDto> {
-    const callingArtistId = req.user.artistId; 
-    if (!callingArtistId) {
+    const { userTypeId, userType } = this.contextService.getContext();
+    if (!userTypeId) {
       throw new HttpException('Artist ID not found in token for an artist user.', HttpStatus.FORBIDDEN);
     }
-    return this.createTemplateUseCase.execute(createFormTemplateDto, callingArtistId);
+
+    if (userType !== UserType.ARTIST) {
+      throw new HttpException('User does not have required role to create a template.', HttpStatus.FORBIDDEN);
+    }
+
+    return this.createTemplateUseCase.execute(createFormTemplateDto, userTypeId);
   }
 
   @Get('templates/:templateId')
@@ -79,10 +94,15 @@ export class ConsentController {
     @Param('artistId') targetArtistId: string,
     @Req() req: AuthenticatedRequest,
   ): Promise<FormTemplateDto[]> {
-    const callingArtistId = req.user.artistId;
-    if (callingArtistId !== targetArtistId) {
-      throw new HttpException('Artists can only access their own templates via this endpoint.', HttpStatus.FORBIDDEN);
+    const { userTypeId, userType } = this.contextService.getContext();
+    if (!userTypeId) {
+      throw new HttpException('Artist ID not found in token for an artist user.', HttpStatus.FORBIDDEN);
     }
+
+    if (userType !== UserType.ARTIST) {
+      throw new HttpException('User does not have required role to access templates.', HttpStatus.FORBIDDEN);
+    }
+
     return this.getTemplateUseCase.executeForArtist(targetArtistId);
   }
 
@@ -97,11 +117,94 @@ export class ConsentController {
   async signConsent(
     @Body() signConsentDto: SignConsentDto,
     @Req() req: AuthenticatedRequest,
-    @Ip() ipAddress: string, 
+    @Ip() ipAddress: string,
   ): Promise<SignedConsentDto> {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const userAgent = req.headers['user-agent'];
     return this.signConsentUseCase.execute(signConsentDto, userId, ipAddress, userAgent);
+  }
+
+  @Put('templates/:templateId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserType.ARTIST)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a consent form template' })
+  @ApiParam({ name: 'templateId', type: 'string', description: 'UUID of the form template' })
+  @ApiResponse({ status: 200, description: 'Template updated successfully', type: FormTemplateDto })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - User does not have required role or is not the template owner' })
+  @ApiResponse({ status: 404, description: 'Template not found' })
+  async updateTemplate(
+    @Param('templateId') templateId: string,
+    @Body() updateFormTemplateDto: UpdateFormTemplateDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<FormTemplateDto> {
+    const { userTypeId, userType } = this.contextService.getContext();
+    if (!userTypeId) {
+      throw new HttpException('Artist ID not found in token for an artist user.', HttpStatus.FORBIDDEN);
+    }
+
+    if (userType !== UserType.ARTIST) {
+      throw new HttpException('User does not have required role to update a template.', HttpStatus.FORBIDDEN);
+    }
+
+    return this.updateTemplateUseCase.execute(templateId, updateFormTemplateDto, userTypeId);
+  }
+
+  @Delete('templates/:templateId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserType.ARTIST)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a consent form template' })
+  @ApiParam({ name: 'templateId', type: 'string', description: 'UUID of the form template' })
+  @ApiResponse({ status: 204, description: 'Template deleted successfully' })
+  @ApiResponse({ status: 400, description: 'Cannot delete template that has been used in signed consents' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - User does not have required role or is not the template owner' })
+  @ApiResponse({ status: 404, description: 'Template not found' })
+  async deleteTemplate(
+    @Param('templateId') templateId: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<void> {
+    const { userTypeId, userType } = this.contextService.getContext();
+    if (!userTypeId) {
+      throw new HttpException('Artist ID not found in token for an artist user.', HttpStatus.FORBIDDEN);
+    }
+
+    if (userType !== UserType.ARTIST) {
+      throw new HttpException('User does not have required role to delete a template.', HttpStatus.FORBIDDEN);
+    }
+
+    return this.deleteTemplateUseCase.execute(templateId, userTypeId);
+  }
+
+  @Patch('templates/:templateId/status')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserType.ARTIST)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a consent form template status (activate/deactivate)' })
+  @ApiParam({ name: 'templateId', type: 'string', description: 'UUID of the form template' })
+  @ApiResponse({ status: 200, description: 'Template status updated successfully', type: FormTemplateDto })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - User does not have required role or is not the template owner' })
+  @ApiResponse({ status: 404, description: 'Template not found' })
+  async updateTemplateStatus(
+    @Param('templateId') templateId: string,
+    @Body() updateTemplateStatusDto: UpdateTemplateStatusDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<FormTemplateDto> {
+    const { userTypeId, userType } = this.contextService.getContext();
+    if (!userTypeId) {
+      throw new HttpException('Artist ID not found in token for an artist user.', HttpStatus.FORBIDDEN);
+    }
+
+    if (userType !== UserType.ARTIST) {
+      throw new HttpException('User does not have required role to update template status.', HttpStatus.FORBIDDEN);
+    }
+
+    return this.updateTemplateStatusUseCase.execute(templateId, updateTemplateStatusDto.isActive, userTypeId);
   }
 
   // TODO: Endpoint to get signed consents (e.g., for an event, for a user)

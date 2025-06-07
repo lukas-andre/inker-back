@@ -13,6 +13,7 @@ export interface ISignedConsentRepository {
   findById(id: string): Promise<SignedConsentEntity | null>;
   findByEventId(eventId: string): Promise<SignedConsentEntity[]>;
   findByUserId(userId: string): Promise<SignedConsentEntity[]>;
+  findByTemplateId(templateId: string): Promise<SignedConsentEntity[]>;
   // Add other methods as needed
 }
 

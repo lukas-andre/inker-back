@@ -184,6 +184,274 @@ export class EventStateMachineService extends BaseComponent {
         }
     }
 
+    private async dispatchPaymentPendingNotification(context: StateMachineContext): Promise<void> {
+        const { eventEntity, payload } = context;
+        if (!eventEntity.customerId && !eventEntity.agenda?.artistId) {
+            this.logger.warn(`Event ${eventEntity.id} has no customerId or artistId, skipping payment pending notification.`);
+            return;
+        }
+
+        const message = `Payment is pending for your appointment '${eventEntity.title}'. Please complete the payment to secure your booking.`;
+        const baseJobMetadata = {
+            eventId: eventEntity.id,
+            status: AgendaEventStatus.PAYMENT_PENDING,
+            message,
+        };
+
+        if (eventEntity.customerId) {
+            await this.notificationQueue.add({
+                jobId: 'EVENT_STATUS_CHANGED',
+                notificationTypeId: 'EMAIL_AND_PUSH',
+                metadata: { ...baseJobMetadata, customerId: eventEntity.customerId, artistId: eventEntity.agenda?.artistId || payload?.artistId || 'unknown_artist' },
+            }).catch(e => this.logger.error(`Failed to dispatch PAYMENT_PENDING notification to customer ${eventEntity.customerId} for event ${eventEntity.id}`, e));
+            this.logger.log(`Dispatched PAYMENT_PENDING notification to customer for event ${eventEntity.id}`);
+        }
+        // Artist is typically not directly notified about payment pending unless it's their action to mark it.
+        // If artist needs notification, it can be added here similarly.
+    }
+
+    private async dispatchSessionStartedNotification(context: StateMachineContext): Promise<void> {
+        const { eventEntity, payload } = context;
+        if (!eventEntity.customerId && !eventEntity.agenda?.artistId) {
+            this.logger.warn(`Event ${eventEntity.id} has no customerId or artistId, skipping session started notification.`);
+            return;
+        }
+
+        const message = `Your session for '${eventEntity.title}' has started.`;
+        const baseJobMetadata = {
+            eventId: eventEntity.id,
+            status: AgendaEventStatus.IN_PROGRESS,
+            message,
+        };
+
+        if (eventEntity.customerId) {
+            await this.notificationQueue.add({
+                jobId: 'EVENT_STATUS_CHANGED',
+                notificationTypeId: 'EMAIL_AND_PUSH',
+                metadata: { ...baseJobMetadata, customerId: eventEntity.customerId, artistId: eventEntity.agenda?.artistId || payload?.artistId || 'unknown_artist' },
+            }).catch(e => this.logger.error(`Failed to dispatch IN_PROGRESS notification to customer ${eventEntity.customerId} for event ${eventEntity.id}`, e));
+            this.logger.log(`Dispatched IN_PROGRESS notification to customer for event ${eventEntity.id}`);
+        }
+        if (eventEntity.agenda?.artistId) {
+            await this.notificationQueue.add({
+                jobId: 'EVENT_STATUS_CHANGED',
+                notificationTypeId: 'EMAIL_AND_PUSH',
+                metadata: { ...baseJobMetadata, artistId: eventEntity.agenda.artistId, customerId: eventEntity.customerId || 'unknown_customer' },
+            }).catch(e => this.logger.error(`Failed to dispatch IN_PROGRESS notification to artist ${eventEntity.agenda?.artistId} for event ${eventEntity.id}`, e));
+            this.logger.log(`Dispatched IN_PROGRESS notification to artist for event ${eventEntity.id}`);
+        }
+    }
+
+    private async dispatchSessionCompletedNotification(context: StateMachineContext): Promise<void> {
+        const { eventEntity, payload } = context;
+        if (!eventEntity.customerId && !eventEntity.agenda?.artistId) {
+            this.logger.warn(`Event ${eventEntity.id} has no customerId or artistId, skipping session completed notification.`);
+            return;
+        }
+
+        const message = `Your session for '${eventEntity.title}' has been completed. We hope you enjoyed your experience!`;
+        const baseJobMetadata = {
+            eventId: eventEntity.id,
+            status: AgendaEventStatus.COMPLETED,
+            message,
+        };
+
+        if (eventEntity.customerId) {
+            await this.notificationQueue.add({
+                jobId: 'EVENT_STATUS_CHANGED',
+                notificationTypeId: 'EMAIL_AND_PUSH',
+                metadata: { ...baseJobMetadata, customerId: eventEntity.customerId, artistId: eventEntity.agenda?.artistId || payload?.artistId || 'unknown_artist' },
+            }).catch(e => this.logger.error(`Failed to dispatch COMPLETED notification to customer ${eventEntity.customerId} for event ${eventEntity.id}`, e));
+            this.logger.log(`Dispatched COMPLETED notification to customer for event ${eventEntity.id}`);
+        }
+        if (eventEntity.agenda?.artistId) {
+            await this.notificationQueue.add({
+                jobId: 'EVENT_STATUS_CHANGED',
+                notificationTypeId: 'EMAIL_AND_PUSH',
+                metadata: { ...baseJobMetadata, artistId: eventEntity.agenda.artistId, customerId: eventEntity.customerId || 'unknown_customer' },
+            }).catch(e => this.logger.error(`Failed to dispatch COMPLETED notification to artist ${eventEntity.agenda?.artistId} for event ${eventEntity.id}`, e));
+            this.logger.log(`Dispatched COMPLETED notification to artist for event ${eventEntity.id}`);
+        }
+    }
+
+    private async dispatchRequestPhotosNotification(context: StateMachineContext): Promise<void> {
+        const { eventEntity, payload } = context;
+        // Typically, photos are requested from the artist.
+        if (!eventEntity.agenda?.artistId) {
+            this.logger.warn(`Event ${eventEntity.id} has no artistId, skipping request photos notification.`);
+            return;
+        }
+
+        const message = `Please upload photos for the completed session '${eventEntity.title}'.`;
+        const jobPayload: AgendaEventStatusChangedJobType = {
+            jobId: 'EVENT_STATUS_CHANGED',
+            notificationTypeId: 'EMAIL_AND_PUSH', // Or just PUSH for artist app
+            metadata: {
+                eventId: eventEntity.id,
+                artistId: eventEntity.agenda.artistId,
+                customerId: eventEntity.customerId || 'unknown_customer',
+                status: AgendaEventStatus.WAITING_FOR_PHOTOS,
+                message,
+            },
+        };
+        try {
+            await this.notificationQueue.add(jobPayload);
+            this.logger.log(`Dispatched WAITING_FOR_PHOTOS notification to artist for event ${eventEntity.id}`);
+        } catch (error) {
+            this.logger.error(`Failed to dispatch WAITING_FOR_PHOTOS notification to artist for event ${eventEntity.id}`, error);
+        }
+    }
+
+    private async dispatchRequestReviewNotification(context: StateMachineContext): Promise<void> {
+        const { eventEntity, payload } = context;
+        if (!eventEntity.customerId) {
+            this.logger.warn(`Event ${eventEntity.id} has no customerId, skipping request review notification.`);
+            return;
+        }
+
+        const message = `We'd love to hear your feedback! Please leave a review for your session '${eventEntity.title}'.`;
+        const jobPayload: AgendaEventStatusChangedJobType = {
+            jobId: 'EVENT_STATUS_CHANGED',
+            notificationTypeId: 'EMAIL_AND_PUSH',
+            metadata: {
+                eventId: eventEntity.id,
+                customerId: eventEntity.customerId,
+                artistId: eventEntity.agenda?.artistId || payload?.artistId || 'unknown_artist',
+                status: AgendaEventStatus.WAITING_FOR_REVIEW,
+                message,
+            },
+        };
+        try {
+            await this.notificationQueue.add(jobPayload);
+            this.logger.log(`Dispatched WAITING_FOR_REVIEW notification to customer for event ${eventEntity.id}`);
+        } catch (error) {
+            this.logger.error(`Failed to dispatch WAITING_FOR_REVIEW notification to customer for event ${eventEntity.id}`, error);
+        }
+    }
+
+    private async dispatchReviewAddedNotification(context: StateMachineContext): Promise<void> {
+        const { eventEntity, payload } = context;
+        // Notify the artist that a review has been added.
+        if (!eventEntity.agenda?.artistId) {
+            this.logger.warn(`Event ${eventEntity.id} has no artistId, skipping review added notification.`);
+            return;
+        }
+
+        const message = `A new review has been submitted for your session '${eventEntity.title}'.`;
+        const jobPayload: AgendaEventStatusChangedJobType = {
+            jobId: 'EVENT_STATUS_CHANGED',
+            notificationTypeId: 'EMAIL_AND_PUSH',
+            metadata: {
+                eventId: eventEntity.id,
+                artistId: eventEntity.agenda.artistId,
+                customerId: eventEntity.customerId || 'unknown_customer',
+                status: AgendaEventStatus.REVIEWED,
+                message,
+            },
+        };
+        try {
+            await this.notificationQueue.add(jobPayload);
+            this.logger.log(`Dispatched REVIEWED notification to artist for event ${eventEntity.id}`);
+        } catch (error) {
+            this.logger.error(`Failed to dispatch REVIEWED notification to artist for event ${eventEntity.id}`, error);
+        }
+        // Optionally notify the customer their review was received.
+        if (eventEntity.customerId) {
+            const customerMessage = `Thank you for your review of '${eventEntity.title}'!`;
+            const customerJobPayload: AgendaEventStatusChangedJobType = {
+                jobId: 'EVENT_STATUS_CHANGED',
+                notificationTypeId: 'EMAIL_AND_PUSH',
+                metadata: {
+                    eventId: eventEntity.id,
+                    customerId: eventEntity.customerId,
+                    artistId: eventEntity.agenda?.artistId || 'unknown_artist',
+                    status: AgendaEventStatus.REVIEWED,
+                    message: customerMessage,
+                },
+            };
+            try {
+                await this.notificationQueue.add(customerJobPayload);
+                this.logger.log(`Dispatched REVIEWED confirmation to customer for event ${eventEntity.id}`);
+            } catch (error) {
+                this.logger.error(`Failed to dispatch REVIEWED confirmation to customer for event ${eventEntity.id}`, error);
+            }
+        }
+    }
+
+    private async dispatchAftercareStartedNotification(context: StateMachineContext): Promise<void> {
+        const { eventEntity, payload } = context;
+        if (!eventEntity.customerId) {
+            this.logger.warn(`Event ${eventEntity.id} has no customerId, skipping aftercare started notification.`);
+            return;
+        }
+
+        const message = `Your aftercare period for '${eventEntity.title}' has started. Please follow the provided instructions.`;
+        const jobPayload: AgendaEventStatusChangedJobType = {
+            jobId: 'EVENT_STATUS_CHANGED',
+            notificationTypeId: 'EMAIL_AND_PUSH',
+            metadata: {
+                eventId: eventEntity.id,
+                customerId: eventEntity.customerId,
+                artistId: eventEntity.agenda?.artistId || payload?.artistId || 'unknown_artist',
+                status: AgendaEventStatus.AFTERCARE_PERIOD,
+                message,
+            },
+        };
+        try {
+            await this.notificationQueue.add(jobPayload);
+            this.logger.log(`Dispatched AFTERCARE_PERIOD notification to customer for event ${eventEntity.id}`);
+        } catch (error) {
+            this.logger.error(`Failed to dispatch AFTERCARE_PERIOD notification to customer for event ${eventEntity.id}`, error);
+        }
+    }
+
+    private async dispatchDisputeOpenedNotification(context: StateMachineContext): Promise<void> {
+        const { eventEntity, payload } = context;
+        if (!eventEntity.customerId && !eventEntity.agenda?.artistId) {
+            this.logger.warn(`Event ${eventEntity.id} has no customerId or artistId, skipping dispute opened notification.`);
+            return;
+        }
+
+        const disputeReason = payload?.reason || 'No reason provided';
+        const message = `A dispute has been opened for the appointment '${eventEntity.title}'. Reason: ${disputeReason}. Our team will review it shortly.`;
+        const baseJobMetadata = {
+            eventId: eventEntity.id,
+            status: AgendaEventStatus.DISPUTE_OPEN,
+            message,
+            reason: disputeReason,
+        };
+
+        // Notify Customer
+        if (eventEntity.customerId) {
+            const customerJobPayload: AgendaEventStatusChangedJobType = {
+                jobId: 'EVENT_STATUS_CHANGED',
+                notificationTypeId: 'EMAIL_AND_PUSH',
+                metadata: { ...baseJobMetadata, customerId: eventEntity.customerId, artistId: eventEntity.agenda?.artistId || 'unknown_artist' },
+            };
+            try {
+                await this.notificationQueue.add(customerJobPayload);
+                this.logger.log(`Dispatched DISPUTE_OPEN notification to customer for event ${eventEntity.id}`);
+            } catch (error) {
+                this.logger.error(`Failed to dispatch DISPUTE_OPEN notification to customer for event ${eventEntity.id}`, error);
+            }
+        }
+
+        // Notify Artist
+        if (eventEntity.agenda?.artistId) {
+            const artistJobPayload: AgendaEventStatusChangedJobType = {
+                jobId: 'EVENT_STATUS_CHANGED',
+                notificationTypeId: 'EMAIL_AND_PUSH',
+                metadata: { ...baseJobMetadata, artistId: eventEntity.agenda.artistId, customerId: eventEntity.customerId || 'unknown_customer' },
+            };
+            try {
+                await this.notificationQueue.add(artistJobPayload);
+                this.logger.log(`Dispatched DISPUTE_OPEN notification to artist for event ${eventEntity.id}`);
+            } catch (error) {
+                this.logger.error(`Failed to dispatch DISPUTE_OPEN notification to artist for event ${eventEntity.id}`, error);
+            }
+        }
+    }
+
     private async dispatchConfirmedNotification(context: StateMachineContext): Promise<void> {
         if (!context.eventEntity.customerId && !context.eventEntity.agenda?.artistId) {
             this.logger.warn(`Event ${context.eventEntity.id} has no customerId or artistId, skipping confirmed notification.`);
@@ -416,6 +684,13 @@ export class EventStateMachineService extends BaseComponent {
                         target: AgendaEventStatus.CANCELED,
                         // actions: [async (event, context) => console.log('Action: Notify cancellation')]
                     },
+                    [AgendaEventTransition.CONFIRM]: {
+                        target: AgendaEventStatus.CONFIRMED,
+                        guards: [this.hasRequiredConsentsSignedGuard.bind(this)],
+                    },
+                    [AgendaEventTransition.REJECT]: {
+                        target: AgendaEventStatus.CANCELED,
+                    }
                 },
             },
             [AgendaEventStatus.PENDING_CONFIRMATION]: {
@@ -467,6 +742,9 @@ export class EventStateMachineService extends BaseComponent {
                 },
             },
             [AgendaEventStatus.PAYMENT_PENDING]: {
+                onEntry: [
+                    this.dispatchPaymentPendingNotification.bind(this),
+                ],
                 transitions: {
                     [AgendaEventTransition.INITIAL_SCHEDULE]: { // Assuming payment completion triggers scheduling
                         target: AgendaEventStatus.CONFIRMED, // Was SCHEDULED
@@ -480,6 +758,9 @@ export class EventStateMachineService extends BaseComponent {
                 }
             },
             [AgendaEventStatus.IN_PROGRESS]: {
+                onEntry: [
+                    this.dispatchSessionStartedNotification.bind(this),
+                ],
                 transitions: {
                     [AgendaEventTransition.COMPLETE_SESSION]: {
                         target: AgendaEventStatus.COMPLETED,
@@ -493,6 +774,9 @@ export class EventStateMachineService extends BaseComponent {
                 }
             },
             [AgendaEventStatus.COMPLETED]: {
+                onEntry: [
+                    this.dispatchSessionCompletedNotification.bind(this),
+                ],
                 transitions: {
                     [AgendaEventTransition.REQUEST_PHOTOS]: {
                         target: AgendaEventStatus.WAITING_FOR_PHOTOS,
@@ -504,6 +788,9 @@ export class EventStateMachineService extends BaseComponent {
                 }
             },
             [AgendaEventStatus.WAITING_FOR_PHOTOS]: {
+                onEntry: [
+                    this.dispatchRequestPhotosNotification.bind(this),
+                ],
                 transitions: {
                     [AgendaEventTransition.ADD_PHOTOS]: { // Assuming an event "ADD_PHOTOS"
                         target: AgendaEventStatus.WAITING_FOR_REVIEW, // Or directly to REVIEWED if photos auto-trigger next step
@@ -515,6 +802,9 @@ export class EventStateMachineService extends BaseComponent {
                 }
             },
             [AgendaEventStatus.WAITING_FOR_REVIEW]: {
+                onEntry: [
+                    this.dispatchRequestReviewNotification.bind(this),
+                ],
                 transitions: {
                     [AgendaEventTransition.ADD_REVIEW]: { // Assuming an event "ADD_REVIEW"
                         target: AgendaEventStatus.REVIEWED,
@@ -526,6 +816,9 @@ export class EventStateMachineService extends BaseComponent {
                 }
             },
             [AgendaEventStatus.REVIEWED]: {
+                onEntry: [
+                    this.dispatchReviewAddedNotification.bind(this),
+                ],
                 transitions: {
                     [AgendaEventTransition.START_AFTERCARE]: {
                         target: AgendaEventStatus.AFTERCARE_PERIOD,
@@ -578,11 +871,15 @@ export class EventStateMachineService extends BaseComponent {
                 transitions: {}, // Ensure transitions property exists
             },
             [AgendaEventStatus.AFTERCARE_PERIOD]: {
-                // Could transition to a "CLOSED" or "ARCHIVED" state after a certain time
-                // No transitions defined in the diagram beyond this for normal flow
+                onEntry: [
+                    this.dispatchAftercareStartedNotification.bind(this),
+                ],
                 transitions: {}, // Ensure transitions property exists
             },
             [AgendaEventStatus.DISPUTE_OPEN]: {
+                onEntry: [
+                    this.dispatchDisputeOpenedNotification.bind(this),
+                ],
                 // Transitions for dispute resolution (e.g., RESOLVE_DISPUTE, CLOSE_DISPUTE)
                 // These would lead to other states like CANCELED, REFUNDED (new state?), or back to a previous state.
                 transitions: {}, // Ensure transitions property exists

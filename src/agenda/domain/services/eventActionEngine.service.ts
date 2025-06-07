@@ -150,7 +150,7 @@ export class EventActionEngineService {
     }
 
     // --- canConfirmEvent & canRejectEvent ---
-    if (event.status === AgendaEventStatus.PENDING_CONFIRMATION) {
+    if (event.status === AgendaEventStatus.PENDING_CONFIRMATION || event.status === AgendaEventStatus.CREATED) {
       // These actions are generally possible if the event is PENDING_CONFIRMATION.
       // The specific use cases/controllers for confirm/reject actions
       // should verify if the current user is the one expected to perform the action.
