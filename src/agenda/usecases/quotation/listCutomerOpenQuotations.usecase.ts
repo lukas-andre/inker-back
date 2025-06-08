@@ -81,6 +81,7 @@ export class ListCustomerOpenQuotationsUseCase extends BaseUseCase implements Us
                     estimatedCost: offer.estimatedCost,
                     message: offer.message,
                     messages: offer.messages ?? [],
+                    status: offer.status,
                 };
                 const existing = map.get(offer.quotationId) || [];
                 existing.push(offerDto);

@@ -78,6 +78,7 @@ export class QuotationEnrichmentService {
           estimatedCost: offer.estimatedCost,
           message: offer.message,
           messages: offer.messages ?? [],
+          status: offer.status,
         };
         const existing = offersMap.get(offer.quotationId) || [];
         existing.push(offerDto);
