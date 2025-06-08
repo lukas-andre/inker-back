@@ -6,6 +6,8 @@ import { DeleteTemplateUseCase } from './usecases/delete-template.usecase';
 import { UpdateTemplateStatusUseCase } from './usecases/update-template-status.usecase';
 import { GetTemplateUseCase } from './usecases/get-template.usecase';
 import { SignConsentUseCase } from './usecases/sign-consent.usecase';
+import { AcceptDefaultTermsUseCase } from './usecases/accept-default-terms.usecase';
+import { CheckConsentStatusUseCase } from './usecases/check-consent-status.usecase';
 import { FormTemplateRepository } from './infrastructure/repositories/form-template.repository';
 import { SignedConsentRepository } from './infrastructure/repositories/signed-consent.repository';
 import { IFormTemplateRepository } from './domain/interfaces/form-template-repository.interface';
@@ -30,6 +32,8 @@ import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
     UpdateTemplateStatusUseCase,
     GetTemplateUseCase,
     SignConsentUseCase,
+    AcceptDefaultTermsUseCase,
+    CheckConsentStatusUseCase,
     FormTemplateRepository,
     SignedConsentRepository,
     {
@@ -48,6 +52,8 @@ import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
     UpdateTemplateStatusUseCase,
     GetTemplateUseCase,
     SignConsentUseCase,
+    AcceptDefaultTermsUseCase,
+    CheckConsentStatusUseCase,
     FormTemplateRepository,
     SignedConsentRepository,
   ],

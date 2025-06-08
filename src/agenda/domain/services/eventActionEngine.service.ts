@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { Quotation} from '../../infrastructure/entities/quotation.entity';
-import { QuotationOffer  } from '../../infrastructure/entities/quotationOffer.entity';
+import { Quotation } from '../../infrastructure/entities/quotation.entity';
+import { QuotationOffer } from '../../infrastructure/entities/quotationOffer.entity';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
 import { TattooDesignCacheEntity } from '../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
@@ -9,6 +9,7 @@ import { ArtistLocation } from '../../../locations/infrastructure/database/entit
 import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
 import { EventActionsResultDto } from '../dtos/eventActionsResult.dto';
 import { UserType } from '../../../users/domain/enums/userType.enum';
+import { SignedConsentRepository } from '../../../consent-module/infrastructure/repositories/signed-consent.repository';
 
 
 export interface EventActionContext {
@@ -25,6 +26,7 @@ export interface EventActionContext {
 
 @Injectable()
 export class EventActionEngineService {
+  constructor() { }
   private calculateHoursDifference(date1: Date, date2: Date): number {
     if (!date1 || !date2) return Infinity; // Or handle as an error
     const diffInMilliseconds = Math.abs(date2.getTime() - date1.getTime());
@@ -34,7 +36,7 @@ export class EventActionEngineService {
   async getAvailableActions(ctx: EventActionContext): Promise<EventActionsResultDto> {
     const { userId, userType, event } = ctx;
     const currentTime = new Date();
-    
+
     // Ensure event.agenda is loaded or agendaId is directly on event if that's the case.
     // The provided logic uses event.agenda.artistId.
     // If event.agenda might be undefined, this could throw an error.
@@ -44,11 +46,11 @@ export class EventActionEngineService {
 
 
     const hoursTillAppointment = this.calculateHoursDifference(currentTime, event.startDate);
-    
+
     // isArtist and isCustomer determination needs to be robust.
     // Assuming ctx.event.agenda.artistId and ctx.event.customerId are available and correct.
     const isArtist = userType === UserType.ARTIST && userId === artistIdFromAgenda;
-    const isCustomer = userType === UserType.CUSTOMER && userId === event.customerId;  
+    const isCustomer = userType === UserType.CUSTOMER && userId === event.customerId;
 
     const reasons: Record<string, string> = {};
     let canEdit = false;
@@ -59,6 +61,7 @@ export class EventActionEngineService {
     let canLeaveReview = false;
     let canConfirmEvent = false;
     let canRejectEvent = false;
+    let canAcceptConsent = false;
 
     // --- canEdit ---
     if (isArtist && [AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED].includes(event.status)) {
@@ -84,7 +87,7 @@ export class EventActionEngineService {
     }
 
     // --- canReschedule ---
-    if ([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED].includes(event.status)) { 
+    if ([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED].includes(event.status)) {
       if (isArtist) {
         canReschedule = true;
       } else if (isCustomer && hoursTillAppointment >= 48) {
@@ -96,16 +99,16 @@ export class EventActionEngineService {
       reasons.canReschedule = "Rescheduling is only allowed for events in the 'confirmed' or 'rescheduled' state.";
     }
     if (!canReschedule && !reasons.canReschedule) {
-        reasons.canReschedule = "Rescheduling not permitted for this user or event state.";
+      reasons.canReschedule = "Rescheduling not permitted for this user or event state.";
     }
 
 
     // --- canSendMessage ---
     if ([
-      AgendaEventStatus.CONFIRMED, 
+      AgendaEventStatus.CONFIRMED,
       AgendaEventStatus.IN_PROGRESS,
       AgendaEventStatus.WAITING_FOR_PHOTOS,
-      AgendaEventStatus.PENDING_CONFIRMATION, 
+      AgendaEventStatus.PENDING_CONFIRMATION,
       AgendaEventStatus.RESCHEDULED,
       AgendaEventStatus.AFTERCARE_PERIOD
     ].includes(event.status)) {
@@ -118,10 +121,10 @@ export class EventActionEngineService {
     // User's rule: isArtist && event.status === AgendaEventStatus.COMPLETED
     // Let's adjust to WAITING_FOR_PHOTOS as per typical flow before COMPLETED or REVIEWED
     if (isArtist && event.status === AgendaEventStatus.WAITING_FOR_PHOTOS) {
-       canAddWorkEvidence = true;
-    } else if (isArtist && event.status === AgendaEventStatus.COMPLETED ) {
-        // Allowing for cases where it might have been marked completed before evidence
-        canAddWorkEvidence = true;
+      canAddWorkEvidence = true;
+    } else if (isArtist && event.status === AgendaEventStatus.COMPLETED) {
+      // Allowing for cases where it might have been marked completed before evidence
+      canAddWorkEvidence = true;
     }
     else {
       if (!isArtist) {
@@ -135,9 +138,9 @@ export class EventActionEngineService {
     // --- canLeaveReview ---
     // User's rule: isCustomer && event.status === AgendaEventStatus.COMPLETED && !event.reviewId
     // Let's adjust to WAITING_FOR_REVIEW or COMPLETED (if review not yet left)
-    if (isCustomer && 
-        (event.status === AgendaEventStatus.WAITING_FOR_REVIEW || event.status === AgendaEventStatus.COMPLETED) &&
-        !event.reviewId) {
+    if (isCustomer &&
+      (event.status === AgendaEventStatus.WAITING_FOR_REVIEW || event.status === AgendaEventStatus.COMPLETED) &&
+      !event.reviewId) {
       canLeaveReview = true;
     } else {
       if (!isCustomer) {
@@ -160,7 +163,23 @@ export class EventActionEngineService {
       reasons.canConfirmEvent = "Event confirmation is only available when the event is pending confirmation.";
       reasons.canRejectEvent = "Event rejection is only available when the event is pending confirmation.";
     }
-    
+
+    // --- canAcceptConsent ---
+    if (isCustomer &&
+      (event.status === AgendaEventStatus.CREATED ||
+        event.status === AgendaEventStatus.PENDING_CONFIRMATION)) {
+      // Note: This check should be async, but for now we'll assume they need to accept if they're a customer
+      // The actual check will be done on the frontend or in the use case
+      canAcceptConsent = true; // Frontend will check if already signed
+      reasons.canAcceptConsent = "You may need to accept terms and conditions for this event.";
+    } else {
+      if (!isCustomer) {
+        reasons.canAcceptConsent = "Only customers need to accept terms and conditions.";
+      } else {
+        reasons.canAcceptConsent = "Terms acceptance is only available for events in creation or pending confirmation phase.";
+      }
+    }
+
     // Quotation related actions - set to false as per "excluding quotation-specific actions"
     // If these are ever needed, their specific logic should be added.
     // const canAcceptOffer = false; // Removed
@@ -181,6 +200,7 @@ export class EventActionEngineService {
       // canRejectOffer, // Removed
       canConfirmEvent,
       canRejectEvent,
+      canAcceptConsent,
       canAppeal,
       reasons,
     };

@@ -89,6 +89,8 @@ import { SendEventMessageReqDto } from './dtos/sendEventMessageReq.dto';
 import { EventMessageDto } from './dtos/eventMessage.dto';
 import { SendEventMessageUseCase } from '../usecases/event/sendEventMessage.usecase';
 import { GetEventMessagesUseCase } from '../usecases/event/getEventMessages.usecase';
+import { GetCustomerAppointmentsViewUseCase } from '../usecases/event/getCustomerAppointmentsView.usecase';
+import { GetCustomerAppointmentsViewResDto } from './dtos/getCustomerAppointmentsViewRes.dto';
 
 @Injectable()
 export class AgendaHandler {
@@ -143,6 +145,7 @@ export class AgendaHandler {
     private readonly updateOpenQuotationUseCase: UpdateOpenQuotationUseCase,
     private readonly sendEventMessageUseCase: SendEventMessageUseCase,
     private readonly getEventMessagesUseCase: GetEventMessagesUseCase,
+    private readonly getCustomerAppointmentsViewUseCase: GetCustomerAppointmentsViewUseCase,
   ) {
     this.logger.log('Initializing AgendaHandler');
   }
@@ -175,6 +178,12 @@ export class AgendaHandler {
 
   async handleListEventFromArtistAgenda(status?: string): Promise<any> {
     const { userType, userTypeId } = this.requestContext;
+
+    if (userType === UserType.CUSTOMER) {
+      return this.getCustomerAppointmentsViewUseCase.execute(userTypeId);
+    }
+    
+    // Keep original behavior for artists
     return this.listEventFromArtistAgenda.execute(userTypeId, userType, status);
   }
 

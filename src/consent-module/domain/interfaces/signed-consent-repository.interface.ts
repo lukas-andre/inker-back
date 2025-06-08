@@ -14,6 +14,8 @@ export interface ISignedConsentRepository {
   findByEventId(eventId: string): Promise<SignedConsentEntity[]>;
   findByUserId(userId: string): Promise<SignedConsentEntity[]>;
   findByTemplateId(templateId: string): Promise<SignedConsentEntity[]>;
+  findByEventAndUser(eventId: string, userId: string): Promise<SignedConsentEntity | null>;
+  findByEventUserAndTemplate(eventId: string, userId: string, formTemplateId?: string): Promise<SignedConsentEntity | null>;
   // Add other methods as needed
 }
 

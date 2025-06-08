@@ -4,6 +4,8 @@ import { CreateFormTemplateDto } from '../../domain/dtos/create-form-template.dt
 import { UpdateFormTemplateDto } from '../../domain/dtos/update-form-template.dto';
 import { UpdateTemplateStatusDto } from '../../domain/dtos/update-template-status.dto';
 import { SignConsentDto } from '../../domain/dtos/sign-consent.dto';
+import { AcceptDefaultTermsDto } from '../../domain/dtos/accept-default-terms.dto';
+import { CheckConsentStatusDto } from '../../domain/dtos/check-consent-status.dto';
 import { FormTemplateDto } from '../../domain/dtos/form-template.dto';
 import { SignedConsentDto } from '../../domain/dtos/signed-consent.dto';
 import { CreateTemplateUseCase } from '../../usecases/create-template.usecase';
@@ -12,6 +14,8 @@ import { DeleteTemplateUseCase } from '../../usecases/delete-template.usecase';
 import { UpdateTemplateStatusUseCase } from '../../usecases/update-template-status.usecase';
 import { GetTemplateUseCase } from '../../usecases/get-template.usecase';
 import { SignConsentUseCase } from '../../usecases/sign-consent.usecase';
+import { AcceptDefaultTermsUseCase } from '../../usecases/accept-default-terms.usecase';
+import { CheckConsentStatusUseCase } from '../../usecases/check-consent-status.usecase';
 import { UserType } from '../../../users/domain/enums/userType.enum'; // Corrected path
 import { Request } from 'express';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
@@ -37,6 +41,8 @@ export class ConsentController {
     private readonly updateTemplateStatusUseCase: UpdateTemplateStatusUseCase,
     private readonly getTemplateUseCase: GetTemplateUseCase,
     private readonly signConsentUseCase: SignConsentUseCase,
+    private readonly acceptDefaultTermsUseCase: AcceptDefaultTermsUseCase,
+    private readonly checkConsentStatusUseCase: CheckConsentStatusUseCase,
     private readonly contextService: RequestContextService,
   ) { }
 
@@ -205,6 +211,57 @@ export class ConsentController {
     }
 
     return this.updateTemplateStatusUseCase.execute(templateId, updateTemplateStatusDto.isActive, userTypeId);
+  }
+
+  @Post('accept-default-terms')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserType.CUSTOMER)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Accept default terms and conditions for an event (MVP endpoint)' })
+  @ApiResponse({ status: 201, description: 'Default terms accepted successfully', type: SignedConsentDto })
+  @ApiResponse({ status: 400, description: 'Invalid input or event status not suitable for acceptance' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Only customers can accept terms' })
+  @ApiResponse({ status: 404, description: 'Event not found' })
+  @ApiResponse({ status: 409, description: 'Terms have already been accepted for this event' })
+  async acceptDefaultTerms(
+    @Body() acceptDefaultTermsDto: AcceptDefaultTermsDto,
+    @Req() req: AuthenticatedRequest,
+    @Ip() ipAddress: string,
+  ): Promise<SignedConsentDto> {
+    const { userTypeId, userType } = this.contextService.getContext();
+    const userAgent = req.headers['user-agent'];
+    if (!userTypeId) {
+      throw new HttpException('User ID not found in token for an artist user.', HttpStatus.FORBIDDEN);
+    }
+
+    if (userType !== UserType.CUSTOMER) {
+      throw new HttpException('User does not have required role to accept terms.', HttpStatus.FORBIDDEN);
+    }
+    return this.acceptDefaultTermsUseCase.execute(acceptDefaultTermsDto, userTypeId, ipAddress, userAgent);
+  }
+
+  @Get('check-consent-status/:eventId')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Check if customer has signed consent for an event' })
+  @ApiParam({ name: 'eventId', type: 'string', description: 'UUID of the event' })
+  @ApiResponse({ status: 200, description: 'Consent status information', type: CheckConsentStatusDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Event not found' })
+  async checkConsentStatus(
+    @Param('eventId') eventId: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<CheckConsentStatusDto> {
+    const { userType, userTypeId } = this.contextService.getContext();
+    if (!userTypeId) {
+      throw new HttpException('User ID not found in token for an artist user.', HttpStatus.FORBIDDEN);
+    }
+
+    if (userType !== UserType.CUSTOMER) {
+      throw new HttpException('User does not have required role to check consent status.', HttpStatus.FORBIDDEN);
+    }
+    return this.checkConsentStatusUseCase.execute(eventId, userTypeId);
   }
 
   // TODO: Endpoint to get signed consents (e.g., for an event, for a user)
