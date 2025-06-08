@@ -5,6 +5,7 @@ import { AppointmentUrgencyLevel } from '../enum/appointmentUrgencyLevel.enum';
 import { AppointmentContextualInfo } from './appointmentContextualInfo.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
+import { GetQuotationResDto } from '../../infrastructure/dtos/getQuotationRes.dto';
 
 export class CustomerAppointmentDto {
   @ApiProperty({
@@ -43,4 +44,11 @@ export class CustomerAppointmentDto {
     isArray: true,
   })
   availableActions: AppointmentAction[];
+
+  @ApiProperty({
+    description: 'The quotation associated with this appointment.',
+    type: () => GetQuotationResDto,
+    required: true,
+  })
+  quotation: GetQuotationResDto;
 } 

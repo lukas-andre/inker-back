@@ -19,8 +19,8 @@ class GroupedAppointmentsDto {
 }
 
 export class GetCustomerAppointmentsViewResDto {
-  @ApiProperty({ type: CustomerAppointmentDto, nullable: true, description: 'The most important upcoming event or action required' })
-  heroAppointment: CustomerAppointmentDto | null;
+  @ApiProperty({ type: String, nullable: true, description: 'The ID of the most important upcoming event or action required' })
+  heroAppointmentId: string | null;
   
   @ApiProperty({ type: GroupedAppointmentsDto, description: 'Events grouped by time and status' })
   appointments: GroupedAppointmentsDto;

@@ -146,6 +146,7 @@ export class GetQuotationOfferUseCase extends BaseUseCase implements UseCase {
       // Nested objects
       quotation: quotationDto,
       customer: customerDto,
+      status: offer.status,
     };
   }
 } 

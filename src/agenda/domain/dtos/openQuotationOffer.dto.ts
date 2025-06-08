@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { OfferMessageDto } from './offerMessage.dto';
-import { OfferMessage } from '../../infrastructure/entities/quotationOffer.entity';
+import { OfferMessage, QuotationOfferStatus } from '../../infrastructure/entities/quotationOffer.entity';
 
 /**
  * DTO representing an offer shown in the list of open quotations (Artist view)
@@ -24,4 +24,7 @@ export class OpenQuotationOfferDto {
 
   @ApiPropertyOptional({ type: [OfferMessageDto] })
   messages?: OfferMessage[];
+
+  @ApiProperty({ enum: QuotationOfferStatus })
+  status: QuotationOfferStatus;
 } 
