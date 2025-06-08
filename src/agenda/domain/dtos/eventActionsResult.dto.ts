@@ -8,5 +8,6 @@ export class EventActionsResultDto {
   canLeaveReview: boolean;
   canConfirmEvent: boolean;
   canRejectEvent: boolean;
+  canAcceptConsent: boolean;
   reasons?: Record<string, string>;
 } 

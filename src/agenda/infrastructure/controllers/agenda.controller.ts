@@ -67,6 +67,8 @@ import { AvailabilityCalendar, SchedulingService, TimeSlot } from '../../service
 import { CancelEventReqDto } from '../dtos/cancelEventReq.dto';
 import { SendEventMessageReqDto } from 'src/agenda/infrastructure/dtos/sendEventMessageReq.dto';
 import { EventMessageDto } from '../dtos/eventMessage.dto';
+import { GetCustomerAppointmentsViewResDto } from '../dtos/getCustomerAppointmentsViewRes.dto';
+import { AgendaEvent } from '../entities/agendaEvent.entity';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -132,9 +134,13 @@ export class AgendaController {
 
   @ApiOperation({
     summary: 'get all events from artist agenda or customer events',
+    description: 'For customers, returns a structured view of appointments (hero, grouped by time). For artists, returns a simple list.'
   })
   @HttpCode(200)
-  @ApiOkResponse({ description: 'Event list successful.', type: undefined })
+  @ApiOkResponse({ 
+    description: 'Event list successful. The response structure depends on the user type.',
+    type: GetCustomerAppointmentsViewResDto, // DTO for the customer view
+  })
   @ApiConflictResponse({ description: 'Trouble listing events.' })
   @ApiHeader({
     name: 'Authorization',
@@ -150,7 +156,7 @@ export class AgendaController {
   @Get()
   async listEventFromArtistAgenda(
     @Query('status') status?: string,
-  ): Promise<any> {
+  ): Promise<any> { // The return type can be either GetCustomerAppointmentsViewResDto or AgendaEvent[]
     return this.agendaHandler.handleListEventFromArtistAgenda(status);
   }
 

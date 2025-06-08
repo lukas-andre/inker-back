@@ -7,6 +7,7 @@ import {
   DeleteResult,
   FindManyOptions,
   FindOneOptions,
+  In,
   Repository,
 } from 'typeorm';
 
@@ -23,6 +24,8 @@ import { ArtistLocation } from './entities/artistLocation.entity';
 
 @Injectable()
 export class ArtistLocationRepository extends BaseComponent {
+
+
   constructor(
     @InjectRepository(ArtistLocation, 'location-db')
     private readonly artistLocationsRepository: Repository<ArtistLocation>,
@@ -148,7 +151,7 @@ export class ArtistLocationRepository extends BaseComponent {
   async update(data: ArtistLocationUpdateDto): Promise<ArtistLocation> {
     try {
       const artistLocation = await this.findById(data.id);
-      
+
       if (!artistLocation) {
         return null;
       }
@@ -174,7 +177,7 @@ export class ArtistLocationRepository extends BaseComponent {
     try {
       const columns = Object.keys(location).filter(key => key !== 'location');
       const values = Object.values(location).filter((_, index) => Object.keys(location)[index] !== 'location');
-      
+
       // Handle the geospatial point data
       let locationPoint = null;
       if (location.lat !== undefined && location.lng !== undefined) {
@@ -185,32 +188,32 @@ export class ArtistLocationRepository extends BaseComponent {
       } else if (location.location) {
         locationPoint = location.location;
       }
-      
+
       // Build placeholders for the query
       const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
-      
+
       // Build column names with proper snake_case conversion for DB
       const columnNames = columns.map(col => {
         // Convert camelCase to snake_case for DB columns
         return col.replace(/([A-Z])/g, '_$1').toLowerCase();
       }).join(', ');
-      
+
       let query = `
         INSERT INTO artist_location (${columnNames}`;
-      
+
       // Add location column if point data exists
       if (locationPoint) {
         query += `, location`;
       }
-      
+
       query += `) VALUES (${placeholders}`;
-      
+
       // Add the ST_SetSRID function for the point if it exists
       if (locationPoint) {
         query += `, ST_SetSRID(ST_GeomFromGeoJSON($${columns.length + 1}), 4326)`;
         values.push(JSON.stringify(locationPoint));
       }
-      
+
       query += `) 
         RETURNING 
           id, 
@@ -233,14 +236,14 @@ export class ArtistLocationRepository extends BaseComponent {
           updated_at AS "updatedAt",
           ST_AsGeoJSON(location)::json AS location
       `;
-      
+
       const result = await this.artistLocationsRepository.query(query, values);
-      
+
       // Convert GeoJSON string to actual object and return the first result
       if (result && result.length > 0) {
         return result[0];
       }
-      
+
       return null;
     } catch (error) {
       throw new DBServiceSaveException(this, TROUBLE_SAVING_LOCATION, error);
@@ -252,6 +255,35 @@ export class ArtistLocationRepository extends BaseComponent {
       return await this.artistLocationsRepository.delete(id);
     } catch (error) {
       throw new DBServiceSaveException(this, TROUBLE_SAVING_LOCATION, error);
+    }
+  }
+
+  async findByArtistIds(artistIds: string[]): Promise<ArtistLocation[]> {
+    try {
+      return await this.artistLocationsRepository
+        .createQueryBuilder('location')
+        .select('id')
+        .addSelect('artist_id', 'artistId')
+        .addSelect('name')
+        .addSelect('country')
+        .addSelect('address1')
+        .addSelect('address2')
+        .addSelect('address3')
+        .addSelect('lat')
+        .addSelect('lng')
+        .addSelect('address_type', 'addressType')
+        .addSelect('formatted_address', 'formattedAddress')
+        .addSelect('city')
+        .addSelect('google_place_id', 'googlePlaceId')
+        .addSelect('location_order', 'locationOrder')
+        .addSelect('is_active', 'isActive')
+        .addSelect('created_at', 'createdAt')
+        .addSelect('updated_at', 'updatedAt')
+        .addSelect('ST_AsGeoJSON(location)::json', 'location')
+        .where('artist_id IN (:...artistIds)', { artistIds })
+        .getRawMany();
+    } catch (error) {
+      throw new DBServiceFindException(this, TROUBLE_FINDING_LOCATIONS, error);
     }
   }
 }

@@ -74,6 +74,9 @@ import { PenaltyQueuesModule } from '../queues/penalty/penaltyQueues.module';
 import { EventStateMachineService } from './domain/services/eventStateMachine.service';
 import { SendEventMessageUseCase } from './usecases/event/sendEventMessage.usecase';
 import { GetEventMessagesUseCase } from './usecases/event/getEventMessages.usecase';
+import { SignedConsentRepository } from '../consent-module/infrastructure/repositories/signed-consent.repository';
+import { ConsentModule } from '../consent-module/consent.module';
+import { GetCustomerAppointmentsViewUseCase } from './usecases/event/getCustomerAppointmentsView.usecase';
 
 @Module({
   imports: [
@@ -89,6 +92,7 @@ import { GetEventMessagesUseCase } from './usecases/event/getEventMessages.useca
     PenaltyQueuesModule,
     LocationRepositoryModule,
     TattooGeneratorDatabaseModule,
+    ConsentModule,
     forwardRef(() => SyncQueueModule),
     TypeOrmModule.forFeature([
         AgendaUnavailableTime, 
@@ -148,6 +152,7 @@ import { GetEventMessagesUseCase } from './usecases/event/getEventMessages.useca
     EventStateMachineService,
     SendEventMessageUseCase,
     GetEventMessagesUseCase,
+    GetCustomerAppointmentsViewUseCase,
   ],
   controllers: [AgendaController, QuotationController],
   exports: [

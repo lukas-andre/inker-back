@@ -10,6 +10,7 @@ import { queues } from '../../../queues/queues';
 import { AgendaEventStatusChangedJobType } from '../../../queues/notifications/domain/schemas/agenda';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { UserType } from '../../../users/domain/enums/userType.enum';
+import { SignedConsentRepository } from '../../../consent-module/infrastructure/repositories/signed-consent.repository';
 
 // NEW: Define a context type for actions and guards
 export interface StateMachineContext {
@@ -85,6 +86,7 @@ export class EventStateMachineService extends BaseComponent {
 
     constructor(
         private readonly agendaEventRepository: AgendaEventRepository,
+        private readonly signedConsentRepository: SignedConsentRepository,
         @InjectQueue(queues.notification.name) private readonly notificationQueue: Queue,
     ) {
         super(EventStateMachineService.name);
@@ -140,19 +142,33 @@ export class EventStateMachineService extends BaseComponent {
     }
 
     private async hasRequiredConsentsSignedGuard(context: StateMachineContext): Promise<boolean> {
-        // This guard relies on the calling use case to populate 'areConsentsSigned' in the payload.
-        // The use case is responsible for determining if consents are required and if they are signed.
-        if (context.payload?.areConsentsSigned === undefined) {
-            this.logger.warn(`Consent check skipped for event ${context.eventEntity.id}: 'areConsentsSigned' not provided in context.payload. Assuming not required or handled externally.`);
-            return true; // Or false, depending on default policy if not provided. Let's assume true if not specified.
+        // For MVP: Check if customer has signed the default consent for this event
+        // Only customers need to sign consent for now
+        if (context.actor.role !== UserType.CUSTOMER) {
+            this.logger.log(`Consent check skipped for event ${context.eventEntity.id}: Actor is not a customer.`);
+            return true;
         }
 
-        if (!context.payload.areConsentsSigned) {
-            this.logger.warn(`Confirmation prevented for event ${context.eventEntity.id}: Required consents are not signed.`);
+        try {
+            // Check if there's any signed consent for this event by this customer
+            // For MVP, we accept any signed consent (formTemplateId can be null for default)
+            const signedConsent = await this.signedConsentRepository.findByEventAndUser(
+                context.eventEntity.id, 
+                context.eventEntity.customerId
+            );
+
+            if (!signedConsent) {
+                this.logger.warn(`Confirmation prevented for event ${context.eventEntity.id}: Customer ${context.actor.userId} has not signed required consent.`);
+                return false;
+            }
+
+            this.logger.log(`Consent check passed for event ${context.eventEntity.id}: Customer ${context.actor.userId} has signed consent.`);
+            return true;
+        } catch (error) {
+            this.logger.error(`Error checking consent for event ${context.eventEntity.id}:`, error);
+            // In case of database error, we'll block the transition for safety
             return false;
         }
-        this.logger.log(`Consent check passed for event ${context.eventEntity.id}.`);
-        return true;
     }
 
     // --- NOTIFICATION DISPATCHERS ---
