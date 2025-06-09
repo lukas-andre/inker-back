@@ -44,11 +44,13 @@ export interface IRescheduleLogEntry {
 
 // Define the structure for a single event message
 export interface EventMessage {
+  id: string;
+  eventId: string;
   senderId: string; // Could be customerId or artistId
   senderType: 'customer' | 'artist';
   message: string;
   imageUrl?: string; // Optional URL for an image
-  timestamp: Date;
+  createdAt: Date;
 }
 
 @Entity()

@@ -198,7 +198,8 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
 
     const isPast = eventDate < now;
     const isActionRequired =
-      event.status === AgendaEventStatus.PENDING_CONFIRMATION;
+      event.status === AgendaEventStatus.PENDING_CONFIRMATION ||
+      event.status === AgendaEventStatus.CREATED;
 
     // Check if consent is needed from the quotation
     const needsConsent = quotation?.offers?.[0]?.status === QuotationOfferStatus.SUBMITTED;
@@ -222,7 +223,7 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
         'Nos encantaría saber cómo fue tu experiencia. Tu opinión ayuda a otros a elegir y al artista a mejorar.';
       availableActions.push(AppointmentAction.LEAVE_REVIEW);
     } else if (
-      isPast ||
+      (isPast && !isToday(eventDate)) ||
       [
         AgendaEventStatus.COMPLETED,
         AgendaEventStatus.CANCELED,
@@ -242,12 +243,16 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
     } else {
       switch (event.status) {
         case AgendaEventStatus.CONFIRMED:
+          urgency = AppointmentUrgencyLevel.INFO;
           contextualInfo.title = 'Confirmada';
-          contextualInfo.message = '¡Todo listo! Tu cita está confirmada por ambas partes.';
+          contextualInfo.message =
+            '¡Todo listo! Tu cita está confirmada por ambas partes.';
           break;
         case AgendaEventStatus.RESCHEDULED:
+          urgency = AppointmentUrgencyLevel.INFO;
           contextualInfo.title = 'Re-agendada';
-          contextualInfo.message = 'La cita fue re-agendada. Verifica la nueva fecha y hora.';
+          contextualInfo.message =
+            'La cita fue re-agendada. Verifica la nueva fecha y hora.';
           break;
         case AgendaEventStatus.WAITING_FOR_PHOTOS:
           contextualInfo.title = '¡Arte en Camino!';

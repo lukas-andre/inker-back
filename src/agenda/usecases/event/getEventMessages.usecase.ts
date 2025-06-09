@@ -53,15 +53,17 @@ export class GetEventMessagesUseCase extends BaseUseCase implements UseCase {
     // Transform EventMessage entities to EventMessageDto array
     // Ensure messages are sorted by timestamp if not already
     const sortedMessages = (event.messages || []).sort(
-        (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
     
     return sortedMessages.map(msg => ({
+        id: msg.id,
+        eventId: msg.eventId,
         senderId: msg.senderId,
         senderType: msg.senderType,
         message: msg.message,
         imageUrl: msg.imageUrl,
-        timestamp: msg.timestamp,
+        createdAt: msg.createdAt,
     }));
   }
 } 
