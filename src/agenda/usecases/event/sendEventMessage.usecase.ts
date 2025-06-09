@@ -16,6 +16,7 @@ import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { AGENDA_EVENT_NOT_EXISTS } from '../../domain/errors/codes';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { NewEventMessageJobId } from '../../../queues/notifications/domain/schemas/agenda';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
@@ -104,11 +105,13 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
     }
 
     const newMessage: EventMessage = {
+      id: randomUUID(),
+      eventId,
       senderId: userTypeId, 
       senderType: isArtist ? 'artist' : 'customer',
       message: dto.message,
       imageUrl: imageUrl,
-      timestamp: new Date(),
+      createdAt: new Date(),
     };
 
     event.messages = [...(event.messages || []), newMessage];

@@ -9,5 +9,7 @@ export class EventActionsResultDto {
   canConfirmEvent: boolean;
   canRejectEvent: boolean;
   canAcceptConsent: boolean;
+  canStartSession: boolean;
+  canFinishSession: boolean;
   reasons?: Record<string, string>;
 } 

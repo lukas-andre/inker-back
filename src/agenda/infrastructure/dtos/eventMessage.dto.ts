@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class EventMessageDto {
+  @ApiProperty({ description: 'ID of the message', example: 'message-uuid-123' })
+  id: string;
+
+  @ApiProperty({ description: 'ID of the event', example: 'event-uuid-123' })
+  eventId: string;
+
   @ApiProperty({ description: 'ID of the sender (artist or customer)', example: 'user-uuid-123' })
   senderId: string;
 
@@ -14,5 +20,5 @@ export class EventMessageDto {
   imageUrl?: string;
 
   @ApiProperty({ description: 'Timestamp when the message was sent', example: '2023-10-27T10:00:00.000Z' })
-  timestamp: Date;
+  createdAt: Date;
 } 
