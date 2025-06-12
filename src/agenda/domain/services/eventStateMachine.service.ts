@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
 import { DomainUnProcessableEntity } from '../../../global/domain/exceptions/domain.exception';
 import { INVALID_EVENT_STATUS_TRANSITION } from '../errors/codes';
@@ -733,6 +733,9 @@ export class EventStateMachineService extends BaseComponent {
                     this.dispatchConfirmedNotification.bind(this),
                 ],
                 transitions: {
+                    [AgendaEventTransition.START_SESSION]: {
+                        target: AgendaEventStatus.IN_PROGRESS,
+                    },
                     // Example: Transition to PAYMENT_PENDING or SCHEDULED based on context
                     [AgendaEventTransition.MARK_PAYMENT_PENDING]: {
                         target: AgendaEventStatus.PAYMENT_PENDING,
@@ -794,44 +797,50 @@ export class EventStateMachineService extends BaseComponent {
                     this.dispatchSessionCompletedNotification.bind(this),
                 ],
                 transitions: {
-                    [AgendaEventTransition.REQUEST_PHOTOS]: {
-                        target: AgendaEventStatus.WAITING_FOR_PHOTOS,
-                    },
-                    // If photos are optional or part of a different flow:
-                    [AgendaEventTransition.REQUEST_REVIEW]: {
+                    [AgendaEventTransition.ADD_PHOTOS]: {
                         target: AgendaEventStatus.WAITING_FOR_REVIEW,
-                    }
+                        // The action to save photos will be in the use case.
+                        // The onEntry hook of WAITING_FOR_REVIEW will handle notifications.
+                    },
+                    [AgendaEventTransition.ADD_REVIEW]: {
+                        target: AgendaEventStatus.WAITING_FOR_PHOTOS,
+                        // The action to save the review will be in its own use case.
+                        // The onEntry hook of WAITING_FOR_PHOTOS will handle notifications.
+                    },
                 }
             },
             [AgendaEventStatus.WAITING_FOR_PHOTOS]: {
                 onEntry: [
+                    // This state means a review was added, so we notify the artist to add photos.
                     this.dispatchRequestPhotosNotification.bind(this),
                 ],
                 transitions: {
-                    [AgendaEventTransition.ADD_PHOTOS]: { // Assuming an event "ADD_PHOTOS"
-                        target: AgendaEventStatus.WAITING_FOR_REVIEW, // Or directly to REVIEWED if photos auto-trigger next step
-                        // actions: [async (event, context) => context.photoService.linkPhotosToEvent(event.id, event.photos)]
+                    [AgendaEventTransition.ADD_PHOTOS]: {
+                        target: AgendaEventStatus.AFTERCARE_PERIOD,
                     },
-                    [AgendaEventTransition.REQUEST_REVIEW]: { // Skip photos
-                        target: AgendaEventStatus.WAITING_FOR_REVIEW,
-                    }
+                    [AgendaEventTransition.ADD_REVIEW]: {
+                        target: AgendaEventStatus.WAITING_FOR_PHOTOS,
+                    },
                 }
             },
             [AgendaEventStatus.WAITING_FOR_REVIEW]: {
                 onEntry: [
+                    // This state means photos were added, so we notify the customer to add a review.
                     this.dispatchRequestReviewNotification.bind(this),
                 ],
                 transitions: {
-                    [AgendaEventTransition.ADD_REVIEW]: { // Assuming an event "ADD_REVIEW"
-                        target: AgendaEventStatus.REVIEWED,
-                        // actions: [async (event, context) => context.reviewService.saveReview(event.id, event.review)]
-                    },
-                    [AgendaEventTransition.START_AFTERCARE]: { // Skip review
+                    [AgendaEventTransition.ADD_REVIEW]: {
                         target: AgendaEventStatus.AFTERCARE_PERIOD,
-                    }
+                    },
+                    [AgendaEventTransition.ADD_PHOTOS]: {
+                        target: AgendaEventStatus.WAITING_FOR_REVIEW,
+                    },
                 }
             },
             [AgendaEventStatus.REVIEWED]: {
+                // This state will no longer be part of the main post-completion flow,
+                // but we leave it for potential other uses or legacy reasons.
+                // The flow now goes directly to AFTERCARE_PERIOD.
                 onEntry: [
                     this.dispatchReviewAddedNotification.bind(this),
                 ],
@@ -977,11 +986,13 @@ export class EventStateMachineService extends BaseComponent {
             throw error;
         }
 
-        // 7. Execute onEntry actions for the target state
-        const targetStateDefinition = this.stateConfig[targetState];
-        if (targetStateDefinition?.onEntry) {
-            for (const action of targetStateDefinition.onEntry) {
-                await action(context, eventKey); // Pass eventKey as the trigger for entry
+        // 7. Execute onEntry actions for the target state, only if the state has changed
+        if (currentState !== targetState) {
+            const targetStateDefinition = this.stateConfig[targetState];
+            if (targetStateDefinition?.onEntry) {
+                for (const action of targetStateDefinition.onEntry) {
+                    await action(context, eventKey); // Pass eventKey as the trigger for entry
+                }
             }
         }
 
@@ -994,5 +1005,25 @@ export class EventStateMachineService extends BaseComponent {
      */
     getStateConfig(state: AgendaEventStatus): Readonly<typeof this.stateConfig[AgendaEventStatus]> {
         return this.stateConfig[state];
+    }
+
+    private async checkIfEventHasPhotos(eventEntity: AgendaEvent): Promise<boolean> {
+        // Esta es una implementación de ejemplo que deberá adaptarse al modelo de datos real
+        try {
+            // Implementación temporal para evitar errores
+            // Este método debe adaptarse según cómo se almacenan las fotos en tu sistema
+            // Por ejemplo, consultando una tabla de evidencias de trabajo o un campo en el evento
+            
+            // Opción segura: verificar si el estado indica que ya debería tener fotos
+            // o implementar una consulta a un repositorio que guarde esta información
+            return [AgendaEventStatus.WAITING_FOR_REVIEW, AgendaEventStatus.REVIEWED, AgendaEventStatus.AFTERCARE_PERIOD].includes(eventEntity.status);
+            
+            // Implementación real sugerida (comentada):
+            // const workEvidence = await this.workEvidenceRepository.findByEventId(eventEntity.id);
+            // return workEvidence && workEvidence.photos && workEvidence.photos.length > 0;
+        } catch (error) {
+            this.logger.error(`Error checking photos for event ${eventEntity.id}`, error);
+            return false;
+        }
     }
 } 

@@ -137,6 +137,22 @@ The Schedulers module manages recurring tasks and notifications.
 4. **Scheduler** sends reminders before the appointment
 5. After appointment, **Customer** can leave reviews on the **Artist** profile
 
+### Session Management Flow (Artist-driven)
+
+The lifecycle of an appointment session is managed by the artist through specific actions that trigger status changes in the `AgendaEvent`. This flow ensures that the state of the appointment accurately reflects its real-world progress.
+
+1.  **Start Session**:
+    *   **Action**: The artist initiates the "Start Session" action.
+    *   **Pre-conditions**: This is possible when the appointment is in the `CONFIRMED` state and is about to begin (typically within an hour of the start time).
+    *   **Status Change**: The `AgendaEvent` status transitions to `IN_PROGRESS`. This status indicates that the session has officially started and is ongoing.
+
+2.  **Finish Session**:
+    *   **Action**: The artist initiates the "Finish Session" action.
+    *   **Pre-conditions**: This is possible only when the appointment is in the `IN_PROGRESS` state.
+    *   **Status Change**: The `AgendaEvent` status transitions to `COMPLETED` or `WAITING_FOR_PHOTOS`, signifying that the session has concluded. From here, post-appointment actions like leaving a review or uploading work photos can proceed.
+
+This structured flow provides clear state management for appointments, driven by artist actions, ensuring data integrity and a predictable user experience.
+
 ### Data Tagging Process
 
 1. **Artists** tag their work with specific **Tags**

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
 import { Quotation } from '../../infrastructure/entities/quotation.entity';
 import { QuotationOffer } from '../../infrastructure/entities/quotationOffer.entity';
@@ -24,7 +25,7 @@ export interface EventActionContext {
 
 @Injectable()
 export class EventActionEngineService {
-  constructor() {}
+  constructor(private readonly configService: ConfigService) {}
 
   private calculateHoursDifference(date1: Date, date2: Date): number {
     if (!date1 || !date2) return Infinity;
@@ -43,6 +44,9 @@ export class EventActionEngineService {
     const hoursTillAppointment = this.calculateHoursDifference(
       currentTime,
       eventStartDate,
+    );
+    const hoursBeforeSessionStart = this.configService.get<number>(
+      'app.hoursBeforeSessionStart',
     );
 
     const isArtist =
@@ -109,34 +113,37 @@ export class EventActionEngineService {
 
     // ARTIST ACTIONS
     if (isArtist) {
-      // Artist can cancel with 24h notice
+      // Artist can cancel up to 1 hour before the appointment
       if (
         [
           AgendaEventStatus.CONFIRMED,
           AgendaEventStatus.RESCHEDULED,
           AgendaEventStatus.PENDING_CONFIRMATION,
         ].includes(event.status) &&
-        hoursTillAppointment >= 24
+        hoursTillAppointment >= 1
       ) {
         canCancel = true;
       }
 
-      // Artist can edit and reschedule with 48h notice
+      // Artist can edit with 24h notice and reschedule with 1h notice
       if (
         [AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED].includes(
           event.status,
-        ) &&
-        hoursTillAppointment >= 48
+        )
       ) {
-        canEdit = true;
-        canReschedule = true;
+        if (hoursTillAppointment >= 24) {
+          canEdit = true;
+        }
+        if (hoursTillAppointment >= 1) {
+          canReschedule = true;
+        }
       }
 
       // Artist can start session if it's about to begin or ongoing
       const appointmentNotOver = currentTime <= eventEndDate;
       if (
         event.status === AgendaEventStatus.CONFIRMED &&
-        hoursTillAppointment <= 1 &&
+        hoursTillAppointment <= hoursBeforeSessionStart &&
         appointmentNotOver
       ) {
         canStartSession = true;
@@ -218,20 +225,18 @@ export class EventActionEngineService {
     hoursTillAppointment: number,
   ) {
     if (!actions.canEdit) {
-      if (isArtist && hoursTillAppointment < 48) {
-        reasons.canEdit =
-          'Artists need at least 48 hours notice to edit event details.';
-      } else {
-        reasons.canEdit =
-          'Only artists can edit event details in the current state.';
+      if (isArtist && hoursTillAppointment < 24) {
+        reasons.canEdit = 'Artists need at least 24 hours notice to edit event details.';
+      } else if (isArtist) {
+        reasons.canEdit = 'Only artists can edit event details in the current state.';
       }
     }
 
     if (!actions.canCancel) {
       if (isCustomer && hoursTillAppointment < 24) {
         reasons.canCancel = 'Customers need at least 24 hours notice to cancel.';
-      } else if (isArtist && hoursTillAppointment < 24) {
-        reasons.canCancel = 'Artists need at least 24 hours notice to cancel.';
+      } else if (isArtist && hoursTillAppointment < 1) {
+        reasons.canCancel = 'Artists need at least 1 hour notice to cancel.';
       } else {
         reasons.canCancel = 'Event cannot be canceled in its current state.';
       }
@@ -241,9 +246,8 @@ export class EventActionEngineService {
       if (isCustomer && hoursTillAppointment < 48) {
         reasons.canReschedule =
           'Customers need at least 48 hours notice to reschedule.';
-      } else if (isArtist && hoursTillAppointment < 48) {
-        reasons.canReschedule =
-          'Artists need at least 48 hours notice to reschedule.';
+      } else if (isArtist && hoursTillAppointment < 1) {
+        reasons.canReschedule = 'Artists need at least 1 hour notice to reschedule.';
       } else {
         reasons.canReschedule =
           'Event cannot be rescheduled in its current state.';

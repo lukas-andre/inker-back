@@ -70,7 +70,7 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
       throw new DomainNotFound('Event not found or not associated with this customer for the given agenda.');
     }
 
-    if (event.status !== AgendaEventStatus.WAITING_FOR_REVIEW) {
+    if (![AgendaEventStatus.WAITING_FOR_REVIEW, AgendaEventStatus.COMPLETED, AgendaEventStatus.WAITING_FOR_PHOTOS].includes(event.status)) {
       throw new DomainUnProcessableEntity(EVENT_NOT_READY_FOR_REVIEW);
     }
 
@@ -81,7 +81,7 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
       await this.agendaRepository.artistAgendaAndEventRelatedToCustomer(
         artistId,
         eventId,
-        userId, // userId here is the reviewerId
+        customerId, // customerId here is the reviewerId
       );
 
     if (!artistAgendaAndEventRelatedToCustomer) {

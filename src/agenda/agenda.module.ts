@@ -77,6 +77,8 @@ import { GetEventMessagesUseCase } from './usecases/event/getEventMessages.useca
 import { SignedConsentRepository } from '../consent-module/infrastructure/repositories/signed-consent.repository';
 import { ConsentModule } from '../consent-module/consent.module';
 import { GetCustomerAppointmentsViewUseCase } from './usecases/event/getCustomerAppointmentsView.usecase';
+import { AddWorkEvidenceUseCase } from './usecases/event/addWorkEvidence.usecase';
+import { DeleteWorkEvidenceUseCase } from './usecases/event/deleteWorkEvidence.usecase';
 
 @Module({
   imports: [
@@ -153,6 +155,8 @@ import { GetCustomerAppointmentsViewUseCase } from './usecases/event/getCustomer
     SendEventMessageUseCase,
     GetEventMessagesUseCase,
     GetCustomerAppointmentsViewUseCase,
+    AddWorkEvidenceUseCase,
+    DeleteWorkEvidenceUseCase,
   ],
   controllers: [AgendaController, QuotationController],
   exports: [
