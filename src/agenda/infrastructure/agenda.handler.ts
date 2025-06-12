@@ -91,6 +91,9 @@ import { SendEventMessageUseCase } from '../usecases/event/sendEventMessage.usec
 import { GetEventMessagesUseCase } from '../usecases/event/getEventMessages.usecase';
 import { GetCustomerAppointmentsViewUseCase } from '../usecases/event/getCustomerAppointmentsView.usecase';
 import { GetCustomerAppointmentsViewResDto } from './dtos/getCustomerAppointmentsViewRes.dto';
+import { AddWorkEvidenceUseCase } from '../usecases/event/addWorkEvidence.usecase';
+import { AgendaEvent } from './entities/agendaEvent.entity';
+import { DeleteWorkEvidenceUseCase } from '../usecases/event/deleteWorkEvidence.usecase';
 
 @Injectable()
 export class AgendaHandler {
@@ -146,6 +149,8 @@ export class AgendaHandler {
     private readonly sendEventMessageUseCase: SendEventMessageUseCase,
     private readonly getEventMessagesUseCase: GetEventMessagesUseCase,
     private readonly getCustomerAppointmentsViewUseCase: GetCustomerAppointmentsViewUseCase,
+    private readonly addWorkEvidenceUseCase: AddWorkEvidenceUseCase,
+    private readonly deleteWorkEvidenceUseCase: DeleteWorkEvidenceUseCase,
   ) {
     this.logger.log('Initializing AgendaHandler');
   }
@@ -585,5 +590,44 @@ export class AgendaHandler {
     );
     // The use case will handle authorization based on the user in context and the event itself.
     return this.getEventMessagesUseCase.execute(eventId);
+  }
+
+  async handleAddWorkEvidence(
+    eventId: string,
+    files: FileInterface[],
+  ): Promise<AgendaEvent> {
+    const { userType, userId, userTypeId } = this.requestContext;
+    if (userType !== UserType.ARTIST) {
+      throw new UnauthorizedException('Only artists can upload work evidence.');
+    }
+    
+    const command = {
+      actor: {
+        id: userId,
+        type: userType,
+        roleId: userTypeId,
+      },
+      eventId,
+      files,
+    };
+
+    return this.addWorkEvidenceUseCase.execute(command);
+  }
+
+  async handleDeleteWorkEvidence(eventId: string): Promise<AgendaEvent> {
+    const { userType, userId } = this.requestContext;
+    if (userType !== UserType.ARTIST) {
+      throw new UnauthorizedException('Only artists can delete work evidence.');
+    }
+
+    const command = {
+      actor: {
+        id: userId,
+        type: userType,
+      },
+      eventId,
+    };
+
+    return this.deleteWorkEvidenceUseCase.execute(command);
   }
 }

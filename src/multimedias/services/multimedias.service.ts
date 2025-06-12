@@ -100,6 +100,26 @@ export class MultimediasService {
     return multimediasMetadata;
   }
 
+  async deleteWorkEvidence(
+    workEvidence: MultimediasMetadataInterface,
+  ): Promise<void> {
+    if (!workEvidence || !workEvidence.metadata) {
+      return;
+    }
+    const cloudFrontUrl = this.configService.get('aws.cloudFrontUrl');
+
+    const deletePromises = workEvidence.metadata.map((fileMeta) => {
+      if (fileMeta.url) {
+        // Extract the S3 key from the full CloudFront URL
+        const key = fileMeta.url.replace(`${cloudFrontUrl}/`, '');
+        return this.s3Client.delete(key);
+      }
+      return Promise.resolve();
+    });
+
+    await Promise.all(deletePromises);
+  }
+
   async uploadReferenceImages(
     files: FileInterface[],
     quotationId: string,

@@ -40,4 +40,12 @@ export class S3Client {
     };
     return this.client.upload(params).promise();
   }
+
+  async delete(path: string): Promise<AWS.S3.DeleteObjectOutput> {
+    const params: AWS.S3.Types.DeleteObjectRequest = {
+      Bucket: this.configService.get('aws.artistBucketName'),
+      Key: path,
+    };
+    return this.client.deleteObject(params).promise();
+  }
 }

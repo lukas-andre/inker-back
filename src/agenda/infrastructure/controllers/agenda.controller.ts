@@ -555,4 +555,32 @@ export class AgendaController {
   ): Promise<EventMessageDto[]> {
     return this.agendaHandler.handleGetEventMessages(agendaId, eventId);
   }
+
+  @ApiOperation({ summary: 'Add work evidence to an event' })
+  @ApiOkResponse({ description: 'Work evidence added successfully.', type: AgendaEvent })
+  @ApiNotFoundResponse({ description: 'Event not found.' })
+  @ApiBadRequestResponse({ description: 'User not authorized or invalid event state.' })
+  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to add work evidence to' })
+  @Post('event/:eventId/work-evidence')
+  @UseInterceptors(FilesFastifyInterceptor('files', 10))
+  @HttpCode(200)
+  async addWorkEvidence(
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
+    @UploadedFiles() files: FileInterface[],
+  ): Promise<AgendaEvent> {
+    return this.agendaHandler.handleAddWorkEvidence(eventId, files);
+  }
+
+  @ApiOperation({ summary: 'Delete work evidence from an event' })
+  @ApiOkResponse({ description: 'Work evidence deleted successfully.', type: AgendaEvent })
+  @ApiNotFoundResponse({ description: 'Event not found.' })
+  @ApiBadRequestResponse({ description: 'User not authorized or work evidence cannot be deleted in the current event state.' })
+  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to delete work evidence from' })
+  @Delete('event/:eventId/work-evidence')
+  @HttpCode(200)
+  async deleteWorkEvidence(
+    @Param('eventId', AgendaEventIdPipe) eventId: string,
+  ): Promise<AgendaEvent> {
+    return this.agendaHandler.handleDeleteWorkEvidence(eventId);
+  }
 }

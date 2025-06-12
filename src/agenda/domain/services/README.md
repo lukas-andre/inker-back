@@ -32,13 +32,16 @@ CANCELED     REJECTED           RESCHEDULED  WAITING_FOR_  WAITING_FOR_
 
 | Acción | Estados Permitidos | Restricciones | Descripción |
 |--------|-------------------|---------------|-------------|
-| `canCancel` | CONFIRMED, RESCHEDULED, PENDING_CONFIRMATION | Sin restricciones | Cancelar cualquier evento |
-| `canEdit` | CONFIRMED, RESCHEDULED | Solo artist | Editar detalles del evento |
-| `canReschedule` | CONFIRMED, RESCHEDULED | Sin restricciones | Reprogramar cita |
+| `canCancel` | CONFIRMED, RESCHEDULED, PENDING_CONFIRMATION | ≥1h antes | Cancelar cita con 1 hora de aviso |
+| `canEdit` | CONFIRMED, RESCHEDULED | ≥24h antes | Editar detalles del evento |
+| `canReschedule` | CONFIRMED, RESCHEDULED | ≥1h antes | Reprogramar cita con 1 hora de aviso |
+| `canStartSession` | CONFIRMED | <= 1h antes del inicio* | Iniciar la sesión de tatuaje |
+| `canFinishSession`| IN_PROGRESS | - | Marcar la sesión como finalizada |
 | `canAddWorkEvidence` | WAITING_FOR_PHOTOS, COMPLETED | Solo artist | Subir fotos del trabajo |
-| `canSendMessage` | Estados activos* | - | Comunicarse |
+| `canSendMessage` | Estados activos** | - | Comunicarse |
 
-*Estados activos: CONFIRMED, IN_PROGRESS, WAITING_FOR_PHOTOS, PENDING_CONFIRMATION, RESCHEDULED, AFTERCARE_PERIOD
+*Configurable via `HOURS_BEFORE_SESSION_START` (default: 1h, para testing puede ser 48h)
+**Estados activos: CONFIRMED, IN_PROGRESS, WAITING_FOR_PHOTOS, PENDING_CONFIRMATION, RESCHEDULED, AFTERCARE_PERIOD
 
 ## Diferencias Clave
 
@@ -50,7 +53,10 @@ CANCELED     REJECTED           RESCHEDULED  WAITING_FOR_  WAITING_FOR_
 - **Customer**: 
   - Cancel: 24h de aviso
   - Reschedule: 48h de aviso
-- **Artist**: Sin restricciones de tiempo
+- **Artist**: 
+  - Edit: 24h de aviso
+  - Cancel: 1h de aviso
+  - Reschedule: 1h de aviso
 
 ## Simplificaciones MVP
 
@@ -85,7 +91,17 @@ if (actions.canCancel) {
 } else {
   // Mostrar razón: actions.reasons.canCancel
 }
+
+// Para iniciar o finalizar una sesión
+if (actions.canStartSession) {
+  // Habilitar botón para iniciar sesión
+}
 ```
+
+### Uso de Acciones de Sesión
+Para `canStartSession` y `canFinishSession`, se debe llamar al endpoint `PUT /api/agenda/:agendaId/event/:eventId/status` con el `eventAction` correspondiente en el body:
+- **Iniciar Sesión**: `{ "eventAction": "start_session" }`
+- **Finalizar Sesión**: `{ "eventAction": "complete_session" }`
 
 ## Estados de Transición
 
@@ -96,8 +112,9 @@ if (actions.canCancel) {
 
 ### Para Artist:
 1. **PENDING_CONFIRMATION** → Cancel
-2. **CONFIRMED** → Edit/Cancel/Reschedule/Message
-3. **WAITING_FOR_PHOTOS** → AddWorkEvidence
+2. **CONFIRMED** → Edit/Cancel/Reschedule/Message/StartSession (si aplica)
+3. **IN_PROGRESS** → FinishSession/Message
+4. **WAITING_FOR_PHOTOS** → AddWorkEvidence
 
 ## Notas de Implementación
 
