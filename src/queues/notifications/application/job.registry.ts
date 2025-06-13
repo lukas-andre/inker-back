@@ -33,6 +33,15 @@ import { PenaltyAppliedNotificationJob } from './jobs/penaltyAppliedNotification
 import { PENALTY_APPLIED_NOTIFICATION_V1 } from '../domain/schemas/penaltyNotification.schema';
 import { NewEventMessageJob } from './jobs/agenda/newEventMessage.job';
 
+// New scheduled notification jobs
+import { AppointmentReminderJob } from './jobs/agenda/appointmentReminder.job';
+import { ConsentReminderJob } from './jobs/agenda/consentReminder.job';
+import { ConfirmationReminderJob } from './jobs/agenda/confirmationReminder.job';
+import { ReviewReminderJob } from './jobs/agenda/reviewReminder.job';
+import { MonthlyReportJob } from './jobs/agenda/monthlyReport.job';
+import { EventAutoCanceledJob } from './jobs/agenda/eventAutoCanceled.job';
+import { PhotoUploadReminderJob } from './jobs/agenda/photoUploadReminder.job';
+
 type NotificationJobConstructor = new (
   emailNotificationService: EmailNotificationService,
   agendaEventProvider: AgendaEventRepository,
@@ -73,6 +82,15 @@ export class NotificationJobRegistry {
 
     this.jobMap.set(PENALTY_APPLIED_NOTIFICATION_V1, PenaltyAppliedNotificationJob);
     this.jobMap.set('NEW_EVENT_MESSAGE', NewEventMessageJob);
+
+    // New scheduled notification jobs
+    this.jobMap.set('APPOINTMENT_REMINDER', AppointmentReminderJob);
+    this.jobMap.set('CONSENT_REMINDER', ConsentReminderJob);
+    this.jobMap.set('CONFIRMATION_REMINDER', ConfirmationReminderJob);
+    this.jobMap.set('REVIEW_REMINDER', ReviewReminderJob);
+    this.jobMap.set('MONTHLY_REPORT', MonthlyReportJob);
+    this.jobMap.set('EVENT_AUTO_CANCELED', EventAutoCanceledJob);
+    this.jobMap.set('PHOTO_UPLOAD_REMINDER', PhotoUploadReminderJob);
   }
 
   getJobConstructor(jobId: JobTypeKey): NotificationJobConstructor | undefined {

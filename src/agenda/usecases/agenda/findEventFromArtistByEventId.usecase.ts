@@ -107,7 +107,7 @@ export class FindEventFromArtistByEventIdUseCase
       offer: offerEntity,
     });
 
-    return {
+     return {
       event,
       artist,
       location: location[0],

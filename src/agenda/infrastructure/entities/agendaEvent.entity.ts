@@ -130,4 +130,7 @@ export class AgendaEvent extends BaseEntity {
 
   @OneToMany(() => SignedConsentEntity, consent => consent.event, { cascade: true })
   consents: SignedConsentEntity[];
+
+  @Column({ name: 'reminder_sent', type: 'jsonb', nullable: true, default: {} })
+  reminderSent?: Record<string, boolean>;
 }

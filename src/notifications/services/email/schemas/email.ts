@@ -16,6 +16,12 @@ export const MailIdSchema = z.enum([
   'QUOTATION_APPEALED',
   'QUOTATION_CANCELED',
   'ACCOUNT_VERIFICATION_CODE',
+  'APPOINTMENT_REMINDER',
+  'CONSENT_REMINDER',
+  'CONFIRMATION_REMINDER',
+  'EVENT_AUTO_CANCELED',
+  'REVIEW_REMINDER',
+  'MONTHLY_REPORT',
 ]);
 export type MailIdType = z.infer<typeof MailIdSchema>;
 
@@ -177,6 +183,95 @@ const AgendaEventStatusChangedSchema = BaseEmailSchema.extend({
 });
 export type AgendaEventStatusChangedType = z.infer<typeof AgendaEventStatusChangedSchema>;
 
+const AppointmentReminderEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.APPOINTMENT_REMINDER),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  eventLocation: z.string(),
+  googleMapsLink: z.string(),
+  reminderType: z.string(),
+  hoursUntilAppointment: z.number(),
+});
+export type AppointmentReminderEmailType = z.infer<typeof AppointmentReminderEmailSchema>;
+
+const ConsentReminderEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.CONSENT_REMINDER),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  eventLocation: z.string(),
+  reminderType: z.string(),
+  hoursUntilAppointment: z.number(),
+  consentUrl: z.string(),
+});
+export type ConsentReminderEmailType = z.infer<typeof ConsentReminderEmailSchema>;
+
+const ConfirmationReminderEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.CONFIRMATION_REMINDER),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  hoursRemaining: z.number(),
+  confirmationUrl: z.string(),
+});
+export type ConfirmationReminderEmailType = z.infer<typeof ConfirmationReminderEmailSchema>;
+
+const EventAutoCanceledEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.EVENT_AUTO_CANCELED),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  reason: z.string(),
+});
+export type EventAutoCanceledEmailType = z.infer<typeof EventAutoCanceledEmailSchema>;
+
+const ReviewReminderEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.REVIEW_REMINDER),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  completedDate: z.date(),
+  reminderType: z.string(),
+  reviewUrl: z.string(),
+});
+export type ReviewReminderEmailType = z.infer<typeof ReviewReminderEmailSchema>;
+
+const MonthlyReportEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.MONTHLY_REPORT),
+  artistName: z.string(),
+  reportMonth: z.string(),
+  appointments: z.object({
+    completedCount: z.number(),
+    canceledCount: z.number(),
+    rescheduledCount: z.number(),
+    totalCount: z.number(),
+    uniqueCustomers: z.number(),
+  }),
+  reviews: z.object({
+    totalReviews: z.number(),
+    averageRating: z.number(),
+    positiveReviews: z.number(),
+    negativeReviews: z.number(),
+  }),
+  quotations: z.object({
+    total: z.number(),
+    accepted: z.number(),
+    rejected: z.number(),
+    totalRevenue: z.number(),
+  }),
+  performance: z.object({
+    conversionRate: z.string(),
+    completionRate: z.string(),
+    customerSatisfaction: z.string(),
+  }),
+});
+export type MonthlyReportEmailType = z.infer<typeof MonthlyReportEmailSchema>;
+
 export const EmailSchema = z.union([
   AgendaEventCreatedSchema,
   AgendaEventCanceledSchema,
@@ -193,6 +288,12 @@ export const EmailSchema = z.union([
   QuotationAppealedSchema,
   QuotationCanceledSchema,
   AccountVerificationCodeSchema,
+  AppointmentReminderEmailSchema,
+  ConsentReminderEmailSchema,
+  ConfirmationReminderEmailSchema,
+  EventAutoCanceledEmailSchema,
+  ReviewReminderEmailSchema,
+  MonthlyReportEmailSchema,
 ]);
 
 export type EmailType = z.infer<typeof EmailSchema>;
@@ -213,4 +314,10 @@ export {
   QuotationAppealedSchema,
   QuotationCanceledSchema,
   AccountVerificationCodeSchema,
+  AppointmentReminderEmailSchema,
+  ConsentReminderEmailSchema,
+  ConfirmationReminderEmailSchema,
+  EventAutoCanceledEmailSchema,
+  ReviewReminderEmailSchema,
+  MonthlyReportEmailSchema,
 };
