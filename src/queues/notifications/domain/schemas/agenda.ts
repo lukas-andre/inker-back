@@ -12,6 +12,15 @@ export const RSVP_DECLINED = 'RSVP_DECLINED' as const;
 export const RSVP_UNSCHEDULABLE = 'RSVP_UNSCHEDULABLE' as const;
 export const NewEventMessageJobId = 'NEW_EVENT_MESSAGE' as const;
 
+// New scheduled notification job IDs
+export const APPOINTMENT_REMINDER = 'APPOINTMENT_REMINDER' as const;
+export const CONSENT_REMINDER = 'CONSENT_REMINDER' as const;
+export const CONFIRMATION_REMINDER = 'CONFIRMATION_REMINDER' as const;
+export const EVENT_AUTO_CANCELED = 'EVENT_AUTO_CANCELED' as const;
+export const REVIEW_REMINDER = 'REVIEW_REMINDER' as const;
+export const PHOTO_UPLOAD_REMINDER = 'PHOTO_UPLOAD_REMINDER' as const;
+export const MONTHLY_REPORT = 'MONTHLY_REPORT' as const;
+
 export const AgendaJobIdSchema = z.enum([
   'EVENT_CREATED',
   'EVENT_CANCELED',
@@ -24,6 +33,14 @@ export const AgendaJobIdSchema = z.enum([
   'EVENT_RESCHEDULED_BY_ARTIST',
   'EVENT_RESCHEDULED_BY_CUSTOMER',
   NewEventMessageJobId,
+  // New scheduled notifications
+  APPOINTMENT_REMINDER,
+  CONSENT_REMINDER,
+  CONFIRMATION_REMINDER,
+  EVENT_AUTO_CANCELED,
+  REVIEW_REMINDER,
+  PHOTO_UPLOAD_REMINDER,
+  MONTHLY_REPORT,
 ]);
 export type AgendaJobIdType = z.infer<typeof AgendaJobIdSchema>;
 
@@ -134,6 +151,113 @@ export type EventRescheduledByCustomerJob = z.infer<typeof EventRescheduledByCus
 });
 export type NewEventMessageJob = z.infer<typeof NewEventMessageJobSchema>;
 
+// New scheduled notification schemas
+const AppointmentReminderJobSchema = AgendaJobSchema.extend({
+  jobId: z.literal(APPOINTMENT_REMINDER),
+  metadata: z.object({
+    customerId: z.string(),
+    eventId: z.string(),
+    artistId: z.string(),
+    reminderType: z.string(),
+    appointmentDate: z.string(),
+    eventTitle: z.string(),
+  }),
+});
+export type AppointmentReminderJobType = z.infer<typeof AppointmentReminderJobSchema>;
+
+const ConsentReminderJobSchema = AgendaJobSchema.extend({
+  jobId: z.literal(CONSENT_REMINDER),
+  metadata: z.object({
+    customerId: z.string(),
+    eventId: z.string(),
+    artistId: z.string(),
+    reminderType: z.string(),
+    appointmentDate: z.string(),
+  }),
+});
+export type ConsentReminderJobType = z.infer<typeof ConsentReminderJobSchema>;
+
+const ConfirmationReminderJobSchema = AgendaJobSchema.extend({
+  jobId: z.literal(CONFIRMATION_REMINDER),
+  metadata: z.object({
+    customerId: z.string(),
+    eventId: z.string(),
+    artistId: z.string(),
+    hoursRemaining: z.number(),
+  }),
+});
+export type ConfirmationReminderJobType = z.infer<typeof ConfirmationReminderJobSchema>;
+
+const EventAutoCanceledJobSchema = AgendaJobSchema.extend({
+  jobId: z.literal(EVENT_AUTO_CANCELED),
+  metadata: z.object({
+    customerId: z.string(),
+    eventId: z.string(),
+    artistId: z.string(),
+    reason: z.string(),
+  }),
+});
+export type EventAutoCanceledJobType = z.infer<typeof EventAutoCanceledJobSchema>;
+
+const ReviewReminderJobSchema = AgendaJobSchema.extend({
+  jobId: z.literal(REVIEW_REMINDER),
+  metadata: z.object({
+    customerId: z.string(),
+    eventId: z.string(),
+    artistId: z.string(),
+    reminderType: z.string(),
+  }),
+});
+export type ReviewReminderJobType = z.infer<typeof ReviewReminderJobSchema>;
+
+const PhotoUploadReminderJobSchema = z.object({
+  jobId: z.literal(PHOTO_UPLOAD_REMINDER),
+  notificationTypeId: z.literal(NotificationTypePush),
+  metadata: z.object({
+    eventId: z.string(),
+    artistId: z.string(),
+    customerId: z.string(),
+    reminderType: z.string(),
+  }),
+});
+export type PhotoUploadReminderJobType = z.infer<typeof PhotoUploadReminderJobSchema>;
+
+const MonthlyReportJobSchema = z.object({
+  jobId: z.literal(MONTHLY_REPORT),
+  notificationTypeId: z.literal(NotificationTypeEmail),
+  metadata: z.object({
+    artistId: z.string(),
+    email: z.string(),
+    reportMonth: z.string(),
+    artistName: z.string(),
+    appointments: z.object({
+      completedCount: z.number(),
+      canceledCount: z.number(),
+      rescheduledCount: z.number(),
+      totalCount: z.number(),
+      uniqueCustomers: z.number(),
+    }),
+    reviews: z.object({
+      totalReviews: z.number(),
+      averageRating: z.number(),
+      positiveReviews: z.number(),
+      negativeReviews: z.number(),
+    }),
+    quotations: z.object({
+      total: z.number(),
+      accepted: z.number(),
+      rejected: z.number(),
+      totalRevenue: z.number(),
+    }),
+    performance: z.object({
+      conversionRate: z.string(),
+      completionRate: z.string(),
+      customerSatisfaction: z.string(),
+    }),
+  }),
+});
+export type MonthlyReportJobType = z.infer<typeof MonthlyReportJobSchema>;
+
 export {
   AgendaEventCreatedJobSchema,
   AgendaEventCanceledJobSchema,
@@ -146,4 +270,11 @@ export {
   EventRescheduledByArtistJobSchema,
   EventRescheduledByCustomerJobSchema,
   NewEventMessageJobSchema,
+  AppointmentReminderJobSchema,
+  ConsentReminderJobSchema,
+  ConfirmationReminderJobSchema,
+  EventAutoCanceledJobSchema,
+  ReviewReminderJobSchema,
+  PhotoUploadReminderJobSchema,
+  MonthlyReportJobSchema,
 };

@@ -359,6 +359,145 @@ export class QuotationRepository extends BaseComponent {
   async updateSimple(id: string, fields: Partial<Quotation>) {
     return this.quotationRepository.update(id, fields);
   }
+
+  /**
+   * Get revenue data for monthly reports using native SQL
+   */
+  async getRevenueForMonth(
+    quotationIds: string[],
+    year: number,
+    month: number
+  ): Promise<any> {
+    if (quotationIds.length === 0) {
+      return {
+        totalRevenue: 0,
+        averagePrice: 0,
+        minPrice: 0,
+        maxPrice: 0,
+        count: 0
+      };
+    }
+
+    try {
+      const placeholders = quotationIds.map((_, i) => `$${i + 3}`).join(', ');
+      
+      const [result] = await this.quotationRepository.query(
+        `SELECT 
+          json_build_object(
+            'totalRevenue', COALESCE(SUM((q.price->>'amount')::decimal), 0),
+            'averagePrice', COALESCE(AVG((q.price->>'amount')::decimal), 0),
+            'minPrice', COALESCE(MIN((q.price->>'amount')::decimal), 0),
+            'maxPrice', COALESCE(MAX((q.price->>'amount')::decimal), 0),
+            'count', COUNT(*),
+            'currency', MAX(q.price->>'currency')
+          ) as revenue
+        FROM quotation q
+        WHERE q.id IN (${placeholders})
+          AND q.status = 'accepted'
+          AND EXTRACT(YEAR FROM q.updated_at) = $1
+          AND EXTRACT(MONTH FROM q.updated_at) = $2`,
+        [year, month, ...quotationIds]
+      );
+
+      return result?.revenue || {
+        totalRevenue: 0,
+        averagePrice: 0,
+        minPrice: 0,
+        maxPrice: 0,
+        count: 0,
+        currency: 'USD'
+      };
+    } catch (error) {
+      throw new DBServiceSaveException(
+        this,
+        'Problems getting revenue for month',
+        error,
+      );
+    }
+  }
+
+  /**
+   * Get quotations by status for reporting
+   */
+  async getQuotationsSummaryByArtist(
+    artistId: string,
+    year: number,
+    month: number
+  ): Promise<any> {
+    try {
+      const [result] = await this.quotationRepository.query(
+        `SELECT 
+          json_build_object(
+            'total', COUNT(*),
+            'accepted', COUNT(*) FILTER (WHERE q.status = 'accepted'),
+            'rejected', COUNT(*) FILTER (WHERE q.status = 'rejected'),
+            'pending', COUNT(*) FILTER (WHERE q.status = 'pending'),
+            'responded', COUNT(*) FILTER (WHERE q.status = 'responded'),
+            'canceled', COUNT(*) FILTER (WHERE q.status = 'canceled'),
+            'totalRevenue', COALESCE(SUM(CASE WHEN q.status = 'accepted' THEN (q.price->>'amount')::decimal ELSE 0 END), 0),
+            'averageResponseTime', COALESCE(
+              AVG(
+                CASE 
+                  WHEN q.response_date IS NOT NULL 
+                  THEN EXTRACT(EPOCH FROM (q.response_date - q.created_at)) / 3600
+                  ELSE NULL 
+                END
+              ), 0
+            )
+          ) as summary
+        FROM quotation q
+        WHERE q.artist_id = $1
+          AND EXTRACT(YEAR FROM q.created_at) = $2
+          AND EXTRACT(MONTH FROM q.created_at) = $3`,
+        [artistId, year, month]
+      );
+
+      return result?.summary || {
+        total: 0,
+        accepted: 0,
+        rejected: 0,
+        pending: 0,
+        responded: 0,
+        canceled: 0,
+        totalRevenue: 0,
+        averageResponseTime: 0
+      };
+    } catch (error) {
+      throw new DBServiceSaveException(
+        this,
+        'Problems getting quotations summary by artist',
+        error,
+      );
+    }
+  }
+
+  /**
+   * Get quotation IDs for completed eventsq  aáaq
+   */
+  async getQuotationIdsByEventIds(eventIds: string[]): Promise<string[]> {
+    if (eventIds.length === 0) return [];
+
+    try {
+      const placeholders = eventIds.map((_, i) => `$${i + 1}`).join(', ');
+      
+      const results = await this.quotationRepository.query(
+        `SELECT DISTINCT q.id
+        FROM quotation q
+        INNER JOIN agenda_event ae ON ae.quotation_id = q.id
+        WHERE ae.id IN (${placeholders})
+          AND q.status = 'accepted'`,
+        eventIds
+      );
+
+      return results.map((row: any) => row.id);
+    } catch (error) {
+      throw new DBServiceSaveException(
+        this,
+        'Problems getting quotation IDs by event IDs',
+        error,
+      );
+    }
+  }
 }
 
 const transformEstimatedCost = (

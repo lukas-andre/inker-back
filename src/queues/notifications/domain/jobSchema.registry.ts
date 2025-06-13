@@ -8,6 +8,13 @@ import {
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,
   RsvpUnschedulableJobSchema,
+  AppointmentReminderJobSchema,
+  ConsentReminderJobSchema,
+  ConfirmationReminderJobSchema,
+  EventAutoCanceledJobSchema,
+  ReviewReminderJobSchema,
+  PhotoUploadReminderJobSchema,
+  MonthlyReportJobSchema,
 } from './schemas/agenda';
 import { SendVerificationCodeJobSchema } from './schemas/codes';
 import {
@@ -46,6 +53,13 @@ export const JobTypeSchemaRegistry = {
   ACCOUNT_VERIFICATION_CODE: SendVerificationCodeJobSchema,
   [PENALTY_APPLIED_NOTIFICATION_V1]: PenaltyAppliedNotificationV1JobSchema,
   NEW_EVENT_MESSAGE: NewEventMessageJobSchema,
+  APPOINTMENT_REMINDER: AppointmentReminderJobSchema,
+  CONSENT_REMINDER: ConsentReminderJobSchema,
+  CONFIRMATION_REMINDER: ConfirmationReminderJobSchema,
+  EVENT_AUTO_CANCELED: EventAutoCanceledJobSchema,
+  REVIEW_REMINDER: ReviewReminderJobSchema,
+  PHOTO_UPLOAD_REMINDER: PhotoUploadReminderJobSchema,
+  MONTHLY_REPORT: MonthlyReportJobSchema,
 };
 
 // export jobtype keys

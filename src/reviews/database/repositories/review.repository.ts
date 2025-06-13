@@ -760,4 +760,100 @@ export class ReviewRepository extends BaseComponent {
 
     return resultMap;
   }
+
+  /**
+   * Get reviews summary for monthly reports using native SQL
+   */
+  async getReviewsSummaryForMonth(
+    eventIds: string[],
+    year: number,
+    month: number
+  ): Promise<any[]> {
+    if (eventIds.length === 0) return [];
+
+    try {
+      const placeholders = eventIds.map((_, i) => `$${i + 3}`).join(', ');
+      
+      const reviews = await this.repository.query(
+        `SELECT 
+          r.event_id as "eventId",
+          json_build_object(
+            'totalReviews', COUNT(*),
+            'averageRating', AVG(r.value),
+            'positiveReviews', COUNT(*) FILTER (WHERE r.value >= 4),
+            'reviews', JSON_AGG(
+              json_build_object(
+                'id', r.id,
+                'rating', r.value,
+                'header', r.header,
+                'content', r.content,
+                'createdAt', r.created_at
+              ) ORDER BY r.created_at DESC
+            )
+          ) as summary
+        FROM review r
+        WHERE r.event_id IN (${placeholders})
+          AND EXTRACT(YEAR FROM r.created_at) = $1
+          AND EXTRACT(MONTH FROM r.created_at) = $2
+        GROUP BY r.event_id`,
+        [year, month, ...eventIds]
+      );
+
+      return reviews;
+    } catch (error) {
+      throw new DBServiceFindException(
+        this,
+        'Problems getting reviews summary for month',
+        error,
+      );
+    }
+  }
+
+  /**
+   * Get reviews by artist for a specific month
+   */
+  async getReviewsByArtistForMonth(
+    artistId: string,
+    year: number,
+    month: number
+  ): Promise<any> {
+    try {
+      const [result] = await this.repository.query(
+        `SELECT 
+          json_build_object(
+            'totalReviews', COUNT(*),
+            'averageRating', COALESCE(AVG(r.value), 0),
+            'positiveReviews', COUNT(*) FILTER (WHERE r.value >= 4),
+            'negativeReviews', COUNT(*) FILTER (WHERE r.value < 3),
+            'ratingDistribution', json_build_object(
+              '5', COUNT(*) FILTER (WHERE r.value = 5),
+              '4', COUNT(*) FILTER (WHERE r.value = 4),
+              '3', COUNT(*) FILTER (WHERE r.value = 3),
+              '2', COUNT(*) FILTER (WHERE r.value = 2),
+              '1', COUNT(*) FILTER (WHERE r.value = 1)
+            )
+          ) as summary
+        FROM review r
+        WHERE r.artist_id = $1
+          AND EXTRACT(YEAR FROM r.created_at) = $2
+          AND EXTRACT(MONTH FROM r.created_at) = $3
+          AND r.is_rated = true`,
+        [artistId, year, month]
+      );
+
+      return result?.summary || {
+        totalReviews: 0,
+        averageRating: 0,
+        positiveReviews: 0,
+        negativeReviews: 0,
+        ratingDistribution: { '5': 0, '4': 0, '3': 0, '2': 0, '1': 0 }
+      };
+    } catch (error) {
+      throw new DBServiceFindException(
+        this,
+        'Problems getting reviews by artist for month',
+        error,
+      );
+    }
+  }
 }
