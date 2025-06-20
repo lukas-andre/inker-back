@@ -85,7 +85,7 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
     }
 
     let multimedias: MultimediasMetadataInterface;
-    if (proposedDesigns && proposedDesigns.length > 0) {
+    if (proposedDesigns && proposedDesigns.length > 0 && Array.isArray(proposedDesigns)) {
       multimedias = await this.multimediasService.uploadProposedDesigns(
         proposedDesigns,
         quotationId,
