@@ -8,14 +8,17 @@ import { ClsModule } from 'nestjs-cls';
 import { appConfigSchema } from '../config/app.config';
 import { authConfigSchema } from '../config/auth.config';
 import { AWSConfigSchema } from '../config/aws.config';
+import { cloudflareConfigSchema } from '../config/cloudflare.config';
 import { config } from '../config/config';
 import { databaseConfigSchema } from '../config/database/config';
 import { oasConfigSchema } from '../config/oas.config';
+import { PlacesConfigSchema } from '../config/places.config';
 import { runwareConfigSchema } from '../config/runware.config';
 import { sendGridSchema } from '../config/sendgrid.config';
 import { verificationHashConfigSchema } from '../config/verificationHash';
 
 import { BaseHandler } from './infrastructure/base.handler';
+import { CloudflareImagesClient } from './infrastructure/clients/cloudflare-images.client';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { SMSClient } from './infrastructure/clients/sms.client';
 import { RequestContextService } from './infrastructure/services/requestContext.service';
@@ -35,8 +38,10 @@ import { DomainEventsService } from './domain/events/domainEvents.service';
         .concat(oasConfigSchema)
         .concat(verificationHashConfigSchema)
         .concat(AWSConfigSchema)
+        .concat(cloudflareConfigSchema)
         .concat(databaseConfigSchema)
         .concat(sendGridSchema)
+        .concat(PlacesConfigSchema)
         .concat(runwareConfigSchema),
     }),
     ClsModule.forRoot({
@@ -54,9 +59,10 @@ import { DomainEventsService } from './domain/events/domainEvents.service';
     }),
   ],
   controllers: [],
-  providers: [BaseHandler, S3Client, SMSClient, RequestContextService, UniqueIdService, DomainEventsService],
+  providers: [BaseHandler, CloudflareImagesClient, S3Client, SMSClient, RequestContextService, UniqueIdService, DomainEventsService],
   exports: [
     ConfigModule,
+    CloudflareImagesClient,
     S3Client,
     SMSClient,
     JwtModule,

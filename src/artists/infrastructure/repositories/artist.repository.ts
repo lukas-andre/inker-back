@@ -185,7 +185,7 @@ export class ArtistRepository extends BaseComponent {
           a.last_name as "lastName",
           a.studio_photo as "studioPhoto",
           a.short_description as "shortDescription",
-          a.profile_photo as "profilePhoto",
+          a.profile_thumbnail as "profileThumbnail",
           a.rating
         FROM
           artist a

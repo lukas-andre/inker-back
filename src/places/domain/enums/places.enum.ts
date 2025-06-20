@@ -1,0 +1,12 @@
+export enum PlacesApiStatus {
+  OK = 'OK',
+  ZERO_RESULTS = 'ZERO_RESULTS',
+  INVALID_REQUEST = 'INVALID_REQUEST',
+  OVER_QUERY_LIMIT = 'OVER_QUERY_LIMIT',
+  REQUEST_DENIED = 'REQUEST_DENIED',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+}
+
+export enum PlacesCountry {
+  CHILE = 'cl',
+}

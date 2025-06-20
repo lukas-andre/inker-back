@@ -16,6 +16,7 @@ import { HealthModule } from './health/health.module';
 import { InteractionsModule } from './interactions/interactions.module';
 import { LocationsModule } from './locations/locations.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
+import { PlacesModule } from './places/places.module';
 import { PostsModule } from './posts/posts.module';
 import { NotificationQueueModule } from './queues/notifications/notification.queue.module';
 import { ReviewsModule } from './reviews/reviews.module';
@@ -50,6 +51,7 @@ import { ConsentModule } from './consent-module/consent.module';
     InteractionsModule,
     LocationsModule,
     MultimediasModule,
+    PlacesModule,
     PostsModule,
     ReviewsModule,
     // ReactionsModule,
