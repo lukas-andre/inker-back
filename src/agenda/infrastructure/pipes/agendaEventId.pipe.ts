@@ -18,9 +18,10 @@ import { AgendaEventRepository } from '../repositories/agendaEvent.repository';
 
 @Injectable()
 export class AgendaEventIdPipe
-  implements PipeTransform<string, Promise<string>> {
+  implements PipeTransform<string, Promise<string>>
+{
   private readonly logger = new Logger(AgendaEventIdPipe.name);
-  constructor(private readonly agendaEventRepository: AgendaEventRepository) { }
+  constructor(private readonly agendaEventRepository: AgendaEventRepository) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || this.invalidIdType(metatype)) {

@@ -4,4 +4,4 @@ export enum ConsentType {
   TATTOO_CONSENT = 'TATTOO_CONSENT',
   IMAGE_RELEASE = 'IMAGE_RELEASE',
   OTHER = 'OTHER',
-} 
+}

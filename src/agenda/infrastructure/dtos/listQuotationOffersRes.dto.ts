@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { QuotationOfferListItemDto } from '../../domain/dtos/quotationOffer.dto';
 
 export class ListQuotationOffersResDto {
@@ -11,4 +12,4 @@ export class ListQuotationOffersResDto {
 export class GetQuotationOfferResDto extends QuotationOfferListItemDto {
   // Potentially add more details specific to retrieving a single offer
   // For now, it inherits everything from the list item DTO
-} 
+}

@@ -7,6 +7,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
+
 import { ArtistStyleType } from '../artistStyleType';
 
 export class ArtistStyleDto implements ArtistStyleType {

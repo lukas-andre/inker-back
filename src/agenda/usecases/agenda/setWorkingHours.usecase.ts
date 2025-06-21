@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AgendaSettingsService } from '../../services/agendaSettings.service';
+
 import { SetWorkingHoursReqDto } from '../../infrastructure/dtos/setWorkingHoursReq.dto';
+import { AgendaSettingsService } from '../../services/agendaSettings.service';
 
 @Injectable()
 export class SetWorkingHoursUseCase {

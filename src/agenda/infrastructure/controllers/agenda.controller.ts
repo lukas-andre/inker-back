@@ -32,11 +32,14 @@ import {
 } from '@nestjs/swagger';
 import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
 
+import { SendEventMessageReqDto } from 'src/agenda/infrastructure/dtos/sendEventMessageReq.dto';
+
 import { ArtistIdPipe } from '../../../artists/infrastructure/pipes/artistId.pipe';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { errorCodesToOASDescription } from '../../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import { ReviewArtistRequestDto } from '../../../reviews/dtos/reviewArtistRequest.dto';
 import {
   AGENDA_EVENT_ID_PIPE_FAILED,
   AGENDA_EVENT_INVALID_ID_TYPE,
@@ -46,29 +49,33 @@ import {
   AGENDA_INVALID_ID_TYPE,
   AGENDA_NOT_EXISTS,
 } from '../../domain/errors/codes';
+import {
+  AvailabilityCalendar,
+  SchedulingService,
+  TimeSlot,
+} from '../../services/scheduling.service';
 import { AgendaHandler } from '../agenda.handler';
 import { AddEventReqDto } from '../dtos/addEventReq.dto';
+import { ArtistAvailabilityQueryDto } from '../dtos/artistAvailabilityQuery.dto';
+import { CancelEventReqDto } from '../dtos/cancelEventReq.dto';
 import { ChangeEventStatusReqDto } from '../dtos/changeEventStatusReq.dto';
+import { CreateUnavailableTimeReqDto } from '../dtos/createUnavailableTimeReq.dto';
+import { EventMessageDto } from '../dtos/eventMessage.dto';
+import { GetAgendaSettingsResDto } from '../dtos/getAgendaSettingsRes.dto';
+import { GetCustomerAppointmentsViewResDto } from '../dtos/getCustomerAppointmentsViewRes.dto';
+import { GetSchedulerViewQueryDto } from '../dtos/getSchedulerViewQuery.dto';
 import { GetWorkEvidenceByArtistIdResponseDto } from '../dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { ListEventByViewTypeQueryDto } from '../dtos/listEventByViewTypeQuery.dto';
 import { UpdateEventReqDto } from '../dtos/updateEventReq.dto';
 import { AgendaEventIdPipe } from '../pipes/agendaEventId.pipe';
 import { AgendaIdPipe } from '../pipes/agendaId.pipe';
-import { ReviewArtistRequestDto } from '../../../reviews/dtos/reviewArtistRequest.dto';
 import { SetWorkingHoursReqDto } from '../dtos/setWorkingHoursReq.dto';
-import { CreateUnavailableTimeReqDto } from '../dtos/createUnavailableTimeReq.dto';
 import { RescheduleEventReqDto } from '../dtos/rescheduleEventReq.dto';
 import { UpdateEventNotesReqDto } from '../dtos/updateEventNotesReq.dto';
-import { ArtistAvailabilityQueryDto } from '../dtos/artistAvailabilityQuery.dto';
 import { UpdateAgendaSettingsReqDto } from '../dtos/updateAgendaSettingsReq.dto';
-import { GetAgendaSettingsResDto } from '../dtos/getAgendaSettingsRes.dto';
 import { AgendaUnavailableTime } from '../entities/agendaUnavailableTime.entity';
-import { AvailabilityCalendar, SchedulingService, TimeSlot } from '../../services/scheduling.service';
-import { CancelEventReqDto } from '../dtos/cancelEventReq.dto';
-import { SendEventMessageReqDto } from 'src/agenda/infrastructure/dtos/sendEventMessageReq.dto';
-import { EventMessageDto } from '../dtos/eventMessage.dto';
-import { GetCustomerAppointmentsViewResDto } from '../dtos/getCustomerAppointmentsViewRes.dto';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
+import { GetSchedulerViewResDto } from '../dtos/getSchedulerViewRes.dto';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -104,16 +111,34 @@ export class AgendaController {
   @ApiOperation({ summary: 'Cancel event' })
   @HttpCode(200)
   @ApiOkResponse({ description: 'Event canceled successful.', type: undefined })
-  @ApiConflictResponse({ description: 'Invalid Dates. Event may not be cancellable in its current state or due to policies.' })
-  @ApiParam({ name: 'agendaId', required: true, type: String, description: "The ID of the agenda (UUID format). Note: This parameter may be deprecated or implicitly derived in future versions if cancellation primarily relies on eventId and authenticated user context." })
-  @ApiParam({ name: 'eventId', required: true, type: String, description: "The ID of the event to cancel (UUID format)." })
+  @ApiConflictResponse({
+    description:
+      'Invalid Dates. Event may not be cancellable in its current state or due to policies.',
+  })
+  @ApiParam({
+    name: 'agendaId',
+    required: true,
+    type: String,
+    description:
+      'The ID of the agenda (UUID format). Note: This parameter may be deprecated or implicitly derived in future versions if cancellation primarily relies on eventId and authenticated user context.',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    type: String,
+    description: 'The ID of the event to cancel (UUID format).',
+  })
   @Delete(':agendaId/event/:eventId')
   async cancelEvent(
     @Param('agendaId') agendaId: string,
     @Param('eventId') eventId: string,
     @Body() cancelEventReqDto: CancelEventReqDto,
   ): Promise<any> {
-    return this.agendaHandler.handleCancelEvent(eventId, agendaId, cancelEventReqDto.reason);
+    return this.agendaHandler.handleCancelEvent(
+      eventId,
+      agendaId,
+      cancelEventReqDto.reason,
+    );
   }
 
   @ApiOperation({ summary: 'List events for week/day' })
@@ -134,11 +159,13 @@ export class AgendaController {
 
   @ApiOperation({
     summary: 'get all events from artist agenda or customer events',
-    description: 'For customers, returns a structured view of appointments (hero, grouped by time). For artists, returns a simple list.'
+    description:
+      'For customers, returns a structured view of appointments (hero, grouped by time). For artists, returns a simple list.',
   })
   @HttpCode(200)
-  @ApiOkResponse({ 
-    description: 'Event list successful. The response structure depends on the user type.',
+  @ApiOkResponse({
+    description:
+      'Event list successful. The response structure depends on the user type.',
     type: GetCustomerAppointmentsViewResDto, // DTO for the customer view
   })
   @ApiConflictResponse({ description: 'Trouble listing events.' })
@@ -156,7 +183,8 @@ export class AgendaController {
   @Get()
   async listEventFromArtistAgenda(
     @Query('status') status?: string,
-  ): Promise<any> { // The return type can be either GetCustomerAppointmentsViewResDto or AgendaEvent[]
+  ): Promise<any> {
+    // The return type can be either GetCustomerAppointmentsViewResDto or AgendaEvent[]
     return this.agendaHandler.handleListEventFromArtistAgenda(status);
   }
 
@@ -185,15 +213,16 @@ export class AgendaController {
   @ApiParam({ name: 'eventId', required: true, type: Number })
   @CacheTTL(20) // Cache for 20 seconds
   @Get('/event/:eventId')
-  async getEventByEventId(
-    @Param('eventId') eventId: string,
-  ): Promise<any> {
+  async getEventByEventId(@Param('eventId') eventId: string): Promise<any> {
     return this.agendaHandler.handleGetEventByEventId(eventId);
   }
-  
+
   @ApiOperation({ summary: 'Get customer event by id' })
   @HttpCode(200)
-  @ApiOkResponse({ description: 'Get Customer Event successful.', type: undefined })
+  @ApiOkResponse({
+    description: 'Get Customer Event successful.',
+    type: undefined,
+  })
   @ApiConflictResponse({ description: 'Trouble finding event.' })
   @ApiParam({ name: 'eventId', required: true, type: Number })
   @Get('/customer/event/:eventId')
@@ -267,27 +296,38 @@ export class AgendaController {
     );
   }
 
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'RSVP to an event (Deprecated)',
-    description: 'Use POST /:agendaId/events/:eventId/confirm or POST /:agendaId/events/:eventId/reject instead.'
+    description:
+      'Use POST /:agendaId/events/:eventId/confirm or POST /:agendaId/events/:eventId/reject instead.',
   })
   @ApiOkResponse({ description: 'RSVP processed.', type: DefaultResponseDto })
   @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID' })
   @ApiParam({ name: 'eventId', required: true, description: 'Event ID' })
-  @ApiQuery({ name: 'willAttend', required: true, type: Boolean, description: 'True to accept, false to decline' })
+  @ApiQuery({
+    name: 'willAttend',
+    required: true,
+    type: Boolean,
+    description: 'True to accept, false to decline',
+  })
   @Put(':agendaId/event/:eventId/rsvp')
   async rsvp(
     @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Query('willAttend', ParseBoolPipe) willAttend: boolean,
   ): Promise<DefaultResponseDto> {
-    this.logger.warn(`Deprecated RSVP endpoint was called for event ${eventId}`);
+    this.logger.warn(
+      `Deprecated RSVP endpoint was called for event ${eventId}`,
+    );
     return this.agendaHandler.handleRsvp(agendaId, eventId, willAttend);
   }
 
   @ApiOperation({ summary: 'Change event status' })
   @HttpCode(200)
-  @ApiOkResponse({ description: 'Event status changed successfully.', type: undefined })
+  @ApiOkResponse({
+    description: 'Event status changed successfully.',
+    type: undefined,
+  })
   @ApiConflictResponse({ description: 'Invalid status transition.' })
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
@@ -306,7 +346,10 @@ export class AgendaController {
 
   @ApiOperation({ summary: 'Review an event' })
   @HttpCode(200)
-  @ApiOkResponse({ description: 'Event reviewed successfully.', type: undefined })
+  @ApiOkResponse({
+    description: 'Event reviewed successfully.',
+    type: undefined,
+  })
   @ApiConflictResponse({ description: 'Event not ready for review.' })
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @ApiParam({ name: 'eventId', required: true, type: Number, example: 1 })
@@ -327,7 +370,10 @@ export class AgendaController {
 
   @ApiOperation({ summary: 'Set working hours and days' })
   @HttpCode(200)
-  @ApiOkResponse({ description: 'Working hours set successfully', type: undefined })
+  @ApiOkResponse({
+    description: 'Working hours set successfully',
+    type: undefined,
+  })
   @ApiConflictResponse({ description: 'Invalid working hours' })
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Put(':agendaId/working-hours')
@@ -335,12 +381,18 @@ export class AgendaController {
     @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Body() setWorkingHoursReqDto: SetWorkingHoursReqDto,
   ): Promise<void> {
-    return this.agendaHandler.handleSetWorkingHours(agendaId, setWorkingHoursReqDto);
+    return this.agendaHandler.handleSetWorkingHours(
+      agendaId,
+      setWorkingHoursReqDto,
+    );
   }
 
   @ApiOperation({ summary: 'Create unavailable time block' })
   @HttpCode(200)
-  @ApiOkResponse({ description: 'Unavailable time created successfully', type: AgendaUnavailableTime })
+  @ApiOkResponse({
+    description: 'Unavailable time created successfully',
+    type: AgendaUnavailableTime,
+  })
   @ApiConflictResponse({ description: 'Invalid time block' })
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Post(':agendaId/unavailable-time')
@@ -348,12 +400,18 @@ export class AgendaController {
     @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Body() createUnavailableTimeReqDto: CreateUnavailableTimeReqDto,
   ): Promise<AgendaUnavailableTime> {
-    return this.agendaHandler.handleCreateUnavailableTime(agendaId, createUnavailableTimeReqDto);
+    return this.agendaHandler.handleCreateUnavailableTime(
+      agendaId,
+      createUnavailableTimeReqDto,
+    );
   }
 
   @ApiOperation({ summary: 'Get unavailable time blocks' })
   @HttpCode(200)
-  @ApiOkResponse({ description: 'Unavailable times retrieved successfully', type: [AgendaUnavailableTime] })
+  @ApiOkResponse({
+    description: 'Unavailable times retrieved successfully',
+    type: [AgendaUnavailableTime],
+  })
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Get(':agendaId/unavailable-time')
   async getUnavailableTimes(
@@ -387,7 +445,11 @@ export class AgendaController {
     @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Body() rescheduleEventReqDto: RescheduleEventReqDto,
   ): Promise<void> {
-    return this.agendaHandler.handleRescheduleEvent(agendaId, eventId, rescheduleEventReqDto);
+    return this.agendaHandler.handleRescheduleEvent(
+      agendaId,
+      eventId,
+      rescheduleEventReqDto,
+    );
   }
 
   @ApiOperation({ summary: 'Update event notes' })
@@ -401,7 +463,11 @@ export class AgendaController {
     @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Body() updateEventNotesReqDto: UpdateEventNotesReqDto,
   ): Promise<void> {
-    return this.agendaHandler.handleUpdateEventNotes(agendaId, eventId, updateEventNotesReqDto);
+    return this.agendaHandler.handleUpdateEventNotes(
+      agendaId,
+      eventId,
+      updateEventNotesReqDto,
+    );
   }
 
   @ApiOperation({ summary: 'Get artist availability' })
@@ -416,55 +482,71 @@ export class AgendaController {
   ): Promise<AvailabilityCalendar[]> {
     return this.agendaHandler.handleGetArtistAvailability(artistId, query);
   }
-  
+
   @ApiOperation({ summary: 'Get artist available time slots' })
   @HttpCode(200)
-  @ApiOkResponse({ description: 'Artist available time slots retrieved successfully' })
+  @ApiOkResponse({
+    description: 'Artist available time slots retrieved successfully',
+  })
   @ApiParam({ name: 'artistId', required: true, type: Number, example: 1 })
   @Get('/artists/:artistId/available-slots')
   async getArtistAvailableSlots(
     @Param('artistId') artistId: string,
     @Query('date') date: string,
     @Query('duration', new DefaultValuePipe(60), ParseIntPipe) duration = 60,
-    @Query('suggestionsCount', new DefaultValuePipe(8), ParseIntPipe) suggestionsCount = 8,
+    @Query('suggestionsCount', new DefaultValuePipe(8), ParseIntPipe)
+    suggestionsCount = 8,
   ): Promise<TimeSlot[]> {
     // Use the scheduling service directly for better suggestions
-    const schedulingService = this.agendaHandler['schedulingService'] as SchedulingService;
-    
+    const schedulingService = this.agendaHandler[
+      'schedulingService'
+    ] as SchedulingService;
+
     if (schedulingService) {
       // Get optimal time slots in the next 7 days
-      return schedulingService.suggestOptimalTimes(artistId, duration, suggestionsCount);
+      return schedulingService.suggestOptimalTimes(
+        artistId,
+        duration,
+        suggestionsCount,
+      );
     } else {
       // Fallback logic if the scheduling service isn't accessible
       // Uses date if provided, otherwise looks for slots starting today
       const fromDate = date ? new Date(date) : new Date();
       const toDate = new Date(fromDate);
       toDate.setDate(toDate.getDate() + 7); // Look ahead 7 days
-      
-      const availabilityCalendar = await this.agendaHandler.handleGetArtistAvailability(
-        artistId, 
-        { fromDate: fromDate, toDate: toDate, duration }
-      );
-      
+
+      const availabilityCalendar =
+        await this.agendaHandler.handleGetArtistAvailability(artistId, {
+          fromDate: fromDate,
+          toDate: toDate,
+          duration,
+        });
+
       // Flatten all slots from all days into a single array
       let allSlots: TimeSlot[] = [];
       for (const day of availabilityCalendar) {
         allSlots = [...allSlots, ...day.slots];
       }
-      
+
       // Sort by date (earlier slots first)
-      allSlots.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-      
+      allSlots.sort(
+        (a, b) =>
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
+      );
+
       // Return the first 'suggestionsCount' slots or all if less than that
       return allSlots.slice(0, suggestionsCount);
     }
   }
-  
-  @ApiOperation({ summary: 'Get agenda settings including working hours and visibility' })
+
+  @ApiOperation({
+    summary: 'Get agenda settings including working hours and visibility',
+  })
   @HttpCode(200)
-  @ApiOkResponse({ 
+  @ApiOkResponse({
     description: 'Agenda settings retrieved successfully',
-    type: GetAgendaSettingsResDto
+    type: GetAgendaSettingsResDto,
   })
   @ApiParam({ name: 'agendaId', required: true, type: Number, example: 1 })
   @Get(':agendaId/settings')
@@ -484,30 +566,59 @@ export class AgendaController {
     @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Body() updateAgendaSettingsReqDto: UpdateAgendaSettingsReqDto,
   ): Promise<void> {
-    return this.agendaHandler.handleUpdateAgendaSettings(agendaId, updateAgendaSettingsReqDto);
+    return this.agendaHandler.handleUpdateAgendaSettings(
+      agendaId,
+      updateAgendaSettingsReqDto,
+    );
   }
 
   @ApiOperation({ summary: 'Confirm an event invitation' })
-  @ApiOkResponse({ description: 'Event confirmed successfully.', type: DefaultResponseDto })
+  @ApiOkResponse({
+    description: 'Event confirmed successfully.',
+    type: DefaultResponseDto,
+  })
   @ApiNotFoundResponse({ description: 'Event or Agenda not found.' })
-  @ApiBadRequestResponse({ description: 'User not authorized or invalid event state for confirmation.' })
-  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID containing the event' })
-  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to confirm' })
+  @ApiBadRequestResponse({
+    description: 'User not authorized or invalid event state for confirmation.',
+  })
+  @ApiParam({
+    name: 'agendaId',
+    required: true,
+    description: 'Agenda ID containing the event',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Event ID to confirm',
+  })
   @Post(':agendaId/events/:eventId/confirm')
   @HttpCode(200)
   async confirmEvent(
     @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Param('eventId', AgendaEventIdPipe) eventId: string,
   ): Promise<DefaultResponseDto> {
-    return this.agendaHandler.handleRsvp(agendaId, eventId, true); 
+    return this.agendaHandler.handleRsvp(agendaId, eventId, true);
   }
 
   @ApiOperation({ summary: 'Reject an event invitation' })
-  @ApiOkResponse({ description: 'Event rejected successfully.', type: DefaultResponseDto })
+  @ApiOkResponse({
+    description: 'Event rejected successfully.',
+    type: DefaultResponseDto,
+  })
   @ApiNotFoundResponse({ description: 'Event or Agenda not found.' })
-  @ApiBadRequestResponse({ description: 'User not authorized or invalid event state for rejection.' })
-  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID containing the event' })
-  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to reject' })
+  @ApiBadRequestResponse({
+    description: 'User not authorized or invalid event state for rejection.',
+  })
+  @ApiParam({
+    name: 'agendaId',
+    required: true,
+    description: 'Agenda ID containing the event',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Event ID to reject',
+  })
   @Post(':agendaId/events/:eventId/reject')
   @HttpCode(200)
   async rejectEvent(
@@ -518,11 +629,25 @@ export class AgendaController {
   }
 
   @ApiOperation({ summary: 'Send a message to an event chat' })
-  @ApiOkResponse({ description: 'Message sent successfully.', type: DefaultResponseDto })
+  @ApiOkResponse({
+    description: 'Message sent successfully.',
+    type: DefaultResponseDto,
+  })
   @ApiNotFoundResponse({ description: 'Event or Agenda not found.' })
-  @ApiBadRequestResponse({ description: 'User not authorized or invalid event state for sending messages.' })
-  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID containing the event' })
-  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to send message to' })
+  @ApiBadRequestResponse({
+    description:
+      'User not authorized or invalid event state for sending messages.',
+  })
+  @ApiParam({
+    name: 'agendaId',
+    required: true,
+    description: 'Agenda ID containing the event',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Event ID to send message to',
+  })
   @Post(':agendaId/event/:eventId/message')
   @UseInterceptors(FilesFastifyInterceptor('imageFile', 1))
   @HttpCode(200)
@@ -542,11 +667,24 @@ export class AgendaController {
   }
 
   @ApiOperation({ summary: 'Get messages for an event chat' })
-  @ApiOkResponse({ description: 'Messages retrieved successfully.', type: [EventMessageDto] })
+  @ApiOkResponse({
+    description: 'Messages retrieved successfully.',
+    type: [EventMessageDto],
+  })
   @ApiNotFoundResponse({ description: 'Event or Agenda not found.' })
-  @ApiBadRequestResponse({ description: 'User not authorized to view messages.' })
-  @ApiParam({ name: 'agendaId', required: true, description: 'Agenda ID containing the event' })
-  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to retrieve messages from' })
+  @ApiBadRequestResponse({
+    description: 'User not authorized to view messages.',
+  })
+  @ApiParam({
+    name: 'agendaId',
+    required: true,
+    description: 'Agenda ID containing the event',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Event ID to retrieve messages from',
+  })
   @Get(':agendaId/event/:eventId/messages')
   @HttpCode(200)
   async getEventMessages(
@@ -557,10 +695,19 @@ export class AgendaController {
   }
 
   @ApiOperation({ summary: 'Add work evidence to an event' })
-  @ApiOkResponse({ description: 'Work evidence added successfully.', type: AgendaEvent })
+  @ApiOkResponse({
+    description: 'Work evidence added successfully.',
+    type: AgendaEvent,
+  })
   @ApiNotFoundResponse({ description: 'Event not found.' })
-  @ApiBadRequestResponse({ description: 'User not authorized or invalid event state.' })
-  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to add work evidence to' })
+  @ApiBadRequestResponse({
+    description: 'User not authorized or invalid event state.',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Event ID to add work evidence to',
+  })
   @Post('event/:eventId/work-evidence')
   @UseInterceptors(FilesFastifyInterceptor('files', 10))
   @HttpCode(200)
@@ -572,15 +719,44 @@ export class AgendaController {
   }
 
   @ApiOperation({ summary: 'Delete work evidence from an event' })
-  @ApiOkResponse({ description: 'Work evidence deleted successfully.', type: AgendaEvent })
+  @ApiOkResponse({
+    description: 'Work evidence deleted successfully.',
+    type: AgendaEvent,
+  })
   @ApiNotFoundResponse({ description: 'Event not found.' })
-  @ApiBadRequestResponse({ description: 'User not authorized or work evidence cannot be deleted in the current event state.' })
-  @ApiParam({ name: 'eventId', required: true, description: 'Event ID to delete work evidence from' })
+  @ApiBadRequestResponse({
+    description:
+      'User not authorized or work evidence cannot be deleted in the current event state.',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Event ID to delete work evidence from',
+  })
   @Delete('event/:eventId/work-evidence')
   @HttpCode(200)
   async deleteWorkEvidence(
     @Param('eventId', AgendaEventIdPipe) eventId: string,
   ): Promise<AgendaEvent> {
     return this.agendaHandler.handleDeleteWorkEvidence(eventId);
+  }
+
+  @ApiOperation({
+    summary: 'Get combined scheduler view with events and quotations',
+    description:
+      'Returns all events and quotations for an artist within a date range, optimized for scheduler UI',
+  })
+  @ApiOkResponse({
+    description: 'Scheduler data retrieved successfully',
+    type: GetSchedulerViewResDto,
+  })
+  @ApiParam({ name: 'artistId', required: true, type: String })
+  @Get('schedule/:artistId')
+  @CacheTTL(10)
+  async getSchedulerView(
+    @Param('artistId') artistId: string,
+    @Query() query: GetSchedulerViewQueryDto,
+  ): Promise<GetSchedulerViewResDto> {
+    return this.agendaHandler.handleGetSchedulerView(artistId, query);
   }
 }

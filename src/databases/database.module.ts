@@ -35,8 +35,6 @@ import {
   USER_DB_CONNECTION_NAME,
 } from './constants';
 
-
-
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -146,4 +144,4 @@ import {
     }),
   ],
 })
-export class DatabasesModule { }
+export class DatabasesModule {}

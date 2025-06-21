@@ -1,10 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 import { ActivateUserByEmailReqDto } from '../../dtos/activateUserByEmail.dto';
 
 export function ActivateUserByEmailDoc() {
@@ -24,7 +20,8 @@ export function ActivateUserByEmailDoc() {
     }),
     ApiResponse({
       status: 400,
-      description: 'Invalid request (missing/invalid parameters or user not found)',
+      description:
+        'Invalid request (missing/invalid parameters or user not found)',
     }),
   );
-} 
+}

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InteractionRepository } from '../infrastructure/database/repositories/interaction.repository';
+
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import { InteractionRepository } from '../infrastructure/database/repositories/interaction.repository';
 
 @Injectable()
 export class DeleteInteractionUseCase extends BaseUseCase {
@@ -8,22 +9,24 @@ export class DeleteInteractionUseCase extends BaseUseCase {
     super(DeleteInteractionUseCase.name);
   }
 
-
-  async execute(params: { userId: string; interactionId: string }): Promise<void> {
+  async execute(params: {
+    userId: string;
+    interactionId: string;
+  }): Promise<void> {
     const { userId, interactionId } = params;
-    
+
     const interactions = await this.interactionProvider.findByUserAndEntity(
       userId,
       null,
       null,
     );
-    
+
     const targetInteraction = interactions.find(i => i.id === interactionId);
-    
+
     if (!targetInteraction) {
       throw new Error('Interaction not found or does not belong to this user');
     }
-    
+
     await this.interactionProvider.delete(interactionId);
   }
 }

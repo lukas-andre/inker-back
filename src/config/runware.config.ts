@@ -33,7 +33,10 @@ export const runwareConfig = registerAs<RunwareConfig>('runware', () => ({
   taskType: process.env.RUNWARE_TASK_TYPE,
   retry: {
     maxRetries: parseInt(process.env.RUNWARE_RETRY_MAX_RETRIES || '5', 10),
-    initialDelayMs: parseInt(process.env.RUNWARE_RETRY_INITIAL_DELAY_MS || '500', 10),
+    initialDelayMs: parseInt(
+      process.env.RUNWARE_RETRY_INITIAL_DELAY_MS || '500',
+      10,
+    ),
     maxDelayMs: parseInt(process.env.RUNWARE_RETRY_MAX_DELAY_MS || '10000', 10),
     backoffFactor: parseFloat(process.env.RUNWARE_RETRY_BACKOFF_FACTOR || '2'),
   },
@@ -54,4 +57,4 @@ export const runwareConfigSchema = Joi.object({
   RUNWARE_RETRY_INITIAL_DELAY_MS: Joi.number().default(500),
   RUNWARE_RETRY_MAX_DELAY_MS: Joi.number().default(10000),
   RUNWARE_RETRY_BACKOFF_FACTOR: Joi.number().default(2),
-}); 
+});

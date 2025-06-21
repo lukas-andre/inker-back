@@ -10,20 +10,20 @@ import {
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
 
 import { Agenda } from './agenda.entity';
-import { UserType } from '../../../users/domain/enums/userType.enum';
 import { SignedConsentEntity } from './signedConsent.entity';
 
 export interface IStatusLogEntry {
   status: AgendaEventStatus;
   timestamp: Date;
   actor: {
-    userId: string;    // The global user ID from auth system (e.g., Keycloak ID)
-    roleId: string;    // The ID specific to their role (e.g., artist_id, customer_id) or a relevant ID for system
-    role: UserType;    // 'artist' | 'customer' | 'system'
+    userId: string; // The global user ID from auth system (e.g., Keycloak ID)
+    roleId: string; // The ID specific to their role (e.g., artist_id, customer_id) or a relevant ID for system
+    role: UserType; // 'artist' | 'customer' | 'system'
   };
   reason?: string;
   notes?: string;
@@ -33,13 +33,13 @@ export interface IStatusLogEntry {
 // Define the interface for reschedule log entries
 export interface IRescheduleLogEntry {
   timestamp: Date;
-  actorId: string;          // The global user ID from auth system (e.g., Keycloak ID)
-  actorRole: UserType;      // 'artist' | 'customer' | 'system'
+  actorId: string; // The global user ID from auth system (e.g., Keycloak ID)
+  actorRole: UserType; // 'artist' | 'customer' | 'system'
   previousStartDate?: Date; // The start date before this specific reschedule
-  previousEndDate?: Date;   // The end date before this specific reschedule
-  newStartDate: Date;       // The new start date set by this reschedule
-  newEndDate?: Date;      // The new end date set by this reschedule
-  reason?: string;           // Reason for rescheduling, if provided
+  previousEndDate?: Date; // The end date before this specific reschedule
+  newStartDate: Date; // The new start date set by this reschedule
+  newEndDate?: Date; // The new end date set by this reschedule
+  reason?: string; // Reason for rescheduling, if provided
 }
 
 // Define the structure for a single event message
@@ -128,7 +128,9 @@ export class AgendaEvent extends BaseEntity {
   @Column({ name: 'messages', type: 'jsonb', nullable: true, default: [] })
   messages?: EventMessage[];
 
-  @OneToMany(() => SignedConsentEntity, consent => consent.event, { cascade: true })
+  @OneToMany(() => SignedConsentEntity, consent => consent.event, {
+    cascade: true,
+  })
   consents: SignedConsentEntity[];
 
   @Column({ name: 'reminder_sent', type: 'jsonb', nullable: true, default: {} })

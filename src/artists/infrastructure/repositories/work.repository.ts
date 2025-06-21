@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Like, FindOneOptions, FindOptionsWhere } from 'typeorm';
-import { Work } from '../entities/work.entity';
-import { CreateWorkDto, UpdateWorkDto } from '../../domain/dtos/work.dto';
-import { Tag } from '../../../tags/tag.entity';
+import {
+  FindOneOptions,
+  FindOptionsWhere,
+  In,
+  Like,
+  Repository,
+} from 'typeorm';
+
 import { BaseComponent } from '../../../global/domain/components/base.component';
+import { Tag } from '../../../tags/tag.entity';
 import { TagsRepository } from '../../../tags/tags.service';
 import { WorkSearchQueryDto } from '../../domain/dtos/work-search.dto';
+import { CreateWorkDto, UpdateWorkDto } from '../../domain/dtos/work.dto';
 import { WorkSource } from '../../domain/workType';
+import { Work } from '../entities/work.entity';
 
 @Injectable()
 export class WorkRepository extends BaseComponent {
@@ -19,7 +26,11 @@ export class WorkRepository extends BaseComponent {
     super(WorkRepository.name);
   }
 
-  async findWorksByArtistId(artistId: string, includeHidden: boolean = false, source?: WorkSource): Promise<Work[]> {
+  async findWorksByArtistId(
+    artistId: string,
+    includeHidden = false,
+    source?: WorkSource,
+  ): Promise<Work[]> {
     const query: FindOptionsWhere<Work> = { artistId, deletedAt: null };
 
     if (!includeHidden) {
@@ -37,8 +48,16 @@ export class WorkRepository extends BaseComponent {
     });
   }
 
-  async findFeaturedWorksByArtistId(artistId: string, includeHidden: boolean = false, source?: WorkSource): Promise<Work[]> {
-    const query: FindOptionsWhere<Work> = { artistId, isFeatured: true, deletedAt: null };
+  async findFeaturedWorksByArtistId(
+    artistId: string,
+    includeHidden = false,
+    source?: WorkSource,
+  ): Promise<Work[]> {
+    const query: FindOptionsWhere<Work> = {
+      artistId,
+      isFeatured: true,
+      deletedAt: null,
+    };
 
     if (!includeHidden) {
       query.isHidden = false;
@@ -62,18 +81,27 @@ export class WorkRepository extends BaseComponent {
     });
   }
 
-  async createWork(artistId: string, createWorkDto: CreateWorkDto, isFeatured: boolean = false, isHidden: boolean = false): Promise<Work> {
+  async createWork(
+    artistId: string,
+    createWorkDto: CreateWorkDto,
+    isFeatured = false,
+    isHidden = false,
+  ): Promise<Work> {
     const { tagIds, ...workData } = createWorkDto;
 
     // Using a query runner to allow for a transaction
-    const queryRunner = this.workRepository.manager.connection.createQueryRunner();
+    const queryRunner =
+      this.workRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       // Use raw query to insert with tsv value computed directly
-      const textSearchFields = `${workData.title || ''} ${workData.description || ''}`;
-      const insertResult = await queryRunner.query(`
+      const textSearchFields = `${workData.title || ''} ${
+        workData.description || ''
+      }`;
+      const insertResult = await queryRunner.query(
+        `
         INSERT INTO works (
           artist_id, title, description, image_url, image_id, image_version, 
           thumbnail_url, thumbnail_version, is_featured, order_position, 
@@ -83,21 +111,23 @@ export class WorkRepository extends BaseComponent {
           $7, $8, $9, $10, 
           $11, $12, to_tsvector('english', $13) || to_tsvector('spanish', $13), NOW(), NOW()
         ) RETURNING id
-      `, [
-        artistId,
-        workData.title,
-        workData.description,
-        workData.imageUrl,
-        workData.imageUrl?.split('/').pop() || '', // Extract imageId from URL as a fallback
-        workData.imageVersion || 0,
-        workData.thumbnailUrl,
-        0, // Default thumbnailVersion to 0 if not provided
-        isFeatured,
-        workData.orderPosition || 0,
-        workData.source || 'EXTERNAL', // Ensure source has a default value
-        isHidden,
-        textSearchFields
-      ]);
+      `,
+        [
+          artistId,
+          workData.title,
+          workData.description,
+          workData.imageUrl,
+          workData.imageUrl?.split('/').pop() || '', // Extract imageId from URL as a fallback
+          workData.imageVersion || 0,
+          workData.thumbnailUrl,
+          0, // Default thumbnailVersion to 0 if not provided
+          isFeatured,
+          workData.orderPosition || 0,
+          workData.source || 'EXTERNAL', // Ensure source has a default value
+          isHidden,
+          textSearchFields,
+        ],
+      );
 
       const workId = insertResult[0].id;
 
@@ -105,34 +135,47 @@ export class WorkRepository extends BaseComponent {
       if (tagIds && tagIds.length > 0) {
         // Get the tags
         const tags = await this.tagsService.find({
-          where: { id: In(Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String)) },
+          where: {
+            id: In(
+              Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String),
+            ),
+          },
         });
 
         // Create tag relationships using join table
         for (const tag of tags) {
-          await queryRunner.query(`
+          await queryRunner.query(
+            `
             INSERT INTO work_tags (work_id, tag_id)
             VALUES ($1, $2)
-          `, [workId, tag.id]);
+          `,
+            [workId, tag.id],
+          );
         }
       }
 
       // Increment the appropriate counters
       if (isHidden) {
         // For hidden works, only increment the total counter
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE artist
           SET works_count = works_count + 1
           WHERE id = $1
-        `, [artistId]);
+        `,
+          [artistId],
+        );
       } else {
         // For visible works, increment both counters
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE artist
           SET works_count = works_count + 1,
               visible_works_count = visible_works_count + 1
           WHERE id = $1
-        `, [artistId]);
+        `,
+          [artistId],
+        );
       }
 
       // Commit the transaction
@@ -151,7 +194,12 @@ export class WorkRepository extends BaseComponent {
     }
   }
 
-  async updateWork(id: string, updateWorkDto: UpdateWorkDto, isFeatured?: boolean, isHidden?: boolean): Promise<Work> {
+  async updateWork(
+    id: string,
+    updateWorkDto: UpdateWorkDto,
+    isFeatured?: boolean,
+    isHidden?: boolean,
+  ): Promise<Work> {
     const { tagIds, ...workData } = updateWorkDto;
 
     // First, get the current work data to handle visibility changes
@@ -164,13 +212,18 @@ export class WorkRepository extends BaseComponent {
     const wasHidden = currentWork.isHidden;
 
     // Using a query runner to allow for a transaction
-    const queryRunner = this.workRepository.manager.connection.createQueryRunner();
+    const queryRunner =
+      this.workRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       // First, update the work data
-      if (Object.keys(workData).length > 0 || isFeatured !== undefined || isHidden !== undefined) {
+      if (
+        Object.keys(workData).length > 0 ||
+        isFeatured !== undefined ||
+        isHidden !== undefined
+      ) {
         // Build SET clause dynamically from provided data
         const updateFields = [];
         const params = [];
@@ -206,11 +259,14 @@ export class WorkRepository extends BaseComponent {
 
         // Execute the update only if there are fields to update
         if (updateFields.length > 0) {
-          await queryRunner.query(`
+          await queryRunner.query(
+            `
             UPDATE works 
             SET ${updateFields.join(', ')}
             WHERE id = $${paramIndex}
-          `, [...params, id]);
+          `,
+            [...params, id],
+          );
         }
       }
 
@@ -218,60 +274,80 @@ export class WorkRepository extends BaseComponent {
       if (isHidden !== undefined && wasHidden !== isHidden) {
         if (isHidden) {
           // Work changed from visible to hidden, decrement visible counter
-          await queryRunner.query(`
+          await queryRunner.query(
+            `
             UPDATE artist
             SET visible_works_count = visible_works_count - 1
             WHERE id = $1 AND visible_works_count > 0
-          `, [artistId]);
+          `,
+            [artistId],
+          );
         } else {
           // Work changed from hidden to visible, increment visible counter
-          await queryRunner.query(`
+          await queryRunner.query(
+            `
             UPDATE artist
             SET visible_works_count = visible_works_count + 1
             WHERE id = $1
-          `, [artistId]);
+          `,
+            [artistId],
+          );
         }
       }
 
       // Get the current work data to update tsv
       const workData2 = await queryRunner.query(
         `SELECT title, description FROM works WHERE id = $1`,
-        [id]
+        [id],
       );
 
       // Only update tsv if title or description fields were updated or workData2 exists
       if ((workData.title || workData.description) && workData2.length > 0) {
         // Combine original fields with updates for tsv computation
         const title = workData.title || workData2[0].title || '';
-        const description = workData.description || workData2[0].description || '';
+        const description =
+          workData.description || workData2[0].description || '';
 
         // Update the tsv field
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE works 
           SET tsv = to_tsvector('english', $1 || ' ' || $2) || to_tsvector('spanish', $1 || ' ' || $2)
           WHERE id = $3
-        `, [title, description, id]);
+        `,
+          [title, description, id],
+        );
       }
 
       // Update tag relationships if specified
       if (tagIds !== undefined) {
         // First, remove existing tag relationships
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           DELETE FROM work_tags
           WHERE work_id = $1
-        `, [id]);
+        `,
+          [id],
+        );
 
         // Then add new tag relationships
         if (tagIds && tagIds.length > 0) {
           const tags = await this.tagsService.find({
-            where: { id: In(Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String)) },
+            where: {
+              id: In(
+                Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String),
+              ),
+            },
           });
 
           for (const tag of tags) {
-            await queryRunner.query(`
+            await queryRunner.query(
+              `
               INSERT INTO work_tags (work_id, tag_id)
               VALUES ($1, $2)
-            `, [id, tag.id]);
+            `,
+              [id, tag.id],
+            );
           }
         }
       }
@@ -299,30 +375,40 @@ export class WorkRepository extends BaseComponent {
     const artistId = work.artistId;
     const isHidden = work.isHidden;
 
-    const queryRunner = this.workRepository.manager.connection.createQueryRunner();
+    const queryRunner =
+      this.workRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      await queryRunner.query(`
+      await queryRunner.query(
+        `
         UPDATE works
         SET deleted_at = NOW()
         WHERE id = $1
-      `, [id]);
+      `,
+        [id],
+      );
 
       if (isHidden) {
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE artist
           SET works_count = works_count - 1
           WHERE id = $1 AND works_count > 0
-        `, [artistId]);
+        `,
+          [artistId],
+        );
       } else {
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE artist
           SET works_count = works_count - 1,
               visible_works_count = visible_works_count - 1
           WHERE id = $1 AND works_count > 0 AND visible_works_count > 0
-        `, [artistId]);
+        `,
+          [artistId],
+        );
       }
 
       await queryRunner.commitTransaction();
@@ -343,11 +429,11 @@ export class WorkRepository extends BaseComponent {
 
   async findWorksByArtistIdWithPagination(
     artistId: string,
-    page: number = 1,
-    limit: number = 10,
+    page = 1,
+    limit = 10,
     isFeatured?: boolean,
     source?: string,
-    includeHidden: boolean = false
+    includeHidden = false,
   ): Promise<[Work[], number]> {
     const queryBuilder = this.workRepository
       .createQueryBuilder('work')
@@ -367,7 +453,8 @@ export class WorkRepository extends BaseComponent {
       queryBuilder.andWhere('work.isHidden = :isHidden', { isHidden: false });
     }
 
-    queryBuilder.orderBy('work.orderPosition', 'ASC')
+    queryBuilder
+      .orderBy('work.orderPosition', 'ASC')
       .addOrderBy('work.createdAt', 'DESC');
 
     const offset = (page - 1) * limit;
@@ -380,7 +467,6 @@ export class WorkRepository extends BaseComponent {
     return [works, total];
   }
 
-
   async searchWorks(params: WorkSearchQueryDto): Promise<[Work[], number]> {
     const {
       query,
@@ -391,7 +477,7 @@ export class WorkRepository extends BaseComponent {
       includeHidden = false,
       sortBy = 'relevance',
       page = 1,
-      limit = 10
+      limit = 10,
     } = params;
 
     const queryBuilder = this.workRepository
@@ -401,13 +487,17 @@ export class WorkRepository extends BaseComponent {
       .where('work.deletedAt IS NULL');
 
     if (query && query.trim() !== '') {
-      queryBuilder.andWhere(`
+      queryBuilder.andWhere(
+        `
         work.tsv @@ plainto_tsquery('english', :query) OR
         work.tsv @@ plainto_tsquery('spanish', :query)
-      `, { query });
+      `,
+        { query },
+      );
 
       if (sortBy === 'relevance') {
-        queryBuilder.addSelect(`
+        queryBuilder.addSelect(
+          `
           (ts_rank(work.tsv, plainto_tsquery('english', :query), 2) * 0.6) +
           (ts_rank(work.tsv, plainto_tsquery('spanish', :query), 2) * 0.6) +
           
@@ -420,7 +510,9 @@ export class WorkRepository extends BaseComponent {
           END) +
           
           (CASE WHEN work.is_featured = true THEN 0.2 ELSE 0 END)
-        `, 'relevance_score');
+        `,
+          'relevance_score',
+        );
 
         queryBuilder.setParameter('likeQuery', `%${query}%`);
 
@@ -429,7 +521,9 @@ export class WorkRepository extends BaseComponent {
     }
 
     if (tagIds && tagIds.length > 0) {
-      queryBuilder.andWhere('tags.id IN (:...tagIds)', { tagIds: tagIds.split(',').map(String) });
+      queryBuilder.andWhere('tags.id IN (:...tagIds)', {
+        tagIds: tagIds.split(',').map(String),
+      });
     }
 
     if (artistId) {
@@ -437,7 +531,9 @@ export class WorkRepository extends BaseComponent {
     }
 
     if (onlyFeatured !== undefined) {
-      queryBuilder.andWhere('work.isFeatured = :onlyFeatured', { onlyFeatured });
+      queryBuilder.andWhere('work.isFeatured = :onlyFeatured', {
+        onlyFeatured,
+      });
     }
 
     if (source !== undefined) {
@@ -451,7 +547,8 @@ export class WorkRepository extends BaseComponent {
     switch (sortBy) {
       case 'relevance':
         if (!query || query.trim() === '') {
-          queryBuilder.orderBy('work.orderPosition', 'ASC')
+          queryBuilder
+            .orderBy('work.orderPosition', 'ASC')
             .addOrderBy('work.createdAt', 'DESC');
         }
         break;
@@ -462,15 +559,18 @@ export class WorkRepository extends BaseComponent {
         queryBuilder.orderBy('work.createdAt', 'ASC');
         break;
       case 'popularity':
-        queryBuilder.orderBy('work.isFeatured', 'DESC')
+        queryBuilder
+          .orderBy('work.isFeatured', 'DESC')
           .addOrderBy('work.createdAt', 'DESC');
         break;
       case 'position':
-        queryBuilder.orderBy('work.orderPosition', 'ASC')
+        queryBuilder
+          .orderBy('work.orderPosition', 'ASC')
           .addOrderBy('work.createdAt', 'DESC');
         break;
       default:
-        queryBuilder.orderBy('work.orderPosition', 'ASC')
+        queryBuilder
+          .orderBy('work.orderPosition', 'ASC')
           .addOrderBy('work.createdAt', 'DESC');
     }
 
@@ -482,20 +582,22 @@ export class WorkRepository extends BaseComponent {
     return [works, total];
   }
 
-  async findTagSuggestions(prefix: string, limit: number = 10): Promise<Tag[]> {
+  async findTagSuggestions(prefix: string, limit = 10): Promise<Tag[]> {
     const tags = await this.tagsService.find({
       where: { name: Like(`${prefix}%`) },
       take: limit,
-      order: { name: 'ASC' }
+      order: { name: 'ASC' },
     });
 
     return tags;
   }
 
-
-  async findPopularTags(limit: number = 10): Promise<{ id: string; name: string; count: number }[]> {
+  async findPopularTags(
+    limit = 10,
+  ): Promise<{ id: string; name: string; count: number }[]> {
     // Consulta SQL para obtener las etiquetas más utilizadas con el recuento
-    const result = await this.workRepository.query(`
+    const result = await this.workRepository.query(
+      `
       SELECT 
         t.id, 
         t.name, 
@@ -513,12 +615,14 @@ export class WorkRepository extends BaseComponent {
       ORDER BY 
         count DESC
       LIMIT $1
-    `, [limit]);
+    `,
+      [limit],
+    );
 
     return result.map(tag => ({
       id: tag.id,
       name: tag.name,
-      count: Number(tag.count)
+      count: Number(tag.count),
     }));
   }
 }

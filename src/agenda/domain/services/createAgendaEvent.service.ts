@@ -1,13 +1,14 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+
 import { BaseComponent } from '../../../global/domain/components/base.component';
-import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
-import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 import {
   AgendaEvent,
   IStatusLogEntry,
 } from '../../infrastructure/entities/agendaEvent.entity';
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { UserType } from '../../../users/domain/enums/userType.enum';
+import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
 
 export interface CreateEventParams {
   // Event details
@@ -21,7 +22,7 @@ export interface CreateEventParams {
   customerId: string;
   quotationId?: string;
 
-  // Creator details 
+  // Creator details
   createdBy: string;
 }
 
@@ -38,7 +39,6 @@ export class CreateAgendaEventService extends BaseComponent {
   ) {
     super(CreateAgendaEventService.name);
   }
-
 
   /**
    * Creates an agenda event specifically from a quotation.
@@ -87,15 +87,23 @@ export class CreateAgendaEventService extends BaseComponent {
         statusLog: [initialStatusLogEntry],
       });
 
-      const savedEvent = await queryRunner.manager.save(AgendaEvent, eventToCreate);
+      const savedEvent = await queryRunner.manager.save(
+        AgendaEvent,
+        eventToCreate,
+      );
       eventId = savedEvent.id;
 
       await queryRunner.commitTransaction();
       transactionIsOK = true;
-      this.logger.log(`Created event with ID ${eventId} from quotation with initial system status log.`);
+      this.logger.log(
+        `Created event with ID ${eventId} from quotation with initial system status log.`,
+      );
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      this.logger.error('Failed to create event from quotation with initial status log', error);
+      this.logger.error(
+        'Failed to create event from quotation with initial status log',
+        error,
+      );
       transactionIsOK = false;
     } finally {
       await queryRunner.release();
@@ -142,15 +150,23 @@ export class CreateAgendaEventService extends BaseComponent {
         statusLog: [initialLogEntry],
       });
 
-      const savedEvent = await queryRunner.manager.save(AgendaEvent, eventToCreate);
+      const savedEvent = await queryRunner.manager.save(
+        AgendaEvent,
+        eventToCreate,
+      );
       eventId = savedEvent.id;
 
       await queryRunner.commitTransaction();
       transactionIsOK = true;
-      this.logger.log(`Created direct event with ID ${eventId} with initial status log by actor: ${actor.userId} (${actor.role})`);
+      this.logger.log(
+        `Created direct event with ID ${eventId} with initial status log by actor: ${actor.userId} (${actor.role})`,
+      );
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      this.logger.error('Failed to create direct event with initial status log', error);
+      this.logger.error(
+        'Failed to create direct event with initial status log',
+        error,
+      );
       transactionIsOK = false;
     } finally {
       await queryRunner.release();

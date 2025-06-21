@@ -29,10 +29,7 @@ export class FollowsController {
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Post(':userId')
-  async follow(
-    @Param('userId') userId: string,
-    @Request() request,
-  ) {
+  async follow(@Param('userId') userId: string, @Request() request) {
     return this.followsHandler.handleFollow(userId, request);
   }
 
@@ -43,10 +40,7 @@ export class FollowsController {
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Post(':userId/unfollow')
-  async unfollow(
-    @Param('userId') userId: string,
-    @Request() request,
-  ) {
+  async unfollow(@Param('userId') userId: string, @Request() request) {
     return this.followsHandler.handleUnfollow(userId, request);
   }
 

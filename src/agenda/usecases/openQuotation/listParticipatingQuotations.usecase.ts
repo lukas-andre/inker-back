@@ -1,20 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 
+import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
+import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { QuotationOfferRepository } from '../../infrastructure/repositories/quotationOffer.repository';
-import { QuotationStatus, QuotationType } from '../../infrastructure/entities/quotation.entity';
-import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
-import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
-import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
-import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
-import { ParticipatingQuotationOfferDto, ListParticipatingQuotationsResDto, NestedQuotationDto } from '../../domain/dtos/participatingQuotationOffer.dto';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
+import {
+  ListParticipatingQuotationsResDto,
+  NestedQuotationDto,
+  ParticipatingQuotationOfferDto,
+} from '../../domain/dtos/participatingQuotationOffer.dto';
+import {
+  Quotation,
+  QuotationStatus,
+  QuotationType,
+} from '../../infrastructure/entities/quotation.entity';
 import { QuotationOfferStatus } from '../../infrastructure/entities/quotationOffer.entity';
-import { Quotation } from '../../infrastructure/entities/quotation.entity';
+import { QuotationOfferRepository } from '../../infrastructure/repositories/quotationOffer.repository';
 
 // Optional: Define a query DTO if pagination/filtering is needed
 // import { ListParticipatingQuotationsQueryDto } from '../infrastructure/dtos/listParticipatingQuotationsQuery.dto';
@@ -44,7 +51,8 @@ export class ListParticipatingQuotationsUseCase
     const skip = 0; // Example: Extract from queryDto?.page, queryDto?.limit
     const take = 50; // Example: Extract from queryDto?.limit
 
-    const queryBuilder = this.quotationOfferRepo.repo.createQueryBuilder('offer');
+    const queryBuilder =
+      this.quotationOfferRepo.repo.createQueryBuilder('offer');
 
     queryBuilder
       .innerJoinAndSelect('offer.quotation', 'q')
@@ -88,12 +96,16 @@ export class ListParticipatingQuotationsUseCase
       return { items: [], total: 0 };
     }
 
-    const customerIds = [...new Set(offers.map(o => o.quotation.customerId).filter(Boolean))];
+    const customerIds = [
+      ...new Set(offers.map(o => o.quotation.customerId).filter(Boolean)),
+    ];
     const artistIds = [artistId];
 
     let customersMap = new Map<string, CustomerDto>();
     if (customerIds.length > 0) {
-      const customers = await this.customerRepo.find({ where: { id: In(customerIds) } });
+      const customers = await this.customerRepo.find({
+        where: { id: In(customerIds) },
+      });
       customersMap = new Map(
         customers.map(c => [
           c.id,
@@ -117,7 +129,9 @@ export class ListParticipatingQuotationsUseCase
 
     let artistsMap = new Map<string, ArtistDto>();
     if (artistIds.length > 0) {
-      const artists = await this.artistRepo.find({ where: { id: In(artistIds) } });
+      const artists = await this.artistRepo.find({
+        where: { id: In(artistIds) },
+      });
       artistsMap = new Map(
         artists.map(a => [
           a.id,
@@ -138,50 +152,54 @@ export class ListParticipatingQuotationsUseCase
       );
     }
 
-    const items: ParticipatingQuotationOfferDto[] = offers.map((offer) => {
-      const quotation = offer.quotation;
-      const customerDto = customersMap.get(quotation.customerId);
-      const artistDto = artistsMap.get(offer.artistId);
+    const items: ParticipatingQuotationOfferDto[] = offers
+      .map(offer => {
+        const quotation = offer.quotation;
+        const customerDto = customersMap.get(quotation.customerId);
+        const artistDto = artistsMap.get(offer.artistId);
 
-      if (!customerDto) {
-        this.logger.warn(
-          `Customer data not found for ID: ${quotation.customerId} related to offer ${offer.id}. Skipping.`,
-        );
-        return null;
-      }
+        if (!customerDto) {
+          this.logger.warn(
+            `Customer data not found for ID: ${quotation.customerId} related to offer ${offer.id}. Skipping.`,
+          );
+          return null;
+        }
 
-      const quotationDto: NestedQuotationDto = {
-        id: quotation.id,
-        description: quotation.description,
-        status: quotation.status,
-        type: quotation.type as QuotationType,
-        referenceImages: quotation.referenceImages as unknown as string[] | undefined,
-        createdAt: quotation.createdAt,
-        updatedAt: quotation.updatedAt,
-      };
+        const quotationDto: NestedQuotationDto = {
+          id: quotation.id,
+          description: quotation.description,
+          status: quotation.status,
+          type: quotation.type as QuotationType,
+          referenceImages: quotation.referenceImages as unknown as
+            | string[]
+            | undefined,
+          createdAt: quotation.createdAt,
+          updatedAt: quotation.updatedAt,
+        };
 
-      return {
-        id: offer.id,
-        quotationId: offer.quotationId,
-        artistName: artistDto.username,
-        artistId: offer.artistId,
-        estimatedCost: offer.estimatedCost as MoneyEntity | undefined,
-        estimatedDuration: offer.estimatedDuration,
-        message: offer.message,
-        status: offer.status,
-        createdAt: offer.createdAt,
-        updatedAt: offer.updatedAt,
-        messages: offer.messages,
-        artist: artistDto,
-        distanceToCustomerKm: undefined,
-        quotation: quotationDto,
-        customer: customerDto,
-      };
-    }).filter(item => item !== null) as ParticipatingQuotationOfferDto[];
+        return {
+          id: offer.id,
+          quotationId: offer.quotationId,
+          artistName: artistDto.username,
+          artistId: offer.artistId,
+          estimatedCost: offer.estimatedCost as MoneyEntity | undefined,
+          estimatedDuration: offer.estimatedDuration,
+          message: offer.message,
+          status: offer.status,
+          createdAt: offer.createdAt,
+          updatedAt: offer.updatedAt,
+          messages: offer.messages,
+          artist: artistDto,
+          distanceToCustomerKm: undefined,
+          quotation: quotationDto,
+          customer: customerDto,
+        };
+      })
+      .filter(item => item !== null) as ParticipatingQuotationOfferDto[];
 
     return {
       items,
       total,
     };
   }
-} 
+}

@@ -1,7 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { JobTypeKey, JobTypeSchemaRegistry } from '../../queues/notifications/domain/jobSchema.registry';
+import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+
+import {
+  JobTypeKey,
+  JobTypeSchemaRegistry,
+} from '../../queues/notifications/domain/jobSchema.registry';
 
 export class NotificationQueryDto {
   @ApiProperty({ required: false, default: 1 })
@@ -18,10 +22,15 @@ export class NotificationQueryDto {
   @IsOptional()
   limit?: number = 10;
 
-  @ApiProperty({ 
-    required: false, 
-    enum: ['EVENT_CREATED', 'EVENT_UPDATED', 'EVENT_CANCELED', 'EVENT_STATUS_CHANGED'],
-    example: 'EVENT_STATUS_CHANGED'
+  @ApiProperty({
+    required: false,
+    enum: [
+      'EVENT_CREATED',
+      'EVENT_UPDATED',
+      'EVENT_CANCELED',
+      'EVENT_STATUS_CHANGED',
+    ],
+    example: 'EVENT_STATUS_CHANGED',
   })
   @IsEnum(JobTypeSchemaRegistry, { each: true })
   @IsOptional()

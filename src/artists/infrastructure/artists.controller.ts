@@ -30,12 +30,16 @@ import {
 } from '@nestjs/swagger';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
 
+import { DomainBadRequest } from '../../global/domain/exceptions/domain.exception';
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { errorCodesToOASDescription } from '../../global/infrastructure/helpers/errorCodesToOASDescription.helper';
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileUploadDto } from '../../multimedias/dtos/fileUpload.dto';
 import { MultimediasService } from '../../multimedias/services/multimedias.service';
+import { UserType } from '../../users/domain/enums/userType.enum';
 import { ArtistDto } from '../domain/dtos/artist.dto';
+import { PaginatedStencilResponseDto } from '../domain/dtos/paginated-stencil-response.dto';
+import { StencilQueryDto } from '../domain/dtos/stencil-query.dto';
 import {
   ARTIST_NOT_FOUND,
   ERROR_UPLOADING_FILE,
@@ -46,12 +50,8 @@ import {
 import { ArtistsHandler } from './artists.handler';
 import { BaseArtistResponse } from './dtos/baseArtistResponse.dto';
 import { CreateArtistDto } from './dtos/createArtist.dto';
-import { UpdateArtistDto } from './dtos/updateArtist.dto';
 import { SearchArtistDto } from './dtos/searchArtist.dto';
-import { PaginatedStencilResponseDto } from '../domain/dtos/paginated-stencil-response.dto';
-import { StencilQueryDto } from '../domain/dtos/stencil-query.dto';
-import { UserType } from '../../users/domain/enums/userType.enum';
-import { DomainBadRequest } from '../../global/domain/exceptions/domain.exception';
+import { UpdateArtistDto } from './dtos/updateArtist.dto';
 
 @ApiBearerAuth()
 @ApiTags('artists')
@@ -60,8 +60,8 @@ import { DomainBadRequest } from '../../global/domain/exceptions/domain.exceptio
 export class ArtistsController {
   constructor(
     private readonly artistHandler: ArtistsHandler,
-    private readonly multimediasService: MultimediasService
-  ) { }
+    private readonly multimediasService: MultimediasService,
+  ) {}
 
   @ApiOperation({ summary: 'Create Artist' })
   @ApiCreatedResponse({
@@ -84,10 +84,7 @@ export class ArtistsController {
   @ApiParam({ name: 'id', required: true, type: Number, example: 1 })
   @Post('/:id/profile-picture')
   @UseInterceptors(FileFastifyInterceptor('file'))
-  async updateProfilePicture(
-    @UploadedFile() file,
-    @Param('id') id: string,
-  ) {
+  async updateProfilePicture(@UploadedFile() file, @Param('id') id: string) {
     console.log('file: ', file);
     return this.artistHandler.updateProfilePicture(id, file);
   }
@@ -113,10 +110,7 @@ export class ArtistsController {
   @ApiParam({ name: 'id', required: true, type: Number, example: 1 })
   @Post('/:id/studio-photo')
   @UseInterceptors(FileFastifyInterceptor('file'))
-  async updateStudioPhoto(
-    @UploadedFile() file,
-    @Param('id') id: string,
-  ) {
+  async updateStudioPhoto(@UploadedFile() file, @Param('id') id: string) {
     console.log('file: ', file);
     return this.artistHandler.updateStudioPhoto(id, file);
   }

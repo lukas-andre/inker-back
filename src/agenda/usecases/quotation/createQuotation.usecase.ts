@@ -5,7 +5,6 @@ import { Queue } from 'bull';
 import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
 import { StencilRepository } from '../../../artists/infrastructure/repositories/stencil.repository';
 import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
-import { TattooDesignCacheRepository } from '../../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository';
 import {
   DomainBadRule,
   DomainNotFound,
@@ -16,14 +15,15 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { MultimediasService } from '../../../multimedias/services/multimedias.service';
+import { QuotationCreatedJobType } from '../../../queues/notifications/domain/schemas/quotation';
 import { queues } from '../../../queues/queues';
+import { TattooDesignCacheRepository } from '../../../tattoo-generator/infrastructure/database/repositories/tattooDesignCache.repository';
 import { CreateQuotationReqDto } from '../../infrastructure/dtos/createQuotationReq.dto';
 import {
   QuotationStatus,
   QuotationType,
 } from '../../infrastructure/entities/quotation.entity';
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
-import { QuotationCreatedJobType } from '../../../queues/notifications/domain/schemas/quotation';
 
 @Injectable()
 export class CreateQuotationUseCase
@@ -56,7 +56,17 @@ export class CreateQuotationUseCase
     message: string;
     created: boolean;
   }> {
-    const { type, artistId, description, stencilId, customerLat, customerLon, customerTravelRadiusKm, tattooDesignCacheId, tattooDesignImageUrl } = createQuotationDto;
+    const {
+      type,
+      artistId,
+      description,
+      stencilId,
+      customerLat,
+      customerLon,
+      customerTravelRadiusKm,
+      tattooDesignCacheId,
+      tattooDesignImageUrl,
+    } = createQuotationDto;
 
     // 1. Validate Customer
     const existsCustomer = await this.customerProvider.exists(customerId);
@@ -77,24 +87,38 @@ export class CreateQuotationUseCase
       if (artistId) {
         throw new DomainBadRule('artistId must be null for OPEN quotations');
       }
-      if (customerLat == null || customerLon == null || customerTravelRadiusKm == null) {
-        throw new DomainBadRule('customerLat, customerLon, and customerTravelRadiusKm are required for OPEN quotations');
+      if (
+        customerLat == null ||
+        customerLon == null ||
+        customerTravelRadiusKm == null
+      ) {
+        throw new DomainBadRule(
+          'customerLat, customerLon, and customerTravelRadiusKm are required for OPEN quotations',
+        );
       }
       if (stencilId) {
-        throw new DomainBadRule('stencilId cannot be provided for OPEN quotations if tattooDesignCacheId is used');
+        throw new DomainBadRule(
+          'stencilId cannot be provided for OPEN quotations if tattooDesignCacheId is used',
+        );
       }
       if (tattooDesignCacheId && !tattooDesignImageUrl) {
-        throw new DomainBadRule('tattooDesignImageUrl is required when tattooDesignCacheId is provided');
+        throw new DomainBadRule(
+          'tattooDesignImageUrl is required when tattooDesignCacheId is provided',
+        );
       }
       if (!tattooDesignImageUrl) {
-        throw new DomainBadRule('tattooDesignCacheId is required when tattooDesignImageUrl is provided');
+        throw new DomainBadRule(
+          'tattooDesignCacheId is required when tattooDesignImageUrl is provided',
+        );
       }
     }
 
     // 3. Validate stencil if provided
     if (stencilId) {
       if (tattooDesignCacheId) {
-        throw new DomainBadRule('stencilId and tattooDesignCacheId cannot both be provided');
+        throw new DomainBadRule(
+          'stencilId and tattooDesignCacheId cannot both be provided',
+        );
       }
       const stencil = await this.stencilProvider.findStencilById(stencilId);
       if (!stencil) {
@@ -105,11 +129,17 @@ export class CreateQuotationUseCase
     // 3.5 Validate Tattoo Design Cache if provided
     if (tattooDesignCacheId) {
       if (type !== QuotationType.OPEN) {
-        throw new DomainBadRule('tattooDesignCacheId is only allowed for OPEN quotations');
+        throw new DomainBadRule(
+          'tattooDesignCacheId is only allowed for OPEN quotations',
+        );
       }
-      let tattooDesign = await this.tattooDesignCacheProvider.findById(tattooDesignCacheId);
+      let tattooDesign = await this.tattooDesignCacheProvider.findById(
+        tattooDesignCacheId,
+      );
       if (!tattooDesign) {
-        tattooDesign = await this.tattooDesignCacheProvider.findByImageUrl(tattooDesignImageUrl);
+        tattooDesign = await this.tattooDesignCacheProvider.findByImageUrl(
+          tattooDesignImageUrl,
+        );
         if (!tattooDesign) {
           throw new DomainNotFound('Tattoo Design Cache not found');
         }
@@ -117,7 +147,10 @@ export class CreateQuotationUseCase
     }
 
     let quotationId: string;
-    const initialStatus = type === QuotationType.OPEN ? QuotationStatus.OPEN : QuotationStatus.PENDING;
+    const initialStatus =
+      type === QuotationType.OPEN
+        ? QuotationStatus.OPEN
+        : QuotationStatus.PENDING;
 
     const queryRunner = this.quotationProvider.source.createQueryRunner();
     await queryRunner.connect();
@@ -138,7 +171,7 @@ export class CreateQuotationUseCase
         'tattoo_design_cache_id',
         'tattoo_design_image_url',
         'created_at',
-        'updated_at'
+        'updated_at',
       ];
       const values = [
         customerId,
@@ -153,7 +186,7 @@ export class CreateQuotationUseCase
         tattooDesignCacheId || null,
         tattooDesignImageUrl || null,
         'NOW()', // Use SQL function for timestamp
-        'NOW()'
+        'NOW()',
       ];
 
       // Agregar campos de presupuesto solo para OPEN
@@ -178,7 +211,9 @@ export class CreateQuotationUseCase
 
       // Filter out columns with null values specifically for OPEN type to avoid sending nulls explicitly if not needed
       // Though binding null is generally fine
-      const nonNullIndices = values.map((v, i) => v !== undefined ? i : -1).filter(i => i !== -1);
+      const nonNullIndices = values
+        .map((v, i) => (v !== undefined ? i : -1))
+        .filter(i => i !== -1);
       const filteredColumns = nonNullIndices.map(i => columns[i]);
       const filteredValues = nonNullIndices.map(i => values[i]);
       const placeholders = filteredValues.map((_, i) => `$${i + 1}`).join(', ');
@@ -189,7 +224,11 @@ export class CreateQuotationUseCase
         RETURNING id;
       `;
 
-      this.logger.debug(`Executing SQL: ${createQuotationSql} with params: ${JSON.stringify(filteredValues)}`);
+      this.logger.debug(
+        `Executing SQL: ${createQuotationSql} with params: ${JSON.stringify(
+          filteredValues,
+        )}`,
+      );
 
       const quotationResult = await queryRunner.query(
         createQuotationSql,
@@ -206,7 +245,7 @@ export class CreateQuotationUseCase
         const multimedias = await this.multimediasService.uploadReferenceImages(
           referenceImages,
           quotationId,
-          artistId, 
+          artistId,
         );
 
         const updateQuotationSql = `
@@ -234,13 +273,18 @@ export class CreateQuotationUseCase
 
       await queryRunner.commitTransaction();
     } catch (error) {
-      this.logger.error(`Transaction failed: ${(error as Error).message}`, (error as Error).stack);
+      this.logger.error(
+        `Transaction failed: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
       await queryRunner.rollbackTransaction();
       // Re-throw specific domain errors or a generic bad rule
       if (error instanceof DomainNotFound || error instanceof DomainBadRule) {
-          throw error;
+        throw error;
       }
-      throw new DomainBadRule(`Error creating quotation: ${(error as Error).message}`);
+      throw new DomainBadRule(
+        `Error creating quotation: ${(error as Error).message}`,
+      );
     } finally {
       await queryRunner.release();
     }

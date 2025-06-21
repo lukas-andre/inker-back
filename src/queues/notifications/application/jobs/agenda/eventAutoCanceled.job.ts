@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
 import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
@@ -8,7 +9,10 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { EventAutoCanceledEmailType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
-import { EventAutoCanceledJobType, EVENT_AUTO_CANCELED } from '../../../domain/schemas/agenda';
+import {
+  EVENT_AUTO_CANCELED,
+  EventAutoCanceledJobType,
+} from '../../../domain/schemas/agenda';
 import { NotificationJob } from '../notification.job';
 
 @Injectable()
@@ -39,7 +43,9 @@ export class EventAutoCanceledJob extends NotificationJob {
 
   async handle(job: EventAutoCanceledJobType): Promise<void> {
     const { artistId, customerId, eventId, reason } = job.metadata;
-    this.logger.log(`Handling ${EVENT_AUTO_CANCELED} for event ${eventId}, reason: ${reason}`);
+    this.logger.log(
+      `Handling ${EVENT_AUTO_CANCELED} for event ${eventId}, reason: ${reason}`,
+    );
 
     try {
       const [agendaEvent, artist, customer] = await Promise.all([
@@ -148,11 +154,15 @@ export class EventAutoCanceledJob extends NotificationJob {
         ),
       ]);
 
-      this.logger.log(`Successfully sent auto-cancellation notifications for event ${eventId}, reason: ${reason}`);
-
+      this.logger.log(
+        `Successfully sent auto-cancellation notifications for event ${eventId}, reason: ${reason}`,
+      );
     } catch (error) {
       const e = error as Error;
-      this.logger.error(`Error handling ${EVENT_AUTO_CANCELED} for event ${eventId}: ${e.message}`, e.stack);
+      this.logger.error(
+        `Error handling ${EVENT_AUTO_CANCELED} for event ${eventId}: ${e.message}`,
+        e.stack,
+      );
     }
   }
-} 
+}

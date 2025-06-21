@@ -1,4 +1,13 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
 import { ArtistMetrics } from './artist-metrics.entity';
 
 @Entity('artist_metrics_viewers')
@@ -16,7 +25,9 @@ export class ArtistMetricsViewer {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @ManyToOne(() => ArtistMetrics, metrics => metrics.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => ArtistMetrics, metrics => metrics.id, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'metrics_id' })
   metrics: ArtistMetrics;
-} 
+}

@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
 import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
@@ -8,7 +9,10 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { AppointmentReminderEmailType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
-import { AppointmentReminderJobType, APPOINTMENT_REMINDER } from '../../../domain/schemas/agenda';
+import {
+  APPOINTMENT_REMINDER,
+  AppointmentReminderJobType,
+} from '../../../domain/schemas/agenda';
 import { NotificationJob, getGoogleMapsLink } from '../notification.job';
 
 @Injectable()
@@ -38,8 +42,17 @@ export class AppointmentReminderJob extends NotificationJob {
   }
 
   async handle(job: AppointmentReminderJobType): Promise<void> {
-    const { artistId, customerId, eventId, reminderType, appointmentDate, eventTitle } = job.metadata;
-    this.logger.log(`Handling ${APPOINTMENT_REMINDER} for event ${eventId}, reminder type: ${reminderType}`);
+    const {
+      artistId,
+      customerId,
+      eventId,
+      reminderType,
+      appointmentDate,
+      eventTitle,
+    } = job.metadata;
+    this.logger.log(
+      `Handling ${APPOINTMENT_REMINDER} for event ${eventId}, reminder type: ${reminderType}`,
+    );
 
     try {
       const [agendaEvent, artist, customer, location] = await Promise.all([
@@ -58,7 +71,9 @@ export class AppointmentReminderJob extends NotificationJob {
       // Calculate hours until appointment
       const eventDate = new Date(appointmentDate);
       const now = new Date();
-      const hoursUntilAppointment = Math.ceil((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60));
+      const hoursUntilAppointment = Math.ceil(
+        (eventDate.getTime() - now.getTime()) / (1000 * 60 * 60),
+      );
 
       // Build notification content based on reminder type
       let title: string;
@@ -112,7 +127,9 @@ export class AppointmentReminderJob extends NotificationJob {
         hoursUntilAppointment,
       };
 
-      await this.emailNotificationService.sendEmail(appointmentReminderEmailData);
+      await this.emailNotificationService.sendEmail(
+        appointmentReminderEmailData,
+      );
 
       // Push notification to customer
       await this.pushNotificationService.sendToUser(
@@ -129,11 +146,15 @@ export class AppointmentReminderJob extends NotificationJob {
         },
       );
 
-      this.logger.log(`Successfully sent ${reminderType} reminder for event ${eventId} to customer ${customerId}`);
-
+      this.logger.log(
+        `Successfully sent ${reminderType} reminder for event ${eventId} to customer ${customerId}`,
+      );
     } catch (error) {
       const e = error as Error;
-      this.logger.error(`Error handling ${APPOINTMENT_REMINDER} for event ${eventId}: ${e.message}`, e.stack);
+      this.logger.error(
+        `Error handling ${APPOINTMENT_REMINDER} for event ${eventId}: ${e.message}`,
+        e.stack,
+      );
     }
   }
-} 
+}

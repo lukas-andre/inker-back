@@ -1,11 +1,12 @@
 import { z } from 'zod';
+
 import { NotificationTypeSchema } from './notification';
 
 // Define Job IDs for Quotation Offers
 export const QuotationOfferJobIdSchema = z.enum([
   'NEW_OFFER_RECEIVED',
-  'OFFER_ACCEPTED',      // Notify winning artist
-  'OFFER_REJECTED',      // Notify losing artist
+  'OFFER_ACCEPTED', // Notify winning artist
+  'OFFER_REJECTED', // Notify losing artist
   // Add other potential offer-related job IDs like OFFER_WITHDRAWN if needed
 ]);
 export type QuotationOfferJobIdType = z.infer<typeof QuotationOfferJobIdSchema>;
@@ -23,7 +24,7 @@ const NewOfferReceivedJobSchema = QuotationOfferBaseJobSchema.extend({
     offerId: z.string(),
     quotationId: z.string(),
     customerId: z.string(), // The customer who owns the quotation
-    artistId: z.string(),   // The artist who submitted the offer
+    artistId: z.string(), // The artist who submitted the offer
     // Include artist name/details if needed directly in notification payload
   }),
 });
@@ -64,4 +65,4 @@ export {
   NewOfferReceivedJobSchema,
   OfferAcceptedJobSchema,
   OfferRejectedJobSchema,
-}; 
+};

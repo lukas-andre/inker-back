@@ -1,5 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+
 import { TattooStyle } from '../enums/tattooStyle.enum';
 
 export class UserTattooDesignDto {
@@ -28,7 +38,10 @@ export class UserTattooDesignDto {
 
   @ApiProperty({
     description: 'URLs of the generated tattoo images',
-    example: ['https://example.com/images/tattoo-123.jpg', 'https://example.com/images/tattoo-124.jpg'],
+    example: [
+      'https://example.com/images/tattoo-123.jpg',
+      'https://example.com/images/tattoo-124.jpg',
+    ],
   })
   @IsArray()
   imageUrls: string[];
@@ -72,4 +85,4 @@ export class UserTattooHistoryResponseDto {
   })
   @IsOptional()
   total?: number;
-} 
+}

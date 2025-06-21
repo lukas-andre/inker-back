@@ -1,7 +1,13 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { IFormTemplateRepository } from '../domain/interfaces/form-template-repository.interface';
-import { UpdateFormTemplateDto } from '../domain/dtos/update-form-template.dto';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+
 import { FormTemplateDto } from '../domain/dtos/form-template.dto';
+import { UpdateFormTemplateDto } from '../domain/dtos/update-form-template.dto';
+import { IFormTemplateRepository } from '../domain/interfaces/form-template-repository.interface';
 
 @Injectable()
 export class UpdateTemplateUseCase {
@@ -16,7 +22,9 @@ export class UpdateTemplateUseCase {
     callingArtistId: string,
   ): Promise<FormTemplateDto> {
     // First, verify the template exists
-    const existingTemplate = await this.formTemplateRepository.findById(templateId);
+    const existingTemplate = await this.formTemplateRepository.findById(
+      templateId,
+    );
     if (!existingTemplate) {
       throw new NotFoundException('Template not found');
     }
@@ -27,7 +35,10 @@ export class UpdateTemplateUseCase {
     }
 
     // Perform the update
-    const updatedTemplate = await this.formTemplateRepository.update(templateId, updateDto);
+    const updatedTemplate = await this.formTemplateRepository.update(
+      templateId,
+      updateDto,
+    );
     if (!updatedTemplate) {
       throw new NotFoundException('Template not found after update');
     }
@@ -49,4 +60,4 @@ export class UpdateTemplateUseCase {
       updatedAt: entity.updatedAt,
     };
   }
-} 
+}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { PenaltyStatus, PenaltyType } from '../../../../agenda/domain/enum';
 import { UserType } from '../../../../users/domain/enums/userType.enum';
 // Corresponds to PenaltyUserRole in cancellationPenalty.entity.ts
@@ -42,4 +43,4 @@ export const ProcessPenaltyV1JobSchema = z.object({
   penalty: CancellationPenaltySchema,
 });
 
-export type ProcessPenaltyV1Job = z.infer<typeof ProcessPenaltyV1JobSchema>; 
+export type ProcessPenaltyV1Job = z.infer<typeof ProcessPenaltyV1JobSchema>;

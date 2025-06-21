@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerRepository } from '../infrastructure/providers/customer.repository';
+
+import { DomainNotFound } from 'src/global/domain/exceptions/domain.exception';
+
 import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { UpdateCustomerDto } from '../infrastructure/dtos/updateCustomerReq.dto';
 import { Customer } from '../infrastructure/entities/customer.entity';
-import { DomainNotFound } from 'src/global/domain/exceptions/domain.exception';
+import { CustomerRepository } from '../infrastructure/providers/customer.repository';
 
 @Injectable()
 export class UpdateCustomerBasicInfoUseCase

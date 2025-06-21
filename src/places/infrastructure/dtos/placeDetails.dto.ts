@@ -3,7 +3,8 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class PlaceDetailsQueryDto {
   @ApiProperty({
-    description: 'The place ID of the place for which details are being requested',
+    description:
+      'The place ID of the place for which details are being requested',
     example: 'ChIJH_ximfDPYpYR_pGBUbiPJiw',
   })
   @IsString()
@@ -63,7 +64,8 @@ export class PlaceDetailsResponseDto {
   formattedAddress: string;
 
   @ApiProperty({
-    description: 'Array containing the separate components applicable to this address',
+    description:
+      'Array containing the separate components applicable to this address',
     type: [AddressComponentDto],
   })
   addressComponents: AddressComponentDto[];

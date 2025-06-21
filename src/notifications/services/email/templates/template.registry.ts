@@ -7,22 +7,22 @@ import {
   AgendaEventReminderSchema,
   AgendaEventStatusChangedSchema,
   AgendaEventUpdatedSchema,
+  AppointmentReminderEmailSchema,
+  ConfirmationReminderEmailSchema,
+  ConsentReminderEmailSchema,
+  EventAutoCanceledEmailSchema,
   MailIdType,
+  MonthlyReportEmailSchema,
   QuotationAcceptedSchema,
   QuotationAppealedSchema,
   QuotationCanceledSchema,
   QuotationCreatedSchema,
   QuotationRejectedSchema,
   QuotationRepliedSchema,
+  ReviewReminderEmailSchema,
   RsvpAcceptedSchema,
   RsvpDeclinedSchema,
   RsvpUnschedulableSchema,
-  AppointmentReminderEmailSchema,
-  ConsentReminderEmailSchema,
-  ConfirmationReminderEmailSchema,
-  EventAutoCanceledEmailSchema,
-  ReviewReminderEmailSchema,
-  MonthlyReportEmailSchema,
 } from '../schemas/email';
 
 export const TemplateRegistry: Record<
@@ -114,22 +114,26 @@ export const TemplateRegistry: Record<
   CONSENT_REMINDER: {
     schema: ConsentReminderEmailSchema,
     path: path.join(__dirname, './consentReminder.hbs'),
-    subject: '📋 :customerName Firma el consentimiento para tu cita con :artistName',
+    subject:
+      '📋 :customerName Firma el consentimiento para tu cita con :artistName',
   },
   CONFIRMATION_REMINDER: {
     schema: ConfirmationReminderEmailSchema,
     path: path.join(__dirname, './confirmationReminder.hbs'),
-    subject: '⏰ :customerName ¡Confirma tu cita con :artistName antes de que expire!',
+    subject:
+      '⏰ :customerName ¡Confirma tu cita con :artistName antes de que expire!',
   },
   EVENT_AUTO_CANCELED: {
     schema: EventAutoCanceledEmailSchema,
     path: path.join(__dirname, './eventAutoCanceled.hbs'),
-    subject: '❌ :customerName Tu cita con :artistName ha sido cancelada automáticamente',
+    subject:
+      '❌ :customerName Tu cita con :artistName ha sido cancelada automáticamente',
   },
   REVIEW_REMINDER: {
     schema: ReviewReminderEmailSchema,
     path: path.join(__dirname, './reviewReminder.hbs'),
-    subject: '⭐ :customerName ¡Cuéntanos sobre tu experiencia con :artistName!',
+    subject:
+      '⭐ :customerName ¡Cuéntanos sobre tu experiencia con :artistName!',
   },
   MONTHLY_REPORT: {
     schema: MonthlyReportEmailSchema,

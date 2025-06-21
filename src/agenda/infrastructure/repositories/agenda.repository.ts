@@ -29,9 +29,9 @@ import {
   PROBLEMS_FINDING_IF_USER_IS_RELATED_TO_EVENT,
   PROBLEMS_SAVING_AGENDA_FOR_USER,
 } from '../../../users/domain/errors/codes';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { Agenda } from '../entities/agenda.entity';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 
 export interface ArtistAgendaAndEventRelatedToCustomerResult {
   id: string;
@@ -157,7 +157,7 @@ export class AgendaRepository extends BaseComponent {
     }
   }
 
-  async update(id: string, agenda: DeepPartial<Agenda>){
+  async update(id: string, agenda: DeepPartial<Agenda>) {
     return this.agendaRepository.update(id, agenda);
   }
 

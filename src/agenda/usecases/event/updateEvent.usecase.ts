@@ -4,13 +4,23 @@ import { Queue } from 'bull';
 
 import {
   DomainConflict,
-  DomainNotFound,
   DomainForbidden,
+  DomainNotFound,
   DomainUnProcessableEntity,
 } from '../../../global/domain/exceptions/domain.exception';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 import { AgendaEventUpdatedJobType } from '../../../queues/notifications/domain/schemas/agenda';
 import { queues } from '../../../queues/queues';
+import { UserType } from '../../../users/domain/enums/userType.enum';
+import { EventActionsResultDto } from '../../domain/dtos';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import { EventActionEngineService } from '../../domain/services/eventActionEngine.service';
+import {
+  AgendaEventTransition,
+  EventStateMachineService,
+  StateMachineContext,
+} from '../../domain/services/eventStateMachine.service';
 import { UpdateEventReqDto } from '../../infrastructure/dtos/updateEventReq.dto';
 import { Agenda } from '../../infrastructure/entities/agenda.entity';
 import {
@@ -19,12 +29,6 @@ import {
 } from '../../infrastructure/entities/agendaEvent.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { EventStateMachineService, StateMachineContext, AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
-import { EventActionEngineService, } from '../../domain/services/eventActionEngine.service';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
-import { EventActionsResultDto } from '../../domain/dtos';
-import { UserType } from '../../../users/domain/enums/userType.enum';
 
 @Injectable()
 export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
@@ -47,9 +51,12 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
     updateEventReqDto: UpdateEventReqDto,
     eventId: string,
   ): Promise<AgendaEvent> {
-    const { userId, userTypeId, isNotArtist, userType } = this.requestContextService;
+    const { userId, userTypeId, isNotArtist, userType } =
+      this.requestContextService;
 
-    const actorRole: UserType = isNotArtist ? UserType.CUSTOMER : UserType.ARTIST;
+    const actorRole: UserType = isNotArtist
+      ? UserType.CUSTOMER
+      : UserType.ARTIST;
     const actorForStateMachine = {
       userId,
       roleId: userTypeId,
@@ -63,10 +70,14 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
 
     let agenda = event.agenda;
     if (!agenda) {
-      this.logger.warn(`Agenda not pre-loaded for event ${eventId}, fetching separately.`);
+      this.logger.warn(
+        `Agenda not pre-loaded for event ${eventId}, fetching separately.`,
+      );
       agenda = await this.agendaProvider.findById(updateEventReqDto.agendaId);
       if (!agenda) {
-        throw new DomainNotFound(`Agenda with ID ${updateEventReqDto.agendaId} not found.`);
+        throw new DomainNotFound(
+          `Agenda with ID ${updateEventReqDto.agendaId} not found.`,
+        );
       }
       event.agenda = agenda;
     }
@@ -77,11 +88,12 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
       );
     }
 
-    const availableActions: EventActionsResultDto = await this.eventActionEngineService.getAvailableActions({
-      event,
-      userId: userId,
-      userType: userType,
-    });
+    const availableActions: EventActionsResultDto =
+      await this.eventActionEngineService.getAvailableActions({
+        event,
+        userId: userId,
+        userType: userType,
+      });
 
     const newStartDate = updateEventReqDto.start
       ? new Date(updateEventReqDto.start)
@@ -101,7 +113,9 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
         );
       }
       if (!newStartDate || !newEndDate) {
-        throw new DomainUnProcessableEntity('Both start and end dates are required for rescheduling.');
+        throw new DomainUnProcessableEntity(
+          'Both start and end dates are required for rescheduling.',
+        );
       }
 
       const stateMachineContext: StateMachineContext = {
@@ -133,7 +147,9 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
     let detailsUpdated = false;
 
     if (updateEventReqDto.title && updateEventReqDto.title !== event.title) {
-      changes.push(`title from "${event.title}" to "${updateEventReqDto.title}"`);
+      changes.push(
+        `title from "${event.title}" to "${updateEventReqDto.title}"`,
+      );
       event.title = updateEventReqDto.title;
       detailsUpdated = true;
     }
@@ -143,12 +159,19 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
       detailsUpdated = true;
     }
     if (updateEventReqDto.color && updateEventReqDto.color !== event.color) {
-      changes.push(`color from "${event.color}" to "${updateEventReqDto.color}"`);
+      changes.push(
+        `color from "${event.color}" to "${updateEventReqDto.color}"`,
+      );
       event.color = updateEventReqDto.color;
       detailsUpdated = true;
     }
-    if (typeof updateEventReqDto.notification === 'boolean' && updateEventReqDto.notification !== event.notification) {
-      changes.push(`notification from "${event.notification}" to "${updateEventReqDto.notification}"`);
+    if (
+      typeof updateEventReqDto.notification === 'boolean' &&
+      updateEventReqDto.notification !== event.notification
+    ) {
+      changes.push(
+        `notification from "${event.notification}" to "${updateEventReqDto.notification}"`,
+      );
       event.notification = updateEventReqDto.notification;
       detailsUpdated = true;
     }
@@ -173,7 +196,10 @@ export class UpdateEventUseCase extends BaseUseCase implements OnModuleDestroy {
     return event;
   }
 
-  private async pushAgendaEventUpdatedEvent(event: AgendaEvent, agenda: Agenda) {
+  private async pushAgendaEventUpdatedEvent(
+    event: AgendaEvent,
+    agenda: Agenda,
+  ) {
     const queueMessage: AgendaEventUpdatedJobType = {
       jobId: 'EVENT_UPDATED',
       metadata: {

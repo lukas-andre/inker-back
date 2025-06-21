@@ -1,7 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { ArtistLocationDto, ArtistLocationUpdateDto } from '../../domain/interfaces/artistLocation.interface';
+import {
+  ArtistLocationDto,
+  ArtistLocationUpdateDto,
+} from '../../domain/interfaces/artistLocation.interface';
 import { ArtistLocationRepository } from '../../infrastructure/database/artistLocation.repository';
 
 @Injectable()
@@ -22,7 +29,9 @@ export class UpdateArtistLocationUseCase extends BaseUseCase {
       }
 
       // Get current location
-      const currentLocation = await this.artistLocationProvider.findById(data.id);
+      const currentLocation = await this.artistLocationProvider.findById(
+        data.id,
+      );
 
       if (!currentLocation) {
         throw new NotFoundException('Location not found');

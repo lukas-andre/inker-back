@@ -11,10 +11,10 @@ import {
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
 import { UserType } from '../../users/domain/enums/userType.enum';
+import { UsersRepository } from '../../users/infrastructure/repositories/users.repository';
 import { FollowedsRepository } from '../infrastructure/database/followeds.repository';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
-import { UsersRepository } from '../../users/infrastructure/repositories/users.repository';
 
 import { FollowArtistParams } from './interfaces/followArtist.param';
 @Injectable()

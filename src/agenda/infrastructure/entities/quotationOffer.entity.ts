@@ -1,6 +1,8 @@
-import { Column, Entity, Index, ManyToOne, JoinColumn } from 'typeorm';
-import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+
 import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+
 import { Quotation } from './quotation.entity';
 // import { User } from '../../../users/infrastructure/entities/user.entity'; // Not needed here
 // import { Artist } from '../../../artists/infrastructure/entities/artist.entity'; // Remove cross-db entity import
@@ -27,7 +29,9 @@ export class QuotationOffer extends BaseEntity {
   @Column({ name: 'quotation_id' })
   quotationId: string;
 
-  @ManyToOne(() => Quotation, quotation => quotation.offers, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Quotation, quotation => quotation.offers, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'quotation_id' })
   quotation: Quotation;
 
@@ -79,4 +83,4 @@ export class QuotationOffer extends BaseEntity {
 
   @Column({ name: 'messages', type: 'jsonb', nullable: true, default: [] })
   messages?: OfferMessage[];
-} 
+}

@@ -18,8 +18,8 @@ import {
   UploadToS3Result,
 } from '../../multimedias/services/multimedias.service';
 import { NOT_VALID_FILE_TYPE_TO_UPLOAD } from '../domain/errors/codes';
-import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 import { Artist } from '../infrastructure/entities/artist.entity';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 
 @Injectable()
 export class UpdateArtistProfilePictureUseCase

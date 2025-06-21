@@ -10,7 +10,6 @@ import {
   AgendaInvitation,
   AgendaInvitationStatus,
 } from '../../entities/agendaInvitation.entity';
-
 import { AgendaRepository } from '../agenda.repository';
 import { AgendaEventRepository } from '../agendaEvent.repository';
 import { AgendaInvitationRepository } from '../agendaInvitation.provider';
@@ -67,8 +66,9 @@ describe('AgendaProvider', () => {
     }).compile();
 
     agendaProvider = moduleFixture.get<AgendaRepository>(AgendaRepository);
-    agendaEventProvider =
-      moduleFixture.get<AgendaEventRepository>(AgendaEventRepository);
+    agendaEventProvider = moduleFixture.get<AgendaEventRepository>(
+      AgendaEventRepository,
+    );
     agendaInvitationProvider = moduleFixture.get<AgendaInvitationRepository>(
       AgendaInvitationRepository,
     );

@@ -15,23 +15,24 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
+
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
-import { RecordInteractionUseCase } from '../usecases/recordInteraction.usecase';
-import { RecordArtistViewUseCase } from '../usecases/recordArtistView.usecase';
-import { GetContentMetricsUseCase } from '../usecases/getContentMetrics.usecase';
-import { GetArtistMetricsUseCase } from '../usecases/getArtistMetrics.usecase';
-import { GetBatchContentMetricsUseCase } from '../usecases/getBatchContentMetrics.usecase';
-import { RecordArtistFollowUseCase } from '../usecases/recordArtistFollow.usecase';
-import { 
-  ArtistMetricsDto, 
-  BatchMetricsQueryDto, 
-  ContentMetricsDto, 
-  RecordArtistViewDto, 
-  RecordInteractionDto 
+import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
+import { AnalyticsInteractionResponseDto } from '../domain/dtos/analytics-interaction-response.dto';
+import {
+  ArtistMetricsDto,
+  BatchMetricsQueryDto,
+  ContentMetricsDto,
+  RecordArtistViewDto,
+  RecordInteractionDto,
 } from '../domain/dtos/metrics.dto';
 import { ContentType } from '../domain/enums/content-types.enum';
-import { AnalyticsInteractionResponseDto } from '../domain/dtos/analytics-interaction-response.dto';
+import { GetArtistMetricsUseCase } from '../usecases/getArtistMetrics.usecase';
+import { GetBatchContentMetricsUseCase } from '../usecases/getBatchContentMetrics.usecase';
+import { GetContentMetricsUseCase } from '../usecases/getContentMetrics.usecase';
+import { RecordArtistFollowUseCase } from '../usecases/recordArtistFollow.usecase';
+import { RecordArtistViewUseCase } from '../usecases/recordArtistView.usecase';
+import { RecordInteractionUseCase } from '../usecases/recordInteraction.usecase';
 
 @ApiTags('Analytics')
 @UseGuards(AuthGuard)
@@ -56,7 +57,9 @@ export class AnalyticsController {
     description: 'Returns the interaction result with updated metrics',
     type: AnalyticsInteractionResponseDto,
   })
-  async recordInteraction(@Body() dto: RecordInteractionDto): Promise<AnalyticsInteractionResponseDto> {
+  async recordInteraction(
+    @Body() dto: RecordInteractionDto,
+  ): Promise<AnalyticsInteractionResponseDto> {
     const userId = this.requestContext.userId;
     return this.recordInteractionUseCase.execute(userId, dto);
   }
@@ -83,7 +86,7 @@ export class AnalyticsController {
   })
   async recordArtistFollow(
     @Body('artistId') artistId: string,
-    @Body('fromContentView') fromContentView: boolean = false,
+    @Body('fromContentView') fromContentView = false,
   ): Promise<void> {
     return this.recordArtistFollowUseCase.execute(artistId, fromContentView);
   }
@@ -101,7 +104,11 @@ export class AnalyticsController {
     @Query('type') contentType: ContentType,
   ): Promise<ContentMetricsDto> {
     const userId = this.requestContext.userId;
-    return this.getContentMetricsUseCase.execute(contentId, contentType, userId);
+    return this.getContentMetricsUseCase.execute(
+      contentId,
+      contentType,
+      userId,
+    );
   }
 
   @Get('artist/:artistId')
@@ -131,4 +138,4 @@ export class AnalyticsController {
     const userId = this.requestContext.userId;
     return this.getBatchContentMetricsUseCase.execute(dto, userId);
   }
-} 
+}

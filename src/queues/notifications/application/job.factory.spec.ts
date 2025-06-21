@@ -60,7 +60,9 @@ describe('JobHandlerFactory', () => {
     emailNotificationService = module.get<EmailNotificationService>(
       EmailNotificationService,
     );
-    agendaEventProvider = module.get<AgendaEventRepository>(AgendaEventRepository);
+    agendaEventProvider = module.get<AgendaEventRepository>(
+      AgendaEventRepository,
+    );
     artistProvider = module.get<ArtistRepository>(ArtistRepository);
     customerProvider = module.get<CustomerRepository>(CustomerRepository);
     locationProvider = module.get<ArtistLocationRepository>(

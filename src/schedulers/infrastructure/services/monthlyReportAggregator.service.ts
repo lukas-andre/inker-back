@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
+
 import { AgendaEventRepository } from '../../../agenda/infrastructure/repositories/agendaEvent.repository';
-import { ReviewRepository } from '../../../reviews/database/repositories/review.repository';
 import { QuotationRepository } from '../../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
 import { BaseComponent } from '../../../global/domain/components/base.component';
+import { ReviewRepository } from '../../../reviews/database/repositories/review.repository';
 
 @Injectable()
 export class MonthlyReportAggregatorService extends BaseComponent {
@@ -22,22 +23,25 @@ export class MonthlyReportAggregatorService extends BaseComponent {
   async generateArtistMonthlyReport(
     artistId: string,
     year: number,
-    month: number
+    month: number,
   ): Promise<any> {
     try {
       // 1. Get artist info from artist DB
-      const artistInfo = await this.artistRepository.getArtistInfoForReport(artistId);
+      const artistInfo = await this.artistRepository.getArtistInfoForReport(
+        artistId,
+      );
       if (!artistInfo) {
         throw new Error(`Artist ${artistId} not found`);
       }
 
       // 2. Get events summary from agenda DB
-      const eventsSummary = await this.agendaEventRepository.getEventsForMonthlyReport(
-        [artistId],
-        year,
-        month
-      );
-      
+      const eventsSummary =
+        await this.agendaEventRepository.getEventsForMonthlyReport(
+          [artistId],
+          year,
+          month,
+        );
+
       const appointmentsSummary = eventsSummary[0]?.summary || {
         completedCount: 0,
         canceledCount: 0,
@@ -47,18 +51,20 @@ export class MonthlyReportAggregatorService extends BaseComponent {
       };
 
       // 3. Get reviews summary from reviews DB
-      const reviewsSummary = await this.reviewRepository.getReviewsByArtistForMonth(
-        artistId,
-        year,
-        month
-      );
+      const reviewsSummary =
+        await this.reviewRepository.getReviewsByArtistForMonth(
+          artistId,
+          year,
+          month,
+        );
 
       // 4. Get quotations summary from agenda DB
-      const quotationsSummary = await this.quotationRepository.getQuotationsSummaryByArtist(
-        artistId,
-        year,
-        month
-      );
+      const quotationsSummary =
+        await this.quotationRepository.getQuotationsSummaryByArtist(
+          artistId,
+          year,
+          month,
+        );
 
       // 5. Combine all data
       return {
@@ -68,20 +74,37 @@ export class MonthlyReportAggregatorService extends BaseComponent {
         reviews: reviewsSummary,
         quotations: quotationsSummary,
         performance: {
-          conversionRate: quotationsSummary.total > 0 
-            ? (quotationsSummary.accepted / quotationsSummary.total * 100).toFixed(2) 
-            : 0,
-          completionRate: appointmentsSummary.totalCount > 0
-            ? (appointmentsSummary.completedCount / appointmentsSummary.totalCount * 100).toFixed(2)
-            : 0,
-          customerSatisfaction: reviewsSummary.totalReviews > 0
-            ? (reviewsSummary.positiveReviews / reviewsSummary.totalReviews * 100).toFixed(2)
-            : 0,
+          conversionRate:
+            quotationsSummary.total > 0
+              ? (
+                  (quotationsSummary.accepted / quotationsSummary.total) *
+                  100
+                ).toFixed(2)
+              : 0,
+          completionRate:
+            appointmentsSummary.totalCount > 0
+              ? (
+                  (appointmentsSummary.completedCount /
+                    appointmentsSummary.totalCount) *
+                  100
+                ).toFixed(2)
+              : 0,
+          customerSatisfaction:
+            reviewsSummary.totalReviews > 0
+              ? (
+                  (reviewsSummary.positiveReviews /
+                    reviewsSummary.totalReviews) *
+                  100
+                ).toFixed(2)
+              : 0,
         },
         generatedAt: new Date(),
       };
     } catch (error) {
-      this.logger.error(`Error generating monthly report for artist ${artistId}:`, error);
+      this.logger.error(
+        `Error generating monthly report for artist ${artistId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -93,21 +116,22 @@ export class MonthlyReportAggregatorService extends BaseComponent {
     try {
       // Get all active artists
       const artists = await this.artistRepository.findActiveArtistsForReports();
-      
+
       // Filter artists who have had events in the last 3 months
       const artistsWithRecentActivity: { id: string; email: string }[] = [];
-      
+
       for (const artist of artists) {
         const threeMonthsAgo = new Date();
         threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-        
+
         // Check if artist has any events in the last 3 months
-        const recentEvents = await this.agendaEventRepository.getEventsForMonthlyReport(
-          [artist.id],
-          threeMonthsAgo.getFullYear(),
-          threeMonthsAgo.getMonth() + 1
-        );
-        
+        const recentEvents =
+          await this.agendaEventRepository.getEventsForMonthlyReport(
+            [artist.id],
+            threeMonthsAgo.getFullYear(),
+            threeMonthsAgo.getMonth() + 1,
+          );
+
         if (recentEvents.length > 0) {
           artistsWithRecentActivity.push({
             id: artist.id,
@@ -115,11 +139,11 @@ export class MonthlyReportAggregatorService extends BaseComponent {
           });
         }
       }
-      
+
       return artistsWithRecentActivity;
     } catch (error) {
       this.logger.error('Error getting active artists for reports:', error);
       throw error;
     }
   }
-} 
+}

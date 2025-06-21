@@ -1,1 +1,1 @@
-export * from './eventActionsResult.dto'; 
+export * from './eventActionsResult.dto';

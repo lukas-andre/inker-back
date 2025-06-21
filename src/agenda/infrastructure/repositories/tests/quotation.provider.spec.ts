@@ -3,11 +3,10 @@ import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { AGENDA_DB_CONNECTION_NAME } from '../../../../databases/constants';
+import { MoneyEntity } from '../../../../global/domain/models/money.model';
 import { Quotation, QuotationStatus } from '../../entities/quotation.entity';
 import { QuotationHistory } from '../../entities/quotationHistory.entity';
-
 import { QuotationRepository } from '../quotation.provider';
-import { MoneyEntity } from '../../../../global/domain/models/money.model';
 
 describe('QuotationRepository', () => {
   let quotationProvider: QuotationRepository;
@@ -48,7 +47,8 @@ describe('QuotationRepository', () => {
       ],
     }).compile();
 
-    quotationProvider = moduleFixture.get<QuotationRepository>(QuotationRepository);
+    quotationProvider =
+      moduleFixture.get<QuotationRepository>(QuotationRepository);
   });
 
   afterAll(async () => {

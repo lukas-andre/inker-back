@@ -3,14 +3,24 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../../../global/infrastructure/base.handler';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { ActivateUserByEmailUseCase } from '../../usecases/user/activateUserByEmail.usecase';
+import { ActivateUserWithSecretUseCase } from '../../usecases/user/activateUserWithSecret.usecase';
 import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
+import { DeleteUserUseCase } from '../../usecases/user/deleteUser.usecase';
 import { CreateUserByTypeParams } from '../../usecases/user/interfaces/createUserByType.params';
+import { SendForgotPasswordCodeUseCase } from '../../usecases/user/sendForgotPasswordCode.usecase';
 import { SendSMSAccountVerificationCodeUseCase } from '../../usecases/user/sendSMSAccountVerificationCode.usecase';
 import { SendSMSForgotPasswordCodeUseCase } from '../../usecases/user/sendSMSForgotPasswordCode.usecase';
 import { UpdateUserEmailUseCase } from '../../usecases/user/updateUserEmail.usecase';
 import { UpdateUserPasswordUseCase } from '../../usecases/user/updateUserPassword.usecase';
+import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
 import { UpdateUserUsernameUseCase } from '../../usecases/user/updateUserUsername.usecase';
 import { ValidateSMSAccountVerificationCodeUseCase } from '../../usecases/user/validateSMSAccountVerificationCode.usecase';
+import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verification-code/sendEmailVerificationCode.usecase';
+import { SendSMSVerificationCodeUseCase } from '../../usecases/user/verification-code/sendSmsVerificationCode.usecase';
+import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
+import { ActivateUserWithSecretReqDto } from '../dtos/activateUserWithSecret.dto';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
 import { GetForgotPasswordCodeQueryDto } from '../dtos/getForgotPasswordCodeQuery.dto';
 import { SendAccountVerificationCodeQueryDto } from '../dtos/sendAccountVerificationCodeQuery.dto';
@@ -20,17 +30,7 @@ import { UpdateUserPasswordReqDto } from '../dtos/updateUserPasswordReq.dto';
 import { UpdateUserUsernameReqDto } from '../dtos/updateUserUsernameReq.dto';
 import { NotificationType } from '../entities/verificationHash.entity';
 import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { DeleteUserUseCase } from '../../usecases/user/deleteUser.usecase';
-import { SendSMSVerificationCodeUseCase } from '../../usecases/user/verification-code/sendSmsVerificationCode.usecase';
-import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verification-code/sendEmailVerificationCode.usecase';
 import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
-import { SendForgotPasswordCodeUseCase } from '../../usecases/user/sendForgotPasswordCode.usecase';
-import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
-import { ActivateUserWithSecretUseCase } from '../../usecases/user/activateUserWithSecret.usecase';
-import { ActivateUserWithSecretReqDto } from '../dtos/activateUserWithSecret.dto';
-import { ActivateUserByEmailUseCase } from '../../usecases/user/activateUserByEmail.usecase';
-import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
 
 @Injectable()
 export class UsersHandler {

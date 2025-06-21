@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+
 import { DeviceType } from '../../database/entities/userFcmToken.entity';
 import { NotificationRepository } from '../../database/notification.repository';
+
 import { FCMPayloadUtil } from './utils';
 
 @Injectable()

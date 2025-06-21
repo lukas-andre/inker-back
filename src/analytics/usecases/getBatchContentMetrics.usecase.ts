@@ -1,24 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
+
+import {
+  BatchMetricsQueryDto,
+  ContentMetricsDto,
+} from '../domain/dtos/metrics.dto';
 import { ContentType } from '../domain/enums/content-types.enum';
-import { BatchMetricsQueryDto, ContentMetricsDto } from '../domain/dtos/metrics.dto';
+import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
 
 @Injectable()
 export class GetBatchContentMetricsUseCase {
   constructor(private readonly analyticsProvider: AnalyticsRepository) {}
 
-  async execute(dto: BatchMetricsQueryDto, userId?: string): Promise<ContentMetricsDto[]> {
+  async execute(
+    dto: BatchMetricsQueryDto,
+    userId?: string,
+  ): Promise<ContentMetricsDto[]> {
     const { contentIds, contentType } = dto;
 
     // Get all metrics that exist
-    const metricsEntities = await this.analyticsProvider.findMultipleContentMetrics(
-      contentIds,
-      contentType
-    );
+    const metricsEntities =
+      await this.analyticsProvider.findMultipleContentMetrics(
+        contentIds,
+        contentType,
+      );
 
     // Create a map for quick lookups
     const metricsMap = new Map(
-      metricsEntities.map(entity => [entity.contentId, entity])
+      metricsEntities.map(entity => [entity.contentId, entity]),
     );
 
     // Build responses for each requested ID
@@ -53,7 +61,7 @@ export class GetBatchContentMetricsUseCase {
         response.userHasLiked = await this.analyticsProvider.checkUserHasLiked(
           contentId,
           contentType,
-          userId
+          userId,
         );
       }
 
@@ -83,4 +91,4 @@ export class GetBatchContentMetricsUseCase {
 
     return results;
   }
-} 
+}

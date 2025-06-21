@@ -9,9 +9,7 @@ import {
 import { createDatabaseConnection } from './config';
 
 const DB_NAME = 'inker-analytics';
-const ENTITIES = [
-  __dirname + '/../../analytics/**/*.entity{.ts,.js}',
-];
+const ENTITIES = [__dirname + '/../../analytics/**/*.entity{.ts,.js}'];
 
 export type AnalyticsDbConfig = TypeOrmModuleOptions;
 
@@ -26,4 +24,4 @@ export const analyticsDatabaseConf = registerAs<AnalyticsDbConfig>(
       keepConnectionAlive: true,
       cache: true,
     }),
-); 
+);

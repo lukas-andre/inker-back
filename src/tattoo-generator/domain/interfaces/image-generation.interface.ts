@@ -14,5 +14,7 @@ export interface GeneratedImage {
 }
 
 export abstract class IImageGenerationService {
-  abstract generateImages(params: GenerateImageParams): Promise<GeneratedImage[]>;
-} 
+  abstract generateImages(
+    params: GenerateImageParams,
+  ): Promise<GeneratedImage[]>;
+}

@@ -1,4 +1,6 @@
 import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+
 import {
   DomainBadRequest,
   DomainBadRule,
@@ -8,14 +10,13 @@ import { UseCase } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
 import { SendVerificationCodeJobType } from '../../../queues/notifications/domain/schemas/codes';
+import { queues } from '../../../queues/queues';
 import { SendForgotPasswordCodeReqDto } from '../../infrastructure/dtos/sendForgotPasswordCodeReq.dto';
 import { User } from '../../infrastructure/entities/user.entity';
 import {
   NotificationType,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
-import { queues } from '../../../queues/queues';
-import { Queue } from 'bull';
 import { UsersRepository } from '../../infrastructure/repositories/users.repository';
 import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
 

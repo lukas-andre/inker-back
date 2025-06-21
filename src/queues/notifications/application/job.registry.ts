@@ -6,13 +6,23 @@ import { ArtistRepository } from '../../../artists/infrastructure/repositories/a
 import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
 import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../notifications/services/email/email.notification';
+import { NotificationStorageService } from '../../../notifications/services/notification.storage';
+import { PushNotificationService } from '../../../notifications/services/push/pushNotification.service';
 import { JobTypeKey } from '../domain/jobSchema.registry';
+import { PENALTY_APPLIED_NOTIFICATION_V1 } from '../domain/schemas/penaltyNotification.schema';
 
 import { AgendaEventCanceledJob } from './jobs/agenda/agendaEventCanceled.job';
 import { AgendaEventCreatedJob } from './jobs/agenda/agendaEventCreated.job';
 import { AgendaEventReminderJob } from './jobs/agenda/agendaEventReminder.job';
 import { AgendaEventStatusChangedJob } from './jobs/agenda/agendaEventStatusChanged.job';
 import { AgendaEventUpdatedJob } from './jobs/agenda/agendaEventUpdated.job';
+import { AppointmentReminderJob } from './jobs/agenda/appointmentReminder.job';
+import { ConfirmationReminderJob } from './jobs/agenda/confirmationReminder.job';
+import { ConsentReminderJob } from './jobs/agenda/consentReminder.job';
+import { EventAutoCanceledJob } from './jobs/agenda/eventAutoCanceled.job';
+import { MonthlyReportJob } from './jobs/agenda/monthlyReport.job';
+import { NewEventMessageJob } from './jobs/agenda/newEventMessage.job';
+import { VerificationCodeSentJob } from './jobs/codes/verficationCodeSent.job';
 import { NotificationJob } from './jobs/notification.job';
 import { QuotationAcceptedJob } from './jobs/quotations/quotationAccepeted.job';
 import { QuotationAppealedJob } from './jobs/quotations/quotationAppealed.job';
@@ -23,23 +33,15 @@ import { QuotationRepliedJob } from './jobs/quotations/quotationReplied.job';
 import { RsvpAcceptedJob } from './jobs/rsvp/rsvpAccepted.job';
 import { RsvpDeclinedJob } from './jobs/rsvp/rsvpDeclined.job';
 import { RsvpUnschedulableJob } from './jobs/rsvp/rsvpUnschedulable.job';
-import { PushNotificationService } from '../../../notifications/services/push/pushNotification.service';
-import { VerificationCodeSentJob } from './jobs/codes/verficationCodeSent.job';
-import { NotificationStorageService } from '../../../notifications/services/notification.storage';
+
 import { NewOfferReceivedJob } from './jobs/quotationOffers/newOfferReceived.job';
 import { OfferAcceptedJob } from './jobs/quotationOffers/offerAccepted.job';
 import { OfferRejectedJob } from './jobs/quotationOffers/offerRejected.job';
 import { PenaltyAppliedNotificationJob } from './jobs/penaltyAppliedNotification.job';
-import { PENALTY_APPLIED_NOTIFICATION_V1 } from '../domain/schemas/penaltyNotification.schema';
-import { NewEventMessageJob } from './jobs/agenda/newEventMessage.job';
+
 
 // New scheduled notification jobs
-import { AppointmentReminderJob } from './jobs/agenda/appointmentReminder.job';
-import { ConsentReminderJob } from './jobs/agenda/consentReminder.job';
-import { ConfirmationReminderJob } from './jobs/agenda/confirmationReminder.job';
 import { ReviewReminderJob } from './jobs/agenda/reviewReminder.job';
-import { MonthlyReportJob } from './jobs/agenda/monthlyReport.job';
-import { EventAutoCanceledJob } from './jobs/agenda/eventAutoCanceled.job';
 import { PhotoUploadReminderJob } from './jobs/agenda/photoUploadReminder.job';
 
 type NotificationJobConstructor = new (
@@ -80,7 +82,10 @@ export class NotificationJobRegistry {
 
     this.jobMap.set('ACCOUNT_VERIFICATION_CODE', VerificationCodeSentJob);
 
-    this.jobMap.set(PENALTY_APPLIED_NOTIFICATION_V1, PenaltyAppliedNotificationJob);
+    this.jobMap.set(
+      PENALTY_APPLIED_NOTIFICATION_V1,
+      PenaltyAppliedNotificationJob,
+    );
     this.jobMap.set('NEW_EVENT_MESSAGE', NewEventMessageJob);
 
     // New scheduled notification jobs

@@ -18,8 +18,9 @@ export class AppointmentContextualInfo {
   @ApiProperty({
     description:
       'An optional, helpful tip for the customer related to their upcoming appointment.',
-    example: 'Recuerda llevar tu identificación oficial y mantenerte hidratado.',
+    example:
+      'Recuerda llevar tu identificación oficial y mantenerte hidratado.',
     nullable: true,
   })
   tip?: string;
-} 
+}

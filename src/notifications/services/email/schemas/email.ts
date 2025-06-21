@@ -181,7 +181,9 @@ const AgendaEventStatusChangedSchema = BaseEmailSchema.extend({
   eventDate: z.date(),
   eventStatus: z.string(),
 });
-export type AgendaEventStatusChangedType = z.infer<typeof AgendaEventStatusChangedSchema>;
+export type AgendaEventStatusChangedType = z.infer<
+  typeof AgendaEventStatusChangedSchema
+>;
 
 const AppointmentReminderEmailSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.APPOINTMENT_REMINDER),
@@ -194,7 +196,9 @@ const AppointmentReminderEmailSchema = BaseEmailSchema.extend({
   reminderType: z.string(),
   hoursUntilAppointment: z.number(),
 });
-export type AppointmentReminderEmailType = z.infer<typeof AppointmentReminderEmailSchema>;
+export type AppointmentReminderEmailType = z.infer<
+  typeof AppointmentReminderEmailSchema
+>;
 
 const ConsentReminderEmailSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.CONSENT_REMINDER),
@@ -207,7 +211,9 @@ const ConsentReminderEmailSchema = BaseEmailSchema.extend({
   hoursUntilAppointment: z.number(),
   consentUrl: z.string(),
 });
-export type ConsentReminderEmailType = z.infer<typeof ConsentReminderEmailSchema>;
+export type ConsentReminderEmailType = z.infer<
+  typeof ConsentReminderEmailSchema
+>;
 
 const ConfirmationReminderEmailSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.CONFIRMATION_REMINDER),
@@ -218,7 +224,9 @@ const ConfirmationReminderEmailSchema = BaseEmailSchema.extend({
   hoursRemaining: z.number(),
   confirmationUrl: z.string(),
 });
-export type ConfirmationReminderEmailType = z.infer<typeof ConfirmationReminderEmailSchema>;
+export type ConfirmationReminderEmailType = z.infer<
+  typeof ConfirmationReminderEmailSchema
+>;
 
 const EventAutoCanceledEmailSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.EVENT_AUTO_CANCELED),
@@ -228,7 +236,9 @@ const EventAutoCanceledEmailSchema = BaseEmailSchema.extend({
   eventDate: z.date(),
   reason: z.string(),
 });
-export type EventAutoCanceledEmailType = z.infer<typeof EventAutoCanceledEmailSchema>;
+export type EventAutoCanceledEmailType = z.infer<
+  typeof EventAutoCanceledEmailSchema
+>;
 
 const ReviewReminderEmailSchema = BaseEmailSchema.extend({
   mailId: z.literal(MailIdSchema.enum.REVIEW_REMINDER),

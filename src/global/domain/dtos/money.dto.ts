@@ -1,4 +1,5 @@
 import { IsNumber, IsString } from 'class-validator';
+
 import { MoneyEntity } from '../models/money.model';
 
 export class MoneyDto extends MoneyEntity {
@@ -6,8 +7,8 @@ export class MoneyDto extends MoneyEntity {
   amount: number;
 
   @IsString()
-  currency: string = 'CLP';
+  currency = 'CLP';
 
   @IsNumber()
-  scale: number = 0;
+  scale = 0;
 }

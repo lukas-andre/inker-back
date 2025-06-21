@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Settings } from '../entities/settings.entity';
-import { BaseComponent } from '../../../global/domain/components/base.component';
+
 import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
+import { BaseComponent } from '../../../global/domain/components/base.component';
+import { Settings } from '../entities/settings.entity';
 
 @Injectable()
 export class SettingsRepository extends BaseComponent {
@@ -50,4 +51,4 @@ export class SettingsRepository extends BaseComponent {
       locationServicesEnabled: enabled,
     });
   }
-} 
+}

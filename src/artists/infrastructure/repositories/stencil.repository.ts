@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { Stencil } from '../entities/stencil.entity';
-import { CreateStencilDto, UpdateStencilDto } from '../../domain/dtos/stencil.dto';
-import { Tag } from '../../../tags/tag.entity';
+import { In, Like, Repository } from 'typeorm';
+
 import { BaseComponent } from '../../../global/domain/components/base.component';
+import { Tag } from '../../../tags/tag.entity';
 import { TagsRepository } from '../../../tags/tags.service';
 import { StencilSearchQueryDto } from '../../domain/dtos/stencil-search.dto';
-import { Like } from 'typeorm';
+import {
+  CreateStencilDto,
+  UpdateStencilDto,
+} from '../../domain/dtos/stencil.dto';
 import { StencilStatus } from '../../domain/stencilType';
+import { Stencil } from '../entities/stencil.entity';
 
 @Injectable()
 export class StencilRepository extends BaseComponent {
@@ -43,18 +46,27 @@ export class StencilRepository extends BaseComponent {
     });
   }
 
-  async createStencil(artistId: string, createStencilDto: CreateStencilDto, isFeatured: boolean = false, isHidden: boolean = false): Promise<Stencil> {
+  async createStencil(
+    artistId: string,
+    createStencilDto: CreateStencilDto,
+    isFeatured = false,
+    isHidden = false,
+  ): Promise<Stencil> {
     const { tagIds, ...stencilData } = createStencilDto;
 
     // Using a query runner to allow for a transaction
-    const queryRunner = this.stencilRepository.manager.connection.createQueryRunner();
+    const queryRunner =
+      this.stencilRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       // Use raw query to insert with tsv value computed directly
-      const textSearchFields = `${stencilData.title || ''} ${stencilData.description || ''}`;
-      const insertResult = await queryRunner.query(`
+      const textSearchFields = `${stencilData.title || ''} ${
+        stencilData.description || ''
+      }`;
+      const insertResult = await queryRunner.query(
+        `
         INSERT INTO stencils (
           artist_id, title, description, image_url, image_id, image_version, 
           thumbnail_url, thumbnail_version, is_featured, order_position, 
@@ -64,58 +76,71 @@ export class StencilRepository extends BaseComponent {
           $7, $8, $9, $10, 
           $11, $12, $13, to_tsvector('english', $14) || to_tsvector('spanish', $14), NOW(), NOW()
         ) RETURNING id
-      `, [
-        artistId,
-        stencilData.title,
-        stencilData.description,
-        stencilData.imageUrl,
-        stencilData.imageId,
-        stencilData.imageVersion || 0,
-        stencilData.thumbnailUrl,
-        0, // Default thumbnailVersion to 0 since it's not in CreateStencilDto
-        isFeatured,
-        stencilData.orderPosition || 0,
-        stencilData.price,
-        stencilData.status || StencilStatus.AVAILABLE,
-        isHidden,
-        textSearchFields
-      ]);
+      `,
+        [
+          artistId,
+          stencilData.title,
+          stencilData.description,
+          stencilData.imageUrl,
+          stencilData.imageId,
+          stencilData.imageVersion || 0,
+          stencilData.thumbnailUrl,
+          0, // Default thumbnailVersion to 0 since it's not in CreateStencilDto
+          isFeatured,
+          stencilData.orderPosition || 0,
+          stencilData.price,
+          stencilData.status || StencilStatus.AVAILABLE,
+          isHidden,
+          textSearchFields,
+        ],
+      );
 
       const stencilId = insertResult[0].id;
 
       // Add tags if provided
       if (tagIds && tagIds.length > 0) {
         // Get the tags
-        const tagIdsArray = Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String);
+        const tagIdsArray = Array.isArray(tagIds)
+          ? tagIds
+          : tagIds.split(',').map(String);
         const tags = await this.tagsService.find({
           where: { id: In(tagIdsArray) },
         });
 
         // Create tag relationships using join table
         for (const tag of tags) {
-          await queryRunner.query(`
+          await queryRunner.query(
+            `
             INSERT INTO stencil_tags (stencil_id, tag_id)
             VALUES ($1, $2)
-          `, [stencilId, tag.id]);
+          `,
+            [stencilId, tag.id],
+          );
         }
       }
 
       // Increment the appropriate counters
       if (isHidden) {
         // For hidden stencils, only increment the total counter
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE artist
           SET stencils_count = stencils_count + 1
           WHERE id = $1
-        `, [artistId]);
+        `,
+          [artistId],
+        );
       } else {
         // For visible stencils, increment both counters
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE artist
           SET stencils_count = stencils_count + 1,
               visible_stencils_count = visible_stencils_count + 1
           WHERE id = $1
-        `, [artistId]);
+        `,
+          [artistId],
+        );
       }
 
       // Commit the transaction
@@ -134,7 +159,12 @@ export class StencilRepository extends BaseComponent {
     }
   }
 
-  async updateStencil(id: string, updateStencilDto: UpdateStencilDto, isFeatured: boolean, isHidden: boolean): Promise<Stencil> {
+  async updateStencil(
+    id: string,
+    updateStencilDto: UpdateStencilDto,
+    isFeatured: boolean,
+    isHidden: boolean,
+  ): Promise<Stencil> {
     const { tagIds, ...stencilData } = updateStencilDto;
 
     // First, get the current stencil data to handle visibility changes
@@ -147,7 +177,8 @@ export class StencilRepository extends BaseComponent {
     const wasHidden = currentStencil.isHidden;
 
     // Using a query runner to allow for a transaction
-    const queryRunner = this.stencilRepository.manager.connection.createQueryRunner();
+    const queryRunner =
+      this.stencilRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
@@ -183,78 +214,107 @@ export class StencilRepository extends BaseComponent {
         updateFields.push(`updated_at = NOW()`);
 
         // Execute the update
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE stencils 
           SET ${updateFields.join(', ')}
           WHERE id = $${paramIndex}
-        `, [...params, id]);
+        `,
+          [...params, id],
+        );
       } else {
         // If no other fields to update, just update the featured and hidden flags
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE stencils 
           SET is_featured = $1, is_hidden = $2, updated_at = NOW()
           WHERE id = $3
-        `, [isFeatured, isHidden, id]);
+        `,
+          [isFeatured, isHidden, id],
+        );
       }
 
       // If the visibility state changed, update the appropriate counters
       if (wasHidden !== isHidden) {
         if (isHidden) {
           // Stencil changed from visible to hidden, decrement visible counter
-          await queryRunner.query(`
+          await queryRunner.query(
+            `
             UPDATE artist
             SET visible_stencils_count = visible_stencils_count - 1
             WHERE id = $1 AND visible_stencils_count > 0
-          `, [artistId]);
+          `,
+            [artistId],
+          );
         } else {
           // Stencil changed from hidden to visible, increment visible counter
-          await queryRunner.query(`
+          await queryRunner.query(
+            `
             UPDATE artist
             SET visible_stencils_count = visible_stencils_count + 1
             WHERE id = $1
-          `, [artistId]);
+          `,
+            [artistId],
+          );
         }
       }
 
       // Get the current stencil data to update tsv
       const stencilData2 = await queryRunner.query(
         `SELECT title, description FROM stencils WHERE id = $1`,
-        [id]
+        [id],
       );
 
       // Only update tsv if title or description fields were updated or stencilData2 exists
-      if ((stencilData.title || stencilData.description) && stencilData2.length > 0) {
+      if (
+        (stencilData.title || stencilData.description) &&
+        stencilData2.length > 0
+      ) {
         // Combine original fields with updates for tsv computation
         const title = stencilData.title || stencilData2[0].title || '';
-        const description = stencilData.description || stencilData2[0].description || '';
+        const description =
+          stencilData.description || stencilData2[0].description || '';
 
         // Update the tsv field
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE stencils 
           SET tsv = to_tsvector('english', $1 || ' ' || $2) || to_tsvector('spanish', $1 || ' ' || $2)
           WHERE id = $3
-        `, [title, description, id]);
+        `,
+          [title, description, id],
+        );
       }
 
       // Update tag relationships if specified
       if (tagIds !== undefined) {
         // First, remove existing tag relationships
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           DELETE FROM stencil_tags
           WHERE stencil_id = $1
-        `, [id]);
+        `,
+          [id],
+        );
 
         // Then add new tag relationships
         if (tagIds && tagIds.length > 0) {
           const tags = await this.tagsService.find({
-            where: { id: In(Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String)) },
+            where: {
+              id: In(
+                Array.isArray(tagIds) ? tagIds : tagIds.split(',').map(String),
+              ),
+            },
           });
 
           for (const tag of tags) {
-            await queryRunner.query(`
+            await queryRunner.query(
+              `
               INSERT INTO stencil_tags (stencil_id, tag_id)
               VALUES ($1, $2)
-            `, [id, tag.id]);
+            `,
+              [id, tag.id],
+            );
           }
         }
       }
@@ -284,34 +344,44 @@ export class StencilRepository extends BaseComponent {
     const isHidden = stencil.isHidden;
 
     // Using a query runner to allow for a transaction
-    const queryRunner = this.stencilRepository.manager.connection.createQueryRunner();
+    const queryRunner =
+      this.stencilRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       // Soft delete the stencil
-      await queryRunner.query(`
+      await queryRunner.query(
+        `
         UPDATE stencils
         SET deleted_at = NOW()
         WHERE id = $1
-      `, [id]);
+      `,
+        [id],
+      );
 
       // Update the appropriate counters based on the stencil's visibility
       if (isHidden) {
         // If the stencil was hidden, only decrement the total counter
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE artist
           SET stencils_count = stencils_count - 1
           WHERE id = $1 AND stencils_count > 0
-        `, [artistId]);
+        `,
+          [artistId],
+        );
       } else {
         // If the stencil was visible, decrement both counters
-        await queryRunner.query(`
+        await queryRunner.query(
+          `
           UPDATE artist
           SET stencils_count = stencils_count - 1,
               visible_stencils_count = visible_stencils_count - 1
           WHERE id = $1 AND stencils_count > 0 AND visible_stencils_count > 0
-        `, [artistId]);
+        `,
+          [artistId],
+        );
       }
 
       // Commit the transaction
@@ -335,10 +405,10 @@ export class StencilRepository extends BaseComponent {
 
   async findStencilsByArtistIdWithPagination(
     artistId: string,
-    page: number = 1,
-    limit: number = 10,
+    page = 1,
+    limit = 10,
     status?: StencilStatus,
-    includeHidden: boolean = false
+    includeHidden = false,
   ): Promise<[Stencil[], number]> {
     const queryBuilder = this.stencilRepository
       .createQueryBuilder('stencil')
@@ -353,7 +423,9 @@ export class StencilRepository extends BaseComponent {
 
     // Apply hidden filter - only include hidden stencils if explicitly requested
     if (!includeHidden) {
-      queryBuilder.andWhere('stencil.isHidden = :isHidden', { isHidden: false });
+      queryBuilder.andWhere('stencil.isHidden = :isHidden', {
+        isHidden: false,
+      });
     }
 
     queryBuilder.orderBy('stencil.createdAt', 'DESC');
@@ -368,8 +440,9 @@ export class StencilRepository extends BaseComponent {
     return [stencils, total];
   }
 
-
-  async searchStencils(params: StencilSearchQueryDto): Promise<[Stencil[], number]> {
+  async searchStencils(
+    params: StencilSearchQueryDto,
+  ): Promise<[Stencil[], number]> {
     const {
       query,
       tagIds,
@@ -378,7 +451,7 @@ export class StencilRepository extends BaseComponent {
       sortBy = 'relevance',
       page = 1,
       limit = 10,
-      status
+      status,
     } = params;
 
     const queryBuilder = this.stencilRepository
@@ -392,18 +465,23 @@ export class StencilRepository extends BaseComponent {
     }
 
     if (!includeHidden) {
-      queryBuilder.andWhere('stencil.isHidden = :isHidden', { isHidden: false });
+      queryBuilder.andWhere('stencil.isHidden = :isHidden', {
+        isHidden: false,
+      });
     }
 
     if (query && query.trim() !== '') {
-      queryBuilder.andWhere(`
+      queryBuilder.andWhere(
+        `
         stencil.tsv @@ plainto_tsquery('english', :query) OR
         stencil.tsv @@ plainto_tsquery('spanish', :query)
-      `, { query });
+      `,
+        { query },
+      );
 
       if (sortBy === 'relevance') {
-
-        queryBuilder.addSelect(`
+        queryBuilder.addSelect(
+          `
           (ts_rank(stencil.tsv, plainto_tsquery('english', :query), 2) * 0.6) +
           (ts_rank(stencil.tsv, plainto_tsquery('spanish', :query), 2) * 0.6) +
           
@@ -416,7 +494,9 @@ export class StencilRepository extends BaseComponent {
           END) +
           
           (CASE WHEN stencil.is_available = true THEN 0.1 ELSE 0 END)
-        `, 'relevance_score');
+        `,
+          'relevance_score',
+        );
 
         queryBuilder.setParameter('likeQuery', `%${query}%`);
 
@@ -425,7 +505,9 @@ export class StencilRepository extends BaseComponent {
     }
 
     if (tagIds && tagIds.length > 0) {
-      queryBuilder.andWhere('tags.id IN (:...tagIds)', { tagIds: tagIds.split(',').map(String) });
+      queryBuilder.andWhere('tags.id IN (:...tagIds)', {
+        tagIds: tagIds.split(',').map(String),
+      });
     }
 
     if (artistId) {
@@ -457,19 +539,21 @@ export class StencilRepository extends BaseComponent {
     return [stencils, total];
   }
 
-
-  async findTagSuggestions(prefix: string, limit: number = 10): Promise<Tag[]> {
+  async findTagSuggestions(prefix: string, limit = 10): Promise<Tag[]> {
     const tags = await this.tagsService.find({
       where: { name: Like(`${prefix}%`) },
       take: limit,
-      order: { name: 'ASC' }
+      order: { name: 'ASC' },
     });
 
     return tags;
   }
 
-  async findPopularTags(limit: number = 10): Promise<{ id: string; name: string; count: number }[]> {
-    const result = await this.stencilRepository.query(`
+  async findPopularTags(
+    limit = 10,
+  ): Promise<{ id: string; name: string; count: number }[]> {
+    const result = await this.stencilRepository.query(
+      `
       SELECT 
         t.id, 
         t.name, 
@@ -487,12 +571,14 @@ export class StencilRepository extends BaseComponent {
       ORDER BY 
         count DESC
       LIMIT $1
-    `, [limit]);
+    `,
+      [limit],
+    );
 
     return result.map(tag => ({
       id: tag.id,
       name: tag.name,
-      count: Number(tag.count)
+      count: Number(tag.count),
     }));
   }
 }

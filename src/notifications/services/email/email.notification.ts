@@ -51,16 +51,23 @@ export class EmailNotificationService extends BaseComponent {
       cancellationReason?: string;
       eventId?: string;
     },
-    locale: string = 'en',
+    locale = 'en',
   ): Promise<void> {
     // TODO: Use TemplateService for i18n and standardized templates
-    const subject = locale === 'es' ? 'Penalización Aplicada' : 'Penalty Applied';
+    const subject =
+      locale === 'es' ? 'Penalización Aplicada' : 'Penalty Applied';
     const html = `
       <h1>Penalty Applied</h1>
       <p>Hello ${payload.userName},</p>
-      <p>A penalty of ${payload.penaltyAmount} ${payload.currency} has been applied to your account.</p>
+      <p>A penalty of ${payload.penaltyAmount} ${
+      payload.currency
+    } has been applied to your account.</p>
       <p>Reason: ${payload.reason}</p>
-      ${payload.cancellationReason ? `<p>Cancellation Reason: ${payload.cancellationReason}</p>` : ''}
+      ${
+        payload.cancellationReason
+          ? `<p>Cancellation Reason: ${payload.cancellationReason}</p>`
+          : ''
+      }
       ${payload.eventId ? `<p>Related Event ID: ${payload.eventId}</p>` : ''}
       <p>If you have any questions, please contact support.</p>
     `;
@@ -72,7 +79,9 @@ export class EmailNotificationService extends BaseComponent {
       html,
     };
 
-    this.logger.log(`Sending penalty applied email to ${to} with subject: ${subject}`);
+    this.logger.log(
+      `Sending penalty applied email to ${to} with subject: ${subject}`,
+    );
     await this.sendGridClient.send(mailData);
   }
 }

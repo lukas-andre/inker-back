@@ -5,4 +5,4 @@ export enum AppointmentAction {
   UPLOAD_PHOTOS = 'UPLOAD_PHOTOS',
   CONTACT_ARTIST = 'CONTACT_ARTIST',
   CONFIRM_CONSENT = 'CONFIRM_CONSENT',
-} 
+}

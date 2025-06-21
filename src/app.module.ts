@@ -1,12 +1,14 @@
 import { BullModule } from '@nestjs/bull';
 import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
+
 import { AgendaModule } from './agenda/agenda.module';
 import { AlertGateway } from './alert/alert.gateway';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ArtistsModule } from './artists/artists.module';
 import { AuthModule } from './auth/auth.module';
 import { ChatGateway } from './chat/chat.gateway';
+import { ConsentModule } from './consent-module/consent.module';
 import { CustomersModule } from './customers/customers.module';
 import { DatabasesModule } from './databases/database.module';
 import { FollowsModule } from './follows/follows.module';
@@ -19,13 +21,12 @@ import { MultimediasModule } from './multimedias/multimedias.module';
 import { PlacesModule } from './places/places.module';
 import { PostsModule } from './posts/posts.module';
 import { NotificationQueueModule } from './queues/notifications/notification.queue.module';
+import { PenaltyQueuesModule } from './queues/penalty/penaltyQueues.module';
+import { SyncQueueModule } from './queues/sync/sync.queue.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { SchedulerModule } from './schedulers/scheduler.module';
 import { TattooGeneratorModule } from './tattoo-generator/tattooGenerator.module';
 import { UsersModule } from './users/users.module';
-import { SyncQueueModule } from './queues/sync/sync.queue.module';
-import { PenaltyQueuesModule } from './queues/penalty/penaltyQueues.module';
-import { ConsentModule } from './consent-module/consent.module';
 @Module({
   imports: [
     BullModule.forRoot({
@@ -61,7 +62,7 @@ import { ConsentModule } from './consent-module/consent.module';
     SyncQueueModule,
     PenaltyQueuesModule,
     SchedulerModule,
-    ConsentModule
+    ConsentModule,
   ],
   providers: [ChatGateway, AlertGateway, ModulesContainer],
 })

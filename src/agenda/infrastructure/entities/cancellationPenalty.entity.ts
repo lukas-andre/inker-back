@@ -1,13 +1,8 @@
-import {
-  Column,
-  Entity,
-  Index,
-} from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { PenaltyStatus, PenaltyType } from '../../domain/enum';
 import { UserType } from '../../../users/domain/enums/userType.enum';
-
+import { PenaltyStatus, PenaltyType } from '../../domain/enum';
 
 export type PenaltyUserRole = UserType.ARTIST | UserType.CUSTOMER;
 
@@ -58,6 +53,6 @@ export class CancellationPenalty extends BaseEntity {
   agendaId: string | null; // Storing agendaId for easier artist/customer grouping if needed
 
   @Index()
-  @Column({name: 'quotation_id', type: 'uuid', nullable: true})
+  @Column({ name: 'quotation_id', type: 'uuid', nullable: true })
   quotationId: string | null;
-} 
+}

@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { IPlacesService, Prediction } from '../domain/interfaces/placesService.interface';
-import { RateLimiterService } from '../infrastructure/services/rateLimiter.service';
-import { GooglePlacesService } from '../infrastructure/services/googlePlaces.service';
+
 import { PlacesRateLimitError } from '../domain/errors/places.errors';
+import {
+  IPlacesService,
+  Prediction,
+} from '../domain/interfaces/placesService.interface';
+import { GooglePlacesService } from '../infrastructure/services/googlePlaces.service';
+import { RateLimiterService } from '../infrastructure/services/rateLimiter.service';
 
 @Injectable()
 export class GetAutoCompleteUseCase {
@@ -13,7 +17,7 @@ export class GetAutoCompleteUseCase {
 
   async execute(input: string, sessionToken?: string): Promise<Prediction[]> {
     const cacheKey = `autocomplete:${input}:${sessionToken || 'no-session'}`;
-    
+
     // Check cache first
     const cachedResult = this.rateLimiter.getCachedResponse(cacheKey);
     if (cachedResult) {
@@ -27,11 +31,14 @@ export class GetAutoCompleteUseCase {
     }
 
     try {
-      const predictions = await this.placesService.getAutoComplete(input, sessionToken);
-      
+      const predictions = await this.placesService.getAutoComplete(
+        input,
+        sessionToken,
+      );
+
       // Cache the result
       this.rateLimiter.cacheResponse(cacheKey, predictions);
-      
+
       return predictions;
     } catch (error) {
       // Re-throw the error

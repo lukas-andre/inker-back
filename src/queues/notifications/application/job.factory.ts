@@ -7,11 +7,11 @@ import { CustomerRepository } from '../../../customers/infrastructure/providers/
 import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../notifications/services/email/email.notification';
 import { NotificationStorageService } from '../../../notifications/services/notification.storage';
+import { PushNotificationService } from '../../../notifications/services/push/pushNotification.service';
 import { JobType } from '../domain/schemas/job';
 
 import { NotificationJobRegistry } from './job.registry';
 import { NotificationJob } from './jobs/notification.job';
-import { PushNotificationService } from '../../../notifications/services/push/pushNotification.service';
 
 @Injectable()
 export class JobHandlerFactory {

@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
+
 import { UpdateAgendaSettingsReqDto } from '../../infrastructure/dtos/updateAgendaSettingsReq.dto';
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 
 @Injectable()
 export class UpdateAgendaSettingsUseCase {
@@ -8,7 +9,10 @@ export class UpdateAgendaSettingsUseCase {
 
   constructor(private readonly agendaProvider: AgendaRepository) {}
 
-  async execute(agendaId: string, dto: UpdateAgendaSettingsReqDto): Promise<void> {
+  async execute(
+    agendaId: string,
+    dto: UpdateAgendaSettingsReqDto,
+  ): Promise<void> {
     this.logger.log(`Updating settings for agenda ${agendaId}`);
 
     // Find the agenda
@@ -21,11 +25,11 @@ export class UpdateAgendaSettingsUseCase {
 
     // Create update object with only provided fields
     const updateData: Partial<UpdateAgendaSettingsReqDto> = {};
-    
+
     if (dto.open !== undefined) {
       updateData.open = dto.open;
     }
-    
+
     if (dto.public !== undefined) {
       updateData.public = dto.public;
     }

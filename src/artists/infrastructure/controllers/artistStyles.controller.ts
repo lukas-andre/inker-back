@@ -15,16 +15,19 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ArtistsHandler } from '../artists.handler';
-import { ArtistStyleDto, CreateArtistStyleDto, UpdateArtistStyleDto } from '../../domain/dtos/artistStyle.dto';
+
 import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import {
+  ArtistStyleDto,
+  CreateArtistStyleDto,
+  UpdateArtistStyleDto,
+} from '../../domain/dtos/artistStyle.dto';
+import { ArtistsHandler } from '../artists.handler';
 
 @ApiTags('Artist Styles')
 @Controller('artist-styles')
 export class ArtistStylesController {
-  constructor(
-    private readonly artistsHandler: ArtistsHandler,
-  ) {}
+  constructor(private readonly artistsHandler: ArtistsHandler) {}
 
   @Get('artist/:artistId')
   @ApiOperation({ summary: 'Get styles for an artist' })
@@ -68,7 +71,10 @@ export class ArtistStylesController {
     @Param('styleName') styleName: string,
     @Body() updateArtistStyleDto: UpdateArtistStyleDto,
   ): Promise<ArtistStyleDto> {
-    return this.artistsHandler.updateArtistStyle(styleName, updateArtistStyleDto);
+    return this.artistsHandler.updateArtistStyle(
+      styleName,
+      updateArtistStyleDto,
+    );
   }
 
   @Delete(':styleName')

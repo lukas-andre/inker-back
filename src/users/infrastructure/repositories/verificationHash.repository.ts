@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 
 import { verificationHashConf } from '../../../config/verificationHash';
+import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { DBServiceCreateException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { PROBLEMS_CREATING_VERIFICATION_HASH } from '../../domain/errors/codes';
@@ -19,7 +20,6 @@ import {
   VerificationHash,
   VerificationType,
 } from '../entities/verificationHash.entity';
-import { USER_DB_CONNECTION_NAME } from '../../../databases/constants';
 
 @Injectable()
 export class VerificationHashRepository
@@ -121,4 +121,4 @@ export class VerificationHashRepository
   public generateForgotPasswordCode(): string {
     return String(Math.floor(100000 + Math.random() * 900000));
   }
-} 
+}

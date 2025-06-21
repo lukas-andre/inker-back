@@ -1,15 +1,20 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { isAxiosError } from '@nestjs/terminus/dist/utils';
 import { firstValueFrom } from 'rxjs';
-import { IPlacesService, Prediction, PlaceDetails } from '../../domain/interfaces/placesService.interface';
+
 import { PlacesApiStatus, PlacesCountry } from '../../domain/enums/places.enum';
 import {
   PlacesApiError,
   PlacesInvalidApiKeyError,
   PlacesQuotaExceededError,
 } from '../../domain/errors/places.errors';
-import { isAxiosError } from '@nestjs/terminus/dist/utils';
+import {
+  IPlacesService,
+  PlaceDetails,
+  Prediction,
+} from '../../domain/interfaces/placesService.interface';
 
 interface GoogleAutoCompleteResponse {
   predictions: Array<{
@@ -47,7 +52,8 @@ export class GooglePlacesService implements IPlacesService {
   private readonly apiKey: string;
   private readonly language: string;
   private readonly country: string;
-  private readonly baseUrl: string = 'https://maps.googleapis.com/maps/api/place';
+  private readonly baseUrl: string =
+    'https://maps.googleapis.com/maps/api/place';
 
   constructor(
     private readonly configService: ConfigService,
@@ -55,34 +61,40 @@ export class GooglePlacesService implements IPlacesService {
   ) {
     this.apiKey = this.configService.get<string>('places.apiKey');
     this.language = this.configService.get<string>('places.language', 'es-419');
-    this.country = this.configService.get<string>('places.country', PlacesCountry.CHILE);
-    
+    this.country = this.configService.get<string>(
+      'places.country',
+      PlacesCountry.CHILE,
+    );
+
     if (!this.apiKey) {
       throw new Error('Google Places API key is not configured');
     }
   }
 
-  async getAutoComplete(input: string, sessionToken?: string): Promise<Prediction[]> {
+  async getAutoComplete(
+    input: string,
+    sessionToken?: string,
+  ): Promise<Prediction[]> {
     const url = `${this.baseUrl}/autocomplete/json`;
-    
+
     const params: any = {
       input,
       key: this.apiKey,
       language: this.language,
       components: `country:${this.country}`,
     };
-    
+
     if (sessionToken) {
       params.sessiontoken = sessionToken;
     }
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get<GoogleAutoCompleteResponse>(url, { params })
+        this.httpService.get<GoogleAutoCompleteResponse>(url, { params }),
       );
 
       const { data } = response;
-      
+
       switch (data.status) {
         case PlacesApiStatus.OK:
           return data.predictions.map(p => ({
@@ -90,16 +102,16 @@ export class GooglePlacesService implements IPlacesService {
             place_id: p.place_id,
             structured_formatting: p.structured_formatting,
           }));
-        
+
         case PlacesApiStatus.ZERO_RESULTS:
           return [];
-        
+
         case PlacesApiStatus.REQUEST_DENIED:
           throw new PlacesInvalidApiKeyError();
-        
+
         case PlacesApiStatus.OVER_QUERY_LIMIT:
           throw new PlacesQuotaExceededError();
-        
+
         default:
           throw new PlacesApiError(`Google Places API error: ${data.status}`);
       }
@@ -107,56 +119,59 @@ export class GooglePlacesService implements IPlacesService {
       if (error instanceof PlacesApiError) {
         throw error;
       }
-      
+
       if (isAxiosError(error)) {
         throw new PlacesApiError(
           `Google Places API request failed: ${error.response.statusText}`,
-          error.response.status
+          error.response.status,
         );
       }
-      
+
       throw new PlacesApiError('Failed to connect to Google Places API');
     }
   }
 
-  async getPlaceDetails(placeId: string, sessionToken?: string): Promise<any | null> {
+  async getPlaceDetails(
+    placeId: string,
+    sessionToken?: string,
+  ): Promise<any | null> {
     const url = `${this.baseUrl}/details/json`;
-    
+
     const params: any = {
       place_id: placeId,
       key: this.apiKey,
       language: this.language,
       fields: 'formatted_address,name,geometry,address_components',
     };
-    
+
     if (sessionToken) {
       params.sessiontoken = sessionToken;
     }
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get<GooglePlaceDetailsResponse>(url, { params })
+        this.httpService.get<GooglePlaceDetailsResponse>(url, { params }),
       );
 
       const { data } = response;
-      
+
       switch (data.status) {
         case PlacesApiStatus.OK:
           if (!data.result) {
             return null;
           }
           return data;
-        
+
         case PlacesApiStatus.ZERO_RESULTS:
         case PlacesApiStatus.INVALID_REQUEST:
           return null;
-        
+
         case PlacesApiStatus.REQUEST_DENIED:
           throw new PlacesInvalidApiKeyError();
-        
+
         case PlacesApiStatus.OVER_QUERY_LIMIT:
           throw new PlacesQuotaExceededError();
-        
+
         default:
           throw new PlacesApiError(`Google Places API error: ${data.status}`);
       }
@@ -164,14 +179,14 @@ export class GooglePlacesService implements IPlacesService {
       if (error instanceof PlacesApiError) {
         throw error;
       }
-      
+
       if (isAxiosError(error)) {
         throw new PlacesApiError(
           `Google Places API request failed: ${error.response.statusText}`,
-          error.response.status
+          error.response.status,
         );
       }
-      
+
       throw new PlacesApiError('Failed to connect to Google Places API');
     }
   }

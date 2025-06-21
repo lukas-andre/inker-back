@@ -12,4 +12,4 @@ export interface IArtistMetrics {
     views: IViewMetrics;
     followers?: IFollowerMetrics;
   };
-} 
+}

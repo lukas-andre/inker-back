@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { GetAgendaSettingsResDto } from '../../infrastructure/dtos/getAgendaSettingsRes.dto';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 
@@ -14,9 +15,7 @@ export class GetAgendaSettingsUseCase {
     open: true,
   };
 
-  constructor(
-    private readonly agendaProvider: AgendaRepository,
-  ) { }
+  constructor(private readonly agendaProvider: AgendaRepository) {}
 
   async execute(agendaId: string): Promise<GetAgendaSettingsResDto> {
     try {
@@ -25,7 +24,9 @@ export class GetAgendaSettingsUseCase {
       });
 
       if (!agenda) {
-        this.logger.log(`No agenda found for ID ${agendaId}, returning default settings`);
+        this.logger.log(
+          `No agenda found for ID ${agendaId}, returning default settings`,
+        );
         return { ...this.DEFAULT_SETTINGS };
       }
 
@@ -38,20 +39,26 @@ export class GetAgendaSettingsUseCase {
           ? agenda.workingHoursEnd
           : this.DEFAULT_SETTINGS.workingHoursEnd,
 
-        workingDays: Array.isArray(agenda.workingDays) && agenda.workingDays.length > 0
-          ? agenda.workingDays
-          : this.DEFAULT_SETTINGS.workingDays,
+        workingDays:
+          Array.isArray(agenda.workingDays) && agenda.workingDays.length > 0
+            ? agenda.workingDays
+            : this.DEFAULT_SETTINGS.workingDays,
 
-        public: typeof agenda.public === 'boolean'
-          ? agenda.public
-          : this.DEFAULT_SETTINGS.public,
+        public:
+          typeof agenda.public === 'boolean'
+            ? agenda.public
+            : this.DEFAULT_SETTINGS.public,
 
-        open: typeof agenda.open === 'boolean'
-          ? agenda.open
-          : this.DEFAULT_SETTINGS.open,
+        open:
+          typeof agenda.open === 'boolean'
+            ? agenda.open
+            : this.DEFAULT_SETTINGS.open,
       };
     } catch (error) {
-      this.logger.error(`Error retrieving agenda settings: ${(error as Error).message}`, (error as Error).stack);
+      this.logger.error(
+        `Error retrieving agenda settings: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
       return { ...this.DEFAULT_SETTINGS };
     }
   }

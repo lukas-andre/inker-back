@@ -1,11 +1,13 @@
 import { BullModule } from '@nestjs/bull';
 import { Module, forwardRef } from '@nestjs/common';
-import { queues } from '../queues';
-import { SyncProcessor } from './sync.processor';
+
+import { AgendaModule } from '../../agenda/agenda.module';
+import { AgendaRepositoryModule } from '../../agenda/infrastructure/repositories/agendaRepository.module';
 import { ArtistsRepositoryModule } from '../../artists/infrastructure/repositories/artistRepository.module';
 import { ReviewRepositoryModule } from '../../reviews/database/reviewRepository.module';
-import { AgendaRepositoryModule } from '../../agenda/infrastructure/repositories/agendaRepository.module';
-import { AgendaModule } from '../../agenda/agenda.module';
+import { queues } from '../queues';
+
+import { SyncProcessor } from './sync.processor';
 
 @Module({
   imports: [

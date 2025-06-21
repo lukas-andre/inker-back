@@ -65,7 +65,7 @@ export class QuotationAcceptedJob implements NotificationJob {
         to: artist.contact.email,
         artistName: artist.username,
         customerName: customer.firstName,
-        estimatedCost: quotation.estimatedCost?.toString() || "N/A",
+        estimatedCost: quotation.estimatedCost?.toString() || 'N/A',
         appointmentDate: quotation.appointmentDate,
         appointmentDuration: quotation.appointmentDuration,
         mailId: 'QUOTATION_ACCEPTED',
@@ -90,7 +90,10 @@ export class QuotationAcceptedJob implements NotificationJob {
         this.emailNotificationService.sendEmail(quotationAcceptedEmailData),
       ]);
     } catch (error) {
-      console.error('Failed to process quotation accepted notification:', error);
+      console.error(
+        'Failed to process quotation accepted notification:',
+        error,
+      );
     }
   }
 }

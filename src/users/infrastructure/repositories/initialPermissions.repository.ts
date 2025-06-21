@@ -51,4 +51,4 @@ export class InitialPermissionsRepository extends BaseComponent {
   public async getAllRoutes(): Promise<Permission[]> {
     return this.permissionsRepository.find();
   }
-} 
+}

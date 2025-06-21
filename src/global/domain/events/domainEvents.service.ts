@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 // import { InjectQueue } from '@nestjs/bull'; // Removed
 // import { Queue } from 'bull'; // Removed
 // import { queues } from '../../../queues/queues'; // Removed
@@ -14,13 +15,15 @@ export interface IDomainEvent {
 export class DomainEventsService {
   private readonly logger = new Logger(DomainEventsService.name);
 
-  constructor(
-    // @InjectQueue(queues.penaltyProcessing.name) private readonly penaltyProcessingQueue: Queue, // Removed
-  ) {}
+  constructor() {} // @InjectQueue(queues.penaltyProcessing.name) private readonly penaltyProcessingQueue: Queue, // Removed
 
   async emitEvent(event: IDomainEvent) {
     const eventIdentifier = event.eventName || event.constructor.name;
-    this.logger.log(`Domain Event Emitted: ${eventIdentifier}, Data: ${JSON.stringify(event)}`);
+    this.logger.log(
+      `Domain Event Emitted: ${eventIdentifier}, Data: ${JSON.stringify(
+        event,
+      )}`,
+    );
 
     if (event instanceof PenaltyAppliedEvent) {
       // This logic is now moved to CancelEventAndApplyPenaltyUseCase
@@ -38,7 +41,9 @@ export class DomainEventsService {
       //   this.logger.error(`Failed to dispatch PenaltyAppliedEvent to ${queues.penaltyProcessing.name} queue`, error);
       // }
     } else {
-      this.logger.log(`Event ${eventIdentifier} not dispatched to a specific queue (no handler configured in DomainEventsService).`);
+      this.logger.log(
+        `Event ${eventIdentifier} not dispatched to a specific queue (no handler configured in DomainEventsService).`,
+      );
     }
   }
 
@@ -47,4 +52,4 @@ export class DomainEventsService {
       await this.emitEvent(event);
     }
   }
-} 
+}

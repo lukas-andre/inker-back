@@ -25,7 +25,6 @@ import { RatingRate } from '../../../interfaces/reviewAvg.interface';
 import { Review } from '../../entities/review.entity';
 import { ReviewAvg } from '../../entities/reviewAvg.entity';
 import { ReviewReaction } from '../../entities/reviewReaction.entity';
-
 import {
   QueryRunnerFactory,
   QueryRunnerInterface,
@@ -86,7 +85,8 @@ describe('ReviewProvider', () => {
     }).compile();
 
     reviewProvider = moduleFixture.get<ReviewRepository>(ReviewRepository);
-    reviewAvgProvider = moduleFixture.get<ReviewAvgRepository>(ReviewAvgRepository);
+    reviewAvgProvider =
+      moduleFixture.get<ReviewAvgRepository>(ReviewAvgRepository);
     reviewReactionProvider = moduleFixture.get<ReviewReactionRepository>(
       ReviewReactionRepository,
     );

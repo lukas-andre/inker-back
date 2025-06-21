@@ -6,8 +6,8 @@ import {
   VerificationType,
 } from '../../../infrastructure/entities/verificationHash.entity';
 import {
-  userQueries,
   UsersRepository,
+  userQueries,
 } from '../../../infrastructure/repositories/users.repository';
 import { VerificationHashRepository } from '../../../infrastructure/repositories/verificationHash.repository';
 

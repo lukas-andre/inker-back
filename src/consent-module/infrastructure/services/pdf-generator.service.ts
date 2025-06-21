@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SignedConsentEntity } from '../../../agenda/infrastructure/entities/signedConsent.entity';
+
 import { FormTemplateEntity } from '../../../agenda/infrastructure/entities/formTemplate.entity';
-import { MultimediasService } from '../../../multimedias/services/multimedias.service';
+import { SignedConsentEntity } from '../../../agenda/infrastructure/entities/signedConsent.entity';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
-import { SignedConsentRepository } from '../repositories/signed-consent.repository';
-import { FormTemplateRepository } from '../repositories/form-template.repository';
+import { MultimediasService } from '../../../multimedias/services/multimedias.service';
 import { PdfJobPayload } from '../../domain/dtos/pdf-job.payload.schema';
+import { FormTemplateRepository } from '../repositories/form-template.repository';
+import { SignedConsentRepository } from '../repositories/signed-consent.repository';
 // import * as puppeteer from 'puppeteer'; // Or puppeteer-core
 
 @Injectable()
@@ -18,7 +19,10 @@ export class PdfGeneratorService {
     private readonly formTemplateRepository: FormTemplateRepository,
   ) {}
 
-  async generatePdf(signedConsent: SignedConsentEntity, template: FormTemplateEntity): Promise<Buffer> {
+  async generatePdf(
+    signedConsent: SignedConsentEntity,
+    template: FormTemplateEntity,
+  ): Promise<Buffer> {
     this.logger.log(`Generating PDF for signed consent: ${signedConsent.id}`);
 
     // 1. Construct HTML content from signedConsent.signedData and template.schema
@@ -39,10 +43,15 @@ export class PdfGeneratorService {
 
     // Placeholder until Puppeteer logic is implemented
     this.logger.warn('PDF generation logic is a placeholder.');
-    return Buffer.from(`Placeholder PDF content for consent: ${signedConsent.id}. Title: ${template.title}`);
+    return Buffer.from(
+      `Placeholder PDF content for consent: ${signedConsent.id}. Title: ${template.title}`,
+    );
   }
 
-  private constructHtml(signedConsent: SignedConsentEntity, template: FormTemplateEntity): string {
+  private constructHtml(
+    signedConsent: SignedConsentEntity,
+    template: FormTemplateEntity,
+  ): string {
     // Basic HTML construction - this would be much more sophisticated
     let fieldsHtml = '';
     for (const field of template.content.fields) {
@@ -51,13 +60,16 @@ export class PdfGeneratorService {
     }
 
     if (signedConsent.digitalSignature) {
-        // Assuming digitalSignature is a URL to an image or base64 data URI
-        if (signedConsent.digitalSignature.startsWith('data:image') || signedConsent.digitalSignature.startsWith('http')) {
-            fieldsHtml += `<div><strong>Signature:</strong><br/><img src="${signedConsent.digitalSignature}" alt="Signature" style="max-width: 200px; max-height: 100px; border: 1px solid #ccc;"/></div>`;
-        } else {
-            // If it's just a string (e.g. typed name), display as text
-            fieldsHtml += `<p><strong>Signature (Typed):</strong> ${signedConsent.digitalSignature}</p>`;
-        }
+      // Assuming digitalSignature is a URL to an image or base64 data URI
+      if (
+        signedConsent.digitalSignature.startsWith('data:image') ||
+        signedConsent.digitalSignature.startsWith('http')
+      ) {
+        fieldsHtml += `<div><strong>Signature:</strong><br/><img src="${signedConsent.digitalSignature}" alt="Signature" style="max-width: 200px; max-height: 100px; border: 1px solid #ccc;"/></div>`;
+      } else {
+        // If it's just a string (e.g. typed name), display as text
+        fieldsHtml += `<p><strong>Signature (Typed):</strong> ${signedConsent.digitalSignature}</p>`;
+      }
     }
 
     return `
@@ -89,11 +101,21 @@ export class PdfGeneratorService {
 
   // Method to be called by the Bull job processor
   async processPdfGenerationJob(payload: PdfJobPayload): Promise<void> {
-    this.logger.log(`Processing PDF generation job for payload: ${JSON.stringify(payload)}`);
-    
-    const signedConsent = await this.signedConsentRepository.findOne(payload.signedConsentId);
-    if (!signedConsent || !signedConsent.formTemplateId || !signedConsent.event) {
-      this.logger.error(`Signed consent, form template ID, or event not found for consent ID: ${payload.signedConsentId}`);
+    this.logger.log(
+      `Processing PDF generation job for payload: ${JSON.stringify(payload)}`,
+    );
+
+    const signedConsent = await this.signedConsentRepository.findOne(
+      payload.signedConsentId,
+    );
+    if (
+      !signedConsent ||
+      !signedConsent.formTemplateId ||
+      !signedConsent.event
+    ) {
+      this.logger.error(
+        `Signed consent, form template ID, or event not found for consent ID: ${payload.signedConsentId}`,
+      );
       // TODO: Add error handling, maybe move to dead letter queue or retry with backoff
       return;
     }
@@ -101,9 +123,13 @@ export class PdfGeneratorService {
     // The `findOne` in SignedConsentRepository was updated to include `event` relation.
     // Assuming event.agenda.artistId or similar is accessible for path, or adapt `multimediasService` path logic.
 
-    const template = await this.formTemplateRepository.findById(signedConsent.formTemplateId);
+    const template = await this.formTemplateRepository.findById(
+      signedConsent.formTemplateId,
+    );
     if (!template) {
-      this.logger.error(`Form template not found for ID: ${signedConsent.formTemplateId}`);
+      this.logger.error(
+        `Form template not found for ID: ${signedConsent.formTemplateId}`,
+      );
       // TODO: Add error handling
       return;
     }
@@ -113,7 +139,10 @@ export class PdfGeneratorService {
     const file: FileInterface = {
       buffer: pdfBuffer,
       mimetype: 'application/pdf',
-      originalname: `consent-${signedConsent.id}-${template.title.replace(/\s+/g, '_')}.pdf`,
+      originalname: `consent-${signedConsent.id}-${template.title.replace(
+        /\s+/g,
+        '_',
+      )}.pdf`,
       size: pdfBuffer.length,
     };
 
@@ -124,16 +153,25 @@ export class PdfGeneratorService {
     const s3FileName = `consent_form_${signedConsent.id}.pdf`;
 
     try {
-      const uploadResult = await this.multimediasService.upload(file, s3SourcePath, s3FileName);
-      this.logger.log(`PDF uploaded for consent ${signedConsent.id}: ${uploadResult.cloudFrontUrl}`);
+      const uploadResult = await this.multimediasService.upload(
+        file,
+        s3SourcePath,
+        s3FileName,
+      );
+      this.logger.log(
+        `PDF uploaded for consent ${signedConsent.id}: ${uploadResult.cloudFrontUrl}`,
+      );
 
       // Optionally, update SignedConsentEntity with PDF location or status
       // signedConsent.pdfUrl = uploadResult.cloudFrontUrl; // Add a field to SignedConsentEntity for this
       // await this.signedConsentRepository.save(signedConsent);
     } catch (e) {
       const error = e as Error;
-      this.logger.error(`Failed to upload PDF for consent ${signedConsent.id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to upload PDF for consent ${signedConsent.id}: ${error.message}`,
+        error.stack,
+      );
       // TODO: Add error handling, retry, or dead-letter queue logic
     }
   }
-} 
+}

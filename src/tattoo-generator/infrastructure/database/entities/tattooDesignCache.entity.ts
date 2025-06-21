@@ -1,10 +1,10 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('tattoo_design_cache')
@@ -15,10 +15,10 @@ export class TattooDesignCacheEntity {
   @Column({ type: 'text' })
   userQuery: string;
 
-  @Column({ 
-    type: 'text', 
+  @Column({
+    type: 'text',
     nullable: true,
-    comment: 'Tattoo style from TattooStyle enum'
+    comment: 'Tattoo style from TattooStyle enum',
   })
   style: string;
 
@@ -46,4 +46,4 @@ export class TattooDesignCacheEntity {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
-} 
+}

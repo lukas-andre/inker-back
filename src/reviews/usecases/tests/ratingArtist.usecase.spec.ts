@@ -17,7 +17,6 @@ import {
   FindIfCustomerAlreadyReviewTheEventResult,
   ReviewRepository,
 } from '../../database/repositories/review.repository';
-
 import { RatingArtistUsecase } from '../ratingArtist.usecase';
 
 describe('RatingArtistUsecase', () => {

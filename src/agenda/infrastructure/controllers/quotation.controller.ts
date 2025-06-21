@@ -4,14 +4,14 @@ import {
   Get,
   HttpCode,
   Param,
+  Patch,
   Post,
   Query,
+  Request,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
-  Request,
-  Patch,
-  UploadedFiles,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,33 +24,45 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FileFastifyInterceptor, FilesFastifyInterceptor } from 'fastify-file-interceptor';
-import { DefaultResponseDto, DefaultResponseStatus } from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import {
+  FileFastifyInterceptor,
+  FilesFastifyInterceptor,
+} from 'fastify-file-interceptor';
+
+import {
+  DefaultResponseDto,
+  DefaultResponseStatus,
+} from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import { OfferMessageDto } from '../../domain/dtos/offerMessage.dto';
+import {
+  ListParticipatingQuotationsResDto,
+  ParticipatingQuotationOfferDto,
+} from '../../domain/dtos/participatingQuotationOffer.dto';
+import { TimeSlot } from '../../services/scheduling.service';
 import { AgendaHandler } from '../agenda.handler';
 import { ArtistQuotationActionDto } from '../dtos/artistQuotationAction.dto';
+import { CreateQuotationOfferReqDto } from '../dtos/createQuotationOfferReq.dto';
 import { CreateQuotationReqDto } from '../dtos/createQuotationReq.dto';
 import { CustomerQuotationActionDto } from '../dtos/customerQuotationAction.dto';
 import { GetQuotationResDto } from '../dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from '../dtos/getQuotationsQuery.dto';
-import { TimeSlot } from '../../services/scheduling.service';
-import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from '../dtos/listOpenQuotationsQuery.dto';
-import { CreateQuotationOfferReqDto } from '../dtos/createQuotationOfferReq.dto';
+import {
+  GetOpenQuotationsResDto,
+  ListOpenQuotationsQueryDto,
+} from '../dtos/listOpenQuotationsQuery.dto';
 import { ListQuotationOffersResDto } from '../dtos/listQuotationOffersRes.dto';
 import { SendOfferMessageReqDto } from '../dtos/sendOfferMessageReq.dto';
-import { OfferMessageDto } from '../../domain/dtos/offerMessage.dto';
-import { ListParticipatingQuotationsResDto } from '../../domain/dtos/participatingQuotationOffer.dto';
-import { ParticipatingQuotationOfferDto } from '../../domain/dtos/participatingQuotationOffer.dto';
-import { UpdateQuotationOfferReqDto } from '../dtos/updateQuotationOfferReq.dto';
 import { UpdateOpenQuotationReqDto } from '../dtos/updateOpenQuotationReq.dto';
+import { UpdateQuotationOfferReqDto } from '../dtos/updateQuotationOfferReq.dto';
 
 @ApiTags('quotations')
 @Controller('quotations')
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
 export class QuotationController {
-  constructor(private readonly quotationHandler: AgendaHandler) { }
+  constructor(private readonly quotationHandler: AgendaHandler) {}
 
   @ApiOperation({ summary: 'Create a direct or open quotation' })
   @HttpCode(201)
@@ -80,7 +92,9 @@ export class QuotationController {
     return this.quotationHandler.getQuotation(id);
   }
 
-  @ApiOperation({ summary: 'List quotations (filtered, for customer or artist)' })
+  @ApiOperation({
+    summary: 'List quotations (filtered, for customer or artist)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Quotations retrieved successfully.',
@@ -94,20 +108,23 @@ export class QuotationController {
     return this.quotationHandler.getQuotations(query);
   }
 
-  @ApiOperation({ summary: '[Artist] List quotations the artist is participating in (has offered on)' })
+  @ApiOperation({
+    summary:
+      '[Artist] List quotations the artist is participating in (has offered on)',
+  })
   @ApiOkResponse({
     description: 'Participating quotation offers retrieved successfully.',
     type: ListParticipatingQuotationsResDto,
   })
   @Get('/participating')
-  async listParticipatingQuotations(
-  ): Promise<ListParticipatingQuotationsResDto> {
+  async listParticipatingQuotations(): Promise<ListParticipatingQuotationsResDto> {
     return this.quotationHandler.listParticipatingQuotations();
   }
 
   @ApiOperation({ summary: '[Artist] List available open quotations' })
   @ApiOkResponse({
-    description: 'Open quotations retrieved successfully. Each quotation includes a list of offers received so far.',
+    description:
+      'Open quotations retrieved successfully. Each quotation includes a list of offers received so far.',
     type: GetOpenQuotationsResDto,
   })
   @Get('/open')
@@ -118,7 +135,10 @@ export class QuotationController {
   }
 
   @ApiOperation({ summary: '[Artist] Submit an offer for an open quotation' })
-  @ApiCreatedResponse({ description: 'Offer submitted successfully.', type: DefaultResponseDto })
+  @ApiCreatedResponse({
+    description: 'Offer submitted successfully.',
+    type: DefaultResponseDto,
+  })
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @ApiBody({ type: CreateQuotationOfferReqDto })
   @Post(':id/offers')
@@ -129,11 +149,19 @@ export class QuotationController {
     @UploadedFile() files: FileInterface[],
   ): Promise<DefaultResponseDto> {
     const result = await this.quotationHandler.submitOffer(quotationId, dto);
-    return { status: DefaultResponseStatus.CREATED, data: `Offer ${result.id} submitted.` };
+    return {
+      status: DefaultResponseStatus.CREATED,
+      data: `Offer ${result.id} submitted.`,
+    };
   }
 
-  @ApiOperation({ summary: '[Customer] List offers received for an open quotation' })
-  @ApiOkResponse({ description: 'Offers retrieved successfully.', type: ListQuotationOffersResDto })
+  @ApiOperation({
+    summary: '[Customer] List offers received for an open quotation',
+  })
+  @ApiOkResponse({
+    description: 'Offers retrieved successfully.',
+    type: ListQuotationOffersResDto,
+  })
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @Get(':id/offers')
   async listOffers(
@@ -143,8 +171,13 @@ export class QuotationController {
     return this.quotationHandler.listOffers(quotationId);
   }
 
-  @ApiOperation({ summary: '[Customer] Accept a specific offer for an open quotation' })
-  @ApiOkResponse({ description: 'Offer accepted successfully.', type: DefaultResponseDto })
+  @ApiOperation({
+    summary: '[Customer] Accept a specific offer for an open quotation',
+  })
+  @ApiOkResponse({
+    description: 'Offer accepted successfully.',
+    type: DefaultResponseDto,
+  })
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @ApiParam({ name: 'offerId', description: 'Offer ID to accept' })
   @Post(':id/offers/:offerId/accept')
@@ -152,7 +185,10 @@ export class QuotationController {
     @Param('id') quotationId: string,
     @Param('offerId') offerId: string,
   ): Promise<DefaultResponseDto> {
-    const result = await this.quotationHandler.acceptOffer(quotationId, offerId);
+    const result = await this.quotationHandler.acceptOffer(
+      quotationId,
+      offerId,
+    );
     return { status: DefaultResponseStatus.OK, data: result.message };
   }
 
@@ -211,13 +247,19 @@ export class QuotationController {
     return this.quotationHandler.handleGetSuggestedTimeSlots(id);
   }
 
-  @ApiOperation({ summary: '[Customer/Artist] Send a message regarding a specific offer' })
-  @ApiOkResponse({ description: 'Message sent successfully.', type: OfferMessageDto })
+  @ApiOperation({
+    summary: '[Customer/Artist] Send a message regarding a specific offer',
+  })
+  @ApiOkResponse({
+    description: 'Message sent successfully.',
+    type: OfferMessageDto,
+  })
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @ApiParam({ name: 'offerId', description: 'Offer ID' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Message content and optional image file. Send image using a field named \'image\'.',
+    description:
+      "Message content and optional image file. Send image using a field named 'image'.",
     type: SendOfferMessageReqDto,
   })
   @Post(':id/offers/:offerId/messages')
@@ -251,8 +293,13 @@ export class QuotationController {
     return this.quotationHandler.getQuotationOffer(offerId);
   }
 
-  @ApiOperation({ summary: '[Artist] Update quotation offer estimated cost and duration' })
-  @ApiOkResponse({ description: 'Quotation offer updated successfully.', type: DefaultResponseDto })
+  @ApiOperation({
+    summary: '[Artist] Update quotation offer estimated cost and duration',
+  })
+  @ApiOkResponse({
+    description: 'Quotation offer updated successfully.',
+    type: DefaultResponseDto,
+  })
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @ApiParam({ name: 'offerId', description: 'Offer ID to update' })
   @ApiBody({ type: UpdateQuotationOfferReqDto })
@@ -263,11 +310,20 @@ export class QuotationController {
     @Body() dto: UpdateQuotationOfferReqDto,
   ): Promise<DefaultResponseDto> {
     await this.quotationHandler.updateQuotationOffer(quotationId, offerId, dto);
-    return { status: DefaultResponseStatus.OK, data: 'Quotation offer updated successfully.' };
+    return {
+      status: DefaultResponseStatus.OK,
+      data: 'Quotation offer updated successfully.',
+    };
   }
 
-  @ApiOperation({ summary: '[Customer] Actualizar cotización abierta (presupuesto, descripción, imagen generada)' })
-  @ApiOkResponse({ description: 'Cotización actualizada correctamente.', type: DefaultResponseDto })
+  @ApiOperation({
+    summary:
+      '[Customer] Actualizar cotización abierta (presupuesto, descripción, imagen generada)',
+  })
+  @ApiOkResponse({
+    description: 'Cotización actualizada correctamente.',
+    type: DefaultResponseDto,
+  })
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @ApiBody({ type: UpdateOpenQuotationReqDto })
   @Patch(':id')
@@ -276,6 +332,9 @@ export class QuotationController {
     @Body() dto: UpdateOpenQuotationReqDto,
   ): Promise<DefaultResponseDto> {
     await this.quotationHandler.updateOpenQuotation(quotationId, dto);
-    return { status: DefaultResponseStatus.OK, data: 'Cotización actualizada correctamente.' };
+    return {
+      status: DefaultResponseStatus.OK,
+      data: 'Cotización actualizada correctamente.',
+    };
   }
 }

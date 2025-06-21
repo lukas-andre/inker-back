@@ -1,20 +1,21 @@
+import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { AgendaEventRepository } from '../../../agenda/infrastructure/repositories/agendaEvent.repository';
+
 import { AgendaEventStatus } from '../../../agenda/domain/enum/agendaEventStatus.enum';
-import { ReminderCalculationService } from '../../domain/services/reminderCalculation.service';
-import { ReminderType } from '../../domain/enums/reminderType.enum';
-import { queues } from '../../../queues/queues';
+import { AgendaEventRepository } from '../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { BaseComponent } from '../../../global/domain/components/base.component';
+import { queues } from '../../../queues/queues';
+import { ReminderType } from '../../domain/enums/reminderType.enum';
+import { ReminderCalculationService } from '../../domain/services/reminderCalculation.service';
 
 @Injectable()
 export class ReviewReminderJob extends BaseComponent {
   constructor(
     private readonly agendaEventRepository: AgendaEventRepository,
     private readonly reminderCalculationService: ReminderCalculationService,
-    @InjectQueue(queues.notification.name) 
+    @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
     super(ReviewReminderJob.name);
@@ -41,21 +42,27 @@ export class ReviewReminderJob extends BaseComponent {
   }
 
   private async processRemindersForType(reminderType: ReminderType) {
-    const { startTime, endTime } = this.reminderCalculationService.getSQLTimestampsForReminder(reminderType);
-    
-    // Get completed events that need review reminders
-    const events = await this.agendaEventRepository.findCompletedEventsForReviewReminder(
-      startTime,
-      endTime,
-      [AgendaEventStatus.COMPLETED, AgendaEventStatus.WAITING_FOR_REVIEW]
-    );
+    const { startTime, endTime } =
+      this.reminderCalculationService.getSQLTimestampsForReminder(reminderType);
 
-    this.logger.log(`Found ${events.length} completed events needing ${reminderType} review reminders`);
+    // Get completed events that need review reminders
+    const events =
+      await this.agendaEventRepository.findCompletedEventsForReviewReminder(
+        startTime,
+        endTime,
+        [AgendaEventStatus.COMPLETED, AgendaEventStatus.WAITING_FOR_REVIEW],
+      );
+
+    this.logger.log(
+      `Found ${events.length} completed events needing ${reminderType} review reminders`,
+    );
 
     for (const event of events) {
       // Check if this reminder was already sent
       if (event.reminderSent && event.reminderSent[reminderType]) {
-        this.logger.debug(`Review reminder ${reminderType} already sent for event ${event.id}`);
+        this.logger.debug(
+          `Review reminder ${reminderType} already sent for event ${event.id}`,
+        );
         continue;
       }
 
@@ -66,9 +73,12 @@ export class ReviewReminderJob extends BaseComponent {
     const eventIds = events
       .filter(e => !e.reminderSent || !e.reminderSent[reminderType])
       .map(e => e.id);
-    
+
     if (eventIds.length > 0) {
-      await this.agendaEventRepository.markRemindersAsSent(eventIds, reminderType);
+      await this.agendaEventRepository.markRemindersAsSent(
+        eventIds,
+        reminderType,
+      );
     }
   }
 
@@ -83,12 +93,17 @@ export class ReviewReminderJob extends BaseComponent {
           eventId: event.id,
           artistId: event.artistId,
           reminderType,
-        }
+        },
       });
 
-      this.logger.log(`Queued ${reminderType} review reminder for event ${event.id}`);
+      this.logger.log(
+        `Queued ${reminderType} review reminder for event ${event.id}`,
+      );
     } catch (error) {
-      this.logger.error(`Failed to queue ${reminderType} review reminder for event ${event.id}:`, error);
+      this.logger.error(
+        `Failed to queue ${reminderType} review reminder for event ${event.id}:`,
+        error,
+      );
     }
   }
-} 
+}

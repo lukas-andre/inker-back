@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { TagsRepository } from '../../../tags/tags.service';
 import { CreateTagDto } from '../../../tags/tag.dto';
+import { TagsRepository } from '../../../tags/tags.service';
 import { WorkTagSuggestionResponseDto } from '../../domain/dtos/work-search.dto';
 
 @Injectable()
@@ -15,32 +16,37 @@ export class CreateWorkTagUseCase extends BaseUseCase {
       // Check if tag already exists
       const existingTag = await this.tagsService.findOne({
         where: {
-          name: params.name.trim().toLowerCase()
-        }
+          name: params.name.trim().toLowerCase(),
+        },
       });
 
       if (existingTag) {
         // Return existing tag
         return {
           id: existingTag.id,
-          name: existingTag.name
+          name: existingTag.name,
         };
       }
 
       // Create new tag
       const newTag = await this.tagsService.save({
         name: params.name.trim().toLowerCase(),
-        createdBy: params.createdBy
+        createdBy: params.createdBy,
       });
 
       // Return created tag
       return {
         id: newTag.id,
-        name: newTag.name
+        name: newTag.name,
       };
     } catch (error) {
-      this.logger.error(`Error creating tag: ${error instanceof Error ? error.message : String(error)}`, error);
+      this.logger.error(
+        `Error creating tag: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        error,
+      );
       throw error;
     }
   }
-} 
+}

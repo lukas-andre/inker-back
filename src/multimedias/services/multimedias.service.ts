@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { S3Client } from '../../global/infrastructure/clients/s3.client';
 import { CloudflareImagesClient } from '../../global/infrastructure/clients/cloudflare-images.client';
+import { S3Client } from '../../global/infrastructure/clients/s3.client';
 import { FileInterface } from '../interfaces/file.interface';
 import { MultimediasMetadataInterface } from '../interfaces/multimediasMetadata.interface';
 import { StorageStrategy } from '../interfaces/storage-strategy.interface';
-import { S3StorageStrategy } from '../strategies/s3-storage.strategy';
 import { CloudflareStorageStrategy } from '../strategies/cloudflare-storage.strategy';
+import { S3StorageStrategy } from '../strategies/s3-storage.strategy';
 
 export interface UploadToS3Result {
   aws: AWS.S3.ManagedUpload.SendData;
@@ -25,13 +25,20 @@ export class MultimediasService {
     private readonly configService: ConfigService,
   ) {
     // Initialize storage strategy based on configuration
-    const storageProvider = this.configService.get<string>('app.storageProvider');
+    const storageProvider = this.configService.get<string>(
+      'app.storageProvider',
+    );
     this.logger.log(`Initializing storage strategy: ${storageProvider}`);
-    
+
     if (storageProvider === 'cloudflare') {
-      this.storageStrategy = new CloudflareStorageStrategy(this.cloudflareClient);
+      this.storageStrategy = new CloudflareStorageStrategy(
+        this.cloudflareClient,
+      );
     } else {
-      this.storageStrategy = new S3StorageStrategy(this.s3Client, this.configService);
+      this.storageStrategy = new S3StorageStrategy(
+        this.s3Client,
+        this.configService,
+      );
     }
   }
 
@@ -43,9 +50,9 @@ export class MultimediasService {
     source = source ? source : 'inker';
     fileName = fileName ? fileName : file.originalname;
     const urlKey = [source, fileName].join('/');
-    
+
     const result = await this.storageStrategy.upload(file, urlKey);
-    
+
     // Return in legacy format for backward compatibility
     return {
       aws: {
@@ -131,9 +138,11 @@ export class MultimediasService {
     if (!workEvidence || !workEvidence.metadata) {
       return;
     }
-    
-    const storageProvider = this.configService.get<string>('app.storageProvider');
-    const deletePromises = workEvidence.metadata.map((fileMeta) => {
+
+    const storageProvider = this.configService.get<string>(
+      'app.storageProvider',
+    );
+    const deletePromises = workEvidence.metadata.map(fileMeta => {
       if (fileMeta.url) {
         if (storageProvider === 'cloudflare') {
           // For Cloudflare, we need to extract the image ID from the URL

@@ -1,9 +1,11 @@
 import { BullModule, InjectQueue } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
-import { queues } from '../queues';
-import { PenaltyProcessorService } from './application/processors/penalty.processor.service';
+
 import { AgendaRepositoryModule } from '../../agenda/infrastructure/repositories/agendaRepository.module'; // For CancellationPenaltyRepository
 import { ReputationModule } from '../../reputation/reputation.module'; // Added
+import { queues } from '../queues';
+
+import { PenaltyProcessorService } from './application/processors/penalty.processor.service';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { ReputationModule } from '../../reputation/reputation.module'; // Added
       },
       {
         name: queues.notification.name, // Adding notification queue for injection
-      }
+      },
     ),
     AgendaRepositoryModule, // To make CancellationPenaltyRepository available for injection
     ReputationModule, // Added
@@ -32,4 +34,4 @@ import { ReputationModule } from '../../reputation/reputation.module'; // Added
   providers: [PenaltyProcessorService],
   exports: [BullModule], // Export BullModule if other modules need to inject this queue by token
 })
-export class PenaltyQueuesModule {} 
+export class PenaltyQueuesModule {}

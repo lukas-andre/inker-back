@@ -29,12 +29,16 @@ import {
   PROBLEMS_FILTERING_ARTISTS,
   TROUBLE_FINDING_LOCATIONS,
 } from '../domain/codes/codes';
+import {
+  ArtistLocationCreateDto,
+  ArtistLocationDto,
+  ArtistLocationUpdateDto,
+} from '../domain/interfaces/artistLocation.interface';
 
 import { AddLocationDto } from './dtos/addLocation.dto';
 import { FindArtistByRangeDTORequest } from './dtos/findArtistByRangeRequest.dto';
 import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
 import { LocationsHandler } from './locations.handler';
-import { ArtistLocationCreateDto, ArtistLocationDto, ArtistLocationUpdateDto } from '../domain/interfaces/artistLocation.interface';
 
 @ApiTags('locations')
 @Controller('locations')
@@ -121,7 +125,11 @@ export class LocationsController {
     @Param('locationId') locationId: string,
     @Body() body: ArtistLocationUpdateDto,
   ): Promise<ArtistLocationDto> {
-    return this.locationsHandler.handleUpdateArtistLocation(artistId, locationId, body);
+    return this.locationsHandler.handleUpdateArtistLocation(
+      artistId,
+      locationId,
+      body,
+    );
   }
 
   @ApiOperation({ summary: 'Delete an artist location' })
@@ -137,6 +145,9 @@ export class LocationsController {
     @Param('artistId') artistId: string,
     @Param('locationId') locationId: string,
   ): Promise<boolean> {
-    return this.locationsHandler.handleDeleteArtistLocation(artistId, locationId);
+    return this.locationsHandler.handleDeleteArtistLocation(
+      artistId,
+      locationId,
+    );
   }
 }

@@ -65,4 +65,4 @@ export class RolesRepository {
   public async findOne(query: FindOneOptions<Role>): Promise<Role> {
     return this.rolesRepository.findOne(query);
   }
-} 
+}

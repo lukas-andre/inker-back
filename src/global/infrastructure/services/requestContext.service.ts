@@ -8,7 +8,6 @@ import {
 } from '../../domain/interfaces/jwtPayload.interface';
 import { InkerClsStore } from '../guards/auth.guard';
 
-
 export type RequestContext = JwtPayload;
 @Injectable()
 export class RequestContextService {

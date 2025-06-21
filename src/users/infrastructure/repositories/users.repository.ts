@@ -251,7 +251,10 @@ export class UsersRepository extends BaseComponent {
       }
       return result;
     } catch (error) {
-      throw new DBServiceUpdateException(this, error instanceof Error ? error.message : String(error));
+      throw new DBServiceUpdateException(
+        this,
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 
@@ -300,4 +303,4 @@ export class UsersRepository extends BaseComponent {
   async findByEmail(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({ where: { email, deletedAt: null } });
   }
-} 
+}

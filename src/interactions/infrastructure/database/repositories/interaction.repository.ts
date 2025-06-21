@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Interaction } from '../entities/interaction.entity';
-import { CreateInteractionDto } from '../../../domain/dtos/interaction.dto';
+
 import { BaseComponent } from '../../../../global/domain/components/base.component';
+import { CreateInteractionDto } from '../../../domain/dtos/interaction.dto';
+import { Interaction } from '../entities/interaction.entity';
 
 @Injectable()
 export class InteractionRepository extends BaseComponent {
@@ -36,7 +37,10 @@ export class InteractionRepository extends BaseComponent {
     });
   }
 
-  async create(userId: string, createInteractionDto: CreateInteractionDto): Promise<Interaction> {
+  async create(
+    userId: string,
+    createInteractionDto: CreateInteractionDto,
+  ): Promise<Interaction> {
     const interaction = this.interactionRepository.create({
       userId,
       ...createInteractionDto,
@@ -71,8 +75,8 @@ export class InteractionRepository extends BaseComponent {
   async getRecentPopularEntities(
     entityType: string,
     interactionType: string,
-    limit: number = 10,
-    daysBack: number = 30,
+    limit = 10,
+    daysBack = 30,
   ): Promise<{ entityId: string; count: number }[]> {
     const dateThreshold = new Date();
     dateThreshold.setDate(dateThreshold.getDate() - daysBack);
@@ -82,7 +86,9 @@ export class InteractionRepository extends BaseComponent {
       .select('interaction.entityId', 'entityId')
       .addSelect('COUNT(interaction.id)', 'count')
       .where('interaction.entityType = :entityType', { entityType })
-      .andWhere('interaction.interactionType = :interactionType', { interactionType })
+      .andWhere('interaction.interactionType = :interactionType', {
+        interactionType,
+      })
       .andWhere('interaction.createdAt > :dateThreshold', { dateThreshold })
       .groupBy('interaction.entityId')
       .orderBy('count', 'DESC')

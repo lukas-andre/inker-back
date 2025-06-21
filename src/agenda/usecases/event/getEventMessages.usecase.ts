@@ -1,15 +1,23 @@
-import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+
+import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
-import { AgendaEvent, EventMessage } from '../../infrastructure/entities/agendaEvent.entity';
 import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 import { UserType } from '../../../users/domain/enums/userType.enum';
 import { AGENDA_EVENT_NOT_EXISTS } from '../../domain/errors/codes';
 import { EventMessageDto } from '../../infrastructure/dtos/eventMessage.dto';
+import {
+  AgendaEvent,
+  EventMessage,
+} from '../../infrastructure/entities/agendaEvent.entity';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 
 @Injectable()
 export class GetEventMessagesUseCase extends BaseUseCase implements UseCase {
@@ -36,13 +44,17 @@ export class GetEventMessagesUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotFound(AGENDA_EVENT_NOT_EXISTS);
     }
     if (!event.agenda) {
-        this.logger.error(`Agenda relationship not loaded for event ${eventId}`);
-        throw new DomainNotFound('Event agenda details not found for authorization check.');
+      this.logger.error(`Agenda relationship not loaded for event ${eventId}`);
+      throw new DomainNotFound(
+        'Event agenda details not found for authorization check.',
+      );
     }
 
     // Authorization Check: User must be the customer or the artist of the event
-    const isCustomer = userType === UserType.CUSTOMER && event.customerId === userTypeId;
-    const isArtist = userType === UserType.ARTIST && event.agenda.artistId === userTypeId;
+    const isCustomer =
+      userType === UserType.CUSTOMER && event.customerId === userTypeId;
+    const isArtist =
+      userType === UserType.ARTIST && event.agenda.artistId === userTypeId;
 
     if (!isCustomer && !isArtist) {
       throw new ForbiddenException(
@@ -53,17 +65,18 @@ export class GetEventMessagesUseCase extends BaseUseCase implements UseCase {
     // Transform EventMessage entities to EventMessageDto array
     // Ensure messages are sorted by timestamp if not already
     const sortedMessages = (event.messages || []).sort(
-        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
-    
+
     return sortedMessages.map(msg => ({
-        id: msg.id,
-        eventId: msg.eventId,
-        senderId: msg.senderId,
-        senderType: msg.senderType,
-        message: msg.message,
-        imageUrl: msg.imageUrl,
-        createdAt: msg.createdAt,
+      id: msg.id,
+      eventId: msg.eventId,
+      senderId: msg.senderId,
+      senderType: msg.senderType,
+      message: msg.message,
+      imageUrl: msg.imageUrl,
+      createdAt: msg.createdAt,
     }));
   }
-} 
+}

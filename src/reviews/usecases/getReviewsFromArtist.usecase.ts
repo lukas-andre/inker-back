@@ -17,9 +17,7 @@ export class GetReviewsFromArtistUsecase
   extends BaseUseCase
   implements UseCase
 {
-  constructor(
-    private readonly reviewProvider: ReviewRepository,
-  ) {
+  constructor(private readonly reviewProvider: ReviewRepository) {
     super(GetReviewsFromArtistUsecase.name);
   }
 

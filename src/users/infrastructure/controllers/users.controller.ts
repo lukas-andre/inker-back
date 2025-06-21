@@ -14,9 +14,13 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
+import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
+import { ActivateUserWithSecretReqDto } from '../dtos/activateUserWithSecret.dto';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
+import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
 import { GetForgotPasswordCodeQueryDto } from '../dtos/getForgotPasswordCodeQuery.dto';
 import { SendAccountVerificationCodeQueryDto } from '../dtos/sendAccountVerificationCodeQuery.dto';
+import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
 import { UpdateUserEmailReqDto } from '../dtos/updateUserEmailReq.dto';
 import { UpdateUserPasswordQueryDto } from '../dtos/updateUserPasswordQuery.dto';
 import { UpdateUserPasswordReqDto } from '../dtos/updateUserPasswordReq.dto';
@@ -25,6 +29,9 @@ import { ValidateAccountVerificationCodeQueryDto } from '../dtos/validateAccount
 import { UsersHandler } from '../handlers/users.handler';
 import { UserIdPipe } from '../pipes/userId.pipe';
 
+import { ActivateUserByEmailDoc } from './docs/activateUserByEmail.doc';
+import { ActivateUserWithSecretDoc } from './docs/activateUserWithSecret.doc';
+import { DeleteUserDoc } from './docs/deleteUser.doc';
 import { GetForgotPasswordCode } from './docs/getForgotPasswordCode.doc';
 import { UpdateUserPasswordDoc } from './docs/updateUserPassword.doc';
 import { UpdateUserUsernameDoc } from './docs/updateUserUsername.doc';
@@ -34,13 +41,6 @@ import {
   UpdateUserEmailDoc,
   ValidateAccountVerificationCodeDoc,
 } from './docs/users.doc';
-import { DeleteUserDoc } from './docs/deleteUser.doc';
-import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
-import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
-import { ActivateUserWithSecretReqDto } from '../dtos/activateUserWithSecret.dto';
-import { ActivateUserWithSecretDoc } from './docs/activateUserWithSecret.doc';
-import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
-import { ActivateUserByEmailDoc } from './docs/activateUserByEmail.doc';
 
 @ApiTags('users')
 @Controller('users')

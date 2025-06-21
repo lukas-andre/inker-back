@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
 import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
@@ -8,7 +9,10 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { MonthlyReportEmailType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
-import { MonthlyReportJobType, MONTHLY_REPORT } from '../../../domain/schemas/agenda';
+import {
+  MONTHLY_REPORT,
+  MonthlyReportJobType,
+} from '../../../domain/schemas/agenda';
 import { NotificationJob } from '../notification.job';
 
 @Injectable()
@@ -38,18 +42,20 @@ export class MonthlyReportJob extends NotificationJob {
   }
 
   async handle(job: MonthlyReportJobType): Promise<void> {
-    const { 
-      artistId, 
-      email, 
-      reportMonth, 
+    const {
+      artistId,
+      email,
+      reportMonth,
       artistName,
       appointments,
       reviews,
       quotations,
-      performance 
+      performance,
     } = job.metadata;
-    
-    this.logger.log(`Handling ${MONTHLY_REPORT} for artist ${artistId}, month: ${reportMonth}`);
+
+    this.logger.log(
+      `Handling ${MONTHLY_REPORT} for artist ${artistId}, month: ${reportMonth}`,
+    );
 
     try {
       // Get artist info
@@ -112,11 +118,15 @@ export class MonthlyReportJob extends NotificationJob {
         },
       );
 
-      this.logger.log(`Successfully sent monthly report for artist ${artistId}, month: ${reportMonth}`);
-
+      this.logger.log(
+        `Successfully sent monthly report for artist ${artistId}, month: ${reportMonth}`,
+      );
     } catch (error) {
       const e = error as Error;
-      this.logger.error(`Error handling ${MONTHLY_REPORT} for artist ${artistId}: ${e.message}`, e.stack);
+      this.logger.error(
+        `Error handling ${MONTHLY_REPORT} for artist ${artistId}: ${e.message}`,
+        e.stack,
+      );
     }
   }
-} 
+}

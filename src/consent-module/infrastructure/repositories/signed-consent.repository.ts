@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { SignedConsentEntity } from '../../../agenda/infrastructure/entities/signedConsent.entity';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { ISignedConsentRepository, ISignedConsentData } from '../../domain/interfaces/signed-consent-repository.interface';
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import {
+  ISignedConsentData,
+  ISignedConsentRepository,
+} from '../../domain/interfaces/signed-consent-repository.interface';
 
 @Injectable()
 export class SignedConsentRepository implements ISignedConsentRepository {
@@ -33,7 +37,7 @@ export class SignedConsentRepository implements ISignedConsentRepository {
         'signedAt', signed_at
       ) as result;
     `;
-    
+
     const result = await this.repository.query(query, [
       data.eventId,
       data.formTemplateId,
@@ -41,9 +45,9 @@ export class SignedConsentRepository implements ISignedConsentRepository {
       data.digitalSignature,
       data.userId,
       data.ipAddress,
-      data.userAgent
+      data.userAgent,
     ]);
-    
+
     return result[0].result;
   }
 
@@ -130,7 +134,10 @@ export class SignedConsentRepository implements ISignedConsentRepository {
     return result.map(r => r.result);
   }
 
-  async findByEventAndUser(eventId: string, userId: string): Promise<SignedConsentEntity | null> {
+  async findByEventAndUser(
+    eventId: string,
+    userId: string,
+  ): Promise<SignedConsentEntity | null> {
     const query = `
       SELECT json_build_object(
         'id', sc.id,
@@ -150,7 +157,11 @@ export class SignedConsentRepository implements ISignedConsentRepository {
     return result[0]?.result || null;
   }
 
-  async findByEventUserAndTemplate(eventId: string, userId: string, formTemplateId?: string): Promise<SignedConsentEntity | null> {
+  async findByEventUserAndTemplate(
+    eventId: string,
+    userId: string,
+    formTemplateId?: string,
+  ): Promise<SignedConsentEntity | null> {
     let query = `
       SELECT json_build_object(
         'id', sc.id,
@@ -179,7 +190,10 @@ export class SignedConsentRepository implements ISignedConsentRepository {
     return result[0]?.result || null;
   }
 
-  async findByEventIdAndUserId(eventId: string, userId: string): Promise<SignedConsentEntity[]> {
+  async findByEventIdAndUserId(
+    eventId: string,
+    userId: string,
+  ): Promise<SignedConsentEntity[]> {
     const query = `
       SELECT json_build_object(
         'id', sc.id,
@@ -255,7 +269,9 @@ export class SignedConsentRepository implements ISignedConsentRepository {
     return result[0]?.result || null;
   }
 
-  async getRequiredConsentsForEvent(eventId: string): Promise<SignedConsentEntity[]> {
+  async getRequiredConsentsForEvent(
+    eventId: string,
+  ): Promise<SignedConsentEntity[]> {
     const query = `
       SELECT json_build_object(
         'id', sc.id,
@@ -275,4 +291,4 @@ export class SignedConsentRepository implements ISignedConsentRepository {
     const result = await this.repository.query(query, [eventId]);
     return result.map(r => r.result);
   }
-} 
+}

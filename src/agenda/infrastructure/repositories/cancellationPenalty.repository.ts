@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
-import { CancellationPenalty } from '../entities/cancellationPenalty.entity';
-import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
+import { CancellationPenalty } from '../entities/cancellationPenalty.entity';
 
 @Injectable()
 export class CancellationPenaltyRepository extends Repository<CancellationPenalty> {
@@ -27,4 +28,4 @@ export class CancellationPenaltyRepository extends Repository<CancellationPenalt
   //     .getRawOne();
   //   return parseFloat(sum) || 0;
   // }
-} 
+}

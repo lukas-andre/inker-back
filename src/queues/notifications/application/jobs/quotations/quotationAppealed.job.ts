@@ -44,7 +44,11 @@ export class QuotationAppealedJob implements NotificationJob {
 
       // Build notification title and message
       const title = 'Quotation Appeal Received';
-      const message = `${customer.firstName} has appealed your quotation decision. Reason: ${quotation.appealedReason || 'No reason provided'}`;
+      const message = `${
+        customer.firstName
+      } has appealed your quotation decision. Reason: ${
+        quotation.appealedReason || 'No reason provided'
+      }`;
 
       // Store notification for artist
       await this.notificationStorageService.storeNotification(
@@ -87,7 +91,10 @@ export class QuotationAppealedJob implements NotificationJob {
         this.emailNotificationService.sendEmail(quotationAppealedEmailData),
       ]);
     } catch (error) {
-      console.error('Failed to process quotation appealed notification:', error);
+      console.error(
+        'Failed to process quotation appealed notification:',
+        error,
+      );
     }
   }
 }

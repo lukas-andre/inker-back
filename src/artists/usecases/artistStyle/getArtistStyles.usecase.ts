@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ArtistStyleRepository } from '../../infrastructure/repositories/artistStyle.repository';
-import { ArtistStyleDto } from '../../domain/dtos/artistStyle.dto';
+
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { ArtistStyleDto } from '../../domain/dtos/artistStyle.dto';
+import { ArtistStyleRepository } from '../../infrastructure/repositories/artistStyle.repository';
 
 @Injectable()
 export class GetArtistStylesUseCase extends BaseUseCase {

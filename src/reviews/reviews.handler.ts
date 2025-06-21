@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { DomainForbidden } from '../global/domain/exceptions/domain.exception';
 import { BaseHandler } from '../global/infrastructure/base.handler';
 import { RequestContextService } from '../global/infrastructure/services/requestContext.service';
-import { ReviewReactionEnum } from './reviews.controller';
 
 import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
+import { ReviewReactionEnum } from './reviews.controller';
 import { GetReviewsFromArtistUsecase } from './usecases/getReviewsFromArtist.usecase';
 import { ReactToReviewUsecase } from './usecases/reactToReview.usecase';
-import { DomainForbidden } from '../global/domain/exceptions/domain.exception';
 
 @Injectable()
 export class ReviewHandler extends BaseHandler {
@@ -29,7 +29,9 @@ export class ReviewHandler extends BaseHandler {
   ) {
     // return this.ratingArtistUseCase.execute(artistId, eventId, userId, body);
 
-    throw new DomainForbidden('DEPRECATED please use EventReviewIntegrationUsecase instead');
+    throw new DomainForbidden(
+      'DEPRECATED please use EventReviewIntegrationUsecase instead',
+    );
   }
 
   async reactToReview(

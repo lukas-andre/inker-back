@@ -1,6 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  Max,
+  Min,
+} from 'class-validator';
+
 import { WorkSource } from '../workType';
 
 export class WorkQueryDto {
@@ -19,33 +27,36 @@ export class WorkQueryDto {
   @Type(() => Number)
   limit?: number = 10;
 
-  @ApiPropertyOptional({ description: 'Mostrar solo trabajos destacados', default: undefined })
+  @ApiPropertyOptional({
+    description: 'Mostrar solo trabajos destacados',
+    default: undefined,
+  })
   @IsOptional()
   @IsBoolean()
   @Type(() => Boolean)
   isFeatured?: boolean;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Filtrar por origen del trabajo (APP o EXTERNAL)',
-    enum: WorkSource
+    enum: WorkSource,
   })
   @IsOptional()
   @IsEnum(WorkSource)
   source?: WorkSource;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Incluir trabajos ocultos en los resultados',
-    default: false
+    default: false,
   })
   @IsOptional()
   @Type(() => Boolean)
   includeHidden?: boolean;
-  
-  @ApiPropertyOptional({ 
+
+  @ApiPropertyOptional({
     description: 'Incluir métricas (vistas y likes) en los resultados',
-    default: true
+    default: true,
   })
   @IsOptional()
   @Type(() => Boolean)
   includeMetrics?: boolean = true;
-} 
+}

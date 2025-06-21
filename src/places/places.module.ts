@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
+
 import { PlacesController } from './infrastructure/controllers/places.controller';
-import { GetAutoCompleteUseCase } from './usecases/getAutoComplete.usecase';
-import { GetPlaceDetailsUseCase } from './usecases/getPlaceDetails.usecase';
+import { IPRateLimitGuard } from './infrastructure/guards/ipRateLimit.guard';
 import { GooglePlacesService } from './infrastructure/services/googlePlaces.service';
 import { RateLimiterService } from './infrastructure/services/rateLimiter.service';
-import { IPRateLimitGuard } from './infrastructure/guards/ipRateLimit.guard';
+import { GetAutoCompleteUseCase } from './usecases/getAutoComplete.usecase';
+import { GetPlaceDetailsUseCase } from './usecases/getPlaceDetails.usecase';
 
 @Module({
   imports: [
@@ -26,11 +27,11 @@ import { IPRateLimitGuard } from './infrastructure/guards/ipRateLimit.guard';
   providers: [
     // Guards
     IPRateLimitGuard,
-    
+
     // Services
     GooglePlacesService,
     RateLimiterService,
-    
+
     // Use Cases
     GetAutoCompleteUseCase,
     GetPlaceDetailsUseCase,

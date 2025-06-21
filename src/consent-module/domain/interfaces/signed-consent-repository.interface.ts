@@ -1,7 +1,8 @@
 import { SignedConsentEntity } from '../../../agenda/infrastructure/entities/signedConsent.entity';
 import { SignConsentDto } from '../dtos/sign-consent.dto';
 
-export interface ISignedConsentData extends Omit<SignConsentDto, 'ipAddress' | 'userAgent'> {
+export interface ISignedConsentData
+  extends Omit<SignConsentDto, 'ipAddress' | 'userAgent'> {
   userId: string;
   ipAddress?: string;
   userAgent?: string;
@@ -14,9 +15,16 @@ export interface ISignedConsentRepository {
   findByEventId(eventId: string): Promise<SignedConsentEntity[]>;
   findByUserId(userId: string): Promise<SignedConsentEntity[]>;
   findByTemplateId(templateId: string): Promise<SignedConsentEntity[]>;
-  findByEventAndUser(eventId: string, userId: string): Promise<SignedConsentEntity | null>;
-  findByEventUserAndTemplate(eventId: string, userId: string, formTemplateId?: string): Promise<SignedConsentEntity | null>;
+  findByEventAndUser(
+    eventId: string,
+    userId: string,
+  ): Promise<SignedConsentEntity | null>;
+  findByEventUserAndTemplate(
+    eventId: string,
+    userId: string,
+    formTemplateId?: string,
+  ): Promise<SignedConsentEntity | null>;
   // Add other methods as needed
 }
 
-export const ISignedConsentRepository = Symbol('ISignedConsentRepository'); 
+export const ISignedConsentRepository = Symbol('ISignedConsentRepository');

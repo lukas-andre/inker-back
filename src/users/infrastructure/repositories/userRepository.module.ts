@@ -7,13 +7,13 @@ import { Role } from '../entities/role.entity';
 import { Settings } from '../entities/settings.entity';
 import { User } from '../entities/user.entity';
 import { VerificationHash } from '../entities/verificationHash.entity';
+
 import { InitialPermissionsRepository } from './initialPermissions.repository';
 import { PermissionsRepository } from './permissions.repository';
 import { RolesRepository } from './roles.repository';
 import { SettingsRepository } from './settings.repository';
 import { UsersRepository } from './users.repository';
 import { VerificationHashRepository } from './verificationHash.repository';
-
 
 @Module({
   imports: [
@@ -39,4 +39,4 @@ import { VerificationHashRepository } from './verificationHash.repository';
     InitialPermissionsRepository,
   ],
 })
-export class UserRepositoryModule {} 
+export class UserRepositoryModule {}

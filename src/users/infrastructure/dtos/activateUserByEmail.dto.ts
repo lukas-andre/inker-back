@@ -10,4 +10,4 @@ export class ActivateUserByEmailReqDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-} 
+}

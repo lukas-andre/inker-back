@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { BaseComponent } from '../../global/domain/components/base.component';
-import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
 import { RequestContext } from '../../global/infrastructure/services/requestContext.service';
+import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
 
 interface UpdateTattooFavoriteParams {
   designId: string;
@@ -16,11 +17,16 @@ export class UpdateTattooFavoriteUseCase extends BaseComponent {
     super(UpdateTattooFavoriteUseCase.name);
   }
 
-  async execute(params: UpdateTattooFavoriteParams, context: RequestContext): Promise<void> {
+  async execute(
+    params: UpdateTattooFavoriteParams,
+    context: RequestContext,
+  ): Promise<void> {
     const { designId, isFavorite } = params;
     const { id: userId, userType, userTypeId } = context;
-    
-    this.logger.log(`Updating favorite status for design ${designId} to ${isFavorite}`);
+
+    this.logger.log(
+      `Updating favorite status for design ${designId} to ${isFavorite}`,
+    );
 
     try {
       // First verify the design exists and belongs to the user
@@ -32,31 +38,41 @@ export class UpdateTattooFavoriteUseCase extends BaseComponent {
         AND metadata->>'userType' = $3
         AND metadata->>'userTypeId' = $4
       `;
-      
-      const result = await this.designCacheRepository.executeRawQuery<{ count: string }>(query, [
-        designId,
-        userId,
-        userType,
-        userTypeId
-      ]);
-      
+
+      const result = await this.designCacheRepository.executeRawQuery<{
+        count: string;
+      }>(query, [designId, userId, userType, userTypeId]);
+
       const count = parseInt(result[0]?.count || '0', 10);
-      
+
       if (count === 0) {
-        throw new NotFoundException(`Design with ID ${designId} not found or does not belong to this user`);
+        throw new NotFoundException(
+          `Design with ID ${designId} not found or does not belong to this user`,
+        );
       }
-      
+
       // Update the favorite status
       await this.designCacheRepository.setFavorite(designId, isFavorite);
-      
-      this.logger.log(`Successfully updated favorite status for design ${designId}`);
+
+      this.logger.log(
+        `Successfully updated favorite status for design ${designId}`,
+      );
     } catch (error: any) {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      
-      this.logger.error(`Error updating tattoo favorite status: ${error?.message || 'Unknown error'}`, error?.stack);
-      throw new Error(`Failed to update favorite status: ${error?.message || 'Unknown error'}`);
+
+      this.logger.error(
+        `Error updating tattoo favorite status: ${
+          error?.message || 'Unknown error'
+        }`,
+        error?.stack,
+      );
+      throw new Error(
+        `Failed to update favorite status: ${
+          error?.message || 'Unknown error'
+        }`,
+      );
     }
   }
-} 
+}

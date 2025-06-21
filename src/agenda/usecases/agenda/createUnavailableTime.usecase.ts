@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AgendaSettingsService } from '../../services/agendaSettings.service';
+
 import { CreateUnavailableTimeReqDto } from '../../infrastructure/dtos/createUnavailableTimeReq.dto';
 import { AgendaUnavailableTime } from '../../infrastructure/entities/agendaUnavailableTime.entity';
+import { AgendaSettingsService } from '../../services/agendaSettings.service';
 
 @Injectable()
 export class CreateUnavailableTimeUseCase {

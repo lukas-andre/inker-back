@@ -17,4 +17,4 @@ export class UpdateTattooFavoriteDto {
   @IsBoolean()
   @IsNotEmpty()
   isFavorite: boolean;
-} 
+}

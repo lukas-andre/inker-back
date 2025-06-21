@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsDate } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
 
 export class ChangeEventStatusReqDto {
   @ApiProperty({
-    description: 'The action to perform on the event, triggering a state transition',
+    description:
+      'The action to perform on the event, triggering a state transition',
     example: AgendaEventTransition.START_SESSION,
     enum: AgendaEventTransition,
   })
@@ -14,7 +15,8 @@ export class ChangeEventStatusReqDto {
   eventAction: AgendaEventTransition;
 
   @ApiProperty({
-    description: 'The specific reason for the status change (e.g., reason for reschedule/cancellation)',
+    description:
+      'The specific reason for the status change (e.g., reason for reschedule/cancellation)',
     example: 'Artist unavailable due to prior commitment.',
     required: false,
   })

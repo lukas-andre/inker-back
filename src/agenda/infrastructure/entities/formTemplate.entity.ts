@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
 import { ConsentType } from '../../domain/enum/consentType.enum';
 
 // Placeholder for FormSchema, will be defined more concretely later
@@ -27,7 +34,7 @@ export interface FormSchema {
   title: string;
   description?: string;
   fields: FormSchemaField[];
-  logic?: FormSchemaLogic; 
+  logic?: FormSchemaLogic;
 }
 
 @Entity('form_templates')
@@ -64,4 +71,4 @@ export class FormTemplateEntity {
 
   @UpdateDateColumn({ type: 'timestamp with time zone', name: 'updated_at' })
   updatedAt: Date;
-} 
+}

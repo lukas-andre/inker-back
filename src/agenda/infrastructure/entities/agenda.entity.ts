@@ -11,7 +11,7 @@ export class Agenda extends BaseEntity {
   userId: string;
 
   @Index()
-  @Column({ name: 'artist_id', default: "0" })
+  @Column({ name: 'artist_id', default: '0' })
   artistId: string;
 
   @Column({
@@ -36,7 +36,10 @@ export class Agenda extends BaseEntity {
   @OneToMany(() => AgendaEvent, agendaEvent => agendaEvent.agenda)
   agendaEvent: AgendaEvent[];
 
-  @OneToMany(() => AgendaUnavailableTime, unavailableTime => unavailableTime.agenda)
+  @OneToMany(
+    () => AgendaUnavailableTime,
+    unavailableTime => unavailableTime.agenda,
+  )
   unavailableTimes: AgendaUnavailableTime[];
 
   @DeleteDateColumn({ name: 'deleted_at' })

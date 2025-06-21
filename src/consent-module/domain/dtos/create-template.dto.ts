@@ -1,7 +1,21 @@
-import { IsEnum, IsNotEmpty, IsObject, IsString, ValidateNested, IsBoolean, IsOptional, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+
 import { ConsentType } from '../../../agenda/domain/enum/consentType.enum';
-import { FormSchema, FormSchemaField, FormSchemaLogic } from '../../../agenda/infrastructure/entities/formTemplate.entity'; // Re-using the interface
+import {
+  FormSchema,
+  FormSchemaField,
+  FormSchemaLogic,
+} from '../../../agenda/infrastructure/entities/formTemplate.entity'; // Re-using the interface
 
 // More detailed validation for FormSchema sub-properties if needed
 class FormSchemaFieldDto implements FormSchemaField {
@@ -26,7 +40,7 @@ class FormSchemaFieldDto implements FormSchemaField {
 
   @IsOptional()
   defaultValue?: any;
-  
+
   @IsOptional()
   @IsObject()
   validation?: Record<string, any>;
@@ -40,16 +54,16 @@ class FormSchemaLogicDto implements FormSchemaLogic {
 }
 
 class FormSchemaLogicConditionDto {
-    @IsString()
-    @IsNotEmpty()
-    field: string;
+  @IsString()
+  @IsNotEmpty()
+  field: string;
 
-    @IsString()
-    @IsNotEmpty()
-    condition: string;
+  @IsString()
+  @IsNotEmpty()
+  condition: string;
 
-    @IsOptional()
-    value?: any;
+  @IsOptional()
+  value?: any;
 }
 
 class FormSchemaDto implements FormSchema {
@@ -87,4 +101,4 @@ export class CreateConsentTemplateDto {
   consentType: ConsentType;
 
   // artistId will be injected from the authenticated user context (e.g., JWT payload)
-} 
+}

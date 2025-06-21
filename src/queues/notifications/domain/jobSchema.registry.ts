@@ -4,19 +4,23 @@ import {
   AgendaEventReminderJobSchema,
   AgendaEventStatusChangedJobSchema,
   AgendaEventUpdatedJobSchema,
+  AppointmentReminderJobSchema,
+  ConfirmationReminderJobSchema,
+  ConsentReminderJobSchema,
+  EventAutoCanceledJobSchema,
+  MonthlyReportJobSchema,
   NewEventMessageJobSchema,
+  PhotoUploadReminderJobSchema,
+  ReviewReminderJobSchema,
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,
   RsvpUnschedulableJobSchema,
-  AppointmentReminderJobSchema,
-  ConsentReminderJobSchema,
-  ConfirmationReminderJobSchema,
-  EventAutoCanceledJobSchema,
-  ReviewReminderJobSchema,
-  PhotoUploadReminderJobSchema,
-  MonthlyReportJobSchema,
 } from './schemas/agenda';
 import { SendVerificationCodeJobSchema } from './schemas/codes';
+import {
+  PENALTY_APPLIED_NOTIFICATION_V1,
+  PenaltyAppliedNotificationV1JobSchema,
+} from './schemas/penaltyNotification.schema';
 import {
   QuotationAcceptedJobSchema,
   QuotationAppealedJobSchema,
@@ -30,7 +34,6 @@ import {
   OfferAcceptedJobSchema,
   OfferRejectedJobSchema,
 } from './schemas/quotationOffer.schema';
-import { PenaltyAppliedNotificationV1JobSchema, PENALTY_APPLIED_NOTIFICATION_V1 } from './schemas/penaltyNotification.schema';
 
 export const JobTypeSchemaRegistry = {
   EVENT_CREATED: AgendaEventCreatedJobSchema,

@@ -38,13 +38,13 @@ export class TemplateService extends BaseComponent implements OnModuleInit {
     Handlebars.registerHelper('formatDateCustom', date => {
       return moment(date).format('dddd D [de] MMMM [del] YYYY [a las] HH:mm');
     });
-    
+
     Handlebars.registerHelper('formatTime', date => {
       return moment(date).format('HH:mm');
     });
 
     Handlebars.registerHelper('eq', (a, b) => a === b);
-    
+
     Handlebars.registerHelper('formatStatus', status => {
       const statusMap = {
         scheduled: 'Programada',
@@ -56,7 +56,7 @@ export class TemplateService extends BaseComponent implements OnModuleInit {
         reviewed: 'Evaluada',
         canceled: 'Cancelada',
       };
-      
+
       return statusMap[status] || status;
     });
   }

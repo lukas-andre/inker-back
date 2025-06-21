@@ -2,26 +2,31 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Post,
   Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Headers,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
+  ApiProperty,
   ApiQuery,
   ApiTags,
-  ApiProperty,
 } from '@nestjs/swagger';
-import { ArtistsHandler } from '../artists.handler';
-import { WorkSearchQueryDto, WorkTagSuggestionQueryDto, WorkTagSuggestionResponseDto } from '../../domain/dtos/work-search.dto';
-import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
+
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { CreateTagDto } from '../../../tags/tag.dto';
+import { PaginatedWorkResponseDto } from '../../domain/dtos/paginated-work-response.dto';
+import {
+  WorkSearchQueryDto,
+  WorkTagSuggestionQueryDto,
+  WorkTagSuggestionResponseDto,
+} from '../../domain/dtos/work-search.dto';
+import { ArtistsHandler } from '../artists.handler';
 
 /**
  * Información detallada sobre el algoritmo de puntuación de relevancia
@@ -29,19 +34,20 @@ import { CreateTagDto } from '../../../tags/tag.dto';
 class WorkSearchRankingInfoDto {
   @ApiProperty({
     description: 'Nombre del factor de relevancia',
-    example: 'title_exact_match'
+    example: 'title_exact_match',
   })
   factor: string;
 
   @ApiProperty({
     description: 'Descripción de cómo afecta este factor a la puntuación',
-    example: 'Si el título del trabajo contiene exactamente la consulta de búsqueda'
+    example:
+      'Si el título del trabajo contiene exactamente la consulta de búsqueda',
   })
   description: string;
 
   @ApiProperty({
     description: 'Peso del factor en la puntuación de relevancia',
-    example: 0.3
+    example: 0.3,
   })
   weight: number;
 }
@@ -53,7 +59,9 @@ export class WorkSearchController {
   constructor(private readonly artistsHandler: ArtistsHandler) {}
 
   @Get()
-  @ApiOperation({ summary: 'Búsqueda avanzada de trabajos con varios criterios' })
+  @ApiOperation({
+    summary: 'Búsqueda avanzada de trabajos con varios criterios',
+  })
   @ApiOkResponse({
     description: 'Resultados de la búsqueda',
     type: PaginatedWorkResponseDto,
@@ -61,17 +69,20 @@ export class WorkSearchController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async searchWorks(
     @Query() searchParams: WorkSearchQueryDto,
-    @Headers('cache-control') cacheControl?: string
+    @Headers('cache-control') cacheControl?: string,
   ): Promise<PaginatedWorkResponseDto> {
     const disableCache = cacheControl === 'no-cache';
     return this.artistsHandler.searchWorks({
       ...searchParams,
-      disableCache
+      disableCache,
     });
   }
 
   @Get('ranking-info')
-  @ApiOperation({ summary: 'Obtener información sobre cómo se calcula la relevancia de los resultados de búsqueda' })
+  @ApiOperation({
+    summary:
+      'Obtener información sobre cómo se calcula la relevancia de los resultados de búsqueda',
+  })
   @ApiOkResponse({
     description: 'Información sobre el algoritmo de ranking',
     type: [WorkSearchRankingInfoDto],
@@ -81,17 +92,20 @@ export class WorkSearchController {
     return [
       {
         factor: 'title_exact_match',
-        description: 'Coincidencia exacta del término de búsqueda en el título del trabajo',
+        description:
+          'Coincidencia exacta del término de búsqueda en el título del trabajo',
         weight: 0.3,
       },
       {
         factor: 'title_partial_match',
-        description: 'Coincidencia parcial de palabras del término de búsqueda en el título',
+        description:
+          'Coincidencia parcial de palabras del término de búsqueda en el título',
         weight: 0.2,
       },
       {
         factor: 'description_match',
-        description: 'Coincidencia del término de búsqueda en la descripción del trabajo',
+        description:
+          'Coincidencia del término de búsqueda en la descripción del trabajo',
         weight: 0.2,
       },
       {
@@ -118,7 +132,9 @@ export class WorkSearchController {
   }
 
   @Get('tags/suggest')
-  @ApiOperation({ summary: 'Obtener sugerencias de etiquetas mientras el usuario escribe' })
+  @ApiOperation({
+    summary: 'Obtener sugerencias de etiquetas mientras el usuario escribe',
+  })
   @ApiOkResponse({
     description: 'Sugerencias de etiquetas',
     type: [WorkTagSuggestionResponseDto],
@@ -143,7 +159,9 @@ export class WorkSearchController {
   }
 
   @Get('tags/popular')
-  @ApiOperation({ summary: 'Obtener las etiquetas más populares para trabajos' })
+  @ApiOperation({
+    summary: 'Obtener las etiquetas más populares para trabajos',
+  })
   @ApiOkResponse({
     description: 'Etiquetas populares',
     type: [WorkTagSuggestionResponseDto],
@@ -154,20 +172,27 @@ export class WorkSearchController {
     description: 'Número máximo de etiquetas',
     type: Number,
   })
-  async getPopularTags(@Query('limit') limit: number = 10): Promise<WorkTagSuggestionResponseDto[]> {
+  async getPopularTags(
+    @Query('limit') limit = 10,
+  ): Promise<WorkTagSuggestionResponseDto[]> {
     // Utilizar el mismo método de sugerencias pero sin prefijo para obtener etiquetas populares
     return this.artistsHandler.getWorkTagSuggestions({ prefix: '', limit });
   }
 
   @Post('tags')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Crear una nueva etiqueta o devolver la existente si coincide el nombre' })
+  @ApiOperation({
+    summary:
+      'Crear una nueva etiqueta o devolver la existente si coincide el nombre',
+  })
   @ApiOkResponse({
     description: 'Etiqueta creada o existente',
     type: WorkTagSuggestionResponseDto,
   })
   @UsePipes(new ValidationPipe({ transform: true }))
-  async createTag(@Body() createTagDto: CreateTagDto): Promise<WorkTagSuggestionResponseDto> {
+  async createTag(
+    @Body() createTagDto: CreateTagDto,
+  ): Promise<WorkTagSuggestionResponseDto> {
     return this.artistsHandler.createTag(createTagDto);
   }
-} 
+}

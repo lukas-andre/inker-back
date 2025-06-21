@@ -11,4 +11,4 @@ export class CancelEventReqDto {
   @IsString()
   @MaxLength(500)
   reason: string;
-} 
+}

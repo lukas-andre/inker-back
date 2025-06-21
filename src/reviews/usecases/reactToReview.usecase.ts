@@ -23,9 +23,7 @@ export const ERROR_DISABLING_REVIEW_REACTION =
 
 @Injectable()
 export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
-  constructor(
-    private readonly reviewProvider: ReviewRepository,
-  ) {
+  constructor(private readonly reviewProvider: ReviewRepository) {
     super(ReactToReviewUsecase.name);
   }
 
@@ -45,10 +43,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
     }
 
     const currentReviewReaction =
-      await this.reviewProvider.getReviewReactionIfExists(
-        reviewId,
-        customerId,
-      );
+      await this.reviewProvider.getReviewReactionIfExists(reviewId, customerId);
 
     if (
       currentReviewReaction === ReviewReactionEnum.off &&

@@ -38,10 +38,18 @@ export class AgendaEventCreatedJob implements NotificationJob {
 
     // Build notification title and messages
     const customerTitle = `New Appointment Scheduled`;
-    const customerMessage = `Your appointment "${agendaEvent.title}" with ${artist.username} has been scheduled for ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
-    
+    const customerMessage = `Your appointment "${agendaEvent.title}" with ${
+      artist.username
+    } has been scheduled for ${new Date(
+      agendaEvent.startDate,
+    ).toLocaleDateString()}`;
+
     const artistTitle = `New Appointment Created`;
-    const artistMessage = `New appointment "${agendaEvent.title}" with ${customer.firstName} has been scheduled for ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
+    const artistMessage = `New appointment "${agendaEvent.title}" with ${
+      customer.firstName
+    } has been scheduled for ${new Date(
+      agendaEvent.startDate,
+    ).toLocaleDateString()}`;
 
     // Store notification for customer
     await this.notificationStorageService.storeNotification(

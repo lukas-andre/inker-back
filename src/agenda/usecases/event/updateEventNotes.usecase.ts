@@ -1,14 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
+
+import {
+  DomainForbidden,
+  DomainNotFound,
+} from '../../../global/domain/exceptions/domain.exception';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { UserType } from '../../../users/domain/enums/userType.enum';
+import { EventActionsResultDto } from '../../domain/dtos';
+import { EventActionEngineService } from '../../domain/services/eventActionEngine.service';
+import { UpdateEventNotesReqDto } from '../../infrastructure/dtos/updateEventNotesReq.dto';
+import {
+  AgendaEvent,
+  IStatusLogEntry,
+} from '../../infrastructure/entities/agendaEvent.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { UpdateEventNotesReqDto } from '../../infrastructure/dtos/updateEventNotesReq.dto';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { EventActionEngineService } from '../../domain/services/eventActionEngine.service';
-import { UserType } from '../../../users/domain/enums/userType.enum';
-import { IStatusLogEntry, AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { DomainForbidden, DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
-import { EventActionsResultDto } from '../../domain/dtos';
-
 
 @Injectable()
 export class UpdateEventNotesUseCase {
@@ -26,15 +32,24 @@ export class UpdateEventNotesUseCase {
     eventId: string,
     dto: UpdateEventNotesReqDto,
   ): Promise<void> {
-    this.logger.log(`Updating notes for event ${eventId} in agenda ${agendaId}`);
+    this.logger.log(
+      `Updating notes for event ${eventId} in agenda ${agendaId}`,
+    );
 
-    const { userId, userTypeId, isNotArtist, userType: actorUserTypeEnum } = this.requestContextService;
-    const actorRoleForLog: UserType = isNotArtist ? UserType.CUSTOMER : UserType.ARTIST;
-    
+    const {
+      userId,
+      userTypeId,
+      isNotArtist,
+      userType: actorUserTypeEnum,
+    } = this.requestContextService;
+    const actorRoleForLog: UserType = isNotArtist
+      ? UserType.CUSTOMER
+      : UserType.ARTIST;
+
     const actor = {
-        userId,
-        roleId: userTypeId,
-        role: actorRoleForLog, 
+      userId,
+      roleId: userTypeId,
+      role: actorRoleForLog,
     };
 
     const event = await this.agendaEventProvider.findOne({
@@ -43,17 +58,22 @@ export class UpdateEventNotesUseCase {
     });
 
     if (!event) {
-      throw new DomainNotFound(`Event with ID ${eventId} not found or does not belong to agenda ${agendaId}`);
+      throw new DomainNotFound(
+        `Event with ID ${eventId} not found or does not belong to agenda ${agendaId}`,
+      );
     }
 
-    const availableActions: EventActionsResultDto = await this.eventActionEngineService.getAvailableActions({
+    const availableActions: EventActionsResultDto =
+      await this.eventActionEngineService.getAvailableActions({
         event,
         userId: userId,
         userType: actorUserTypeEnum,
-    });
+      });
 
-    if (!availableActions.canEdit) { 
-      throw new DomainForbidden('User is not authorized to update notes for this event.');
+    if (!availableActions.canEdit) {
+      throw new DomainForbidden(
+        'User is not authorized to update notes for this event.',
+      );
     }
 
     const oldNotes = event.notes;
@@ -67,12 +87,18 @@ export class UpdateEventNotesUseCase {
         roleId: actor.roleId,
         role: actor.role,
       },
-      notes: `Event notes updated. Previous: "${oldNotes || ''}". New: "${dto.notes || ''}".`,
+      notes: `Event notes updated. Previous: "${oldNotes || ''}". New: "${
+        dto.notes || ''
+      }".`,
     };
 
-    event.statusLog = event.statusLog ? [...event.statusLog, logEntry] : [logEntry];
+    event.statusLog = event.statusLog
+      ? [...event.statusLog, logEntry]
+      : [logEntry];
 
-    await this.agendaEventProvider.save(event); 
-    this.logger.log(`Notes updated for event ${eventId} and status log appended.`);
+    await this.agendaEventProvider.save(event);
+    this.logger.log(
+      `Notes updated for event ${eventId} and status log appended.`,
+    );
   }
 }

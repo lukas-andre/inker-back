@@ -1,42 +1,62 @@
-import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
+import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 
 // import { RatingArtistUsecase } from '../../../reviews/usecases/ratingArtist.usecase'; // Removed
-import { ReviewRepository } from '../../../reviews/database/repositories/review.repository'; // Added
-import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository'; // Added
+import {
+  DomainForbidden,
+  DomainNotFound,
+  DomainUnProcessableEntity,
+} from '../../../global/domain/exceptions/domain.exception';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../../global/domain/usecases/base.usecase';
+import {
+  DefaultResponseDto,
+  DefaultResponseStatus,
+} from '../../../global/infrastructure/dtos/defaultResponse.dto';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
 import { queues } from '../../../queues/queues'; // Added
 import {
   SyncArtistRatingsJobType,
   SyncJobIdSchema,
 } from '../../../queues/sync/jobs'; // Added
-import { BaseUseCase, UseCase } from '../../../global/domain/usecases/base.usecase';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { DomainUnProcessableEntity, DomainForbidden, DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
-import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
-import { CUSTOMER_NOT_AUTHORIZED, EVENT_NOT_READY_FOR_REVIEW } from '../../domain/errors/codes';
+import { ERROR_CREATING_REVIEW } from '../../../reviews/codes'; // Added
+import { ReviewRepository } from '../../../reviews/database/repositories/review.repository'; // Added
 import { ReviewArtistRequestDto } from '../../../reviews/dtos/reviewArtistRequest.dto';
-import { DefaultResponseDto, DefaultResponseStatus } from '../../../global/infrastructure/dtos/defaultResponse.dto';
-import { EventStateMachineService, StateMachineContext, AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import {
+  CUSTOMER_NOT_AUTHORIZED,
+  EVENT_NOT_READY_FOR_REVIEW,
+} from '../../domain/errors/codes';
+import {
+  AgendaEventTransition,
+  EventStateMachineService,
+  StateMachineContext,
+} from '../../domain/services/eventStateMachine.service';
 // import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity'; // Removed as not directly used, event comes from context
 import { UserType } from '../../../users/domain/enums/userType.enum';
 import {
   EVENT_NEEDS_TO_BE_DONE_TO_RATE, // Added
   USER_IS_NOT_RELATED_TO_EVENT, // Added
 } from '../../../users/domain/errors/codes'; // Added
-import { ERROR_CREATING_REVIEW } from '../../../reviews/codes'; // Added
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository'; // Added
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 // import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper'; // Removed, not used for this flow
 
 // Temporary structural type for actor if IActor is not yet exported from its module
 interface ActorForReview {
-    userId: string;
-    roleId: string;
-    role: UserType;
+  userId: string;
+  roleId: string;
+  role: UserType;
 }
 
 @Injectable()
-export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCase {
+export class EventReviewIntegrationUsecase
+  extends BaseUseCase
+  implements UseCase
+{
   constructor(
     private readonly requestContext: RequestContextService,
     private readonly agendaEventProvider: AgendaEventRepository,
@@ -67,10 +87,18 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
     });
 
     if (!event) {
-      throw new DomainNotFound('Event not found or not associated with this customer for the given agenda.');
+      throw new DomainNotFound(
+        'Event not found or not associated with this customer for the given agenda.',
+      );
     }
 
-    if (![AgendaEventStatus.WAITING_FOR_REVIEW, AgendaEventStatus.COMPLETED, AgendaEventStatus.WAITING_FOR_PHOTOS].includes(event.status)) {
+    if (
+      ![
+        AgendaEventStatus.WAITING_FOR_REVIEW,
+        AgendaEventStatus.COMPLETED,
+        AgendaEventStatus.WAITING_FOR_PHOTOS,
+      ].includes(event.status)
+    ) {
       throw new DomainUnProcessableEntity(EVENT_NOT_READY_FOR_REVIEW);
     }
 
@@ -118,7 +146,7 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
 
       if (customerReview) {
         // If they are submitting an empty form and a review exists, update it.
-         await this.reviewRepository.updateReviewTransaction(
+        await this.reviewRepository.updateReviewTransaction(
           artistId,
           eventId,
           userId,
@@ -168,36 +196,37 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
     await this.dispatchSyncArtistRatingEvent(artistId);
     // --- Logic from RatingArtistUsecase ends here ---
 
-
     // The original ratingArtistUsecase returned a simple string message.
     // We need to ensure we have the review ID if possible for the state machine payload.
     // Let's try to fetch the review again after creation/update to get its ID.
-    const finalReview = await this.reviewRepository.findIfCustomerAlreadyReviewTheEvent(
+    const finalReview =
+      await this.reviewRepository.findIfCustomerAlreadyReviewTheEvent(
         userId, // reviewerId
         eventId,
-        artistId
-    );
+        artistId,
+      );
 
-    let reviewIdForPayload: string | undefined = finalReview?.id;
+    const reviewIdForPayload: string | undefined = finalReview?.id;
 
     if (!reviewIdForPayload) {
-        this.logger.warn(`Review ID could not be determined for event ${eventId}, artist ${artistId} by user ${userId}. Proceeding with state transition.`);
+      this.logger.warn(
+        `Review ID could not be determined for event ${eventId}, artist ${artistId} by user ${userId}. Proceeding with state transition.`,
+      );
     }
 
-
     const actor: ActorForReview = {
-        userId: userId,
-        roleId: customerId, // customer's type-specific ID
-        role: UserType.CUSTOMER,
+      userId: userId,
+      roleId: customerId, // customer's type-specific ID
+      role: UserType.CUSTOMER,
     };
 
     const stateMachineContext: StateMachineContext = {
-        eventEntity: event,
-        actor,
-        payload: {
-            reviewId: reviewIdForPayload,
-            notes: `Review added/updated by customer ${userId}.`
-        },
+      eventEntity: event,
+      actor,
+      payload: {
+        reviewId: reviewIdForPayload,
+        notes: `Review added/updated by customer ${userId}.`,
+      },
     };
 
     await this.eventStateMachineService.transition(
@@ -220,12 +249,18 @@ export class EventReviewIntegrationUsecase extends BaseUseCase implements UseCas
           artistId,
         } as SyncArtistRatingsJobType,
       });
-      this.logger.log(`Dispatched SYNC_ARTIST_RATINGS job for artist ${artistId}`);
+      this.logger.log(
+        `Dispatched SYNC_ARTIST_RATINGS job for artist ${artistId}`,
+      );
     } catch (error: unknown) {
       if (error instanceof Error) {
-        this.logger.error(`Error dispatching SYNC_ARTIST_RATINGS job for artist ${artistId}: ${error.message}`);
+        this.logger.error(
+          `Error dispatching SYNC_ARTIST_RATINGS job for artist ${artistId}: ${error.message}`,
+        );
       } else {
-        this.logger.error(`Error dispatching SYNC_ARTIST_RATINGS job for artist ${artistId}: Unknown error`);
+        this.logger.error(
+          `Error dispatching SYNC_ARTIST_RATINGS job for artist ${artistId}: Unknown error`,
+        );
       }
     }
   }

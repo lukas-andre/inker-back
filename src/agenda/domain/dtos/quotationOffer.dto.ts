@@ -1,7 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
-import { QuotationOfferStatus, OfferMessage } from '../../infrastructure/entities/quotationOffer.entity';
+
 import { ArtistDto } from '../../../artists/domain/dtos/artist.dto'; // Assuming you have an ArtistDto
+import { MoneyEntity } from '../../../global/domain/models/money.model';
+import {
+  OfferMessage,
+  QuotationOfferStatus,
+} from '../../infrastructure/entities/quotationOffer.entity';
+
 import { OfferMessageDto } from './offerMessage.dto'; // Import OfferMessageDto for Swagger
 
 // Base DTO for Quotation Offer data
@@ -20,7 +25,7 @@ export class QuotationOfferDto {
 
   @ApiPropertyOptional()
   estimatedDate?: Date;
-  
+
   @ApiPropertyOptional()
   estimatedDuration?: number; // in minutes
 
@@ -46,7 +51,8 @@ export class QuotationOfferListItemDto extends QuotationOfferDto {
   artist?: ArtistDto; // Include basic artist info
 
   @ApiPropertyOptional({
-    description: 'Estimated distance from offering artist to customer location in KM',
+    description:
+      'Estimated distance from offering artist to customer location in KM',
   })
   distanceToCustomerKm?: number;
-} 
+}

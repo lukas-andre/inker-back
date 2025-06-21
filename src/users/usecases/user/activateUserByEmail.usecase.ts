@@ -13,7 +13,7 @@ export class ActivateUserByEmailUseCase extends BaseComponent {
 
   async execute(email: string): Promise<{ activated: boolean }> {
     this.logger.log(`Activating user with email ${email}`);
-    
+
     // Find user by email
     const user = await this.usersRepository.findByEmail(email);
     if (!user) {
@@ -24,10 +24,10 @@ export class ActivateUserByEmailUseCase extends BaseComponent {
     if (user.active) {
       return { activated: true };
     }
-    
+
     // Activate user
     await this.usersRepository.activate(user.id);
-    
+
     return { activated: true };
   }
-} 
+}

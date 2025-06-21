@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsNumber, IsOptional, IsString, IsBoolean, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class TattooImageDto {
   @ApiProperty({
@@ -42,7 +49,6 @@ export class TattooImageResponseDto {
   @IsArray()
   images: TattooImageDto[];
 
-
   @ApiProperty({
     description: 'Total cost of generating all images in USD',
     example: 0.0039,
@@ -67,4 +73,4 @@ export class TattooImageResponseDto {
   @IsNumber()
   @IsOptional()
   similarityScore?: number;
-} 
+}

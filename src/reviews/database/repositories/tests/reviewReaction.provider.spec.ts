@@ -8,7 +8,6 @@ import { ReviewReactionEnum } from '../../../../reactions/domain/enums/reviewRea
 import { Review } from '../../entities/review.entity';
 import { ReviewAvg } from '../../entities/reviewAvg.entity';
 import { ReviewReaction } from '../../entities/reviewReaction.entity';
-
 import {
   CustomerReviewReactionDetailsResult,
   ReviewReactionRepository,

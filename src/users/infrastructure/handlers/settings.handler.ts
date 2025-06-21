@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+
 import { GetSettingsUseCase } from '../../usecases/settings/getSettings.usecase';
-import { UpdateNotificationsUseCase } from '../../usecases/settings/updateNotifications.usecase';
 import { UpdateLocationServicesUseCase } from '../../usecases/settings/updateLocationService.usecase';
+import { UpdateNotificationsUseCase } from '../../usecases/settings/updateNotifications.usecase';
 
 @Injectable()
 export class SettingsHandler {

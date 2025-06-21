@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
 import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
@@ -8,7 +9,10 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { ConsentReminderEmailType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
-import { ConsentReminderJobType, CONSENT_REMINDER } from '../../../domain/schemas/agenda';
+import {
+  CONSENT_REMINDER,
+  ConsentReminderJobType,
+} from '../../../domain/schemas/agenda';
 import { NotificationJob } from '../notification.job';
 
 @Injectable()
@@ -38,8 +42,11 @@ export class ConsentReminderJob extends NotificationJob {
   }
 
   async handle(job: ConsentReminderJobType): Promise<void> {
-    const { artistId, customerId, eventId, reminderType, appointmentDate } = job.metadata;
-    this.logger.log(`Handling ${CONSENT_REMINDER} for event ${eventId}, reminder type: ${reminderType}`);
+    const { artistId, customerId, eventId, reminderType, appointmentDate } =
+      job.metadata;
+    this.logger.log(
+      `Handling ${CONSENT_REMINDER} for event ${eventId}, reminder type: ${reminderType}`,
+    );
 
     try {
       const [agendaEvent, artist, customer, location] = await Promise.all([
@@ -58,7 +65,9 @@ export class ConsentReminderJob extends NotificationJob {
       // Calculate hours until appointment
       const eventDate = new Date(appointmentDate);
       const now = new Date();
-      const hoursUntilAppointment = Math.ceil((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60));
+      const hoursUntilAppointment = Math.ceil(
+        (eventDate.getTime() - now.getTime()) / (1000 * 60 * 60),
+      );
 
       // Build notification content based on reminder type
       let title: string;
@@ -135,11 +144,15 @@ export class ConsentReminderJob extends NotificationJob {
         },
       );
 
-      this.logger.log(`Successfully sent ${reminderType} consent reminder for event ${eventId} to customer ${customerId}`);
-
+      this.logger.log(
+        `Successfully sent ${reminderType} consent reminder for event ${eventId} to customer ${customerId}`,
+      );
     } catch (error) {
       const e = error as Error;
-      this.logger.error(`Error handling ${CONSENT_REMINDER} for event ${eventId}: ${e.message}`, e.stack);
+      this.logger.error(
+        `Error handling ${CONSENT_REMINDER} for event ${eventId}: ${e.message}`,
+        e.stack,
+      );
     }
   }
-} 
+}

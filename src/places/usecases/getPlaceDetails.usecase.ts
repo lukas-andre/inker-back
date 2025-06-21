@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PlaceDetails } from '../domain/interfaces/placesService.interface';
-import { RateLimiterService } from '../infrastructure/services/rateLimiter.service';
-import { GooglePlacesService } from '../infrastructure/services/googlePlaces.service';
+
 import { PlacesRateLimitError } from '../domain/errors/places.errors';
+import { PlaceDetails } from '../domain/interfaces/placesService.interface';
+import { GooglePlacesService } from '../infrastructure/services/googlePlaces.service';
+import { RateLimiterService } from '../infrastructure/services/rateLimiter.service';
 
 @Injectable()
 export class GetPlaceDetailsUseCase {
@@ -13,7 +14,7 @@ export class GetPlaceDetailsUseCase {
 
   async execute(placeId: string, sessionToken?: string): Promise<any | null> {
     const cacheKey = `details:${placeId}`;
-    
+
     // Check cache first
     const cachedResult = this.rateLimiter.getCachedResponse(cacheKey);
     if (cachedResult) {
@@ -27,13 +28,16 @@ export class GetPlaceDetailsUseCase {
     }
 
     try {
-      const details = await this.placesService.getPlaceDetails(placeId, sessionToken);
-      
+      const details = await this.placesService.getPlaceDetails(
+        placeId,
+        sessionToken,
+      );
+
       if (details) {
         // Cache the result for longer since place details don't change often
         this.rateLimiter.cacheResponse(cacheKey, details);
       }
-      
+
       return details;
     } catch (error) {
       // Re-throw the error

@@ -1,18 +1,29 @@
-import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
-import { 
-  BaseUseCase, 
-  UseCase 
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+
+import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
+import {
+  BaseUseCase,
+  UseCase,
 } from '../../../global/domain/usecases/base.usecase';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import {
+  MultimediasService,
+  UploadToS3Result,
+} from '../../../multimedias/services/multimedias.service';
+import { UserType } from '../../../users/domain/enums/userType.enum';
+import { SendOfferMessageReqDto } from '../../infrastructure/dtos/sendOfferMessageReq.dto';
+import { QuotationType } from '../../infrastructure/entities/quotation.entity';
+import {
+  OfferMessage,
+  QuotationOffer,
+} from '../../infrastructure/entities/quotationOffer.entity';
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 import { QuotationOfferRepository } from '../../infrastructure/repositories/quotationOffer.repository';
-import { SendOfferMessageReqDto } from '../../infrastructure/dtos/sendOfferMessageReq.dto';
-import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
-import { QuotationType } from '../../infrastructure/entities/quotation.entity';
-import { QuotationOffer, OfferMessage } from '../../infrastructure/entities/quotationOffer.entity';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { UserType } from '../../../users/domain/enums/userType.enum';
-import { MultimediasService, UploadToS3Result } from '../../../multimedias/services/multimedias.service';
-import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 
 @Injectable()
 export class SendOfferMessageUseCase extends BaseUseCase implements UseCase {
@@ -39,9 +50,9 @@ export class SendOfferMessageUseCase extends BaseUseCase implements UseCase {
     }
 
     // 1. Find the offer and its parent quotation
-    const offer = await this.quotationOfferRepo.findOne({ 
+    const offer = await this.quotationOfferRepo.findOne({
       where: { id: offerId, quotationId },
-      relations: ['quotation'] // Need quotation to verify customerId and type
+      relations: ['quotation'], // Need quotation to verify customerId and type
     });
 
     if (!offer || !offer.quotation) {
@@ -49,14 +60,21 @@ export class SendOfferMessageUseCase extends BaseUseCase implements UseCase {
     }
 
     // 2. Authorization Check
-    const isCustomer = userType === UserType.CUSTOMER && offer.quotation.customerId === userTypeId;
-    const isArtist = userType === UserType.ARTIST && offer.artistId === userTypeId;
+    const isCustomer =
+      userType === UserType.CUSTOMER &&
+      offer.quotation.customerId === userTypeId;
+    const isArtist =
+      userType === UserType.ARTIST && offer.artistId === userTypeId;
 
     if (!isCustomer && !isArtist) {
-      throw new ForbiddenException('User is not authorized to send messages to this offer');
+      throw new ForbiddenException(
+        'User is not authorized to send messages to this offer',
+      );
     }
     if (offer.quotation.type !== QuotationType.OPEN) {
-        throw new ForbiddenException('Messages can only be sent on OPEN quotations');
+      throw new ForbiddenException(
+        'Messages can only be sent on OPEN quotations',
+      );
     }
     // Add checks for quotation/offer status if needed (e.g., cannot message after accepted/rejected)
 
@@ -67,14 +85,18 @@ export class SendOfferMessageUseCase extends BaseUseCase implements UseCase {
         // Generate a unique filename part
         const timestamp = Date.now();
         const randomSuffix = Math.random().toString(36).substring(2, 8); // 6 random chars
-        const safeOriginalName = imageFile.originalname.replace(/[^a-zA-Z0-9_\-\.]/g, '_'); // Sanitize original name
+        const safeOriginalName = imageFile.originalname.replace(
+          /[^a-zA-Z0-9_\-\.]/g,
+          '_',
+        ); // Sanitize original name
         const uniqueFileName = `${timestamp}-${randomSuffix}-${safeOriginalName}`;
         const path = `quotations/${quotationId}/offers/${offerId}/messages`; // S3 "folder"
-        const uploadedImage: UploadToS3Result = await this.multimediaService.upload(
-          imageFile,
-          path, 
-          uniqueFileName // Full path including filename for S3 key
-        );
+        const uploadedImage: UploadToS3Result =
+          await this.multimediaService.upload(
+            imageFile,
+            path,
+            uniqueFileName, // Full path including filename for S3 key
+          );
         imageUrl = uploadedImage.cloudFrontUrl;
         this.logger.log(`Image uploaded for offer message: ${imageUrl}`);
       } catch (error) {
@@ -93,14 +115,18 @@ export class SendOfferMessageUseCase extends BaseUseCase implements UseCase {
 
     // 5. Append message and save
     offer.messages = [...(offer.messages || []), newMessage];
-    const offerToSave = { ...offer, quotation: undefined }; 
-    const updatedOffer = await this.quotationOfferRepo.repo.save(offerToSave as QuotationOffer);
+    const offerToSave = { ...offer, quotation: undefined };
+    const updatedOffer = await this.quotationOfferRepo.repo.save(
+      offerToSave as QuotationOffer,
+    );
 
-    this.logger.log(`Message sent by ${newMessage.senderType} (${userTypeId}) on offer ${offerId}`);
+    this.logger.log(
+      `Message sent by ${newMessage.senderType} (${userTypeId}) on offer ${offerId}`,
+    );
 
     // TODO: Implement notification logic here (notify the other party)
     // e.g., this.notificationService.notifyOfferMessage(offer, newMessage);
 
     return updatedOffer;
   }
-} 
+}

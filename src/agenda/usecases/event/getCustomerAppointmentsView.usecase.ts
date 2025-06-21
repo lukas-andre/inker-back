@@ -1,27 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { differenceInHours, isFuture, isThisWeek, isToday } from 'date-fns';
-import { BaseUseCase, UseCase } from '../../../global/domain/usecases/base.usecase';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
-import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { GetCustomerAppointmentsViewResDto } from '../../infrastructure/dtos/getCustomerAppointmentsViewRes.dto';
-import { AppointmentUrgencyLevel } from '../../domain/enum/appointmentUrgencyLevel.enum';
-import { AppointmentAction } from '../../domain/enum/appointmentAction.enum';
-import { CustomerAppointmentDto } from '../../domain/dtos/customerAppointment.dto';
-import { AppointmentContextualInfo } from '../../domain/dtos/appointmentContextualInfo.dto';
-import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
-import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
-import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
-import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
 import { In } from 'typeorm';
+
+import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
+import {
+  BaseUseCase,
+  UseCase,
+} from '../../../global/domain/usecases/base.usecase';
+import { AppointmentContextualInfo } from '../../domain/dtos/appointmentContextualInfo.dto';
+import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
+import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
+import { CustomerAppointmentDto } from '../../domain/dtos/customerAppointment.dto';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import { AppointmentAction } from '../../domain/enum/appointmentAction.enum';
+import { AppointmentUrgencyLevel } from '../../domain/enum/appointmentUrgencyLevel.enum';
 import { QuotationEnrichmentService } from '../../domain/services/quotationEnrichment.service';
+import { GetCustomerAppointmentsViewResDto } from '../../infrastructure/dtos/getCustomerAppointmentsViewRes.dto';
 import { GetQuotationResDto } from '../../infrastructure/dtos/getQuotationRes.dto';
-import { QuotationOfferStatus } from '../../infrastructure/entities/quotationOffer.entity';
+import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
 import { Quotation } from '../../infrastructure/entities/quotation.entity';
+import { QuotationOfferStatus } from '../../infrastructure/entities/quotationOffer.entity';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 
 @Injectable()
-export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements UseCase {
+export class GetCustomerAppointmentsViewUseCase
+  extends BaseUseCase
+  implements UseCase
+{
   constructor(
     private readonly agendaEventRepository: AgendaEventRepository,
     private readonly artistRepository: ArtistRepository,
@@ -55,9 +62,7 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
 
     const artistIds = [
       ...new Set(
-        allEvents
-          .map((event) => event.agenda?.artistId)
-          .filter((id) => id != null),
+        allEvents.map(event => event.agenda?.artistId).filter(id => id != null),
       ),
     ];
 
@@ -73,14 +78,14 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
       this.artistLocationRepository.findByArtistIds(artistIds),
     ]);
 
-    const artistsMap = new Map(artists.map((artist) => [artist.id, artist]));
+    const artistsMap = new Map(artists.map(artist => [artist.id, artist]));
     const locationsMap = new Map(
-      locations.map((location) => [location.artistId, location]),
+      locations.map(location => [location.artistId, location]),
     );
 
     // Get quotation IDs from events
     const quotationIds = allEvents
-      .map((event) => event.quotationId)
+      .map(event => event.quotationId)
       .filter((id): id is string => id != null);
 
     // Enrich quotations if there are any
@@ -90,9 +95,8 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
         where: { id: In(quotationIds) },
       });
 
-      enrichedQuotations = await this.quotationEnrichmentService.enrichQuotations(
-        quotations,
-        {
+      enrichedQuotations =
+        await this.quotationEnrichmentService.enrichQuotations(quotations, {
           includeOffers: true,
           includeCustomer: true,
           includeArtist: false,
@@ -100,16 +104,15 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
           includeLocation: false,
           includeTattooDesignCache: true,
           includeHasOffered: true,
-        },
-      );
+        });
     }
 
     const quotationsMap = new Map(
-      enrichedQuotations.map(quotation => [quotation.id, quotation])
+      enrichedQuotations.map(quotation => [quotation.id, quotation]),
     );
 
     const enrichedEvents: CustomerAppointmentDto[] = allEvents
-      .map((event) => {
+      .map(event => {
         const artist = artistsMap.get(event.agenda.artistId);
         const location = locationsMap.get(event.agenda.artistId);
         const quotation = event.quotationId
@@ -141,27 +144,27 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
     );
 
     const requiringAction = enrichedEvents.filter(
-      (e) => e.urgency === AppointmentUrgencyLevel.CRITICAL,
+      e => e.urgency === AppointmentUrgencyLevel.CRITICAL,
     );
     const today = enrichedEvents.filter(
-      (e) =>
+      e =>
         isToday(new Date(e.event.startDate)) &&
         e.urgency !== AppointmentUrgencyLevel.PAST,
     );
     const thisWeek = enrichedEvents.filter(
-      (e) =>
+      e =>
         isThisWeek(new Date(e.event.startDate), { weekStartsOn: 1 }) &&
         !isToday(new Date(e.event.startDate)) &&
         e.urgency !== AppointmentUrgencyLevel.PAST,
     );
     const upcoming = enrichedEvents.filter(
-      (e) =>
+      e =>
         isFuture(new Date(e.event.startDate)) &&
         !isThisWeek(new Date(e.event.startDate), { weekStartsOn: 1 }) &&
         e.urgency !== AppointmentUrgencyLevel.PAST,
     );
     const history = enrichedEvents
-      .filter((e) => e.urgency === AppointmentUrgencyLevel.PAST)
+      .filter(e => e.urgency === AppointmentUrgencyLevel.PAST)
       .sort(
         (a, b) =>
           new Date(b.event.startDate).getTime() -
@@ -171,7 +174,9 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
     const finalHeroAppointment = this.determineHeroAppointment(enrichedEvents);
 
     return {
-      heroAppointmentId: finalHeroAppointment ? finalHeroAppointment.event.id : null,
+      heroAppointmentId: finalHeroAppointment
+        ? finalHeroAppointment.event.id
+        : null,
       appointments: {
         requiringAction,
         today,
@@ -202,7 +207,8 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
       event.status === AgendaEventStatus.CREATED;
 
     // Check if consent is needed from the quotation
-    const needsConsent = quotation?.offers?.[0]?.status === QuotationOfferStatus.SUBMITTED;
+    const needsConsent =
+      quotation?.offers?.[0]?.status === QuotationOfferStatus.SUBMITTED;
 
     if (isActionRequired) {
       urgency = AppointmentUrgencyLevel.CRITICAL;
@@ -256,7 +262,8 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
           break;
         case AgendaEventStatus.WAITING_FOR_PHOTOS:
           contextualInfo.title = '¡Arte en Camino!';
-          contextualInfo.message = 'Tu sesión finalizó. El artista está preparando las fotos de tu nuevo tatuaje.';
+          contextualInfo.message =
+            'Tu sesión finalizó. El artista está preparando las fotos de tu nuevo tatuaje.';
           urgency = AppointmentUrgencyLevel.INFO;
           break;
         default:
@@ -284,7 +291,7 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
   ): CustomerAppointmentDto | null {
     // First priority: Events requiring action
     const requiringAction = appointments.filter(
-      (a) => a.urgency === AppointmentUrgencyLevel.CRITICAL,
+      a => a.urgency === AppointmentUrgencyLevel.CRITICAL,
     );
     if (requiringAction.length > 0) {
       return requiringAction[0];
@@ -292,7 +299,7 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
 
     // Second priority: Today's appointments
     const today = appointments.filter(
-      (a) =>
+      a =>
         isToday(new Date(a.event.startDate)) &&
         a.urgency !== AppointmentUrgencyLevel.PAST,
     );
@@ -302,7 +309,7 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
 
     // Third priority: This week's appointments
     const thisWeek = appointments.filter(
-      (a) =>
+      a =>
         isThisWeek(new Date(a.event.startDate), { weekStartsOn: 1 }) &&
         !isToday(new Date(a.event.startDate)) &&
         a.urgency !== AppointmentUrgencyLevel.PAST,
@@ -313,7 +320,7 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
 
     // Fourth priority: Upcoming appointments
     const upcoming = appointments.filter(
-      (a) =>
+      a =>
         isFuture(new Date(a.event.startDate)) &&
         !isThisWeek(new Date(a.event.startDate), { weekStartsOn: 1 }) &&
         a.urgency !== AppointmentUrgencyLevel.PAST,
@@ -324,4 +331,4 @@ export class GetCustomerAppointmentsViewUseCase extends BaseUseCase implements U
 
     return null;
   }
-} 
+}

@@ -18,14 +18,16 @@ import {
 } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { TROUBLE_SAVING_LOCATION } from '../../../users/domain/errors/codes';
 import { TROUBLE_FINDING_LOCATIONS } from '../../domain/codes/codes';
-import { ArtistLocationCreateDto, ArtistLocationUpdateDto } from '../../domain/interfaces/artistLocation.interface';
+import {
+  ArtistLocationCreateDto,
+  ArtistLocationUpdateDto,
+} from '../../domain/interfaces/artistLocation.interface';
 import { FindArtistByRangeResponseDTO } from '../dtos/findArtistByRangeResponse.dto';
+
 import { ArtistLocation } from './entities/artistLocation.entity';
 
 @Injectable()
 export class ArtistLocationRepository extends BaseComponent {
-
-
   constructor(
     @InjectRepository(ArtistLocation, 'location-db')
     private readonly artistLocationsRepository: Repository<ArtistLocation>,
@@ -166,7 +168,10 @@ export class ArtistLocationRepository extends BaseComponent {
       }
 
       // Update the entity
-      const updatedLocation = this.artistLocationsRepository.merge(artistLocation, data);
+      const updatedLocation = this.artistLocationsRepository.merge(
+        artistLocation,
+        data,
+      );
       return await this.artistLocationsRepository.save(updatedLocation);
     } catch (error) {
       throw new DBServiceSaveException(this, TROUBLE_SAVING_LOCATION, error);
@@ -176,7 +181,9 @@ export class ArtistLocationRepository extends BaseComponent {
   async save(location: DeepPartial<ArtistLocation>): Promise<ArtistLocation> {
     try {
       const columns = Object.keys(location).filter(key => key !== 'location');
-      const values = Object.values(location).filter((_, index) => Object.keys(location)[index] !== 'location');
+      const values = Object.values(location).filter(
+        (_, index) => Object.keys(location)[index] !== 'location',
+      );
 
       // Handle the geospatial point data
       let locationPoint = null;
@@ -190,13 +197,17 @@ export class ArtistLocationRepository extends BaseComponent {
       }
 
       // Build placeholders for the query
-      const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
+      const placeholders = columns
+        .map((_, index) => `$${index + 1}`)
+        .join(', ');
 
       // Build column names with proper snake_case conversion for DB
-      const columnNames = columns.map(col => {
-        // Convert camelCase to snake_case for DB columns
-        return col.replace(/([A-Z])/g, '_$1').toLowerCase();
-      }).join(', ');
+      const columnNames = columns
+        .map(col => {
+          // Convert camelCase to snake_case for DB columns
+          return col.replace(/([A-Z])/g, '_$1').toLowerCase();
+        })
+        .join(', ');
 
       let query = `
         INSERT INTO artist_location (${columnNames}`;
@@ -210,7 +221,9 @@ export class ArtistLocationRepository extends BaseComponent {
 
       // Add the ST_SetSRID function for the point if it exists
       if (locationPoint) {
-        query += `, ST_SetSRID(ST_GeomFromGeoJSON($${columns.length + 1}), 4326)`;
+        query += `, ST_SetSRID(ST_GeomFromGeoJSON($${
+          columns.length + 1
+        }), 4326)`;
         values.push(JSON.stringify(locationPoint));
       }
 

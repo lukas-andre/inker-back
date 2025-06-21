@@ -1,9 +1,10 @@
 import {
   Column,
-  Entity,
   CreateDateColumn,
+  Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import {
   JobTypeKey,
   JobTypeSchemaRegistry,

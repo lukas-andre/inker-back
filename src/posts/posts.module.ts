@@ -5,6 +5,7 @@ import { ArtistsModule } from '../artists/artists.module';
 import { ArtistsRepositoryModule } from '../artists/infrastructure/repositories/artistRepository.module';
 import { GenresModule } from '../genres/genres.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
+import { TagsRepositoryModule } from '../tags/tagsRespository.module';
 
 import { CommentsService } from './domain/services/comments.service';
 import { PostsService } from './domain/services/posts.service';
@@ -17,7 +18,6 @@ import { PostsHandler } from './infrastructure/handlers/posts.handler';
 import { ArtistUploadPostUseCase } from './usecases/artistUploadPost.usecase';
 import { GetAllArtistPostsUseCase } from './usecases/getAllArtistPosts.usecase';
 import { UserAddCommentUseCase } from './usecases/userAddComment.usecase';
-import { TagsRepositoryModule } from '../tags/tagsRespository.module';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { TagsRepositoryModule } from '../tags/tagsRespository.module';
     ArtistsModule,
     MultimediasModule,
     GenresModule,
-    TagsRepositoryModule
+    TagsRepositoryModule,
   ],
   providers: [
     PostsService,

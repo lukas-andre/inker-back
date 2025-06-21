@@ -14,8 +14,9 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { QuotationType } from '../entities/quotation.entity';
+
 import { MoneyDto } from '../../../global/domain/dtos/money.dto';
+import { QuotationType } from '../entities/quotation.entity';
 
 export class CreateQuotationReqDto {
   @ApiProperty({
@@ -46,7 +47,8 @@ export class CreateQuotationReqDto {
 
   @ApiPropertyOptional({
     example: 'clsk9876543210fedc',
-    description: 'Stencil Id (optional) - Reference to a specific stencil design',
+    description:
+      'Stencil Id (optional) - Reference to a specific stencil design',
   })
   @IsString()
   @IsOptional()
@@ -54,7 +56,8 @@ export class CreateQuotationReqDto {
 
   @ApiPropertyOptional({
     example: 'cluv123abc...',
-    description: 'Tattoo Design Cache ID (optional) - Reference to a specific AI-generated design. Required if tattooDesignImageUrl is provided. Only valid for OPEN type quotations. Cannot be used with stencilId.',
+    description:
+      'Tattoo Design Cache ID (optional) - Reference to a specific AI-generated design. Required if tattooDesignImageUrl is provided. Only valid for OPEN type quotations. Cannot be used with stencilId.',
   })
   @IsString()
   @IsOptional()
@@ -62,10 +65,18 @@ export class CreateQuotationReqDto {
 
   @ApiPropertyOptional({
     example: 'https://example.com/image.png',
-    description: 'Specific Image URL from the Tattoo Design Cache (optional) - Required if tattooDesignCacheId is provided. Only valid for OPEN type quotations.',
+    description:
+      'Specific Image URL from the Tattoo Design Cache (optional) - Required if tattooDesignCacheId is provided. Only valid for OPEN type quotations.',
   })
-  @ValidateIf(o => o.type === QuotationType.OPEN && (o.tattooDesignCacheId || o.tattooDesignImageUrl))
-  @IsNotEmpty({ message: 'tattooDesignImageUrl is required if tattooDesignCacheId is provided' })
+  @ValidateIf(
+    o =>
+      o.type === QuotationType.OPEN &&
+      (o.tattooDesignCacheId || o.tattooDesignImageUrl),
+  )
+  @IsNotEmpty({
+    message:
+      'tattooDesignImageUrl is required if tattooDesignCacheId is provided',
+  })
   @IsString()
   @IsOptional()
   readonly tattooDesignImageUrl?: string;
@@ -100,7 +111,8 @@ export class CreateQuotationReqDto {
   readonly customerLon?: number;
 
   @ApiPropertyOptional({
-    description: 'Max distance customer is willing to travel in KM (Required for OPEN quotations)',
+    description:
+      'Max distance customer is willing to travel in KM (Required for OPEN quotations)',
     example: 50,
   })
   @ValidateIf(o => o.type === QuotationType.OPEN)
@@ -112,21 +124,30 @@ export class CreateQuotationReqDto {
   @Max(1000)
   readonly customerTravelRadiusKm?: number;
 
-  @ApiPropertyOptional({ type: MoneyDto, description: 'Presupuesto mínimo sugerido (solo OPEN)' })
+  @ApiPropertyOptional({
+    type: MoneyDto,
+    description: 'Presupuesto mínimo sugerido (solo OPEN)',
+  })
   @IsOptional()
   @ValidateIf(o => o.type === QuotationType.OPEN)
   @ValidateNested()
   @Type(() => MoneyDto)
   readonly minBudget?: MoneyDto;
 
-  @ApiPropertyOptional({ type: MoneyDto, description: 'Presupuesto máximo sugerido (solo OPEN)' })
+  @ApiPropertyOptional({
+    type: MoneyDto,
+    description: 'Presupuesto máximo sugerido (solo OPEN)',
+  })
   @IsOptional()
   @ValidateIf(o => o.type === QuotationType.OPEN)
   @ValidateNested()
   @Type(() => MoneyDto)
   readonly maxBudget?: MoneyDto;
 
-  @ApiPropertyOptional({ type: MoneyDto, description: 'Presupuesto de referencia (solo OPEN)' })
+  @ApiPropertyOptional({
+    type: MoneyDto,
+    description: 'Presupuesto de referencia (solo OPEN)',
+  })
   @IsOptional()
   @ValidateIf(o => o.type === QuotationType.OPEN)
   @ValidateNested()

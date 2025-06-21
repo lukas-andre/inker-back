@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { Artist } from '../../artists/infrastructure/entities/artist.entity';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { Customer } from '../../customers/infrastructure/entities/customer.entity';
 import { CustomerRepository } from '../../customers/infrastructure/providers/customer.repository';
 import {
@@ -14,14 +14,14 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
+import { PushNotificationService } from '../../notifications/services/push/pushNotification.service';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { User } from '../../users/infrastructure/entities/user.entity';
+import { UsersRepository } from '../../users/infrastructure/repositories/users.repository';
 import { AuthService } from '../domain/auth.service';
 
 import { LoginParams } from './interfaces/defaultLogin.params';
 import { DefaultLoginResult } from './interfaces/defaultLogin.result';
-import { PushNotificationService } from '../../notifications/services/push/pushNotification.service';
-import { UsersRepository } from '../../users/infrastructure/repositories/users.repository';
 
 @Injectable()
 export class DefaultLoginUseCase extends BaseUseCase implements UseCase {

@@ -25,5 +25,8 @@ export interface PlaceDetails {
 
 export interface IPlacesService {
   getAutoComplete(input: string, sessionToken?: string): Promise<Prediction[]>;
-  getPlaceDetails(placeId: string, sessionToken?: string): Promise<PlaceDetails | null>;
+  getPlaceDetails(
+    placeId: string,
+    sessionToken?: string,
+  ): Promise<PlaceDetails | null>;
 }

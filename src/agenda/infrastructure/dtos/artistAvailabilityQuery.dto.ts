@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsOptional, IsNumber, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsDate, IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
 
 export class ArtistAvailabilityQueryDto {
   @ApiProperty({
@@ -14,7 +14,8 @@ export class ArtistAvailabilityQueryDto {
   fromDate?: Date;
 
   @ApiProperty({
-    description: 'End date for availability search (defaults to 30 days from start)',
+    description:
+      'End date for availability search (defaults to 30 days from start)',
     example: '2023-01-31',
     required: false,
   })

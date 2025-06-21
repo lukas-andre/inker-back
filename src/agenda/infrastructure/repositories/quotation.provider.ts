@@ -18,9 +18,10 @@ import {
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { DBServiceSaveException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 import {
   Quotation,
   QuotationArtistRejectReason,
@@ -32,7 +33,6 @@ import {
   QuotationSystemCancelReason,
   QuotationUserType,
 } from '../entities/quotation.entity';
-import { UserType } from '../../../users/domain/enums/userType.enum';
 
 type ActionType = 'artist' | 'customer' | 'system';
 
@@ -366,7 +366,7 @@ export class QuotationRepository extends BaseComponent {
   async getRevenueForMonth(
     quotationIds: string[],
     year: number,
-    month: number
+    month: number,
   ): Promise<any> {
     if (quotationIds.length === 0) {
       return {
@@ -374,13 +374,13 @@ export class QuotationRepository extends BaseComponent {
         averagePrice: 0,
         minPrice: 0,
         maxPrice: 0,
-        count: 0
+        count: 0,
       };
     }
 
     try {
       const placeholders = quotationIds.map((_, i) => `$${i + 3}`).join(', ');
-      
+
       const [result] = await this.quotationRepository.query(
         `SELECT 
           json_build_object(
@@ -396,17 +396,19 @@ export class QuotationRepository extends BaseComponent {
           AND q.status = 'accepted'
           AND EXTRACT(YEAR FROM q.updated_at) = $1
           AND EXTRACT(MONTH FROM q.updated_at) = $2`,
-        [year, month, ...quotationIds]
+        [year, month, ...quotationIds],
       );
 
-      return result?.revenue || {
-        totalRevenue: 0,
-        averagePrice: 0,
-        minPrice: 0,
-        maxPrice: 0,
-        count: 0,
-        currency: 'USD'
-      };
+      return (
+        result?.revenue || {
+          totalRevenue: 0,
+          averagePrice: 0,
+          minPrice: 0,
+          maxPrice: 0,
+          count: 0,
+          currency: 'USD',
+        }
+      );
     } catch (error) {
       throw new DBServiceSaveException(
         this,
@@ -422,7 +424,7 @@ export class QuotationRepository extends BaseComponent {
   async getQuotationsSummaryByArtist(
     artistId: string,
     year: number,
-    month: number
+    month: number,
   ): Promise<any> {
     try {
       const [result] = await this.quotationRepository.query(
@@ -449,19 +451,21 @@ export class QuotationRepository extends BaseComponent {
         WHERE q.artist_id = $1
           AND EXTRACT(YEAR FROM q.created_at) = $2
           AND EXTRACT(MONTH FROM q.created_at) = $3`,
-        [artistId, year, month]
+        [artistId, year, month],
       );
 
-      return result?.summary || {
-        total: 0,
-        accepted: 0,
-        rejected: 0,
-        pending: 0,
-        responded: 0,
-        canceled: 0,
-        totalRevenue: 0,
-        averageResponseTime: 0
-      };
+      return (
+        result?.summary || {
+          total: 0,
+          accepted: 0,
+          rejected: 0,
+          pending: 0,
+          responded: 0,
+          canceled: 0,
+          totalRevenue: 0,
+          averageResponseTime: 0,
+        }
+      );
     } catch (error) {
       throw new DBServiceSaveException(
         this,
@@ -479,14 +483,14 @@ export class QuotationRepository extends BaseComponent {
 
     try {
       const placeholders = eventIds.map((_, i) => `$${i + 1}`).join(', ');
-      
+
       const results = await this.quotationRepository.query(
         `SELECT DISTINCT q.id
         FROM quotation q
         INNER JOIN agenda_event ae ON ae.quotation_id = q.id
         WHERE ae.id IN (${placeholders})
           AND q.status = 'accepted'`,
-        eventIds
+        eventIds,
       );
 
       return results.map((row: any) => row.id);

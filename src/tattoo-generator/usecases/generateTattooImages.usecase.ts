@@ -1,12 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { TattooImageDto, TattooImageResponseDto } from '../domain/dto/tattoo-image-response.dto';
-import { TattooStyle } from '../domain/enums/tattooStyle.enum';
+
 import { BaseComponent } from '../../global/domain/components/base.component';
+import { RequestContext } from '../../global/infrastructure/services/requestContext.service';
+import {
+  TattooImageDto,
+  TattooImageResponseDto,
+} from '../domain/dto/tattoo-image-response.dto';
+import { TattooStyle } from '../domain/enums/tattooStyle.enum';
+import { TattooDesignCacheEntity } from '../infrastructure/database/entities/tattooDesignCache.entity';
+import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
 import { RunwareImageGenerationService } from '../infrastructure/services/runwareImageGeneration.service';
 import { TattooPromptEnhancementService } from '../infrastructure/services/tattooPromptEnhancement.service';
-import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
-import { RequestContext } from '../../global/infrastructure/services/requestContext.service';
-import { TattooDesignCacheEntity } from '../infrastructure/database/entities/tattooDesignCache.entity';
 
 interface GenerateTattooImagesParams {
   style: TattooStyle;
@@ -14,43 +18,56 @@ interface GenerateTattooImagesParams {
 }
 
 @Injectable()
-export class GenerateTattooImagesUseCase extends BaseComponent{
+export class GenerateTattooImagesUseCase extends BaseComponent {
   private readonly SIMILARITY_THRESHOLD = 0.65;
 
   constructor(
     private readonly imageGenerationService: RunwareImageGenerationService,
     private readonly promptEnhancementService: TattooPromptEnhancementService,
     private readonly designCacheRepository?: TattooDesignCacheRepository,
-  ) { 
+  ) {
     super(GenerateTattooImagesUseCase.name);
   }
 
-  async execute(params: GenerateTattooImagesParams, context: RequestContext): Promise<TattooImageResponseDto> {
+  async execute(
+    params: GenerateTattooImagesParams,
+    context: RequestContext,
+  ): Promise<TattooImageResponseDto> {
     const { style, userInput } = params;
     const { id, userType, userTypeId } = context;
-    
+
     if (this.designCacheRepository) {
       try {
-        const similarDesigns = await this.designCacheRepository.findSimilarByText(
-          userInput,
-          style,
-          2,
-          this.SIMILARITY_THRESHOLD
-        );
+        const similarDesigns =
+          await this.designCacheRepository.findSimilarByText(
+            userInput,
+            style,
+            2,
+            this.SIMILARITY_THRESHOLD,
+          );
 
-        if (similarDesigns.length > 0 && similarDesigns[0].similarity > this.SIMILARITY_THRESHOLD) {
+        if (
+          similarDesigns.length > 0 &&
+          similarDesigns[0].similarity > this.SIMILARITY_THRESHOLD
+        ) {
           const bestMatch = similarDesigns[0];
-          this.logger.log(`Found cached design for query: "${userInput}" (similarity: ${bestMatch.similarity.toFixed(2)})`);
-          
+          this.logger.log(
+            `Found cached design for query: "${userInput}" (similarity: ${bestMatch.similarity.toFixed(
+              2,
+            )})`,
+          );
+
           await this.designCacheRepository.incrementUsageCount(bestMatch.id);
-          
-          const images: TattooImageDto[] = bestMatch.imageUrls.map((url, index) => ({
-            imageUrl: url,
-            imageId: `${bestMatch.id}-${index}`,
-            cost: 0,
-            fromCache: true,
-          }));
-          
+
+          const images: TattooImageDto[] = bestMatch.imageUrls.map(
+            (url, index) => ({
+              imageUrl: url,
+              imageId: `${bestMatch.id}-${index}`,
+              cost: 0,
+              fromCache: true,
+            }),
+          );
+
           return {
             images,
             totalCost: 0,
@@ -59,7 +76,11 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
           };
         }
       } catch (error: any) {
-        this.logger.warn(`Cache lookup failed, falling back to generation. Error: ${error.message || 'Unknown error'}`);
+        this.logger.warn(
+          `Cache lookup failed, falling back to generation. Error: ${
+            error.message || 'Unknown error'
+          }`,
+        );
       }
     }
 
@@ -68,7 +89,8 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
       style,
     });
 
-    const negativePrompt = 'low quality, blurry, letter, text, watermark, signature, bad anatomy,' +
+    const negativePrompt =
+      'low quality, blurry, letter, text, watermark, signature, bad anatomy,' +
       'duplicate, missing limbs, extra limbs, bad hands, bad fingers, cropped, ' +
       'out of frame, grainy, pixelated, jpeg artifacts, ' +
       'poor resolution, multiple tattoos';
@@ -93,7 +115,7 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
     if (this.designCacheRepository && images.length > 0) {
       try {
         const imageUrls = images.map(img => img.imageUrl);
-        
+
         designEntity = await this.designCacheRepository.save({
           userQuery: userInput,
           style,
@@ -108,14 +130,16 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
             userTypeId,
           },
         });
-        
+
         if (designEntity?.id) {
           this.logger.log(`Stored design in cache with ID: ${designEntity.id}`);
         } else {
           this.logger.warn('Design was saved but no ID was returned');
         }
       } catch (error: any) {
-        this.logger.warn(`Failed to cache design. Error: ${error.message || 'Unknown error'}`);
+        this.logger.warn(
+          `Failed to cache design. Error: ${error.message || 'Unknown error'}`,
+        );
       }
     }
 
@@ -134,4 +158,4 @@ export class GenerateTattooImagesUseCase extends BaseComponent{
       fromCache: false,
     };
   }
-} 
+}

@@ -1,13 +1,15 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { Artist } from './artist.entity';
+
 import { ArtistStyleType } from '../../domain/artistStyleType';
-import { CreateDateColumn } from 'typeorm';
+
+import { Artist } from './artist.entity';
 
 @Entity('artist_styles')
 export class ArtistStyle implements ArtistStyleType {

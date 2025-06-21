@@ -1,18 +1,25 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Connection } from 'typeorm';
+import { InjectQueue } from '@nestjs/bull';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { Queue } from 'bull';
+import { Connection } from 'typeorm';
+
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
+import { queues } from '../../../queues/queues';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
+import { RescheduleEventReqDto } from '../../infrastructure/dtos/rescheduleEventReq.dto';
+import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { RescheduleEventReqDto } from '../../infrastructure/dtos/rescheduleEventReq.dto';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import { queues } from '../../../queues/queues';
 import { SchedulingService } from '../../services/scheduling.service';
+
 import { ChangeEventStatusUsecase } from './changeEventStatus.usecase';
-import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { AgendaEventTransition } from '../../domain/services/eventStateMachine.service';
 
 @Injectable()
 export class RescheduleEventUseCase {

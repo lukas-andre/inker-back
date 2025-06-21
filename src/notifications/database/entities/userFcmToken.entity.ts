@@ -1,10 +1,10 @@
 import {
   Column,
-  Entity,
   CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
+  Entity,
   Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export enum DeviceType {

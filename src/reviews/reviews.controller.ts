@@ -20,6 +20,7 @@ import {
 
 import { AgendaEventIdPipe } from '../agenda/infrastructure/pipes/agendaEventId.pipe';
 import { ArtistIdPipe } from '../artists/infrastructure/pipes/artistId.pipe';
+import { AuthGuard } from '../global/infrastructure/guards/auth.guard';
 import { UserIdPipe } from '../users/infrastructure/pipes/userId.pipe';
 
 import { GetReviewsFromArtistResponseDto } from './dtos/getReviewsFromArtistResponse.dto';
@@ -27,8 +28,6 @@ import { ReviewArtistRequestDto } from './dtos/reviewArtistRequest.dto';
 import { ReviewIdPipe } from './pipes/review.pipe';
 import { ReviewReactionPipe } from './pipes/reviewReactionEnum.pipe';
 import { ReviewHandler } from './reviews.handler';
-import { AuthGuard } from '../global/infrastructure/guards/auth.guard';
-
 
 export enum ReviewReactionEnum {
   off = 'off',

@@ -18,8 +18,8 @@ import {
   VerificationHash,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
-import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
 import { UsersRepository } from '../../infrastructure/repositories/users.repository';
+import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
 
 @Injectable()
 export class SendSMSAccountVerificationCodeUseCase
