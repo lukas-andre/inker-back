@@ -1,19 +1,15 @@
 import {
   Controller,
   Get,
-  Query,
   HttpException,
   HttpStatus,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { IPRateLimitGuard } from '../guards/ipRateLimit.guard';
+
+import { PlacesApiError } from '../../domain/errors/places.errors';
 import { GetAutoCompleteUseCase } from '../../usecases/getAutoComplete.usecase';
 import { GetPlaceDetailsUseCase } from '../../usecases/getPlaceDetails.usecase';
 import {
@@ -21,11 +17,11 @@ import {
   AutoCompleteResponseDto,
 } from '../dtos/autoComplete.dto';
 import {
+  ParsedAddressDto,
   PlaceDetailsQueryDto,
   PlaceDetailsResponseDto,
-  ParsedAddressDto,
 } from '../dtos/placeDetails.dto';
-import { PlacesApiError } from '../../domain/errors/places.errors';
+import { IPRateLimitGuard } from '../guards/ipRateLimit.guard';
 
 @ApiTags('Places')
 @Controller('places')
@@ -40,7 +36,8 @@ export class PlacesController {
   @Throttle({ default: { limit: 30, ttl: 60000 } }) // 30 requests per minute
   @ApiOperation({
     summary: 'Get place suggestions based on input text',
-    description: 'Proxy endpoint for Google Places Autocomplete API with rate limiting',
+    description:
+      'Proxy endpoint for Google Places Autocomplete API with rate limiting',
   })
   @ApiQuery({
     name: 'input',
@@ -102,11 +99,13 @@ export class PlacesController {
   @Throttle({ default: { limit: 20, ttl: 60000 } }) // 20 requests per minute
   @ApiOperation({
     summary: 'Get detailed information about a specific place',
-    description: 'Proxy endpoint for Google Places Details API with rate limiting',
+    description:
+      'Proxy endpoint for Google Places Details API with rate limiting',
   })
   @ApiQuery({
     name: 'placeId',
-    description: 'The place ID of the place for which details are being requested',
+    description:
+      'The place ID of the place for which details are being requested',
     example: 'ChIJH_ximfDPYpYR_pGBUbiPJiw',
   })
   @ApiQuery({
@@ -163,7 +162,8 @@ export class PlacesController {
   })
   @ApiQuery({
     name: 'placeId',
-    description: 'The place ID of the place for which details are being requested',
+    description:
+      'The place ID of the place for which details are being requested',
     example: 'ChIJH_ximfDPYpYR_pGBUbiPJiw',
   })
   @ApiQuery({
@@ -194,10 +194,10 @@ export class PlacesController {
       }
 
       const addressComponents = details.address_components;
-      
+
       const getComponent = (types: string[]): string => {
         const component = addressComponents.find(c =>
-          types.some(type => c.types.includes(type))
+          types.some(type => c.types.includes(type)),
         );
         return component?.long_name || '';
       };

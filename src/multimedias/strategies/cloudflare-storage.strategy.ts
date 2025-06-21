@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
+
 import { CloudflareImagesClient } from '../../global/infrastructure/clients/cloudflare-images.client';
 import { FileInterface } from '../interfaces/file.interface';
-import { StorageStrategy, StorageUploadResult } from '../interfaces/storage-strategy.interface';
+import {
+  StorageStrategy,
+  StorageUploadResult,
+} from '../interfaces/storage-strategy.interface';
 
 @Injectable()
 export class CloudflareStorageStrategy implements StorageStrategy {
@@ -24,7 +28,9 @@ export class CloudflareStorageStrategy implements StorageStrategy {
     // Validate file size (Cloudflare limit is 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB in bytes
     if (file.size > maxSize) {
-      throw new Error(`File size exceeds Cloudflare's 10MB limit. File size: ${file.size} bytes`);
+      throw new Error(
+        `File size exceeds Cloudflare's 10MB limit. File size: ${file.size} bytes`,
+      );
     }
 
     // Upload to Cloudflare
@@ -61,7 +67,7 @@ export class CloudflareStorageStrategy implements StorageStrategy {
 
   private extractMetadataFromPath(path: string): Record<string, string> {
     const metadata: Record<string, string> = {};
-    
+
     // Parse different path patterns
     if (path.includes('artist/posts/')) {
       // Pattern: artist/posts/{artistId}/{postId}_{index}
@@ -74,7 +80,9 @@ export class CloudflareStorageStrategy implements StorageStrategy {
       }
     } else if (path.includes('work-evidence')) {
       // Pattern: agenda/{agendaId}/event/{eventId}/work-evidence/file_{index}
-      const match = path.match(/agenda\/([^\/]+)\/event\/([^\/]+)\/work-evidence\/file_(\d+)/);
+      const match = path.match(
+        /agenda\/([^\/]+)\/event\/([^\/]+)\/work-evidence\/file_(\d+)/,
+      );
       if (match) {
         metadata.type = 'work-evidence';
         metadata.agendaId = match[1];
@@ -83,7 +91,9 @@ export class CloudflareStorageStrategy implements StorageStrategy {
       }
     } else if (path.includes('reference-images')) {
       // Pattern: quotation/{quotationId}/artist/{artistId}/reference-images/reference_{index}
-      const match = path.match(/quotation\/([^\/]+)\/artist\/([^\/]+)\/reference-images\/reference_(\d+)/);
+      const match = path.match(
+        /quotation\/([^\/]+)\/artist\/([^\/]+)\/reference-images\/reference_(\d+)/,
+      );
       if (match) {
         metadata.type = 'reference-image';
         metadata.quotationId = match[1];
@@ -92,7 +102,9 @@ export class CloudflareStorageStrategy implements StorageStrategy {
       }
     } else if (path.includes('proposed-images')) {
       // Pattern: quotation/{quotationId}/artist/{artistId}/proposed-images/proposed_{index}
-      const match = path.match(/quotation\/([^\/]+)\/artist\/([^\/]+)\/proposed-images\/proposed_(\d+)/);
+      const match = path.match(
+        /quotation\/([^\/]+)\/artist\/([^\/]+)\/proposed-images\/proposed_(\d+)/,
+      );
       if (match) {
         metadata.type = 'proposed-image';
         metadata.quotationId = match[1];
@@ -101,7 +113,9 @@ export class CloudflareStorageStrategy implements StorageStrategy {
       }
     } else if (path.includes('proposed-designs')) {
       // Pattern: quotation/{quotationId}/artist/{artistId}/proposed-designs/design_{index}
-      const match = path.match(/quotation\/([^\/]+)\/artist\/([^\/]+)\/proposed-designs\/design_(\d+)/);
+      const match = path.match(
+        /quotation\/([^\/]+)\/artist\/([^\/]+)\/proposed-designs\/design_(\d+)/,
+      );
       if (match) {
         metadata.type = 'proposed-design';
         metadata.quotationId = match[1];

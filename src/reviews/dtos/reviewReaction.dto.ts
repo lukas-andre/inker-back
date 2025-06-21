@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
 
 import { BaseDTO } from '../../global/domain/dtos/base.dto';
-import { ReviewReactionEnum } from '../reviews.controller';
 import { ReviewReactionInterface } from '../interfaces/reviewReaction.interface';
+import { ReviewReactionEnum } from '../reviews.controller';
 
 export class ReviewReactionDTO
   extends BaseDTO

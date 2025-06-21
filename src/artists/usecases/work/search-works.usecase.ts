@@ -1,16 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { WorkRepository } from '../../infrastructure/repositories/work.repository';
-import { WorkSearchQueryDto } from '../../domain/dtos/work-search.dto';
-import { PaginatedWorkResponseDto, WorkWithRelevanceDto } from '../../domain/dtos/paginated-work-response.dto';
-import { InteractionRepository } from '../../../interactions/infrastructure/database/repositories/interaction.repository';
-import { WorkDto } from '../../domain/dtos/work.dto';
-import { ContentMetricsEnricherService, WithMetrics, MetricsOptions } from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
+
 import { ContentType } from '../../../analytics/domain/enums/content-types.enum';
+import {
+  ContentMetricsEnricherService,
+  MetricsOptions,
+  WithMetrics,
+} from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
+import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { InteractionRepository } from '../../../interactions/infrastructure/database/repositories/interaction.repository';
+import {
+  PaginatedWorkResponseDto,
+  WorkWithRelevanceDto,
+} from '../../domain/dtos/paginated-work-response.dto';
+import { WorkSearchQueryDto } from '../../domain/dtos/work-search.dto';
+import { WorkDto } from '../../domain/dtos/work.dto';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 
 type WorkWithRelevanceAndMetrics = WorkWithRelevanceDto & WithMetrics;
 
-interface PaginatedWorkResponseWithMetrics extends Omit<PaginatedWorkResponseDto, 'items'> {
+interface PaginatedWorkResponseWithMetrics
+  extends Omit<PaginatedWorkResponseDto, 'items'> {
   items: WorkWithRelevanceAndMetrics[];
 }
 
@@ -24,38 +33,57 @@ export class SearchWorksUseCase extends BaseUseCase {
     super(SearchWorksUseCase.name);
   }
 
-  async execute(params: WorkSearchQueryDto & { 
-    includeMetrics?: boolean; 
-    userId?: string;
-    disableCache?: boolean;
-  }): Promise<PaginatedWorkResponseWithMetrics> {
-    const { query, page = 1, limit = 10, sortBy = 'relevance', includeMetrics = true, userId, disableCache } = params;
+  async execute(
+    params: WorkSearchQueryDto & {
+      includeMetrics?: boolean;
+      userId?: string;
+      disableCache?: boolean;
+    },
+  ): Promise<PaginatedWorkResponseWithMetrics> {
+    const {
+      query,
+      page = 1,
+      limit = 10,
+      sortBy = 'relevance',
+      includeMetrics = true,
+      userId,
+      disableCache,
+    } = params;
 
     // Usar el método searchWorks del provider para buscar trabajos
     const [works, total] = await this.workProvider.searchWorks(params);
 
     // Enriquecer los resultados con información de relevancia y popularidad
-    const worksWithRelevance = await this.enrichSearchResults(works, query, sortBy);
+    const worksWithRelevance = await this.enrichSearchResults(
+      works,
+      query,
+      sortBy,
+    );
 
     // Calcular páginas totales
     const pages = Math.ceil(total / limit);
-    
+
     const paginatedResponse = {
       items: worksWithRelevance,
       page,
       limit,
       total,
-      pages
+      pages,
     };
-    
+
     const options: MetricsOptions = { disableCache };
-    
+
     // Add metrics if requested
-    return includeMetrics 
-      ? await this.metricsEnricher.enrichPaginatedWithMetrics(paginatedResponse, ContentType.WORK, userId, options)
+    return includeMetrics
+      ? await this.metricsEnricher.enrichPaginatedWithMetrics(
+          paginatedResponse,
+          ContentType.WORK,
+          userId,
+          options,
+        )
       : {
           ...paginatedResponse,
-          items: this.metricsEnricher.addEmptyMetricsToAll(worksWithRelevance)
+          items: this.metricsEnricher.addEmptyMetricsToAll(worksWithRelevance),
         };
   }
 
@@ -63,9 +91,9 @@ export class SearchWorksUseCase extends BaseUseCase {
    * Enriquece los resultados de búsqueda con información de relevancia
    */
   private async enrichSearchResults(
-    works: any[], 
-    searchQuery?: string, 
-    sortBy: string = 'relevance'
+    works: any[],
+    searchQuery?: string,
+    sortBy = 'relevance',
   ): Promise<WorkWithRelevanceDto[]> {
     // Si no hay trabajos, devolver array vacío
     if (!works.length) return [];
@@ -75,14 +103,15 @@ export class SearchWorksUseCase extends BaseUseCase {
       // Obtener métricas de popularidad para los trabajos
       const workIds = works.map(work => work.id);
       let popularityData: { entityId: string; count: number }[] = [];
-      
+
       try {
-        popularityData = await this.interactionProvider.getRecentPopularEntities(
-          'work',
-          'view',
-          workIds.length,
-          30 // Últimos 30 días
-        );
+        popularityData =
+          await this.interactionProvider.getRecentPopularEntities(
+            'work',
+            'view',
+            workIds.length,
+            30, // Últimos 30 días
+          );
       } catch (error) {
         this.logger.error('Error al obtener datos de popularidad', error);
       }
@@ -95,14 +124,16 @@ export class SearchWorksUseCase extends BaseUseCase {
 
       // Regex para verificar coincidencias de palabras completas
       const searchTerms = searchQuery.trim().toLowerCase().split(/\s+/);
-      const searchRegexes = searchTerms.map(term => new RegExp(`\\b${term}\\b`, 'i'));
+      const searchRegexes = searchTerms.map(
+        term => new RegExp(`\\b${term}\\b`, 'i'),
+      );
 
       // Enriquecer cada trabajo
       return works.map(work => {
         const result: WorkWithRelevanceDto = { ...work };
         const relevanceFactors: string[] = [];
         let baseScore = 0.5; // Puntuación base
-        
+
         // Factor 1: Coincidencia en título
         if (work.title && typeof work.title === 'string') {
           const titleLower = work.title.toLowerCase();
@@ -112,7 +143,9 @@ export class SearchWorksUseCase extends BaseUseCase {
             relevanceFactors.push('title_exact_match');
           } else {
             // Verificar coincidencia de palabras individuales
-            const matchCount = searchRegexes.filter(regex => regex.test(titleLower)).length;
+            const matchCount = searchRegexes.filter(regex =>
+              regex.test(titleLower),
+            ).length;
             if (matchCount > 0) {
               const matchScore = Math.min(0.2, matchCount * 0.05);
               baseScore += matchScore;
@@ -120,7 +153,7 @@ export class SearchWorksUseCase extends BaseUseCase {
             }
           }
         }
-        
+
         // Factor 2: Coincidencia en descripción
         if (work.description && typeof work.description === 'string') {
           const descLower = work.description.toLowerCase();
@@ -129,14 +162,18 @@ export class SearchWorksUseCase extends BaseUseCase {
             relevanceFactors.push('description_match');
           }
         }
-        
+
         // Factor 3: Reciente
         const createdAt = work.createdAt ? new Date(work.createdAt) : null;
         if (createdAt) {
           const now = new Date();
-          const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-          const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-          
+          const thirtyDaysAgo = new Date(
+            now.getTime() - 30 * 24 * 60 * 60 * 1000,
+          );
+          const ninetyDaysAgo = new Date(
+            now.getTime() - 90 * 24 * 60 * 60 * 1000,
+          );
+
           if (createdAt > thirtyDaysAgo) {
             baseScore += 0.15;
             relevanceFactors.push('recent');
@@ -145,13 +182,13 @@ export class SearchWorksUseCase extends BaseUseCase {
             relevanceFactors.push('fairly_recent');
           }
         }
-        
+
         // Factor 4: Destacado
         if (work.isFeatured) {
           baseScore += 0.2;
           relevanceFactors.push('featured');
         }
-        
+
         // Factor 5: Popularidad (basada en visualizaciones)
         const viewCount = popularityMap.get(work.id) || 0;
         if (viewCount > 0) {
@@ -160,23 +197,24 @@ export class SearchWorksUseCase extends BaseUseCase {
           baseScore += viewScore;
           relevanceFactors.push('popular');
         }
-        
+
         // Asignar puntuación final (máximo 1.0)
         result.relevanceScore = Math.min(1.0, baseScore);
         result.relevanceFactors = relevanceFactors;
-        
+
         return result;
       });
     } else if (sortBy === 'popularity') {
       // Si ordenamos por popularidad, obtener datos de popularidad
       try {
         const workIds = works.map(work => work.id);
-        const popularWorks = await this.interactionProvider.getRecentPopularEntities(
-          'work',
-          'view',
-          workIds.length,
-          30
-        );
+        const popularWorks =
+          await this.interactionProvider.getRecentPopularEntities(
+            'work',
+            'view',
+            workIds.length,
+            30,
+          );
 
         // Crear mapa de popularidad
         const popularityMap = new Map<string, number>();
@@ -195,20 +233,20 @@ export class SearchWorksUseCase extends BaseUseCase {
         return works.map(work => {
           const viewCount = popularityMap.get(work.id) || 0;
           const result: WorkWithRelevanceDto = { ...work };
-          
+
           if (viewCount > 0) {
             result.relevanceScore = Math.min(1.0, viewCount * 0.01);
             result.relevanceFactors = ['popular'];
           }
-          
+
           return result;
         });
       } catch (error) {
         this.logger.error('Error ordenando por popularidad', error);
       }
     }
-    
+
     // Para otros casos, devolver los trabajos sin información de relevancia
     return works.map(work => ({ ...work }));
   }
-} 
+}

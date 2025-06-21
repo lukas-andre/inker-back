@@ -1,19 +1,21 @@
-import {  Column, Entity, Index, OneToMany } from 'typeorm';
-import { ContentMetricsViewer } from './content-metrics-viewer.entity';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
+
+import { BaseEntity } from '../../../../global/infrastructure/entities/base.entity';
 import { ContentType } from '../../../domain/enums/content-types.enum';
 import { IContentMetrics } from '../../../domain/interfaces/content-metrics.interface';
-import { BaseEntity } from '../../../../global/infrastructure/entities/base.entity';
+
+import { ContentMetricsViewer } from './content-metrics-viewer.entity';
 
 @Entity('content_metrics')
 export class ContentMetrics extends BaseEntity implements IContentMetrics {
-  @Index("IDX_45549bf4dbca82611ce8c94804", { unique: true })
+  @Index('IDX_45549bf4dbca82611ce8c94804', { unique: true })
   @Column({ name: 'content_id', type: 'uuid' })
   contentId: string;
 
-  @Column({ 
+  @Column({
     name: 'content_type',
     type: 'enum',
-    enum: ContentType
+    enum: ContentType,
   })
   contentType: ContentType;
 
@@ -23,9 +25,9 @@ export class ContentMetrics extends BaseEntity implements IContentMetrics {
     default: {
       views: {
         count: 0,
-        uniqueCount: 0
-      }
-    }
+        uniqueCount: 0,
+      },
+    },
   })
   metrics: {
     reactions?: {
@@ -62,4 +64,4 @@ export class ContentMetrics extends BaseEntity implements IContentMetrics {
 
   @OneToMany(() => ContentMetricsViewer, viewer => viewer.metrics)
   viewers: ContentMetricsViewer[];
-} 
+}

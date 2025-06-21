@@ -1,29 +1,50 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsBoolean, IsUUID, IsArray } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class GenerateDesignDto {
-  @ApiProperty({ description: 'The user query for the tattoo design', example: 'Japanese cat' })
+  @ApiProperty({
+    description: 'The user query for the tattoo design',
+    example: 'Japanese cat',
+  })
   @IsString()
   query: string;
 
-  @ApiPropertyOptional({ description: 'The desired style of the tattoo', example: 'traditional' })
+  @ApiPropertyOptional({
+    description: 'The desired style of the tattoo',
+    example: 'traditional',
+  })
   @IsString()
   @IsOptional()
   style?: string;
 
-  @ApiPropertyOptional({ description: 'The target language for translation', example: 'es' })
+  @ApiPropertyOptional({
+    description: 'The target language for translation',
+    example: 'es',
+  })
   @IsString()
   @IsOptional()
   targetLanguage?: string;
 
-  @ApiPropertyOptional({ description: 'Additional prompt instructions', example: 'with cherry blossoms' })
+  @ApiPropertyOptional({
+    description: 'Additional prompt instructions',
+    example: 'with cherry blossoms',
+  })
   @IsString()
   @IsOptional()
   additionalPrompt?: string;
 }
 
 export class MarkFavoriteDto {
-  @ApiProperty({ description: 'Whether the design is marked as favorite', default: true })
+  @ApiProperty({
+    description: 'Whether the design is marked as favorite',
+    default: true,
+  })
   @IsBoolean()
   isFavorite: boolean;
 }
@@ -50,12 +71,16 @@ export class TattooDesignResultDto {
   @IsBoolean()
   fromCache: boolean;
 
-  @ApiPropertyOptional({ description: 'Similarity score if retrieved from cache' })
+  @ApiPropertyOptional({
+    description: 'Similarity score if retrieved from cache',
+  })
   @IsOptional()
   similarity?: number;
 
-  @ApiPropertyOptional({ description: 'Translated query if translation was applied' })
+  @ApiPropertyOptional({
+    description: 'Translated query if translation was applied',
+  })
   @IsString()
   @IsOptional()
   translatedQuery?: string;
-} 
+}

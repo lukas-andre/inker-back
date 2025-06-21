@@ -1,11 +1,12 @@
 import { applyDecorators } from '@nestjs/common';
 import {
+  ApiBody,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
-  ApiBody,
 } from '@nestjs/swagger';
+
 import { ActivateUserWithSecretReqDto } from '../../dtos/activateUserWithSecret.dto';
 
 export function ActivateUserWithSecretDoc() {
@@ -30,11 +31,12 @@ export function ActivateUserWithSecretDoc() {
     }),
     ApiResponse({
       status: 400,
-      description: 'Invalid request (missing/invalid parameters or user not found)',
+      description:
+        'Invalid request (missing/invalid parameters or user not found)',
     }),
     ApiResponse({
       status: 403,
       description: 'Invalid secret key',
     }),
   );
-} 
+}

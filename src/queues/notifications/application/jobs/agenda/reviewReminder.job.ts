@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
 import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
@@ -8,7 +9,10 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { ReviewReminderEmailType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
-import { ReviewReminderJobType, REVIEW_REMINDER } from '../../../domain/schemas/agenda';
+import {
+  REVIEW_REMINDER,
+  ReviewReminderJobType,
+} from '../../../domain/schemas/agenda';
 import { NotificationJob } from '../notification.job';
 
 @Injectable()
@@ -39,7 +43,9 @@ export class ReviewReminderJob extends NotificationJob {
 
   async handle(job: ReviewReminderJobType): Promise<void> {
     const { artistId, customerId, eventId, reminderType } = job.metadata;
-    this.logger.log(`Handling ${REVIEW_REMINDER} for event ${eventId}, reminder type: ${reminderType}`);
+    this.logger.log(
+      `Handling ${REVIEW_REMINDER} for event ${eventId}, reminder type: ${reminderType}`,
+    );
 
     try {
       const [agendaEvent, artist, customer] = await Promise.all([
@@ -124,11 +130,15 @@ export class ReviewReminderJob extends NotificationJob {
         },
       );
 
-      this.logger.log(`Successfully sent ${reminderType} review reminder for event ${eventId} to customer ${customerId}`);
-
+      this.logger.log(
+        `Successfully sent ${reminderType} review reminder for event ${eventId} to customer ${customerId}`,
+      );
     } catch (error) {
       const e = error as Error;
-      this.logger.error(`Error handling ${REVIEW_REMINDER} for event ${eventId}: ${e.message}`, e.stack);
+      this.logger.error(
+        `Error handling ${REVIEW_REMINDER} for event ${eventId}: ${e.message}`,
+        e.stack,
+      );
     }
   }
-} 
+}

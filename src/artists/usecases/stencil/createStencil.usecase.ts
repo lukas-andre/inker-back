@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
+import { ConfigService } from '@nestjs/config';
+import mime from 'mime-types';
+import sharp from 'sharp';
+
+import {
+  DomainBadRequest,
+  DomainNotFound,
+} from '../../../global/domain/exceptions/domain.exception';
+import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { UniqueIdService } from '../../../global/infrastructure/services/uniqueId.service';
+import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import {
+  MultimediasService,
+  UploadToS3Result,
+} from '../../../multimedias/services/multimedias.service';
 import { CreateStencilDto, StencilDto } from '../../domain/dtos/stencil.dto';
 import { Artist } from '../../infrastructure/entities/artist.entity';
 import { ArtistRepository } from '../../infrastructure/repositories/artist.repository';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { ConfigService } from '@nestjs/config';
-import { MultimediasService, UploadToS3Result } from '../../../multimedias/services/multimedias.service';
-import { FileInterface } from '../../../multimedias/interfaces/file.interface';
-import { DomainBadRequest, DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
-import mime from 'mime-types';
-import sharp from 'sharp';
-import { UniqueIdService } from '../../../global/infrastructure/services/uniqueId.service';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 
 @Injectable()
 export class CreateStencilUseCase extends BaseUseCase {
@@ -24,14 +31,17 @@ export class CreateStencilUseCase extends BaseUseCase {
     super(CreateStencilUseCase.name);
   }
 
-  async execute(params: { artistId: string; dto: CreateStencilDto; file: FileInterface }): Promise<StencilDto> {
+  async execute(params: {
+    artistId: string;
+    dto: CreateStencilDto;
+    file: FileInterface;
+  }): Promise<StencilDto> {
     const { artistId, dto, file } = params;
-    
+
     // Convert string values to booleans for proper handling in multipart/form-data
     const isFeatured = dto.isFeatured === 'true' || dto.isFeatured === true;
     const isHidden = dto.isHidden === 'true' || dto.isHidden === true;
-    
-    
+
     // Validate artist
     const existingArtist = await this.artistProvider.findById(artistId);
     if (!existingArtist) {
@@ -57,14 +67,20 @@ export class CreateStencilUseCase extends BaseUseCase {
 
     // Define the source directory for files
     const source = `artist/${artistId}/stencils`;
-    
+
     // Upload different sizes of the image
     console.time('uploadStencilFile');
     let uploadResult: UploadToS3Result[];
     try {
       uploadResult = await Promise.all([
         this.uploadOriginal(file, source, fileExtension, imageId, imageVersion),
-        this.uploadThumbnail(file, source, fileExtension, imageId, imageVersion),
+        this.uploadThumbnail(
+          file,
+          source,
+          fileExtension,
+          imageId,
+          imageVersion,
+        ),
         this.uploadTiny(file, source, fileExtension, imageId, imageVersion),
       ]);
     } catch (error) {
@@ -83,8 +99,13 @@ export class CreateStencilUseCase extends BaseUseCase {
     };
 
     // Create the stencil using the updated DTO
-    const stencil = await this.stencilProvider.createStencil(artistId, updatedDto, isFeatured, isHidden);
-    
+    const stencil = await this.stencilProvider.createStencil(
+      artistId,
+      updatedDto,
+      isFeatured,
+      isHidden,
+    );
+
     return stencil;
   }
 
@@ -112,10 +133,10 @@ export class CreateStencilUseCase extends BaseUseCase {
       .resize({ width: 512 })
       .jpeg({ quality: 70 })
       .toBuffer();
-    
+
     // Create a new file object with the resized buffer
     const thumbnailFile = { ...file, buffer: data };
-    
+
     return this.multimediasService.upload(thumbnailFile, source, fileName);
   }
 
@@ -132,10 +153,10 @@ export class CreateStencilUseCase extends BaseUseCase {
       .resize({ width: 50 })
       .jpeg({ quality: 70 })
       .toBuffer();
-    
+
     // Create a new file object with the resized buffer
     const tinyFile = { ...file, buffer: data };
-    
+
     return this.multimediasService.upload(tinyFile, source, fileName);
   }
 }

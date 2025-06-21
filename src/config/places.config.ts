@@ -14,8 +14,14 @@ export const PlacesConfig = registerAs<PlacesConfig>('places', () => ({
   apiKey: process.env.GOOGLE_PLACES_API_KEY,
   language: process.env.GOOGLE_PLACES_LANGUAGE || 'es-419',
   country: process.env.GOOGLE_PLACES_COUNTRY || 'cl',
-  rateLimitPerMinute: parseInt(process.env.GOOGLE_PLACES_RATE_LIMIT_PER_MINUTE || '30', 10),
-  rateLimitPerHour: parseInt(process.env.GOOGLE_PLACES_RATE_LIMIT_PER_HOUR || '500', 10),
+  rateLimitPerMinute: parseInt(
+    process.env.GOOGLE_PLACES_RATE_LIMIT_PER_MINUTE || '30',
+    10,
+  ),
+  rateLimitPerHour: parseInt(
+    process.env.GOOGLE_PLACES_RATE_LIMIT_PER_HOUR || '500',
+    10,
+  ),
   cacheExpiry: parseInt(process.env.GOOGLE_PLACES_CACHE_EXPIRY || '1800', 10), // 30 minutes default
 }));
 

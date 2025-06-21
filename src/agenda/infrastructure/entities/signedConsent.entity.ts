@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
 import { AgendaEvent } from './agendaEvent.entity';
 import { FormTemplateEntity } from './formTemplate.entity';
 
@@ -13,7 +20,11 @@ export class SignedConsentEntity {
   @Column({ type: 'uuid', name: 'event_id' })
   eventId: string;
 
-  @ManyToOne(() => FormTemplateEntity, { eager: false, onDelete: 'SET NULL', nullable: true })
+  @ManyToOne(() => FormTemplateEntity, {
+    eager: false,
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
   formTemplate?: FormTemplateEntity;
 
   @Column({ type: 'uuid', nullable: true, name: 'form_template_id' })
@@ -37,4 +48,4 @@ export class SignedConsentEntity {
 
   @Column({ type: 'text', nullable: true, name: 'user_agent' })
   userAgent?: string;
-} 
+}

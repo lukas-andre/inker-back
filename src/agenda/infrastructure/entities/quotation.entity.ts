@@ -1,10 +1,17 @@
-import { Column, Entity, Index, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 import { QuotationHistory } from './quotationHistory.entity';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { QuotationOffer } from './quotationOffer.entity';
 
 export const CUSTOMER_CANCEL_REASONS = [
@@ -104,7 +111,11 @@ export class Quotation extends BaseEntity {
   @Column({ name: 'customer_lon', type: 'float', nullable: true })
   customerLon?: number;
 
-  @Column({ name: 'customer_travel_radius_km', type: 'integer', nullable: true })
+  @Column({
+    name: 'customer_travel_radius_km',
+    type: 'integer',
+    nullable: true,
+  })
   customerTravelRadiusKm?: number;
 
   @Column()
@@ -293,22 +304,40 @@ export class Quotation extends BaseEntity {
   @OneToMany(() => QuotationOffer, offer => offer.quotation)
   offers?: QuotationOffer[];
 
-  @Column({ name: 'min_budget', type: 'jsonb', nullable: true, transformer: {
-    to: (v: MoneyEntity) => v ? v.toJSON() : null,
-    from: (v: any) => v ? new MoneyEntity(v.amount, v.currency, v.scale) : null
-  } })
+  @Column({
+    name: 'min_budget',
+    type: 'jsonb',
+    nullable: true,
+    transformer: {
+      to: (v: MoneyEntity) => (v ? v.toJSON() : null),
+      from: (v: any) =>
+        v ? new MoneyEntity(v.amount, v.currency, v.scale) : null,
+    },
+  })
   minBudget?: MoneyEntity;
 
-  @Column({ name: 'max_budget', type: 'jsonb', nullable: true, transformer: {
-    to: (v: MoneyEntity) => v ? v.toJSON() : null,
-    from: (v: any) => v ? new MoneyEntity(v.amount, v.currency, v.scale) : null
-  } })
+  @Column({
+    name: 'max_budget',
+    type: 'jsonb',
+    nullable: true,
+    transformer: {
+      to: (v: MoneyEntity) => (v ? v.toJSON() : null),
+      from: (v: any) =>
+        v ? new MoneyEntity(v.amount, v.currency, v.scale) : null,
+    },
+  })
   maxBudget?: MoneyEntity;
 
-  @Column({ name: 'reference_budget', type: 'jsonb', nullable: true, transformer: {
-    to: (v: MoneyEntity) => v ? v.toJSON() : null,
-    from: (v: any) => v ? new MoneyEntity(v.amount, v.currency, v.scale) : null
-  } })
+  @Column({
+    name: 'reference_budget',
+    type: 'jsonb',
+    nullable: true,
+    transformer: {
+      to: (v: MoneyEntity) => (v ? v.toJSON() : null),
+      from: (v: any) =>
+        v ? new MoneyEntity(v.amount, v.currency, v.scale) : null,
+    },
+  })
   referenceBudget?: MoneyEntity;
 
   @Column({ name: 'generated_image_id', type: 'varchar', nullable: true })

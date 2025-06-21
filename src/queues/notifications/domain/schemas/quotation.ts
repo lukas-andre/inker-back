@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import { NotificationTypeSchema } from './notification';
 
-
 export const QuotationJobIdSchema = z.enum([
   'QUOTATION_CREATED',
   'QUOTATION_REPLIED',

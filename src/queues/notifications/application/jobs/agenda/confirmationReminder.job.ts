@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
 import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
@@ -8,7 +9,10 @@ import { EmailNotificationService } from '../../../../../notifications/services/
 import { ConfirmationReminderEmailType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
-import { ConfirmationReminderJobType, CONFIRMATION_REMINDER } from '../../../domain/schemas/agenda';
+import {
+  CONFIRMATION_REMINDER,
+  ConfirmationReminderJobType,
+} from '../../../domain/schemas/agenda';
 import { NotificationJob } from '../notification.job';
 
 @Injectable()
@@ -39,7 +43,9 @@ export class ConfirmationReminderJob extends NotificationJob {
 
   async handle(job: ConfirmationReminderJobType): Promise<void> {
     const { artistId, customerId, eventId, hoursRemaining } = job.metadata;
-    this.logger.log(`Handling ${CONFIRMATION_REMINDER} for event ${eventId}, hours remaining: ${hoursRemaining}`);
+    this.logger.log(
+      `Handling ${CONFIRMATION_REMINDER} for event ${eventId}, hours remaining: ${hoursRemaining}`,
+    );
 
     try {
       const [agendaEvent, artist, customer] = await Promise.all([
@@ -103,7 +109,9 @@ export class ConfirmationReminderJob extends NotificationJob {
         confirmationUrl,
       };
 
-      await this.emailNotificationService.sendEmail(confirmationReminderEmailData);
+      await this.emailNotificationService.sendEmail(
+        confirmationReminderEmailData,
+      );
 
       // Push notification to customer
       await this.pushNotificationService.sendToUser(
@@ -122,11 +130,15 @@ export class ConfirmationReminderJob extends NotificationJob {
         },
       );
 
-      this.logger.log(`Successfully sent confirmation reminder for event ${eventId} to customer ${customerId}, ${hoursRemaining}h remaining`);
-
+      this.logger.log(
+        `Successfully sent confirmation reminder for event ${eventId} to customer ${customerId}, ${hoursRemaining}h remaining`,
+      );
     } catch (error) {
       const e = error as Error;
-      this.logger.error(`Error handling ${CONFIRMATION_REMINDER} for event ${eventId}: ${e.message}`, e.stack);
+      this.logger.error(
+        `Error handling ${CONFIRMATION_REMINDER} for event ${eventId}: ${e.message}`,
+        e.stack,
+      );
     }
   }
-} 
+}

@@ -23,8 +23,7 @@ export enum TattooStyle {
 }
 
 export const TattooStyleDescriptions: Record<TattooStyle, string> = {
-  [TattooStyle.TRADITIONAL_AMERICAN]:
-    `Create an American Traditional (Old School) tattoo design with these authentic characteristics:
+  [TattooStyle.TRADITIONAL_AMERICAN]: `Create an American Traditional (Old School) tattoo design with these authentic characteristics:
 - Heavy, bold black outlines of consistent thickness
 - Limited but vibrant color palette (primarily black, red, green, yellow, blue)
 - Simplified, iconic imagery with strong silhouettes
@@ -38,8 +37,7 @@ export const TattooStyleDescriptions: Record<TattooStyle, string> = {
 
 The design should capture the timeless, straightforward aesthetic originated by pioneers like Sailor Jerry, emphasizing readability and longevity.`,
 
-  [TattooStyle.NEOTRADITIONAL]:
-    `Create a Neotraditional tattoo design with these distinctive characteristics:
+  [TattooStyle.NEOTRADITIONAL]: `Create a Neotraditional tattoo design with these distinctive characteristics:
 - Richer, expanded color palette beyond traditional primary colors
 - Dynamic line weights that vary from bold to fine
 - Illustrative quality with greater artistic depth and dimension
@@ -53,8 +51,7 @@ The design should capture the timeless, straightforward aesthetic originated by 
 
 The design should feel like an evolved version of traditional tattooing, with enhanced artistic complexity while maintaining the bold readability of traditional work.`,
 
-  [TattooStyle.REALISM]:
-    `Create a Realistic tattoo design with these technical characteristics:
+  [TattooStyle.REALISM]: `Create a Realistic tattoo design with these technical characteristics:
 - Photographic level of detail and precision
 - Advanced shading techniques creating smooth gradients
 - Three-dimensional illusion of depth and form
@@ -68,8 +65,7 @@ The design should feel like an evolved version of traditional tattooing, with en
 
 The design should appear as though a photograph has been perfectly transferred onto skin, demonstrating mastery of light, shadow, texture, and dimension.`,
 
-  [TattooStyle.WATERCOLOR]:
-    `Create a Watercolor tattoo design with these artistic characteristics:
+  [TattooStyle.WATERCOLOR]: `Create a Watercolor tattoo design with these artistic characteristics:
 - Fluid, spontaneous color transitions mimicking watercolor paint
 - Absence of defining black outlines or limited outline use
 - Splashes, drips, and paint splatters for organic aesthetic
@@ -83,8 +79,7 @@ The design should appear as though a photograph has been perfectly transferred o
 
 The design should capture the ephemeral, flowy aesthetic of watercolor paintings, creating the illusion that the colors have been painted directly onto skin with a watercolor brush.`,
 
-  [TattooStyle.GEOMETRIC]:
-    `Create a Geometric tattoo design with these precise characteristics:
+  [TattooStyle.GEOMETRIC]: `Create a Geometric tattoo design with these precise characteristics:
 - Composition built entirely from mathematical shapes (circles, triangles, squares, hexagons)
 - Perfect symmetry and proportional harmony
 - Sacred geometry patterns (flower of life, metatron's cube)
@@ -98,8 +93,7 @@ The design should capture the ephemeral, flowy aesthetic of watercolor paintings
 
 The design should demonstrate mathematical precision and balance, transforming natural subjects into their geometric essence through perfect shapes, symmetry, and proportion.`,
 
-  [TattooStyle.BLACKWORK]:
-    `Create a Blackwork tattoo design with these striking characteristics:
+  [TattooStyle.BLACKWORK]: `Create a Blackwork tattoo design with these striking characteristics:
 - Solid, dense black ink fills with no gradients
 - High contrast between black elements and skin (negative space)
 - Graphic, bold patterns with clear silhouettes
@@ -113,8 +107,7 @@ The design should demonstrate mathematical precision and balance, transforming n
 
 The design should make powerful use of solid black ink to create striking silhouettes and bold patterns that emphasize contrast and visual impact over detail and color.`,
 
-  [TattooStyle.DOTWORK]:
-    `Create a Dotwork/Stippling tattoo design with these meticulous characteristics:
+  [TattooStyle.DOTWORK]: `Create a Dotwork/Stippling tattoo design with these meticulous characteristics:
 - Composition formed entirely of precisely placed dots with no solid lines
 - Varying dot density to create shading, contrast, and dimension
 - Areas of high concentration for darker regions
@@ -128,8 +121,7 @@ The design should make powerful use of solid black ink to create striking silhou
 
 The design should demonstrate extraordinary patience and precision, using only dots to create form, depth, and texture. The varying density of dots should create a detailed image that appears almost three-dimensional.`,
 
-  [TattooStyle.JAPANESE]:
-    `Create a Japanese traditional (Irezumi) tattoo design with these authentic characteristics:
+  [TattooStyle.JAPANESE]: `Create a Japanese traditional (Irezumi) tattoo design with these authentic characteristics:
 - Bold, flowing black outlines with dynamic line weight
 - Strategic use of negative space (allowing skin to show through)
 - Traditional color palette (black, red, blue, green, yellow)
@@ -143,8 +135,7 @@ The design should demonstrate extraordinary patience and precision, using only d
 
 The design should honor the centuries-old Japanese tattoo tradition of Irezumi, demonstrating understanding of its composition rules, motif meanings, and aesthetic principles.`,
 
-  [TattooStyle.TRIBAL]:
-    `Create a Tribal tattoo design with these cultural characteristics:
+  [TattooStyle.TRIBAL]: `Create a Tribal tattoo design with these cultural characteristics:
 - Bold black silhouettes with solid fills
 - Patterns designed to contour and enhance body shape
 - Symbolic elements from Polynesian, Māori, Samoan, or other Indigenous cultures
@@ -158,8 +149,7 @@ The design should honor the centuries-old Japanese tattoo tradition of Irezumi, 
 
 The design should respect the cultural heritage of tribal tattooing traditions, understanding the symbolic meaning behind patterns while creating a bold, striking silhouette that enhances the body's natural form.`,
 
-  [TattooStyle.NEW_SCHOOL]:
-    `Create a New School tattoo design with these dynamic characteristics:
+  [TattooStyle.NEW_SCHOOL]: `Create a New School tattoo design with these dynamic characteristics:
 - Exaggerated, cartoonish proportions and perspectives
 - Graffiti and comic book art influences
 - Hyper-saturated, vibrant color palette
@@ -173,8 +163,7 @@ The design should respect the cultural heritage of tribal tattooing traditions, 
 
 The design should be bold, colorful and playful, using exaggeration and distortion to create a contemporary, often humorous take on traditional tattoo subjects with an animated, cartoon-like quality.`,
 
-  [TattooStyle.BIOMECHANICAL]:
-    `Create a Biomechanical tattoo design with these science fiction characteristics:
+  [TattooStyle.BIOMECHANICAL]: `Create a Biomechanical tattoo design with these science fiction characteristics:
 - Seamless integration of mechanical and organic elements
 - H.R. Giger-inspired aesthetic (Alien franchise influence)
 - Anatomical precision blended with mechanical components
@@ -188,8 +177,7 @@ The design should be bold, colorful and playful, using exaggeration and distorti
 
 The design should create the illusion of the human body merged with machine, as if the skin has been peeled back to reveal a complex mechanical system underneath that follows and enhances the natural anatomy.`,
 
-  [TattooStyle.MINIMALIST]:
-    `Create a Minimalist tattoo design with these restrained characteristics:
+  [TattooStyle.MINIMALIST]: `Create a Minimalist tattoo design with these restrained characteristics:
 - Single needle fine line work
 - Essential forms reduced to their simplest expression
 - Abundant negative space surrounding minimal elements
@@ -203,8 +191,7 @@ The design should create the illusion of the human body merged with machine, as 
 
 The design should embody the "less is more" philosophy, communicating the subject with the fewest possible lines while maintaining clarity and creating an elegant, understated aesthetic.`,
 
-  [TattooStyle.SURREALISM]:
-    `Create a Surrealist tattoo design with these dreamlike characteristics:
+  [TattooStyle.SURREALISM]: `Create a Surrealist tattoo design with these dreamlike characteristics:
 - Unexpected juxtaposition of unrelated elements
 - Dream logic composition defying physical laws
 - Metaphorical and symbolic imagery
@@ -218,8 +205,7 @@ The design should embody the "less is more" philosophy, communicating the subjec
 
 The design should create a dreamlike, psychological impression that challenges reality, blending highly realistic technique with impossible scenarios that evoke subconscious meanings and emotions.`,
 
-  [TattooStyle.ORNAMENTAL]:
-    `Create an Ornamental tattoo design with these decorative characteristics:
+  [TattooStyle.ORNAMENTAL]: `Create an Ornamental tattoo design with these decorative characteristics:
 - Henna and mehndi-inspired intricate patterns
 - Lace-like delicate linework and detail
 - Perfectly symmetrical repetition of motifs
@@ -233,8 +219,7 @@ The design should create a dreamlike, psychological impression that challenges r
 
 The design should transform the body part into an ornate, decorated surface through intricate, symmetrical patterns that enhance natural contours and create a jewelry-like decorative effect.`,
 
-  [TattooStyle.NEO_JAPANESE]:
-    `Create a Neo-Japanese tattoo design with these contemporary characteristics:
+  [TattooStyle.NEO_JAPANESE]: `Create a Neo-Japanese tattoo design with these contemporary characteristics:
 - Anime, manga, and Japanese pop culture influences
 - Vibrant, expanded color palette beyond traditional Irezumi
 - Dynamic compositions with modern artistic techniques
@@ -248,8 +233,7 @@ The design should transform the body part into an ornate, decorated surface thro
 
 The design should blend respect for traditional Japanese tattoo aesthetics with contemporary Japanese cultural influences, creating a fusion that feels both culturally connected and thoroughly modern.`,
 
-  [TattooStyle.CELTIC]:
-    `Create a Celtic tattoo design with these historical characteristics:
+  [TattooStyle.CELTIC]: `Create a Celtic tattoo design with these historical characteristics:
 - Intricate knotwork with unbroken, interlaced lines
 - Complex spiral motifs and triskelions
 - Interwoven patterns that create illusion of depth
@@ -263,8 +247,7 @@ The design should blend respect for traditional Japanese tattoo aesthetics with 
 
 The design should demonstrate the mathematical precision and cultural depth of authentic Celtic knotwork, creating an intricate, flowing pattern that appears to have no beginning or end.`,
 
-  [TattooStyle.CHICANO]:
-    `Create a Chicano tattoo design with these cultural characteristics:
+  [TattooStyle.CHICANO]: `Create a Chicano tattoo design with these cultural characteristics:
 - Prison art and barrio aesthetic origins
 - Fine line black and grey technique with smooth gradients
 - Paño art influence (prison handkerchief drawings)
@@ -278,8 +261,7 @@ The design should demonstrate the mathematical precision and cultural depth of a
 
 The design should honor the Mexican-American cultural tradition of Chicano tattooing, with its distinctive fine line black and grey technique, spiritual symbolism, and connection to street and prison art origins.`,
 
-  [TattooStyle.ABSTRACT]:
-    `Create an Abstract tattoo design with these artistic characteristics:
+  [TattooStyle.ABSTRACT]: `Create an Abstract tattoo design with these artistic characteristics:
 - Non-representational forms that evoke emotion rather than depict objects
 - Color field theory application (for color versions)
 - Shape relationships creating visual tension and harmony
@@ -293,8 +275,7 @@ The design should honor the Mexican-American cultural tradition of Chicano tatto
 
 The design should challenge conventional representation by focusing on pure form, color relationships, and compositional balance to evoke emotion rather than illustrate specific subjects.`,
 
-  [TattooStyle.MANDALA]:
-    `Create a Mandala tattoo design with these meditative characteristics:
+  [TattooStyle.MANDALA]: `Create a Mandala tattoo design with these meditative characteristics:
 - Perfect radial symmetry from a central point
 - Sacred geometry principles throughout composition
 - Concentric circular patterns radiating outward
@@ -308,8 +289,7 @@ The design should challenge conventional representation by focusing on pure form
 
 The design should create a perfect circular universe in miniature, using radial symmetry and sacred geometry to create a meditative, spiritually symbolic pattern representing cosmic harmony and balance.`,
 
-  [TattooStyle.FINELINE]:
-    `Create a Fine Line tattoo design with these delicate characteristics:
+  [TattooStyle.FINELINE]: `Create a Fine Line tattoo design with these delicate characteristics:
 - Single needle precision creating extremely thin lines
 - Delicate contours with minimal weight variation
 - Micro-shading techniques for subtle dimension
@@ -323,8 +303,7 @@ The design should create a perfect circular universe in miniature, using radial 
 
 The design should demonstrate exceptional technical precision with the thinnest possible linework, creating a delicate, refined aesthetic that appears almost impossibly detailed while maintaining an airy, elegant quality.`,
 
-  [TattooStyle.IGNORANT_STYLE]:
-    `Create an Ignorant Style tattoo design with these deliberately naive characteristics:
+  [TattooStyle.IGNORANT_STYLE]: `Create an Ignorant Style tattoo design with these deliberately naive characteristics:
 - Intentionally crude, hand-drawn aesthetic
 - Anti-technique approach that rejects traditional skill metrics
 - DIY punk aesthetic with raw execution
@@ -339,8 +318,10 @@ The design should demonstrate exceptional technical precision with the thinnest 
 The design should deliberately embrace an "amateur" aesthetic as an artistic choice, using simplistic execution and ironic humor to challenge conventional tattoo standards while maintaining intentional artistic purpose.`,
 };
 
-
-const StyleColorInfo: Record<TattooStyle, 'color' | 'blackAndGrey' | 'blackwork' | 'flexible'> = {
+const StyleColorInfo: Record<
+  TattooStyle,
+  'color' | 'blackAndGrey' | 'blackwork' | 'flexible'
+> = {
   [TattooStyle.TRADITIONAL_AMERICAN]: 'color', // Limited but vibrant palette
   [TattooStyle.NEOTRADITIONAL]: 'color', // Extended color spectrum
   [TattooStyle.REALISM]: 'flexible', // Can be either B&G or Color
@@ -367,7 +348,7 @@ const StyleColorInfo: Record<TattooStyle, 'color' | 'blackAndGrey' | 'blackwork'
 export function getColorInstruction(style: TattooStyle): string {
   switch (StyleColorInfo[style]) {
     case 'color':
-      return 'using a vibrant and appropriate color palette for this style, with strategic placement of colors to enhance the design\'s impact and authenticity';
+      return "using a vibrant and appropriate color palette for this style, with strategic placement of colors to enhance the design's impact and authenticity";
     case 'blackAndGrey':
       return 'rendered exclusively in black and grey with smooth gradient shading to create depth and dimension without using any color';
     case 'blackwork':
@@ -377,4 +358,3 @@ export function getColorInstruction(style: TattooStyle): string {
       return 'using the most appropriate color approach for the subject matter - this style works well with either vibrant colors or a sophisticated black and grey palette depending on the desired effect';
   }
 }
-

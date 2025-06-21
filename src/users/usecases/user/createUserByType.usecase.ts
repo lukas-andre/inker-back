@@ -4,9 +4,9 @@ import stringify from 'fast-safe-stringify';
 
 import { Agenda } from '../../../agenda/infrastructure/entities/agenda.entity';
 import { AgendaRepository } from '../../../agenda/infrastructure/repositories/agenda.repository';
-import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
 import { CreateArtistDto } from '../../../artists/infrastructure/dtos/createArtist.dto';
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
 import { CreateArtistParams } from '../../../artists/usecases/interfaces/createArtist.params';
 import { Customer } from '../../../customers/infrastructure/entities/customer.entity';
 import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';

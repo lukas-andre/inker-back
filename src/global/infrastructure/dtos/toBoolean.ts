@@ -7,7 +7,7 @@ const ToBoolean = () => {
     },
     {
       toPlainOnly: true,
-    }
+    },
   );
   const toClass = (target: any, key: string) => {
     return Transform(
@@ -16,7 +16,7 @@ const ToBoolean = () => {
       },
       {
         toClassOnly: true,
-      }
+      },
     )(target, key);
   };
   return function (target: any, key: string) {

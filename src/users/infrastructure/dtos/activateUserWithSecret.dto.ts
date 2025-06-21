@@ -10,4 +10,4 @@ export class ActivateUserWithSecretReqDto {
   @IsNotEmpty()
   @IsUUID()
   secretKey: string;
-} 
+}

@@ -18,4 +18,4 @@ export const PenaltyAppliedNotificationV1JobSchema = z.object({
 
 export type PenaltyAppliedNotificationV1Job = z.infer<
   typeof PenaltyAppliedNotificationV1JobSchema
->; 
+>;

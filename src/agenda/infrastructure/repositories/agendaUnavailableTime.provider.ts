@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
+
 import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { AgendaUnavailableTime } from '../entities/agendaUnavailableTime.entity';
 
@@ -11,7 +12,9 @@ export class AgendaUnavailableTimeRepository {
     private repository: Repository<AgendaUnavailableTime>,
   ) {}
 
-  create(agendaUnavailableTime: Partial<AgendaUnavailableTime>): Promise<AgendaUnavailableTime> {
+  create(
+    agendaUnavailableTime: Partial<AgendaUnavailableTime>,
+  ): Promise<AgendaUnavailableTime> {
     return this.repository.save(agendaUnavailableTime);
   }
 
@@ -26,8 +29,12 @@ export class AgendaUnavailableTimeRepository {
   findByAgendaId(agendaId: string): Promise<AgendaUnavailableTime[]> {
     return this.repository.find({ where: { agendaId } });
   }
-  
-  findByDateRange(agendaId: string, startDate: Date, endDate: Date): Promise<AgendaUnavailableTime[]> {
+
+  findByDateRange(
+    agendaId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<AgendaUnavailableTime[]> {
     return this.repository.find({
       where: {
         agendaId,
@@ -36,7 +43,11 @@ export class AgendaUnavailableTimeRepository {
     });
   }
 
-  findOverlapping(agendaId: string, startDate: Date, endDate: Date): Promise<AgendaUnavailableTime[]> {
+  findOverlapping(
+    agendaId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<AgendaUnavailableTime[]> {
     return this.repository
       .createQueryBuilder('unavailableTime')
       .where('unavailableTime.agendaId = :agendaId', { agendaId })
@@ -47,7 +58,10 @@ export class AgendaUnavailableTimeRepository {
       .getMany();
   }
 
-  update(id: string, agendaUnavailableTime: Partial<AgendaUnavailableTime>): Promise<any> {
+  update(
+    id: string,
+    agendaUnavailableTime: Partial<AgendaUnavailableTime>,
+  ): Promise<any> {
     return this.repository.update(id, agendaUnavailableTime);
   }
 

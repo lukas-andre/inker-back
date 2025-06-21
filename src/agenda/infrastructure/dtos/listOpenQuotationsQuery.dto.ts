@@ -1,12 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsNumber, IsOptional, Max, Min } from 'class-validator';
+
 import { OpenQuotationListItemDto } from '../../domain/dtos/openQuotationListItem.dto';
 
 export class ListOpenQuotationsQueryDto {
   @ApiPropertyOptional({
-    description: 'Maximum distance in kilometers that the artist is willing to travel',
-    example: 10
+    description:
+      'Maximum distance in kilometers that the artist is willing to travel',
+    example: 10,
   })
   @IsOptional()
   @IsNumber()
@@ -25,4 +27,4 @@ export class GetOpenQuotationsResDto {
   total: number;
 
   // Add pagination metadata if needed
-} 
+}

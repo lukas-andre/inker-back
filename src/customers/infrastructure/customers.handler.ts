@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { FindOneOptions } from 'typeorm';
 
+import { RequestContextService } from 'src/global/infrastructure/services/requestContext.service';
+
 import { CRCustomerUseCase } from '../usecases/CRCustomer.usecase';
 import { FullTextSearchCustomerUseCase } from '../usecases/fullTextSearchCustomer.usecase';
+import { UpdateCustomerBasicInfoUseCase } from '../usecases/updateCustomerBasicInfo.usecase';
 
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
-import { Customer } from './entities/customer.entity';
 import { UpdateCustomerDto } from './dtos/updateCustomerReq.dto';
-import { RequestContextService } from 'src/global/infrastructure/services/requestContext.service';
-import { UpdateCustomerBasicInfoUseCase } from '../usecases/updateCustomerBasicInfo.usecase';
+import { Customer } from './entities/customer.entity';
 
 @Injectable()
 export class CustomerHandler {

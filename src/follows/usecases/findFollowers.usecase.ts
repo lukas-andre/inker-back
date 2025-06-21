@@ -7,9 +7,9 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
+import { UsersRepository } from '../../users/infrastructure/repositories/users.repository';
 import { FollowedType } from '../domain/types/followedType';
 import { FollowedsRepository } from '../infrastructure/database/followeds.repository';
-import { UsersRepository } from '../../users/infrastructure/repositories/users.repository';
 @Injectable()
 export class FindFollowersUseCase extends BaseUseCase implements UseCase {
   constructor(

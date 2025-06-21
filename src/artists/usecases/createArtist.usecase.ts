@@ -6,8 +6,8 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 import { Artist } from '../infrastructure/entities/artist.entity';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 
 import { CreateArtistParams } from './interfaces/createArtist.params';
 

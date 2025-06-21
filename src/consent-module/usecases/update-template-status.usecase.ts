@@ -1,6 +1,12 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { IFormTemplateRepository } from '../domain/interfaces/form-template-repository.interface';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+
 import { FormTemplateDto } from '../domain/dtos/form-template.dto';
+import { IFormTemplateRepository } from '../domain/interfaces/form-template-repository.interface';
 
 @Injectable()
 export class UpdateTemplateStatusUseCase {
@@ -15,18 +21,25 @@ export class UpdateTemplateStatusUseCase {
     callingArtistId: string,
   ): Promise<FormTemplateDto> {
     // First, verify the template exists
-    const existingTemplate = await this.formTemplateRepository.findById(templateId);
+    const existingTemplate = await this.formTemplateRepository.findById(
+      templateId,
+    );
     if (!existingTemplate) {
       throw new NotFoundException('Template not found');
     }
 
     // Verify that the calling artist owns this template
     if (existingTemplate.artistId !== callingArtistId) {
-      throw new ForbiddenException('You can only update the status of your own templates');
+      throw new ForbiddenException(
+        'You can only update the status of your own templates',
+      );
     }
 
     // Perform the status update
-    const updatedTemplate = await this.formTemplateRepository.updateStatus(templateId, isActive);
+    const updatedTemplate = await this.formTemplateRepository.updateStatus(
+      templateId,
+      isActive,
+    );
     if (!updatedTemplate) {
       throw new NotFoundException('Template not found after status update');
     }
@@ -48,4 +61,4 @@ export class UpdateTemplateStatusUseCase {
       updatedAt: entity.updatedAt,
     };
   }
-} 
+}

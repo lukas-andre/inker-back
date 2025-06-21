@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
+
 import { BaseComponent } from '../../global/domain/components/base.component';
-import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
-import { UserTattooDesignDto, UserTattooHistoryResponseDto } from '../domain/dto/user-tattoo-history.dto';
 import { RequestContext } from '../../global/infrastructure/services/requestContext.service';
+import {
+  UserTattooDesignDto,
+  UserTattooHistoryResponseDto,
+} from '../domain/dto/user-tattoo-history.dto';
+import { TattooDesignCacheRepository } from '../infrastructure/database/repositories/tattooDesignCache.repository';
 
 interface GetUserTattooHistoryParams {
   showOnlyFavorites?: boolean;
@@ -22,16 +26,23 @@ export class GetUserTattooHistoryUseCase extends BaseComponent {
     super(GetUserTattooHistoryUseCase.name);
   }
 
-  async execute(params: GetUserTattooHistoryParams, context: RequestContext): Promise<UserTattooHistoryResponseDto> {
+  async execute(
+    params: GetUserTattooHistoryParams,
+    context: RequestContext,
+  ): Promise<UserTattooHistoryResponseDto> {
     const { id: userId, userType, userTypeId } = context;
     const { showOnlyFavorites = false, limit = 20, offset = 0 } = params;
-    
-    this.logger.log(`Retrieving tattoo history for user: ${userId}, showOnlyFavorites: ${showOnlyFavorites}`);
+
+    this.logger.log(
+      `Retrieving tattoo history for user: ${userId}, showOnlyFavorites: ${showOnlyFavorites}`,
+    );
 
     try {
       // Build the query conditionally based on parameters
-      const favoriteCondition = showOnlyFavorites ? 'AND is_favorite = true' : '';
-      
+      const favoriteCondition = showOnlyFavorites
+        ? 'AND is_favorite = true'
+        : '';
+
       const query = `
         WITH user_designs AS (
           SELECT *
@@ -66,23 +77,29 @@ export class GetUserTattooHistoryUseCase extends BaseComponent {
           ) AS result
         FROM user_designs d;
       `;
-      
-      const result = await this.designCacheRepository.executeRawQuery<QueryResult>(query, [
-        userId,
-        userType,
-        userTypeId,
-        limit,
-        offset
-      ]);
-      
+
+      const result =
+        await this.designCacheRepository.executeRawQuery<QueryResult>(query, [
+          userId,
+          userType,
+          userTypeId,
+          limit,
+          offset,
+        ]);
+
       if (result.length === 0 || !result[0]?.result) {
         return { designs: [], total: 0 };
       }
-      
+
       return result[0].result;
     } catch (error: any) {
-      this.logger.error(`Error retrieving user tattoo history: ${error?.message || 'Unknown error'}`, error?.stack);
+      this.logger.error(
+        `Error retrieving user tattoo history: ${
+          error?.message || 'Unknown error'
+        }`,
+        error?.stack,
+      );
       return { designs: [], total: 0 };
     }
   }
-} 
+}

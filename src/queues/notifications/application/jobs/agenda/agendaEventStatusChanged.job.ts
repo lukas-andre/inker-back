@@ -29,7 +29,7 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
       locationProvider,
       quotationProvider,
       pushNotificationService,
-      notificationStorageService
+      notificationStorageService,
     );
   }
 
@@ -51,8 +51,10 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
 
     // Build notification title and message
     const title = `Appointment Status: ${this.getStatusDisplayName(status)}`;
-    const notificationMessage = message || `Your appointment status is now ${this.getStatusDisplayName(status)}`;
-    
+    const notificationMessage =
+      message ||
+      `Your appointment status is now ${this.getStatusDisplayName(status)}`;
+
     // Store notification for customer in database
     await this.notificationStorageService.storeNotification(
       customer.userId,
@@ -70,7 +72,9 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
     await this.notificationStorageService.storeNotification(
       artist.userId,
       `Appointment Status Updated`,
-      `Appointment with ${customer.firstName} is now ${this.getStatusDisplayName(status)}`,
+      `Appointment with ${
+        customer.firstName
+      } is now ${this.getStatusDisplayName(status)}`,
       'EVENT_STATUS_CHANGED',
       {
         eventId,

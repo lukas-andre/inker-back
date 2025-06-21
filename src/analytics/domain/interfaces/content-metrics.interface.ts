@@ -48,4 +48,4 @@ export interface IContentMetrics {
     impressions?: IImpressionMetrics;
     viewSources?: IViewSourceMetrics;
   };
-} 
+}

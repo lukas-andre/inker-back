@@ -1,17 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
-import {
-  QuotationStatus,
-  QuotationType,
-} from '../entities/quotation.entity';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
-import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
-import { LocationDto } from '../../../global/infrastructure/dtos/geometry.dto';
 import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
+import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { LocationDto } from '../../../global/infrastructure/dtos/geometry.dto';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { TattooDesignCacheEntity } from '../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
 import { OpenQuotationOfferDto } from '../../domain/dtos/openQuotationOffer.dto';
+import { QuotationStatus, QuotationType } from '../entities/quotation.entity';
 
 // Define local const for enum values used in decorators if not exported
 const CUSTOMER_APPEAL_REASONS = [
@@ -112,7 +109,10 @@ export class GetQuotationResDto {
   @ApiPropertyOptional({ type: () => TattooDesignCacheEntity })
   tattooDesignCache?: TattooDesignCacheEntity;
 
-  @ApiPropertyOptional({ description: 'Indicates if the current artist has offered on this quotation' })
+  @ApiPropertyOptional({
+    description:
+      'Indicates if the current artist has offered on this quotation',
+  })
   hasOffered?: boolean;
 
   @ApiPropertyOptional({ type: () => MoneyEntity })

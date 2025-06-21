@@ -7,7 +7,11 @@ export interface StorageUploadResult {
 }
 
 export interface StorageStrategy {
-  upload(file: FileInterface, path: string, metadata?: Record<string, string>): Promise<StorageUploadResult>;
+  upload(
+    file: FileInterface,
+    path: string,
+    metadata?: Record<string, string>,
+  ): Promise<StorageUploadResult>;
   delete(identifier: string): Promise<void>;
   getUrl(identifier: string, options?: Record<string, any>): string;
 }

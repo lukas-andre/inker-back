@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
 import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
@@ -7,7 +8,10 @@ import { ArtistLocationRepository } from '../../../../../locations/infrastructur
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
-import { PhotoUploadReminderJobType, PHOTO_UPLOAD_REMINDER } from '../../../domain/schemas/agenda';
+import {
+  PHOTO_UPLOAD_REMINDER,
+  PhotoUploadReminderJobType,
+} from '../../../domain/schemas/agenda';
 import { NotificationJob } from '../notification.job';
 
 @Injectable()
@@ -38,7 +42,9 @@ export class PhotoUploadReminderJob extends NotificationJob {
 
   async handle(job: PhotoUploadReminderJobType): Promise<void> {
     const { artistId, customerId, eventId, reminderType } = job.metadata;
-    this.logger.log(`Handling ${PHOTO_UPLOAD_REMINDER} for event ${eventId}, reminder type: ${reminderType}`);
+    this.logger.log(
+      `Handling ${PHOTO_UPLOAD_REMINDER} for event ${eventId}, reminder type: ${reminderType}`,
+    );
 
     try {
       const [agendaEvent, artist, customer] = await Promise.all([
@@ -137,11 +143,15 @@ export class PhotoUploadReminderJob extends NotificationJob {
         },
       );
 
-      this.logger.log(`Successfully sent ${reminderType} photo upload reminder for event ${eventId}`);
-
+      this.logger.log(
+        `Successfully sent ${reminderType} photo upload reminder for event ${eventId}`,
+      );
     } catch (error) {
       const e = error as Error;
-      this.logger.error(`Error handling ${PHOTO_UPLOAD_REMINDER} for event ${eventId}: ${e.message}`, e.stack);
+      this.logger.error(
+        `Error handling ${PHOTO_UPLOAD_REMINDER} for event ${eventId}: ${e.message}`,
+        e.stack,
+      );
     }
   }
-} 
+}

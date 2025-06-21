@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { ConsentType } from '../../../agenda/domain/enum/consentType.enum';
 import { FormTemplateEntity } from '../../../agenda/infrastructure/entities/formTemplate.entity';
-import { IFormTemplateRepository } from '../../domain/interfaces/form-template-repository.interface';
+import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { CreateFormTemplateDto } from '../../domain/dtos/create-form-template.dto';
 import { UpdateFormTemplateDto } from '../../domain/dtos/update-form-template.dto';
-import { ConsentType } from '../../../agenda/domain/enum/consentType.enum';
-import { AGENDA_DB_CONNECTION_NAME } from '../../../databases/constants';
+import { IFormTemplateRepository } from '../../domain/interfaces/form-template-repository.interface';
 
 @Injectable()
 export class FormTemplateRepository implements IFormTemplateRepository {
@@ -32,16 +33,32 @@ export class FormTemplateRepository implements IFormTemplateRepository {
     return this.repository.find({ where: { artistId, isActive: true } });
   }
 
-  async findByArtistAndDetails(artistId: string, title: string, consentType: ConsentType): Promise<FormTemplateEntity | null> {
-    return this.repository.findOne({ where: { artistId, title, consentType }, order: { version: 'DESC' } });
+  async findByArtistAndDetails(
+    artistId: string,
+    title: string,
+    consentType: ConsentType,
+  ): Promise<FormTemplateEntity | null> {
+    return this.repository.findOne({
+      where: { artistId, title, consentType },
+      order: { version: 'DESC' },
+    });
   }
 
   // Example for a more specific finder, e.g., by artist and type
-  async findByArtistAndType(artistId: string, consentType: ConsentType): Promise<FormTemplateEntity | null> {
-    return this.repository.findOne({ where: { artistId, consentType, isActive: true }, order: { version: 'DESC' } });
+  async findByArtistAndType(
+    artistId: string,
+    consentType: ConsentType,
+  ): Promise<FormTemplateEntity | null> {
+    return this.repository.findOne({
+      where: { artistId, consentType, isActive: true },
+      order: { version: 'DESC' },
+    });
   }
 
-  async update(id: string, updateDto: UpdateFormTemplateDto): Promise<FormTemplateEntity | null> {
+  async update(
+    id: string,
+    updateDto: UpdateFormTemplateDto,
+  ): Promise<FormTemplateEntity | null> {
     const existingTemplate = await this.findById(id);
     if (!existingTemplate) {
       return null;
@@ -56,7 +73,10 @@ export class FormTemplateRepository implements IFormTemplateRepository {
     return result.affected > 0;
   }
 
-  async updateStatus(id: string, isActive: boolean): Promise<FormTemplateEntity | null> {
+  async updateStatus(
+    id: string,
+    isActive: boolean,
+  ): Promise<FormTemplateEntity | null> {
     const existingTemplate = await this.findById(id);
     if (!existingTemplate) {
       return null;
@@ -65,4 +85,4 @@ export class FormTemplateRepository implements IFormTemplateRepository {
     await this.repository.update(id, { isActive });
     return this.findById(id);
   }
-} 
+}

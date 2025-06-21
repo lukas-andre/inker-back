@@ -80,7 +80,10 @@ export class QuotationCanceledJob implements NotificationJob {
       // Removed system cancellation logic since that should be handled in a separate job
       // if needed, and artist cancellations are handled in rejection jobs
     } catch (error) {
-      console.error('Failed to process quotation canceled notification:', error);
+      console.error(
+        'Failed to process quotation canceled notification:',
+        error,
+      );
     }
   }
 }

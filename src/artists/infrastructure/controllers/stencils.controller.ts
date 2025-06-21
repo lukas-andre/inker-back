@@ -1,8 +1,10 @@
+import { FileInterceptor } from '@nest-lab/fastify-multer';
 import {
   Body,
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   ParseIntPipe,
   Post,
@@ -12,7 +14,6 @@ import {
   UseGuards,
   UseInterceptors,
   ValidationPipe,
-  Headers,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,21 +23,23 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ArtistsHandler } from '../artists.handler';
-import { CreateStencilDto, UpdateStencilDto, StencilDto } from '../../domain/dtos/stencil.dto';
-import { FileInterceptor } from '@nest-lab/fastify-multer';
-import { FileInterface } from '../../../multimedias/interfaces/file.interface';
-import { StencilQueryDto } from '../../domain/dtos/stencil-query.dto';
-import { PaginatedStencilResponseDto } from '../../domain/dtos/paginated-stencil-response.dto';
+
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
+import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import { PaginatedStencilResponseDto } from '../../domain/dtos/paginated-stencil-response.dto';
+import { StencilQueryDto } from '../../domain/dtos/stencil-query.dto';
+import {
+  CreateStencilDto,
+  StencilDto,
+  UpdateStencilDto,
+} from '../../domain/dtos/stencil.dto';
+import { ArtistsHandler } from '../artists.handler';
 
 @ApiTags('Stencils')
 @Controller('stencils')
 @UseGuards(AuthGuard)
 export class StencilsController {
-  constructor(
-    private readonly artistsHandler: ArtistsHandler,
-  ) { }
+  constructor(private readonly artistsHandler: ArtistsHandler) {}
 
   @Get('artist/:artistId')
   @ApiOperation({ summary: 'Get stencils by artist ID' })
@@ -49,7 +52,7 @@ export class StencilsController {
   async getStencilsByArtistId(
     @Param('artistId') artistId: string,
     @Query() query: StencilQueryDto,
-    @Headers('cache-control') cacheControl?: string
+    @Headers('cache-control') cacheControl?: string,
   ): Promise<PaginatedStencilResponseDto> {
     const disableCache = cacheControl === 'no-cache';
     return this.artistsHandler.getStencils(artistId, query, disableCache);
@@ -65,7 +68,7 @@ export class StencilsController {
   @ApiParam({ name: 'id', description: 'Stencil ID' })
   async getStencilById(
     @Param('id') id: string,
-    @Headers('cache-control') cacheControl?: string
+    @Headers('cache-control') cacheControl?: string,
   ): Promise<StencilDto> {
     const disableCache = cacheControl === 'no-cache';
     return this.artistsHandler.getStencilById(id, disableCache);
@@ -112,9 +115,7 @@ export class StencilsController {
     description: 'Stencil deleted successfully',
   })
   @ApiParam({ name: 'id', description: 'Stencil ID' })
-  async deleteStencil(
-    @Param('id') id: string,
-  ): Promise<void> {
+  async deleteStencil(@Param('id') id: string): Promise<void> {
     return this.artistsHandler.deleteStencil(id);
   }
 }

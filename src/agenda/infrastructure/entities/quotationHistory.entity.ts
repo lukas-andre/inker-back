@@ -1,6 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+
 import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
+
 import {
   Quotation,
   QuotationCustomerAppealReason,
@@ -92,7 +94,11 @@ export class QuotationHistory extends BaseEntity {
   @Column({ name: 'new_tattoo_design_cache_id', nullable: true })
   newTattooDesignCacheId?: string;
 
-  @Column({ name: 'previous_tattoo_design_image_url', nullable: true, type: 'text' })
+  @Column({
+    name: 'previous_tattoo_design_image_url',
+    nullable: true,
+    type: 'text',
+  })
   previousTattooDesignImageUrl?: string;
 
   @Column({ name: 'new_tattoo_design_image_url', nullable: true, type: 'text' })

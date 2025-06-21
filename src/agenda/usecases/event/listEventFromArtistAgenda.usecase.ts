@@ -5,11 +5,11 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
+import { UserType } from '../../../users/domain/enums/userType.enum';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
 import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { UserType } from '../../../users/domain/enums/userType.enum';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 
 @Injectable()
 export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
@@ -20,9 +20,13 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
     super(ListEventFromArtistAgenda.name);
   }
 
-  async execute(id: string, type: UserType, status?: string): Promise<AgendaEvent[]> {
+  async execute(
+    id: string,
+    type: UserType,
+    status?: string,
+  ): Promise<AgendaEvent[]> {
     console.time('ListEventFromArtistAgenda');
-    
+
     if (type === UserType.ARTIST) {
       return this.getArtistEvents(id, status);
     } else {
@@ -30,7 +34,10 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
     }
   }
 
-  private async getArtistEvents(artistId: string, status?: string): Promise<AgendaEvent[]> {
+  private async getArtistEvents(
+    artistId: string,
+    status?: string,
+  ): Promise<AgendaEvent[]> {
     const existsAgenda = await this.agendaProvider.findOne({
       where: {
         artistId,
@@ -42,12 +49,15 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
     }
 
     // Use status if provided
-    if (status && Object.values(AgendaEventStatus).includes(status as AgendaEventStatus)) {
+    if (
+      status &&
+      Object.values(AgendaEventStatus).includes(status as AgendaEventStatus)
+    ) {
       const result = await this.agendaEventProvider.find({
         where: {
           agenda: { id: existsAgenda.id },
-          status: status as AgendaEventStatus
-        }
+          status: status as AgendaEventStatus,
+        },
       });
 
       if (!result.length) {
@@ -58,7 +68,9 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
       return result;
     }
 
-    const result = await this.agendaEventProvider.findByArtistId(existsAgenda.id);
+    const result = await this.agendaEventProvider.findByArtistId(
+      existsAgenda.id,
+    );
 
     if (!result.length) {
       throw new DomainNotFound('No events found');
@@ -68,18 +80,26 @@ export class ListEventFromArtistAgenda extends BaseUseCase implements UseCase {
     return result;
   }
 
-  private async getCustomerEvents(customerId: string, status?: string): Promise<AgendaEvent[]> {
+  private async getCustomerEvents(
+    customerId: string,
+    status?: string,
+  ): Promise<AgendaEvent[]> {
     // Use status if provided
-    if (status && Object.values(AgendaEventStatus).includes(status as AgendaEventStatus)) {
+    if (
+      status &&
+      Object.values(AgendaEventStatus).includes(status as AgendaEventStatus)
+    ) {
       const result = await this.agendaEventProvider.find({
         where: {
           customerId,
-          status: status as AgendaEventStatus
-        }
+          status: status as AgendaEventStatus,
+        },
       });
 
       if (!result.length) {
-        throw new DomainNotFound(`No events found for customer with status ${status}`);
+        throw new DomainNotFound(
+          `No events found for customer with status ${status}`,
+        );
       }
 
       console.timeEnd('ListEventFromArtistAgenda');

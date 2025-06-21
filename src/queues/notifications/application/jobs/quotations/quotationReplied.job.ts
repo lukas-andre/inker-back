@@ -34,7 +34,7 @@ export class QuotationRepliedJob extends NotificationJob {
       locationProvider,
       quotationProvider,
       pushNotificationService,
-      notificationStorageService
+      notificationStorageService,
     );
   }
 
@@ -78,7 +78,7 @@ export class QuotationRepliedJob extends NotificationJob {
         to: customer.contactEmail,
         artistName: artist.username,
         customerName: customer.firstName,
-        estimatedCost: quotation.estimatedCost?.toString() || "N/A",
+        estimatedCost: quotation.estimatedCost?.toString() || 'N/A',
         appointmentDate: quotation.appointmentDate,
         appointmentDuration: quotation.appointmentDuration,
         mailId: 'QUOTATION_REPLIED',

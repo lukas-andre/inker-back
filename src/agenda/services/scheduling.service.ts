@@ -1,9 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Between, MoreThanOrEqual, LessThanOrEqual, In } from 'typeorm';
+import { Between, In, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+
+import { AgendaEventStatus } from '../domain/enum/agendaEventStatus.enum';
 import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 import { AgendaUnavailableTimeRepository } from '../infrastructure/repositories/agendaUnavailableTime.provider';
-import { AgendaEventStatus } from '../domain/enum/agendaEventStatus.enum';
 
 export interface TimeSlot {
   startTime: Date;
@@ -44,17 +45,27 @@ export class SchedulingService {
       where: { artistId },
     });
     if (!agenda) {
-      throw new NotFoundException(`Artist with ID ${artistId} not found or has no agenda`);
+      throw new NotFoundException(
+        `Artist with ID ${artistId} not found or has no agenda`,
+      );
     }
 
     // If working hours are not set, cannot calculate availability
     if (!agenda.workingHoursStart || !agenda.workingHoursEnd) {
-      throw new NotFoundException(`Artist with ID ${artistId} has not set working hours`);
+      agenda.workingHoursStart = '09:00';
+      agenda.workingHoursEnd = '17:00';
+      // throw new NotFoundException(
+      //   `Artist with ID ${artistId} has not set working hours`,
+      // );
     }
 
     // Parse working hours
-    const [startHour, startMinute] = agenda.workingHoursStart.split(':').map(n => parseInt(n, 10));
-    const [endHour, endMinute] = agenda.workingHoursEnd.split(':').map(n => parseInt(n, 10));
+    const [startHour, startMinute] = agenda.workingHoursStart
+      .split(':')
+      .map(n => parseInt(n, 10));
+    const [endHour, endMinute] = agenda.workingHoursEnd
+      .split(':')
+      .map(n => parseInt(n, 10));
 
     // Get all existing appointments for the date range
     const existingAppointments = await this.agendaEventProvider.find({
@@ -62,7 +73,10 @@ export class SchedulingService {
         agenda: { id: agenda.id },
         startDate: MoreThanOrEqual(startDate),
         endDate: LessThanOrEqual(endDate),
-        status: In([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED]),
+        status: In([
+          AgendaEventStatus.CONFIRMED,
+          AgendaEventStatus.RESCHEDULED,
+        ]),
       },
     });
 
@@ -80,7 +94,9 @@ export class SchedulingService {
 
     while (currentDate <= endDateObj) {
       // Check if today is a working day
-      const dayOfWeek = (currentDate.getDay() === 0 ? 7 : currentDate.getDay()).toString();
+      const dayOfWeek = (
+        currentDate.getDay() === 0 ? 7 : currentDate.getDay()
+      ).toString();
       if (!agenda.workingDays.includes(dayOfWeek)) {
         // Skip non-working days
         currentDate.setDate(currentDate.getDate() + 1);
@@ -128,7 +144,9 @@ export class SchedulingService {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 14);
 
-    this.logger.log(`Looking for optimal slots from ${startDate.toISOString()} to ${endDate.toISOString()}`);
+    this.logger.log(
+      `Looking for optimal slots from ${startDate.toISOString()} to ${endDate.toISOString()}`,
+    );
 
     // Get available slots in the date range
     const allAvailability = await this.findAvailableSlots(
@@ -151,25 +169,27 @@ export class SchedulingService {
 
     // If we don't have enough slots, extend the search
     if (allSlots.length < numberOfSuggestions) {
-      this.logger.log(`Not enough slots found (${allSlots.length}), extending search range`);
-      
+      this.logger.log(
+        `Not enough slots found (${allSlots.length}), extending search range`,
+      );
+
       // Extend to 30 days
       endDate.setDate(startDate.getDate() + 30);
-      
+
       const extendedAvailability = await this.findAvailableSlots(
         artistId,
         durationMinutes,
         startDate,
         endDate,
       );
-      
+
       // Add more slots from extended range
       for (const day of extendedAvailability) {
         // Skip days we already processed
         if (allAvailability.some(a => a.date === day.date)) {
           continue;
         }
-        
+
         const additionalSlots = await this.calculateDensityScores(
           artistId,
           day.slots,
@@ -181,14 +201,16 @@ export class SchedulingService {
     // Calculate proximity bonus - favor slots in the next 3 days
     const threeDaysFromNow = new Date();
     threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
-    
+
     allSlots = allSlots.map(slot => {
       const slotDate = new Date(slot.startTime);
-      
+
       // Apply a proximity bonus to slots in the next 3 days
       if (slotDate < threeDaysFromNow) {
         // Reduce density (lower is better) for near-term slots
-        const daysDiff = Math.round((slotDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const daysDiff = Math.round(
+          (slotDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+        );
         const proximityBonus = 0.5 * (3 - daysDiff); // 0.5-1.5 bonus for closer days
         return {
           ...slot,
@@ -204,7 +226,7 @@ export class SchedulingService {
     // Ensure some diversity in days
     const result: TimeSlot[] = [];
     const selectedDates = new Set<string>();
-    
+
     // First pass: take top 3 slots regardless of day
     const topSlots = allSlots.slice(0, 3);
     for (const slot of topSlots) {
@@ -212,22 +234,22 @@ export class SchedulingService {
       const dateStr = new Date(slot.startTime).toDateString();
       selectedDates.add(dateStr);
     }
-    
+
     // Second pass: add slots from different days to ensure variety
     for (const slot of allSlots) {
       if (result.length >= numberOfSuggestions) break;
-      
+
       const dateStr = new Date(slot.startTime).toDateString();
       if (!selectedDates.has(dateStr)) {
         result.push(slot);
         selectedDates.add(dateStr);
       }
     }
-    
+
     // Third pass: fill remaining slots with best options
     for (const slot of allSlots) {
       if (result.length >= numberOfSuggestions) break;
-      
+
       // Skip slots we've already added
       if (!result.includes(slot)) {
         result.push(slot);
@@ -261,18 +283,29 @@ export class SchedulingService {
 
     // If working hours are not set, cannot validate
     if (!agenda.workingHoursStart || !agenda.workingHoursEnd) {
-      return { valid: false, reason: 'Artist has not set working hours' };
+      // return { valid: false, reason: 'Artist has not set working hours' };
+      agenda.workingHoursStart = '09:00';
+      agenda.workingHoursEnd = '17:00';
     }
 
     // Check if the day is a working day
-    const dayOfWeek = (startTime.getDay() === 0 ? 7 : startTime.getDay()).toString();
+    const dayOfWeek = (
+      startTime.getDay() === 0 ? 7 : startTime.getDay()
+    ).toString();
     if (!agenda.workingDays.includes(dayOfWeek)) {
-      return { valid: false, reason: 'The selected day is not a working day for this artist' };
+      return {
+        valid: false,
+        reason: 'The selected day is not a working day for this artist',
+      };
     }
 
     // Parse working hours
-    const [startHour, startMinute] = agenda.workingHoursStart.split(':').map(n => parseInt(n, 10));
-    const [endHour, endMinute] = agenda.workingHoursEnd.split(':').map(n => parseInt(n, 10));
+    const [startHour, startMinute] = agenda.workingHoursStart
+      .split(':')
+      .map(n => parseInt(n, 10));
+    const [endHour, endMinute] = agenda.workingHoursEnd
+      .split(':')
+      .map(n => parseInt(n, 10));
 
     // Check if appointment is within working hours
     const dayStart = new Date(startTime);
@@ -282,7 +315,10 @@ export class SchedulingService {
     dayEnd.setHours(endHour, endMinute, 0, 0);
 
     if (startTime < dayStart) {
-      return { valid: false, reason: 'Appointment starts before working hours' };
+      return {
+        valid: false,
+        reason: 'Appointment starts before working hours',
+      };
     }
 
     if (endTime > dayEnd) {
@@ -294,12 +330,18 @@ export class SchedulingService {
       where: {
         agenda: { id: agenda.id },
         startDate: Between(startTime, endTime),
-        status: In([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED]),
+        status: In([
+          AgendaEventStatus.CONFIRMED,
+          AgendaEventStatus.RESCHEDULED,
+        ]),
       },
     });
 
     if (existingAppointments.length > 0) {
-      return { valid: false, reason: 'Time slot conflicts with an existing appointment' };
+      return {
+        valid: false,
+        reason: 'Time slot conflicts with an existing appointment',
+      };
     }
 
     // Check for conflicts with unavailable time blocks
@@ -310,7 +352,10 @@ export class SchedulingService {
     );
 
     if (unavailableTimes.length > 0) {
-      return { valid: false, reason: 'Time slot conflicts with artist unavailable time' };
+      return {
+        valid: false,
+        reason: 'Time slot conflicts with artist unavailable time',
+      };
     }
 
     return { valid: true };
@@ -342,7 +387,9 @@ export class SchedulingService {
       if (now > dayStart) {
         dayStart.setTime(now.getTime());
         // Round up to next interval
-        const minutesToAdd = this.SLOT_INTERVAL_MINUTES - (dayStart.getMinutes() % this.SLOT_INTERVAL_MINUTES);
+        const minutesToAdd =
+          this.SLOT_INTERVAL_MINUTES -
+          (dayStart.getMinutes() % this.SLOT_INTERVAL_MINUTES);
         dayStart.setMinutes(dayStart.getMinutes() + minutesToAdd);
       }
     }
@@ -420,7 +467,10 @@ export class SchedulingService {
           where: {
             agenda: { id: agenda.id },
             startDate: Between(windowStart, windowEnd),
-            status: In([AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED]),
+            status: In([
+              AgendaEventStatus.CONFIRMED,
+              AgendaEventStatus.RESCHEDULED,
+            ]),
           },
         });
 
@@ -430,9 +480,9 @@ export class SchedulingService {
         for (const appt of nearbyAppointments) {
           const apptStart = new Date(appt.startDate);
           const hoursDifference = Math.abs(
-            (slot.startTime.getTime() - apptStart.getTime()) / (1000 * 60 * 60)
+            (slot.startTime.getTime() - apptStart.getTime()) / (1000 * 60 * 60),
           );
-          
+
           // Appointments closer to the slot have higher weight
           const weight = 1 - hoursDifference / 3; // Will be between 0 and 1
           densityScore += weight;
@@ -442,7 +492,7 @@ export class SchedulingService {
           ...slot,
           density: densityScore,
         };
-      })
+      }),
     );
 
     return slotsWithDensity;

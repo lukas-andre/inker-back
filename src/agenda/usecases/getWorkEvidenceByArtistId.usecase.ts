@@ -6,10 +6,10 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { Review } from '../../reviews/database/entities/review.entity';
 import { ReviewRepository } from '../../reviews/database/repositories/review.repository';
+import { CustomerReviewReactionDetailsResult } from '../../reviews/interfaces/reviewReaction.interface';
 import { GetWorkEvidenceByArtistIdResponseDto } from '../infrastructure/dtos/getWorkEvidenceByArtistIdResponse.dto';
 import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
-import { CustomerReviewReactionDetailsResult } from '../../reviews/interfaces/reviewReaction.interface';
 
 @Injectable()
 export class GetWorkEvidenceByArtistIdUseCase

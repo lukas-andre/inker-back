@@ -19,6 +19,8 @@ import {
   PhotoUploadReminderJobSchema,
   MonthlyReportJobSchema,
 } from './agenda';
+import { SendVerificationCodeJobSchema } from './codes';
+import { PenaltyAppliedNotificationV1JobSchema } from './penaltyNotification.schema';
 import {
   QuotationAcceptedJobSchema,
   QuotationAppealedJobSchema,
@@ -27,10 +29,11 @@ import {
   QuotationRejectedJobSchema,
   QuotationRepliedJobSchema,
 } from './quotation';
-
-import { SendVerificationCodeJobSchema } from './codes';
-import { NewOfferReceivedJobSchema, OfferAcceptedJobSchema, OfferRejectedJobSchema } from './quotationOffer.schema';
-import { PenaltyAppliedNotificationV1JobSchema } from './penaltyNotification.schema';
+import {
+  NewOfferReceivedJobSchema,
+  OfferAcceptedJobSchema,
+  OfferRejectedJobSchema,
+} from './quotationOffer.schema';
 
 export const JobSchema = z.union([
   // Agenda

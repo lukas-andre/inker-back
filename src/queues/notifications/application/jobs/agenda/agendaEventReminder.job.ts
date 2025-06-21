@@ -23,7 +23,12 @@ export class AgendaEventReminderJob implements NotificationJob {
   ) {}
 
   async handle(job: AgendaEventReminderJobType): Promise<void> {
-    const { artistId, customerId, eventId, reminderType = '24-hours' } = job.metadata;
+    const {
+      artistId,
+      customerId,
+      eventId,
+      reminderType = '24-hours',
+    } = job.metadata;
     const [agendaEvent, artist, customer, location] = await Promise.all([
       this.agendaEventProvider.findById(eventId),
       this.artistProvider.findById(artistId),
@@ -32,18 +37,17 @@ export class AgendaEventReminderJob implements NotificationJob {
     ]);
 
     if (!agendaEvent || !artist || !customer || !location) {
-      console.error('Missing required data for reminder:', { 
+      console.error('Missing required data for reminder:', {
         event: !!agendaEvent,
         artist: !!artist,
         customer: !!customer,
-        location: !!location
+        location: !!location,
       });
       return;
     }
 
-    const timeDescription = reminderType === '3-hours' 
-      ? 'en unas horas' 
-      : 'mañana';
+    const timeDescription =
+      reminderType === '3-hours' ? 'en unas horas' : 'mañana';
 
     const agendaEventReminderEmailData: AgendaEventReminderType = {
       to: customer.contactEmail,
@@ -60,7 +64,7 @@ export class AgendaEventReminderJob implements NotificationJob {
     await this.emailNotificationService.sendEmail(agendaEventReminderEmailData);
 
     const notificationContent = `¡Recordatorio! Tu cita "${agendaEvent.title}" con ${artist.username} está programada para ${timeDescription}.`;
-    
+
     await this.notificationStorageService.storeNotification(
       customer.userId,
       'Recordatorio de Cita',
@@ -70,9 +74,8 @@ export class AgendaEventReminderJob implements NotificationJob {
         eventId: agendaEvent.id,
         artistId: artist.id,
         reminderType,
-      }
+      },
     );
-
 
     try {
       await this.pushNotificationService.sendToUser(
@@ -84,8 +87,9 @@ export class AgendaEventReminderJob implements NotificationJob {
         {
           type: 'EVENT_REMINDER',
           eventId: agendaEvent.id.toString(),
-          artistId: artist.id.toString(), 
-      });
+          artistId: artist.id.toString(),
+        },
+      );
     } catch (error) {
       console.error('Failed to send push notification:', error);
     }

@@ -15,6 +15,7 @@ import {
   Repository,
 } from 'typeorm';
 
+import { ARTIST_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
 import { ExistsQueryResult } from '../../../global/domain/interfaces/existsQueryResult.interface';
 import {
@@ -25,10 +26,9 @@ import {
 import { PROBLEMS_FILTERING_ARTISTS } from '../../../locations/domain/codes/codes';
 import { RawFindByArtistIdsResponseDTO } from '../../../locations/infrastructure/dtos/findArtistByRangeResponse.dto';
 import { CreateArtistParams } from '../../usecases/interfaces/createArtist.params';
+import { SearchArtistDto } from '../dtos/searchArtist.dto';
 import { Artist } from '../entities/artist.entity';
 import { Contact } from '../entities/contact.entity';
-import { SearchArtistDto } from '../dtos/searchArtist.dto';
-import { ARTIST_DB_CONNECTION_NAME } from '../../../databases/constants';
 
 @Injectable()
 export class ArtistRepository extends BaseComponent {
@@ -301,9 +301,7 @@ export class ArtistRepository extends BaseComponent {
   /**
    * Get artist basic info for monthly report using native SQL
    */
-  async getArtistInfoForReport(
-    artistId: string
-  ): Promise<any> {
+  async getArtistInfoForReport(artistId: string): Promise<any> {
     try {
       const [artistInfo] = await this.artistsRepository.query(
         `SELECT 
@@ -319,7 +317,7 @@ export class ArtistRepository extends BaseComponent {
         FROM artist a
         LEFT JOIN contact c ON c.id = a.contact_id
         WHERE a.id = $1`,
-        [artistId]
+        [artistId],
       );
 
       return artistInfo?.artistInfo || null;
@@ -337,7 +335,9 @@ export class ArtistRepository extends BaseComponent {
    * Note: Cannot check agenda_event from here as it's in a different DB
    * Will return all active artists and filter later in service layer
    */
-  async findActiveArtistsForReports(): Promise<{ id: string; email: string; firstName: string; lastName: string }[]> {
+  async findActiveArtistsForReports(): Promise<
+    { id: string; email: string; firstName: string; lastName: string }[]
+  > {
     try {
       const artists = await this.artistsRepository.query(
         `SELECT 
@@ -348,7 +348,7 @@ export class ArtistRepository extends BaseComponent {
         FROM artist a
         INNER JOIN contact c ON c.id = a.contact_id
         WHERE a.deleted_at IS NULL
-          AND a.is_active = true`
+          AND a.is_active = true`,
       );
 
       return artists;
@@ -369,7 +369,7 @@ export class ArtistRepository extends BaseComponent {
 
     try {
       const placeholders = artistIds.map((_, i) => `$${i + 1}`).join(', ');
-      
+
       const artists = await this.artistsRepository.query(
         `SELECT 
           a.id,
@@ -389,12 +389,12 @@ export class ArtistRepository extends BaseComponent {
         LEFT JOIN contact c ON c.id = a.contact_id
         WHERE a.id IN (${placeholders})
           AND a.deleted_at IS NULL`,
-        artistIds
+        artistIds,
       );
 
       return artists.map(row => ({
         id: row.id,
-        ...row.artistData
+        ...row.artistData,
       }));
     } catch (error) {
       throw new DBServiceFindOneException(
@@ -427,7 +427,7 @@ export class ArtistRepository extends BaseComponent {
         LEFT JOIN contact c ON a.contact_id = c.id
         WHERE a.is_active = true
           AND c.email IS NOT NULL  -- Only artists with valid email
-        ORDER BY a.created_at ASC`
+        ORDER BY a.created_at ASC`,
       );
 
       return artists.map(row => row.artist);

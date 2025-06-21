@@ -1,22 +1,37 @@
-import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+
 import { InjectQueue } from '@nestjs/bull';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Queue } from 'bull';
+
+import {
+  DomainForbidden,
+  DomainNotFound,
+} from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-import { SendEventMessageReqDto } from '../../infrastructure/dtos/sendEventMessageReq.dto';
-import { DomainNotFound, DomainForbidden } from '../../../global/domain/exceptions/domain.exception';
-import { AgendaEvent, EventMessage } from '../../infrastructure/entities/agendaEvent.entity';
 import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { UserType } from '../../../users/domain/enums/userType.enum';
-import { MultimediasService, UploadToS3Result } from '../../../multimedias/services/multimedias.service';
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
-import { AGENDA_EVENT_NOT_EXISTS } from '../../domain/errors/codes';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import {
+  MultimediasService,
+  UploadToS3Result,
+} from '../../../multimedias/services/multimedias.service';
 import { NewEventMessageJobId } from '../../../queues/notifications/domain/schemas/agenda';
-import { randomUUID } from 'crypto';
+import { UserType } from '../../../users/domain/enums/userType.enum';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
+import { AGENDA_EVENT_NOT_EXISTS } from '../../domain/errors/codes';
+import { SendEventMessageReqDto } from '../../infrastructure/dtos/sendEventMessageReq.dto';
+import {
+  AgendaEvent,
+  EventMessage,
+} from '../../infrastructure/entities/agendaEvent.entity';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 
 @Injectable()
 export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
@@ -37,7 +52,9 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
     const { userId, userTypeId, userType } = this.contextService;
 
     if (!userId || !userTypeId || !userType) {
-      throw new UnauthorizedException('User context not found. Ensure JWT is processed and RequestContextService is populated.');
+      throw new UnauthorizedException(
+        'User context not found. Ensure JWT is processed and RequestContextService is populated.',
+      );
     }
 
     const event = await this.agendaEventRepo.findOne({
@@ -49,13 +66,15 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
       throw new DomainNotFound(AGENDA_EVENT_NOT_EXISTS);
     }
     if (!event.agenda) {
-        this.logger.error(`Agenda relationship not loaded for event ${eventId}`);
-        throw new DomainNotFound('Event agenda details not found.');
+      this.logger.error(`Agenda relationship not loaded for event ${eventId}`);
+      throw new DomainNotFound('Event agenda details not found.');
     }
 
     // Authorization Check
-    const isCustomer = userType === UserType.CUSTOMER && event.customerId === userTypeId;
-    const isArtist = userType === UserType.ARTIST && event.agenda.artistId === userTypeId;
+    const isCustomer =
+      userType === UserType.CUSTOMER && event.customerId === userTypeId;
+    const isArtist =
+      userType === UserType.ARTIST && event.agenda.artistId === userTypeId;
 
     if (!isCustomer && !isArtist) {
       throw new ForbiddenException(
@@ -65,9 +84,9 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
 
     // Check if event status allows sending messages
     const allowedMessageStatuses = [
-      AgendaEventStatus.CREATED,          // Event just created
+      AgendaEventStatus.CREATED, // Event just created
       AgendaEventStatus.PENDING_CONFIRMATION, // Waiting for customer confirmation
-      AgendaEventStatus.CONFIRMED,        // Event confirmed, equivalent to scheduled
+      AgendaEventStatus.CONFIRMED, // Event confirmed, equivalent to scheduled
       AgendaEventStatus.RESCHEDULED,
       AgendaEventStatus.IN_PROGRESS,
       AgendaEventStatus.WAITING_FOR_PHOTOS, // Artist might communicate about photos
@@ -92,11 +111,8 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
         const uniqueFileName = `${timestamp}-${randomSuffix}-${safeOriginalName}`;
         const agendaIdForPath = event.agenda?.id || 'unknown-agenda';
         const path = `agendas/${agendaIdForPath}/events/${eventId}/messages`;
-        const uploadedImage: UploadToS3Result = await this.multimediaService.upload(
-          imageFile,
-          path,
-          uniqueFileName,
-        );
+        const uploadedImage: UploadToS3Result =
+          await this.multimediaService.upload(imageFile, path, uniqueFileName);
         imageUrl = uploadedImage.cloudFrontUrl;
         this.logger.log(`Image uploaded for event message: ${imageUrl}`);
       } catch (error) {
@@ -107,7 +123,7 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
     const newMessage: EventMessage = {
       id: randomUUID(),
       eventId,
-      senderId: userTypeId, 
+      senderId: userTypeId,
       senderType: isArtist ? 'artist' : 'customer',
       message: dto.message,
       imageUrl: imageUrl,
@@ -115,11 +131,13 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
     };
 
     event.messages = [...(event.messages || []), newMessage];
-    
+
     const eventToSave = { ...event };
     delete eventToSave.agenda;
 
-    const updatedEvent = await this.agendaEventRepo.save(eventToSave as AgendaEvent);
+    const updatedEvent = await this.agendaEventRepo.save(
+      eventToSave as AgendaEvent,
+    );
 
     this.logger.log(
       `Message sent by ${newMessage.senderType} (${userTypeId}) on event ${eventId}`,
@@ -127,7 +145,9 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
 
     // --- Notification Logic ---
     try {
-      const receiverUserTypeId = isArtist ? event.customerId : event.agenda.artistId;
+      const receiverUserTypeId = isArtist
+        ? event.customerId
+        : event.agenda.artistId;
       if (receiverUserTypeId) {
         const jobPayload = {
           eventId: event.id,
@@ -139,13 +159,18 @@ export class SendEventMessageUseCase extends BaseUseCase implements UseCase {
           // senderName: // Could fetch sender's name here if needed
         };
         await this.notificationQueue.add(NewEventMessageJobId, jobPayload);
-        this.logger.log(`Notification job added to queue for event ${eventId}, receiver ${receiverUserTypeId}`);
+        this.logger.log(
+          `Notification job added to queue for event ${eventId}, receiver ${receiverUserTypeId}`,
+        );
       }
     } catch (error) {
-      this.logger.error(`Failed to add notification job for event ${eventId}`, error);
+      this.logger.error(
+        `Failed to add notification job for event ${eventId}`,
+        error,
+      );
     }
     // --- End Notification Logic ---
 
     return updatedEvent;
   }
-} 
+}

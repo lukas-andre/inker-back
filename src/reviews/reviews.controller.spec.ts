@@ -6,11 +6,11 @@ import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
 import { AgendaEventRepository } from '../agenda/infrastructure/repositories/agendaEvent.repository';
 import { ArtistRepository } from '../artists/infrastructure/repositories/artist.repository';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
+import { UsersRepository } from '../users/infrastructure/repositories/users.repository';
 
 import { ReviewRepository } from './database/repositories/review.repository';
 import { ReviewsController } from './reviews.controller';
 import { ReviewHandler } from './reviews.handler';
-import { UsersRepository } from '../users/infrastructure/repositories/users.repository';
 
 const moduleMocker = new ModuleMocker(global);
 describe('ReviewsController', () => {

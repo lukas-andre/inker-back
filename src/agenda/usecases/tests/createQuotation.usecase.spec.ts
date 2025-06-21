@@ -86,9 +86,11 @@ describe('CreateQuotationUseCase', () => {
     notificationQueue = moduleFixture.get(
       getQueueToken(queues.notification.name),
     );
-    quotationProvider = moduleFixture.get<QuotationRepository>(QuotationRepository);
+    quotationProvider =
+      moduleFixture.get<QuotationRepository>(QuotationRepository);
     artistProvider = moduleFixture.get<ArtistRepository>(ArtistRepository);
-    customerProvider = moduleFixture.get<CustomerRepository>(CustomerRepository);
+    customerProvider =
+      moduleFixture.get<CustomerRepository>(CustomerRepository);
     multimediasService =
       moduleFixture.get<MultimediasService>(MultimediasService);
   });

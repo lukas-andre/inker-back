@@ -8,7 +8,11 @@ import {
 } from '../interfaces/review.interface';
 
 export class ReviewDto extends BaseDTO implements ReviewInterface {
-  @ApiProperty({ type: String, description: 'The id of the event', example: '1' })
+  @ApiProperty({
+    type: String,
+    description: 'The id of the event',
+    example: '1',
+  })
   @IsString()
   eventId: string;
 

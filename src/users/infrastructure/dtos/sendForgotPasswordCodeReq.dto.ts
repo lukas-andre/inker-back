@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsString,
+  IsEnum,
   IsOptional,
   IsPhoneNumber,
-  IsEnum,
+  IsString,
 } from 'class-validator';
+
 import { NotificationType } from '../entities/verificationHash.entity';
 
 export class SendForgotPasswordCodeReqDto {

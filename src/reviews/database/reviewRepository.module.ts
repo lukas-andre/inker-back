@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../databases/constants';
@@ -16,7 +16,7 @@ import { ReviewAvgRepository } from './repositories/reviewAvg.repository';
       REVIEW_DB_CONNECTION_NAME,
     ),
   ],
-  providers: [ReviewRepository, ReviewAvgRepository, ],
-  exports: [ReviewRepository, ReviewAvgRepository,],
+  providers: [ReviewRepository, ReviewAvgRepository],
+  exports: [ReviewRepository, ReviewAvgRepository],
 })
 export class ReviewRepositoryModule {}

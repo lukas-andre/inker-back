@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ReputationService } from './domain/services/reputation.service';
+
 import { IReputationService } from './domain/interfaces/reputationService.interface';
+import { ReputationService } from './domain/services/reputation.service';
 // import { UserReputationRepository } from './infrastructure/repositories/userReputation.repository'; // If you have a repository
 // import { TypeOrmModule } from '@nestjs/typeorm'; // If using TypeORM entities for reputation
 // import { UserReputationEntity } from './infrastructure/entities/userReputation.entity'; // If you have an entity
@@ -18,4 +19,4 @@ import { IReputationService } from './domain/interfaces/reputationService.interf
   ],
   exports: [IReputationService],
 })
-export class ReputationModule {} 
+export class ReputationModule {}

@@ -4,4 +4,4 @@ export const PdfJobPayloadSchema = z.object({
   signedConsentId: z.string().uuid(),
 });
 
-export type PdfJobPayload = z.infer<typeof PdfJobPayloadSchema>; 
+export type PdfJobPayload = z.infer<typeof PdfJobPayloadSchema>;

@@ -6,14 +6,12 @@ import {
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { UserType } from '../../../users/domain/enums/userType.enum';
+import { OpenQuotationOfferDto } from '../../domain/dtos/openQuotationOffer.dto';
+import { QuotationEnrichmentService } from '../../domain/services/quotationEnrichment.service';
+import { GetQuotationResDto } from '../../infrastructure/dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from '../../infrastructure/dtos/getQuotationsQuery.dto';
 import { Quotation } from '../../infrastructure/entities/quotation.entity';
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
-
-import { GetQuotationResDto } from '../../infrastructure/dtos/getQuotationRes.dto';
-
-import { OpenQuotationOfferDto } from '../../domain/dtos/openQuotationOffer.dto';
-import { QuotationEnrichmentService } from '../../domain/services/quotationEnrichment.service';
 
 @Injectable()
 export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
@@ -56,14 +54,15 @@ export class GetQuotationsUseCase extends BaseUseCase implements UseCase {
       order: { updatedAt: 'DESC' },
     });
 
-    const enrichedQuotations = await this.quotationEnrichmentService.enrichQuotations(quotations, {
-      includeOffers: true,
-      includeCustomer: true,
-      includeArtist: true,
-      includeStencil: true,
-      includeLocation: true,
-      includeTattooDesignCache: true,
-    });
+    const enrichedQuotations =
+      await this.quotationEnrichmentService.enrichQuotations(quotations, {
+        includeOffers: true,
+        includeCustomer: true,
+        includeArtist: true,
+        includeStencil: true,
+        includeLocation: true,
+        includeTattooDesignCache: true,
+      });
 
     return {
       items: enrichedQuotations,

@@ -1,4 +1,4 @@
-import { TattooStyle } from "../enums/tattooStyle.enum";
+import { TattooStyle } from '../enums/tattooStyle.enum';
 
 export interface PromptEnhancementParams {
   style: TattooStyle;
@@ -7,4 +7,4 @@ export interface PromptEnhancementParams {
 
 export abstract class IPromptEnhancementService {
   abstract enhancePrompt(params: PromptEnhancementParams): Promise<string>;
-} 
+}

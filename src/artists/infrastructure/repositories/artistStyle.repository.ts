@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ArtistStyle } from '../entities/artistStyle.entity';
-import { CreateArtistStyleDto, UpdateArtistStyleDto } from '../../domain/dtos/artistStyle.dto';
+
 import { BaseComponent } from '../../../global/domain/components/base.component';
+import {
+  CreateArtistStyleDto,
+  UpdateArtistStyleDto,
+} from '../../domain/dtos/artistStyle.dto';
+import { ArtistStyle } from '../entities/artistStyle.entity';
 
 @Injectable()
 export class ArtistStyleRepository extends BaseComponent {
@@ -21,13 +25,19 @@ export class ArtistStyleRepository extends BaseComponent {
     });
   }
 
-  async findArtistStyle(artistId: string, styleName: string): Promise<ArtistStyle> {
+  async findArtistStyle(
+    artistId: string,
+    styleName: string,
+  ): Promise<ArtistStyle> {
     return this.artistStyleRepository.findOne({
       where: { artistId, styleName },
     });
   }
 
-  async createArtistStyle(artistId: string, createArtistStyleDto: CreateArtistStyleDto): Promise<ArtistStyle> {
+  async createArtistStyle(
+    artistId: string,
+    createArtistStyleDto: CreateArtistStyleDto,
+  ): Promise<ArtistStyle> {
     const artistStyle = this.artistStyleRepository.create({
       artistId,
       styleName: createArtistStyleDto.styleName,

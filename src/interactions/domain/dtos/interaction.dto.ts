@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+
 import { InteractionType } from '../interactionType';
 
 enum InteractionTypeEnum {

@@ -1,20 +1,21 @@
+import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { AgendaEventRepository } from '../../../agenda/infrastructure/repositories/agendaEvent.repository';
+
 import { AgendaEventStatus } from '../../../agenda/domain/enum/agendaEventStatus.enum';
-import { ReminderCalculationService } from '../../domain/services/reminderCalculation.service';
-import { ReminderType } from '../../domain/enums/reminderType.enum';
-import { queues } from '../../../queues/queues';
+import { AgendaEventRepository } from '../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { BaseComponent } from '../../../global/domain/components/base.component';
+import { queues } from '../../../queues/queues';
+import { ReminderType } from '../../domain/enums/reminderType.enum';
+import { ReminderCalculationService } from '../../domain/services/reminderCalculation.service';
 
 @Injectable()
 export class AppointmentReminderJob extends BaseComponent {
   constructor(
     private readonly agendaEventRepository: AgendaEventRepository,
     private readonly reminderCalculationService: ReminderCalculationService,
-    @InjectQueue(queues.notification.name) 
+    @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
   ) {
     super(AppointmentReminderJob.name);
@@ -72,7 +73,7 @@ export class AppointmentReminderJob extends BaseComponent {
     try {
       // Check for review requests
       await this.processReviewReminders();
-      
+
       // Check for photo requests
       await this.processPhotoReminders();
     } catch (error) {
@@ -81,20 +82,25 @@ export class AppointmentReminderJob extends BaseComponent {
   }
 
   private async processRemindersForType(reminderType: ReminderType) {
-    const { startTime, endTime } = this.reminderCalculationService.getSQLTimestampsForReminder(reminderType);
-    
+    const { startTime, endTime } =
+      this.reminderCalculationService.getSQLTimestampsForReminder(reminderType);
+
     const events = await this.agendaEventRepository.findEventsForReminder(
       startTime,
       endTime,
-      [AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED]
+      [AgendaEventStatus.CONFIRMED, AgendaEventStatus.RESCHEDULED],
     );
 
-    this.logger.log(`Found ${events.length} events for ${reminderType} reminders`);
+    this.logger.log(
+      `Found ${events.length} events for ${reminderType} reminders`,
+    );
 
     for (const event of events) {
       // Check if this reminder was already sent
       if (event.reminderSent && event.reminderSent[reminderType]) {
-        this.logger.debug(`Reminder ${reminderType} already sent for event ${event.id}`);
+        this.logger.debug(
+          `Reminder ${reminderType} already sent for event ${event.id}`,
+        );
         continue;
       }
 
@@ -105,21 +111,28 @@ export class AppointmentReminderJob extends BaseComponent {
     const eventIds = events
       .filter(e => !e.reminderSent || !e.reminderSent[reminderType])
       .map(e => e.id);
-    
+
     if (eventIds.length > 0) {
-      await this.agendaEventRepository.markRemindersAsSent(eventIds, reminderType);
+      await this.agendaEventRepository.markRemindersAsSent(
+        eventIds,
+        reminderType,
+      );
     }
   }
 
   private async processConsentRemindersForType(reminderType: ReminderType) {
-    const { startTime, endTime } = this.reminderCalculationService.getSQLTimestampsForReminder(reminderType);
-    
-    const events = await this.agendaEventRepository.findEventsNeedingConsentReminder(
-      startTime,
-      endTime
-    );
+    const { startTime, endTime } =
+      this.reminderCalculationService.getSQLTimestampsForReminder(reminderType);
 
-    this.logger.log(`Found ${events.length} events needing ${reminderType} consent reminders`);
+    const events =
+      await this.agendaEventRepository.findEventsNeedingConsentReminder(
+        startTime,
+        endTime,
+      );
+
+    this.logger.log(
+      `Found ${events.length} events needing ${reminderType} consent reminders`,
+    );
 
     for (const event of events) {
       await this.sendConsentReminder(event, reminderType);
@@ -128,50 +141,67 @@ export class AppointmentReminderJob extends BaseComponent {
 
   private async processReviewReminders() {
     // 24 hours after
-    const twentyFourHoursAgo = this.reminderCalculationService.getSQLTimestampsForReminder(
-      ReminderType.REVIEW_REQUEST_24H_AFTER
-    );
-    
-    const events24h = await this.agendaEventRepository.findCompletedEventsForReview(
-      twentyFourHoursAgo.startTime,
-      twentyFourHoursAgo.endTime
-    );
+    const twentyFourHoursAgo =
+      this.reminderCalculationService.getSQLTimestampsForReminder(
+        ReminderType.REVIEW_REQUEST_24H_AFTER,
+      );
+
+    const events24h =
+      await this.agendaEventRepository.findCompletedEventsForReview(
+        twentyFourHoursAgo.startTime,
+        twentyFourHoursAgo.endTime,
+      );
 
     // 48 hours after
-    const fortyEightHoursAgo = this.reminderCalculationService.getSQLTimestampsForReminder(
-      ReminderType.REVIEW_REQUEST_48H_AFTER
-    );
-    
-    const events48h = await this.agendaEventRepository.findCompletedEventsForReview(
-      fortyEightHoursAgo.startTime,
-      fortyEightHoursAgo.endTime
-    );
+    const fortyEightHoursAgo =
+      this.reminderCalculationService.getSQLTimestampsForReminder(
+        ReminderType.REVIEW_REQUEST_48H_AFTER,
+      );
+
+    const events48h =
+      await this.agendaEventRepository.findCompletedEventsForReview(
+        fortyEightHoursAgo.startTime,
+        fortyEightHoursAgo.endTime,
+      );
 
     for (const event of events24h) {
-      await this.sendReviewReminder(event, ReminderType.REVIEW_REQUEST_24H_AFTER);
+      await this.sendReviewReminder(
+        event,
+        ReminderType.REVIEW_REQUEST_24H_AFTER,
+      );
     }
 
     for (const event of events48h) {
-      await this.sendReviewReminder(event, ReminderType.REVIEW_REQUEST_48H_AFTER);
+      await this.sendReviewReminder(
+        event,
+        ReminderType.REVIEW_REQUEST_48H_AFTER,
+      );
     }
   }
 
   private async processPhotoReminders() {
-    const immediately = this.reminderCalculationService.getSQLTimestampsForReminder(
-      ReminderType.PHOTO_REQUEST_IMMEDIATELY
-    );
-    
+    const immediately =
+      this.reminderCalculationService.getSQLTimestampsForReminder(
+        ReminderType.PHOTO_REQUEST_IMMEDIATELY,
+      );
+
     const events = await this.agendaEventRepository.findEventsNeedingPhotos(
       immediately.startTime,
-      immediately.endTime
+      immediately.endTime,
     );
 
     for (const event of events) {
-      await this.sendPhotoReminder(event, ReminderType.PHOTO_REQUEST_IMMEDIATELY);
+      await this.sendPhotoReminder(
+        event,
+        ReminderType.PHOTO_REQUEST_IMMEDIATELY,
+      );
     }
   }
 
-  private async sendAppointmentReminder(event: any, reminderType: ReminderType) {
+  private async sendAppointmentReminder(
+    event: any,
+    reminderType: ReminderType,
+  ) {
     try {
       // Add job to notification queue
       await this.notificationQueue.add('APPOINTMENT_REMINDER', {
@@ -184,12 +214,15 @@ export class AppointmentReminderJob extends BaseComponent {
           reminderType,
           appointmentDate: event.startDate,
           eventTitle: event.title,
-        }
+        },
       });
 
       this.logger.log(`Queued ${reminderType} reminder for event ${event.id}`);
     } catch (error) {
-      this.logger.error(`Failed to queue ${reminderType} reminder for event ${event.id}:`, error);
+      this.logger.error(
+        `Failed to queue ${reminderType} reminder for event ${event.id}:`,
+        error,
+      );
     }
   }
 
@@ -204,13 +237,18 @@ export class AppointmentReminderJob extends BaseComponent {
           artistId: event.agenda.artistId,
           reminderType,
           appointmentDate: event.startDate,
-        }
+        },
       };
 
       await this.notificationQueue.add(jobData);
-      this.logger.log(`Queued ${reminderType} consent reminder for event ${event.id}`);
+      this.logger.log(
+        `Queued ${reminderType} consent reminder for event ${event.id}`,
+      );
     } catch (error) {
-      this.logger.error(`Error sending consent reminder for event ${event.id}:`, error);
+      this.logger.error(
+        `Error sending consent reminder for event ${event.id}:`,
+        error,
+      );
     }
   }
 
@@ -224,13 +262,18 @@ export class AppointmentReminderJob extends BaseComponent {
           customerId: event.customerId,
           artistId: event.agenda.artistId,
           reminderType,
-        }
+        },
       };
 
       await this.notificationQueue.add(jobData);
-      this.logger.log(`Queued ${reminderType} review reminder for event ${event.id}`);
+      this.logger.log(
+        `Queued ${reminderType} review reminder for event ${event.id}`,
+      );
     } catch (error) {
-      this.logger.error(`Error sending review reminder for event ${event.id}:`, error);
+      this.logger.error(
+        `Error sending review reminder for event ${event.id}:`,
+        error,
+      );
     }
   }
 
@@ -244,13 +287,18 @@ export class AppointmentReminderJob extends BaseComponent {
           artistId: event.agenda.artistId,
           customerId: event.customerId,
           reminderType,
-        }
+        },
       };
 
       await this.notificationQueue.add(jobData);
-      this.logger.log(`Queued ${reminderType} photo reminder for event ${event.id}`);
+      this.logger.log(
+        `Queued ${reminderType} photo reminder for event ${event.id}`,
+      );
     } catch (error) {
-      this.logger.error(`Error sending photo reminder for event ${event.id}:`, error);
+      this.logger.error(
+        `Error sending photo reminder for event ${event.id}:`,
+        error,
+      );
     }
   }
-} 
+}

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { InteractionRepository } from '../infrastructure/database/repositories/interaction.repository';
-import { InteractionDto } from '../domain/dtos/interaction.dto';
+
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
+import { InteractionDto } from '../domain/dtos/interaction.dto';
+import { InteractionRepository } from '../infrastructure/database/repositories/interaction.repository';
 
 @Injectable()
 export class GetUserInteractionsUseCase extends BaseUseCase {
@@ -16,7 +17,7 @@ export class GetUserInteractionsUseCase extends BaseUseCase {
     interactionType?: string;
   }): Promise<InteractionDto[]> {
     const { userId, entityType, entityId, interactionType } = params;
-    
+
     return this.interactionProvider.findByUserAndEntity(
       userId,
       entityType,

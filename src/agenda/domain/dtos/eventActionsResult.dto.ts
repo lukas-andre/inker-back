@@ -12,4 +12,4 @@ export class EventActionsResultDto {
   canStartSession: boolean;
   canFinishSession: boolean;
   reasons?: Record<string, string>;
-} 
+}

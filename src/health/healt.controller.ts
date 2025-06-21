@@ -33,9 +33,7 @@ export class HealthController {
     @InjectDataSource('agenda-db')
     private agendaDbDataSource: DataSource,
     @InjectDataSource('location-db')
-    private locationDbDataSource: DataSource,
-    // @InjectDataSource('customer-feed-db')
-    // private customerFeedDbDataSource: DataSource,
+    private locationDbDataSource: DataSource, // @InjectDataSource('customer-feed-db') // private customerFeedDbDataSource: DataSource,
   ) {}
 
   @Get()

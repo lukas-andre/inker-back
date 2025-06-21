@@ -17,15 +17,15 @@ import { AgendaRepository } from '../repositories/agenda.repository';
 
 @Injectable()
 export class AgendaIdPipe
-  implements PipeTransform<string, Promise<string | number>> {
+  implements PipeTransform<string, Promise<string | number>>
+{
   private readonly logger = new Logger(AgendaIdPipe.name);
-  constructor(private readonly agendaRepository: AgendaRepository) { }
+  constructor(private readonly agendaRepository: AgendaRepository) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || this.invalidIdType(metatype)) {
       return value;
     }
-
 
     if (!(await this.agendaRepository.exists(value))) {
       throw new NotAcceptableException(AGENDA_NOT_EXISTS);
@@ -33,7 +33,6 @@ export class AgendaIdPipe
 
     return value;
   }
-
 
   private invalidIdType(metatype: Function): boolean {
     const types: Function[] = [String];

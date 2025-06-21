@@ -25,7 +25,9 @@ export class PermissionsRepository {
     });
   }
 
-  public async findOne(options?: FindOneOptions<Permission>): Promise<Permission> {
+  public async findOne(
+    options?: FindOneOptions<Permission>,
+  ): Promise<Permission> {
     return this.permissionsRepository.findOne(options);
   }
-} 
+}

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
+
 import { ArtistMetricsDto } from '../domain/dtos/metrics.dto';
+import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
 
 @Injectable()
 export class GetArtistMetricsUseCase {
@@ -8,7 +9,7 @@ export class GetArtistMetricsUseCase {
 
   async execute(artistId: string): Promise<ArtistMetricsDto> {
     const metrics = await this.analyticsRepository.findArtistMetrics(artistId);
-    
+
     if (!metrics) {
       return {
         artistId,
@@ -31,4 +32,4 @@ export class GetArtistMetricsUseCase {
 
     return response;
   }
-} 
+}

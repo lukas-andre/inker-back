@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { TattooStyle, TattooStyleDescriptions } from '../enums/tattooStyle.enum';
+
+import {
+  TattooStyle,
+  TattooStyleDescriptions,
+} from '../enums/tattooStyle.enum';
 
 export class CreateTattooImageDto {
   @ApiProperty({
@@ -32,4 +36,4 @@ export class CreateTattooImageDto {
   @IsNotEmpty()
   @IsString()
   userInput: string;
-} 
+}

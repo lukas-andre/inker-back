@@ -49,8 +49,10 @@ export class CustomerRepository extends BaseComponent {
 
     try {
       // Create a new customer with tsv properly generated and return JSON in camelCase
-      const searchText = `${params.firstName || ''} ${params.lastName || ''} ${params.contactEmail || ''}`;
-      
+      const searchText = `${params.firstName || ''} ${params.lastName || ''} ${
+        params.contactEmail || ''
+      }`;
+
       const result = await this.customersRepository.query(
         `INSERT INTO "customer"("user_id", "first_name", "last_name", "contact_email", "contact_phone_number", "tsv")
          VALUES ($1, $2, $3, $4, $5, to_tsvector('english', $6))
@@ -76,14 +78,14 @@ export class CustomerRepository extends BaseComponent {
           params.lastName,
           params.contactEmail,
           params.phoneNumber,
-          searchText
-        ]
+          searchText,
+        ],
       );
-      
+
       const customerData = result[0].customer;
       const customer = Object.assign(new Customer(), customerData);
-      
-        return customer;
+
+      return customer;
     } catch (error) {
       throw new DBServiceCreateException(
         this,

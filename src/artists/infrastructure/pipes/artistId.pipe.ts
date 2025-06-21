@@ -17,16 +17,14 @@ import {
 import { ArtistRepository } from '../repositories/artist.repository';
 
 @Injectable()
-export class ArtistIdPipe
-  implements PipeTransform<string, Promise<string>> {
+export class ArtistIdPipe implements PipeTransform<string, Promise<string>> {
   private readonly logger = new Logger(ArtistIdPipe.name);
-  constructor(private readonly artistProvider: ArtistRepository) { }
+  constructor(private readonly artistProvider: ArtistRepository) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || this.invalidIdType(metatype)) {
       return value;
     }
-
 
     if (!(await this.artistProvider.exists(value))) {
       throw new NotAcceptableException(ARTIST_NOT_ACCEPTED);

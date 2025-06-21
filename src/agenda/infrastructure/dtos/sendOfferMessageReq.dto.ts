@@ -14,4 +14,4 @@ export class SendOfferMessageReqDto {
   // @IsOptional()
   // @IsString()
   // imageId?: string;
-} 
+}

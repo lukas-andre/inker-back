@@ -18,6 +18,7 @@ import {
   Repository,
   SelectQueryBuilder,
 } from 'typeorm';
+import { z } from 'zod';
 
 import { REVIEW_DB_CONNECTION_NAME } from '../../../databases/constants';
 import { BaseComponent } from '../../../global/domain/components/base.component';
@@ -40,12 +41,11 @@ import {
   RatingRate,
   defaultRatingMap,
 } from '../../interfaces/reviewAvg.interface';
+import { CustomerReviewReactionDetailsResult } from '../../interfaces/reviewReaction.interface';
+import { ReviewReactionEnum } from '../../reviews.controller';
 import { Review } from '../entities/review.entity';
 import { ReviewAvg } from '../entities/reviewAvg.entity';
 
-import { CustomerReviewReactionDetailsResult } from '../../interfaces/reviewReaction.interface';
-import { ReviewReactionEnum } from '../../reviews.controller';
-import { z } from 'zod';
 export type FindIfCustomerAlreadyReviewTheEventResult = Pick<
   Review,
   'id' | 'isRated'
@@ -767,13 +767,13 @@ export class ReviewRepository extends BaseComponent {
   async getReviewsSummaryForMonth(
     eventIds: string[],
     year: number,
-    month: number
+    month: number,
   ): Promise<any[]> {
     if (eventIds.length === 0) return [];
 
     try {
       const placeholders = eventIds.map((_, i) => `$${i + 3}`).join(', ');
-      
+
       const reviews = await this.repository.query(
         `SELECT 
           r.event_id as "eventId",
@@ -796,7 +796,7 @@ export class ReviewRepository extends BaseComponent {
           AND EXTRACT(YEAR FROM r.created_at) = $1
           AND EXTRACT(MONTH FROM r.created_at) = $2
         GROUP BY r.event_id`,
-        [year, month, ...eventIds]
+        [year, month, ...eventIds],
       );
 
       return reviews;
@@ -815,7 +815,7 @@ export class ReviewRepository extends BaseComponent {
   async getReviewsByArtistForMonth(
     artistId: string,
     year: number,
-    month: number
+    month: number,
   ): Promise<any> {
     try {
       const [result] = await this.repository.query(
@@ -838,16 +838,18 @@ export class ReviewRepository extends BaseComponent {
           AND EXTRACT(YEAR FROM r.created_at) = $2
           AND EXTRACT(MONTH FROM r.created_at) = $3
           AND r.is_rated = true`,
-        [artistId, year, month]
+        [artistId, year, month],
       );
 
-      return result?.summary || {
-        totalReviews: 0,
-        averageRating: 0,
-        positiveReviews: 0,
-        negativeReviews: 0,
-        ratingDistribution: { '5': 0, '4': 0, '3': 0, '2': 0, '1': 0 }
-      };
+      return (
+        result?.summary || {
+          totalReviews: 0,
+          averageRating: 0,
+          positiveReviews: 0,
+          negativeReviews: 0,
+          ratingDistribution: { '5': 0, '4': 0, '3': 0, '2': 0, '1': 0 },
+        }
+      );
     } catch (error) {
       throw new DBServiceFindException(
         this,

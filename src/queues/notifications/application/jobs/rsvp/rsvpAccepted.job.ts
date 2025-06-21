@@ -5,10 +5,10 @@ import { CustomerRepository } from '../../../../../customers/infrastructure/prov
 import { ArtistLocationRepository } from '../../../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { RsvpAcceptedType } from '../../../../../notifications/services/email/schemas/email';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
+import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { RsvpAcceptedJobType } from '../../../domain/schemas/agenda';
 import { NotificationJob, getGoogleMapsLink } from '../notification.job';
-import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
-import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 
 export class RsvpAcceptedJob implements NotificationJob {
   constructor(
@@ -39,7 +39,9 @@ export class RsvpAcceptedJob implements NotificationJob {
 
     // Build notification title and message
     const title = `Appointment Invitation Accepted`;
-    const message = `${customer.firstName} has accepted the invitation for "${agendaEvent.title}" on ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
+    const message = `${customer.firstName} has accepted the invitation for "${
+      agendaEvent.title
+    }" on ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
 
     // Store notification for artist
     await this.notificationStorageService.storeNotification(

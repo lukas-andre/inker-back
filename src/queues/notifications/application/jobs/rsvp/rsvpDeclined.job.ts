@@ -39,7 +39,9 @@ export class RsvpDeclinedJob implements NotificationJob {
 
     // Build notification title and message
     const title = `Appointment Invitation Declined`;
-    const message = `${customer.firstName} has declined the invitation for "${agendaEvent.title}" on ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
+    const message = `${customer.firstName} has declined the invitation for "${
+      agendaEvent.title
+    }" on ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
 
     // Store notification for artist
     await this.notificationStorageService.storeNotification(

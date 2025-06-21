@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { ANALYTICS_DB_CONNECTION_NAME } from '../../../../databases/constants';
 import { BaseComponent } from '../../../../global/domain/components/base.component';
-import { ContentMetrics } from '../entities/content-metrics.entity';
-import { ArtistMetrics } from '../entities/artist-metrics.entity';
-import { ContentMetricsViewer } from '../entities/content-metrics-viewer.entity';
-import { ArtistMetricsViewer } from '../entities/artist-metrics-viewer.entity';
+import { AnalyticsInteractionResponseDto } from '../../../domain/dtos/analytics-interaction-response.dto';
 import { ContentType } from '../../../domain/enums/content-types.enum';
 import { ViewSource } from '../../../domain/enums/interaction-types.enum';
-import { ANALYTICS_DB_CONNECTION_NAME } from '../../../../databases/constants';
 import { IContentSummaryMetrics } from '../../../domain/interfaces/content-summary-metrics.interface';
-import { AnalyticsInteractionResponseDto } from '../../../domain/dtos/analytics-interaction-response.dto';
+import { ArtistMetricsViewer } from '../entities/artist-metrics-viewer.entity';
+import { ArtistMetrics } from '../entities/artist-metrics.entity';
+import { ContentMetricsViewer } from '../entities/content-metrics-viewer.entity';
+import { ContentMetrics } from '../entities/content-metrics.entity';
 
 interface ToggleReactionResponse {
   result: boolean;
@@ -26,26 +27,32 @@ export class AnalyticsRepository extends BaseComponent {
   constructor(
     @InjectRepository(ContentMetrics, ANALYTICS_DB_CONNECTION_NAME)
     private readonly contentMetricsRepository: Repository<ContentMetrics>,
-    
+
     @InjectRepository(ArtistMetrics, ANALYTICS_DB_CONNECTION_NAME)
     private readonly artistMetricsRepository: Repository<ArtistMetrics>,
 
     @InjectRepository(ContentMetricsViewer, ANALYTICS_DB_CONNECTION_NAME)
     private readonly contentMetricsViewerRepository: Repository<ContentMetricsViewer>,
-    
+
     @InjectRepository(ArtistMetricsViewer, ANALYTICS_DB_CONNECTION_NAME)
     private readonly artistMetricsViewerRepository: Repository<ArtistMetricsViewer>,
   ) {
     super(AnalyticsRepository.name);
   }
 
-  async findContentMetrics(contentId: string, contentType: ContentType): Promise<ContentMetrics | null> {
+  async findContentMetrics(
+    contentId: string,
+    contentType: ContentType,
+  ): Promise<ContentMetrics | null> {
     return this.contentMetricsRepository.findOne({
       where: { contentId, contentType },
     });
   }
 
-  async findMultipleContentMetrics(contentIds: string[], contentType: ContentType): Promise<ContentMetrics[]> {
+  async findMultipleContentMetrics(
+    contentIds: string[],
+    contentType: ContentType,
+  ): Promise<ContentMetrics[]> {
     return this.contentMetricsRepository.find({
       where: contentIds.map(id => ({ contentId: id, contentType })),
     });
@@ -57,13 +64,16 @@ export class AnalyticsRepository extends BaseComponent {
     });
   }
 
-  async upsertContentMetrics(contentId: string, contentType: ContentType): Promise<ContentMetrics> {
+  async upsertContentMetrics(
+    contentId: string,
+    contentType: ContentType,
+  ): Promise<ContentMetrics> {
     const existing = await this.findContentMetrics(contentId, contentType);
-    
+
     if (existing) {
       return existing;
     }
-    
+
     const metrics = this.contentMetricsRepository.create({
       contentId,
       contentType,
@@ -71,34 +81,39 @@ export class AnalyticsRepository extends BaseComponent {
         views: {
           count: 0,
           uniqueCount: 0,
-        }
-      }
+        },
+      },
     });
-    
+
     return this.contentMetricsRepository.save(metrics);
   }
 
   async upsertArtistMetrics(artistId: string): Promise<ArtistMetrics> {
     const existing = await this.findArtistMetrics(artistId);
-    
+
     if (existing) {
       return existing;
     }
-    
+
     const metrics = this.artistMetricsRepository.create({
       artistId,
       metrics: {
         views: {
           count: 0,
           uniqueCount: 0,
-        }
-      }
+        },
+      },
     });
-    
+
     return this.artistMetricsRepository.save(metrics);
   }
 
-  async incrementContentView(contentId: string, contentType: ContentType, userId: string, viewSource?: ViewSource): Promise<AnalyticsInteractionResponseDto> {
+  async incrementContentView(
+    contentId: string,
+    contentType: ContentType,
+    userId: string,
+    viewSource?: ViewSource,
+  ): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
 
     // Increment total views count
@@ -111,23 +126,25 @@ export class AnalyticsRepository extends BaseComponent {
            (COALESCE((metrics->'views'->>'count')::int, 0) + 1)::text::jsonb
          ),
          '{viewSources,${viewSource || 'direct'}}',
-         (COALESCE((metrics->'viewSources'->>'${viewSource || 'direct'}')::int, 0) + 1)::text::jsonb
+         (COALESCE((metrics->'viewSources'->>'${
+           viewSource || 'direct'
+         }')::int, 0) + 1)::text::jsonb
        )
        WHERE id = $1`,
-      [metrics.id]
+      [metrics.id],
     );
 
     // Check if this is a unique view for this user
     const viewerKey = `viewer_${userId}`;
     const existingViewer = await this.contentMetricsViewerRepository.findOne({
-      where: { metricsId: metrics.id, viewerKey }
+      where: { metricsId: metrics.id, viewerKey },
     });
 
     // If it's a unique view, increment unique count and save viewer
     if (!existingViewer) {
       await this.contentMetricsViewerRepository.save({
         metricsId: metrics.id,
-        viewerKey
+        viewerKey,
       });
 
       await this.contentMetricsRepository.query(
@@ -138,24 +155,27 @@ export class AnalyticsRepository extends BaseComponent {
            (COALESCE((metrics->'views'->>'uniqueCount')::int, 0) + 1)::text::jsonb
          )
          WHERE id = $1`,
-        [metrics.id]
+        [metrics.id],
       );
     }
 
     // Get updated metrics
-    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
-    
+    const updatedMetrics = await this.findContentMetrics(
+      contentId,
+      contentType,
+    );
+
     return {
       result: true,
       state: {
         count: updatedMetrics?.metrics.views?.count || 0,
-        userIds: [userId]
+        userIds: [userId],
       },
       metrics: {
         viewCount: updatedMetrics?.metrics.views?.count || 0,
         uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
-        engagementRate: updatedMetrics?.metrics.engagementRate || 0
-      }
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0,
+      },
     };
   }
 
@@ -171,20 +191,20 @@ export class AnalyticsRepository extends BaseComponent {
          (COALESCE((metrics->'views'->>'count')::int, 0) + 1)::text::jsonb
        )
        WHERE id = $1`,
-      [metrics.id]
+      [metrics.id],
     );
 
     // Check if this is a unique view for this user
     const viewerKey = `viewer_${userId}`;
     const existingViewer = await this.artistMetricsViewerRepository.findOne({
-      where: { metricsId: metrics.id, viewerKey }
+      where: { metricsId: metrics.id, viewerKey },
     });
 
     // If it's a unique view, increment unique count and save viewer
     if (!existingViewer) {
       await this.artistMetricsViewerRepository.save({
         metricsId: metrics.id,
-        viewerKey
+        viewerKey,
       });
 
       await this.artistMetricsRepository.query(
@@ -195,14 +215,18 @@ export class AnalyticsRepository extends BaseComponent {
            (COALESCE((metrics->'views'->>'uniqueCount')::int, 0) + 1)::text::jsonb
          )
          WHERE id = $1`,
-        [metrics.id]
+        [metrics.id],
       );
     }
   }
 
-  async toggleContentReaction(contentId: string, contentType: ContentType, userId: string): Promise<AnalyticsInteractionResponseDto> {
+  async toggleContentReaction(
+    contentId: string,
+    contentType: ContentType,
+    userId: string,
+  ): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
-    
+
     // Initialize reactions if they don't exist
     if (!metrics.metrics.reactions || !metrics.metrics.reactions.like) {
       await this.contentMetricsRepository.query(
@@ -213,7 +237,7 @@ export class AnalyticsRepository extends BaseComponent {
            '{"like":{"count":0,"userIds":[]}}'::jsonb
          )
          WHERE id = $1`,
-        [metrics.id]
+        [metrics.id],
       );
     }
 
@@ -222,7 +246,7 @@ export class AnalyticsRepository extends BaseComponent {
       `SELECT (metrics->'reactions'->'like'->'userIds') @> $1::jsonb as has_reacted
        FROM content_metrics
        WHERE id = $2`,
-      [JSON.stringify([userId]), metrics.id]
+      [JSON.stringify([userId]), metrics.id],
     );
 
     let isLiked: boolean;
@@ -248,7 +272,7 @@ export class AnalyticsRepository extends BaseComponent {
            )
          )
          WHERE id = $2`,
-        [userId.toString(), metrics.id]
+        [userId.toString(), metrics.id],
       );
       isLiked = false;
     } else {
@@ -265,34 +289,41 @@ export class AnalyticsRepository extends BaseComponent {
            (COALESCE(metrics->'reactions'->'like'->'userIds', '[]'::jsonb) || $1::jsonb)
          )
          WHERE id = $2`,
-        [JSON.stringify([userId]), metrics.id]
+        [JSON.stringify([userId]), metrics.id],
       );
       isLiked = true;
     }
 
     // Update engagement rate
     await this.updateContentEngagementRate(metrics.id);
-    
+
     // Get updated metrics
-    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
-    
+    const updatedMetrics = await this.findContentMetrics(
+      contentId,
+      contentType,
+    );
+
     return {
       result: true,
       state: {
         count: updatedMetrics?.metrics.reactions?.like?.count || 0,
-        userIds: updatedMetrics?.metrics.reactions?.like?.userIds || []
+        userIds: updatedMetrics?.metrics.reactions?.like?.userIds || [],
       },
       metrics: {
         viewCount: updatedMetrics?.metrics.views?.count || 0,
         uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
-        engagementRate: updatedMetrics?.metrics.engagementRate || 0
-      }
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0,
+      },
     };
   }
 
-  async recordViewDuration(contentId: string, contentType: ContentType, durationSeconds: number): Promise<AnalyticsInteractionResponseDto> {
+  async recordViewDuration(
+    contentId: string,
+    contentType: ContentType,
+    durationSeconds: number,
+  ): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
-    
+
     // Initialize view duration if it doesn't exist
     if (!metrics.metrics.viewDuration) {
       await this.contentMetricsRepository.query(
@@ -303,10 +334,10 @@ export class AnalyticsRepository extends BaseComponent {
            '{"totalSeconds":0,"averageSeconds":0}'::jsonb
          )
          WHERE id = $1`,
-        [metrics.id]
+        [metrics.id],
       );
     }
-    
+
     // Update totalSeconds and averageSeconds
     await this.contentMetricsRepository.query(
       `UPDATE content_metrics 
@@ -323,32 +354,38 @@ export class AnalyticsRepository extends BaseComponent {
          )::text::jsonb
        )
        WHERE id = $2`,
-      [durationSeconds, metrics.id]
+      [durationSeconds, metrics.id],
     );
-    
+
     // Update engagement rate
     await this.updateContentEngagementRate(metrics.id);
 
     // Get updated metrics
-    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
-    
+    const updatedMetrics = await this.findContentMetrics(
+      contentId,
+      contentType,
+    );
+
     return {
       result: true,
       state: {
         count: updatedMetrics?.metrics.viewDuration?.totalSeconds || 0,
-        userIds: []
+        userIds: [],
       },
       metrics: {
         viewCount: updatedMetrics?.metrics.views?.count || 0,
         uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
-        engagementRate: updatedMetrics?.metrics.engagementRate || 0
-      }
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0,
+      },
     };
   }
 
-  async recordConversion(contentId: string, contentType: ContentType): Promise<AnalyticsInteractionResponseDto> {
+  async recordConversion(
+    contentId: string,
+    contentType: ContentType,
+  ): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
-    
+
     // Initialize conversions if they don't exist
     if (!metrics.metrics.conversions) {
       await this.contentMetricsRepository.query(
@@ -359,10 +396,10 @@ export class AnalyticsRepository extends BaseComponent {
            '{"count":0,"conversionRate":0}'::jsonb
          )
          WHERE id = $1`,
-        [metrics.id]
+        [metrics.id],
       );
     }
-    
+
     // Update count and conversionRate
     await this.contentMetricsRepository.query(
       `UPDATE content_metrics 
@@ -379,29 +416,35 @@ export class AnalyticsRepository extends BaseComponent {
          )::text::jsonb
        )
        WHERE id = $1`,
-      [metrics.id]
+      [metrics.id],
     );
 
     // Get updated metrics
-    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
-    
+    const updatedMetrics = await this.findContentMetrics(
+      contentId,
+      contentType,
+    );
+
     return {
       result: true,
       state: {
         count: updatedMetrics?.metrics.conversions?.count || 0,
-        userIds: []
+        userIds: [],
       },
       metrics: {
         viewCount: updatedMetrics?.metrics.views?.count || 0,
         uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
-        engagementRate: updatedMetrics?.metrics.engagementRate || 0
-      }
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0,
+      },
     };
   }
 
-  async recordImpression(contentId: string, contentType: ContentType): Promise<AnalyticsInteractionResponseDto> {
+  async recordImpression(
+    contentId: string,
+    contentType: ContentType,
+  ): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertContentMetrics(contentId, contentType);
-    
+
     // Initialize impressions if they don't exist
     if (!metrics.metrics.impressions) {
       await this.contentMetricsRepository.query(
@@ -412,10 +455,10 @@ export class AnalyticsRepository extends BaseComponent {
            '{"count":0,"ctr":0}'::jsonb
          )
          WHERE id = $1`,
-        [metrics.id]
+        [metrics.id],
       );
     }
-    
+
     // Update count and CTR
     await this.contentMetricsRepository.query(
       `UPDATE content_metrics 
@@ -432,29 +475,35 @@ export class AnalyticsRepository extends BaseComponent {
          )::text::jsonb
        )
        WHERE id = $1`,
-      [metrics.id]
+      [metrics.id],
     );
 
     // Get updated metrics
-    const updatedMetrics = await this.findContentMetrics(contentId, contentType);
-    
+    const updatedMetrics = await this.findContentMetrics(
+      contentId,
+      contentType,
+    );
+
     return {
       result: true,
       state: {
         count: updatedMetrics?.metrics.impressions?.count || 0,
-        userIds: []
+        userIds: [],
       },
       metrics: {
         viewCount: updatedMetrics?.metrics.views?.count || 0,
         uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
-        engagementRate: updatedMetrics?.metrics.engagementRate || 0
-      }
+        engagementRate: updatedMetrics?.metrics.engagementRate || 0,
+      },
     };
   }
 
-  async recordArtistFollow(artistId: string, fromContentView: boolean = false): Promise<AnalyticsInteractionResponseDto> {
+  async recordArtistFollow(
+    artistId: string,
+    fromContentView = false,
+  ): Promise<AnalyticsInteractionResponseDto> {
     const metrics = await this.upsertArtistMetrics(artistId);
-    
+
     // Initialize followers if they don't exist
     if (!metrics.metrics.followers) {
       await this.artistMetricsRepository.query(
@@ -465,13 +514,13 @@ export class AnalyticsRepository extends BaseComponent {
            '{"count":0,"fromContentViews":0,"conversionRate":0}'::jsonb
          )
          WHERE id = $1`,
-        [metrics.id]
+        [metrics.id],
       );
     }
-    
+
     // Update follower metrics
     const fromContentViewsIncrement = fromContentView ? 1 : 0;
-    
+
     await this.artistMetricsRepository.query(
       `UPDATE artist_metrics 
        SET metrics = jsonb_set(
@@ -491,22 +540,22 @@ export class AnalyticsRepository extends BaseComponent {
          )::text::jsonb
        )
        WHERE id = $2`,
-      [fromContentViewsIncrement, metrics.id]
+      [fromContentViewsIncrement, metrics.id],
     );
 
     // Get updated metrics
     const updatedMetrics = await this.findArtistMetrics(artistId);
-    
+
     return {
       result: true,
       state: {
         count: updatedMetrics?.metrics.followers?.count || 0,
-        userIds: []
+        userIds: [],
       },
       metrics: {
         viewCount: updatedMetrics?.metrics.views?.count || 0,
         uniqueViewCount: updatedMetrics?.metrics.views?.uniqueCount || 0,
-      }
+      },
     };
   }
 
@@ -525,78 +574,98 @@ export class AnalyticsRepository extends BaseComponent {
          )::text::jsonb
        )
        WHERE id = $1`,
-      [metricsId]
+      [metricsId],
     );
   }
 
-  async checkUserHasLiked(contentId: string, contentType: ContentType, userId: string): Promise<boolean> {
+  async checkUserHasLiked(
+    contentId: string,
+    contentType: ContentType,
+    userId: string,
+  ): Promise<boolean> {
     const metrics = await this.findContentMetrics(contentId, contentType);
-    
-    if (!metrics || !metrics.metrics.reactions || !metrics.metrics.reactions.like) {
+
+    if (
+      !metrics ||
+      !metrics.metrics.reactions ||
+      !metrics.metrics.reactions.like
+    ) {
       return false;
     }
-    
+
     return metrics.metrics.reactions.like.userIds.includes(userId);
   }
 
-  async getSummaryMetricsForContent(contentId: string, contentType: ContentType, disableCache?: boolean): Promise<IContentSummaryMetrics> {
-    const cacheOptions = disableCache ? undefined : {
-      id: `content_metrics_summary_${contentType}_${contentId}`,
-      milliseconds: 60000 // 1 minute cache
-    };
+  async getSummaryMetricsForContent(
+    contentId: string,
+    contentType: ContentType,
+    disableCache?: boolean,
+  ): Promise<IContentSummaryMetrics> {
+    const cacheOptions = disableCache
+      ? undefined
+      : {
+          id: `content_metrics_summary_${contentType}_${contentId}`,
+          milliseconds: 60000, // 1 minute cache
+        };
 
     const metrics = await this.contentMetricsRepository.findOne({
       where: { contentId, contentType },
-      cache: cacheOptions
+      cache: cacheOptions,
     });
-    
+
     if (!metrics) {
       return {
         viewCount: 0,
-        likeCount: 0
+        likeCount: 0,
       };
     }
-    
+
     return {
       viewCount: metrics.metrics.views?.count || 0,
-      likeCount: metrics.metrics.reactions?.like?.count || 0
+      likeCount: metrics.metrics.reactions?.like?.count || 0,
     };
   }
-  
-  async getBatchSummaryMetrics(contentIds: string[], contentType: ContentType, disableCache?: boolean): Promise<Map<string, IContentSummaryMetrics>> {
+
+  async getBatchSummaryMetrics(
+    contentIds: string[],
+    contentType: ContentType,
+    disableCache?: boolean,
+  ): Promise<Map<string, IContentSummaryMetrics>> {
     if (contentIds.length === 0) {
       return new Map();
     }
-    
-    const cacheOptions = disableCache ? undefined : {
-      id: `content_metrics_batch_${contentType}_${contentIds.join('_')}`,
-      milliseconds: 60000 // 1 minute cache
-    };
-    
+
+    const cacheOptions = disableCache
+      ? undefined
+      : {
+          id: `content_metrics_batch_${contentType}_${contentIds.join('_')}`,
+          milliseconds: 60000, // 1 minute cache
+        };
+
     const metrics = await this.contentMetricsRepository.find({
       where: contentIds.map(id => ({ contentId: id, contentType })),
-      cache: cacheOptions
+      cache: cacheOptions,
     });
-    
+
     // Create a map of contentId -> metrics
     const metricsMap = new Map<string, IContentSummaryMetrics>();
-    
+
     // Initialize with default values for all requested IDs
     contentIds.forEach(id => {
       metricsMap.set(id, {
         viewCount: 0,
-        likeCount: 0
+        likeCount: 0,
       });
     });
-    
+
     // Update with actual metrics for items that have them
     metrics.forEach(metric => {
       metricsMap.set(metric.contentId, {
         viewCount: metric.metrics.views?.count || 0,
-        likeCount: metric.metrics.reactions?.like?.count || 0
+        likeCount: metric.metrics.reactions?.like?.count || 0,
       });
     });
-    
+
     return metricsMap;
   }
-} 
+}

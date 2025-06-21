@@ -1,12 +1,37 @@
-import { Injectable, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
+
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { ReviewArtistRequestDto } from '../../reviews/dtos/reviewArtistRequest.dto';
+import {
+  UserType as RequestContextUserType,
+  UserType,
+} from '../../users/domain/enums/userType.enum';
+import { EventActionsResultDto } from '../domain/dtos/eventActionsResult.dto';
+import { OfferMessageDto } from '../domain/dtos/offerMessage.dto';
+import {
+  ListParticipatingQuotationsResDto,
+  ParticipatingQuotationOfferDto,
+} from '../domain/dtos/participatingQuotationOffer.dto';
+import {
+  AvailabilityCalendar,
+  SchedulingService,
+  TimeSlot,
+} from '../services/scheduling.service';
+import { CreateUnavailableTimeUseCase } from '../usecases/agenda/createUnavailableTime.usecase';
+import { DeleteUnavailableTimeUseCase } from '../usecases/agenda/deleteUnavailableTime.usecase';
+import { FindEventFromArtistByEventIdUseCase } from '../usecases/agenda/findEventFromArtistByEventId.usecase';
+import { SetWorkingHoursUseCase } from '../usecases/agenda/setWorkingHours.usecase';
+import { UpdateAgendaSettingsUseCase } from '../usecases/agenda/updateAgendaSettings.usecase';
 import { AddEventUseCase } from '../usecases/event/addEvent.usecase';
 import { CancelEventAndApplyPenaltyUseCase } from '../usecases/event/cancelEventAndApplyPenalty.usecase';
 import { ChangeEventStatusUsecase } from '../usecases/event/changeEventStatus.usecase';
 import { CreateQuotationUseCase } from '../usecases/quotation/createQuotation.usecase';
-import { FindEventFromArtistByEventIdUseCase } from '../usecases/agenda/findEventFromArtistByEventId.usecase';
 import { GetQuotationUseCase } from '../usecases/quotation/getQuotation.usecase';
 import { GetQuotationsUseCase } from '../usecases/quotation/getQuotations.usecase';
 import { GetWorkEvidenceByArtistIdUseCase } from '../usecases/getWorkEvidenceByArtistId.usecase';
@@ -15,30 +40,29 @@ import { ListEventByViewTypeUseCase } from '../usecases/event/listEventByViewTyp
 import { ListEventFromArtistAgenda } from '../usecases/event/listEventFromArtistAgenda.usecase';
 import { ListEventsByArtistId } from '../usecases/event/listEventsByArtistId.usecase';
 import { MarkEventAsDoneUseCase } from '../usecases/event/markEventAsDone.usecase';
+import { MarkQuotationAsReadUseCase } from '../usecases/quotation/markQuotationAsRead.usecase';
 import { ProcessArtistActionUseCase } from '../usecases/quotation/processArtistAction.usecase';
 import { ProcessCustomerActionUseCase } from '../usecases/quotation/processCustomerAction.usecase';
 import { RsvpUseCase } from '../usecases/event/rsvp.usecase';
 import { UpdateEventUseCase } from '../usecases/event/updateEvent.usecase';
-import { MarkQuotationAsReadUseCase } from '../usecases/quotation/markQuotationAsRead.usecase';
 
 // New imports for Artist Workflow Improvements
-import { UpdateAgendaSettingsUseCase } from '../usecases/agenda/updateAgendaSettings.usecase';
-import { SetWorkingHoursUseCase } from '../usecases/agenda/setWorkingHours.usecase';
-import { CreateUnavailableTimeUseCase } from '../usecases/agenda/createUnavailableTime.usecase';
 import { GetUnavailableTimesUseCase } from '../usecases/agenda/getUnavailableTimes.usecase';
-import { DeleteUnavailableTimeUseCase } from '../usecases/agenda/deleteUnavailableTime.usecase';
 import { RescheduleEventUseCase } from '../usecases/event/rescheduleEvent.usecase';
 import { UpdateEventNotesUseCase } from '../usecases/event/updateEventNotes.usecase';
 import { GetArtistAvailabilityUseCase } from '../usecases/agenda/getArtistAvailability.usecase';
 import { GetSuggestedTimeSlotsUseCase } from '../usecases/agenda/getSuggestedTimeSlots.usecase';
-import { SchedulingService, AvailabilityCalendar, TimeSlot } from '../services/scheduling.service';
+import { GetSchedulerViewUseCase } from '../usecases/scheduler/getSchedulerView.usecase';
+
+import { AddEventReqDto } from './dtos/addEventReq.dto';
+import { ArtistAvailabilityQueryDto } from './dtos/artistAvailabilityQuery.dto';
+import { ArtistQuotationActionDto } from './dtos/artistQuotationAction.dto';
+import { ChangeEventStatusReqDto } from './dtos/changeEventStatusReq.dto';
+import { CreateQuotationOfferReqDto } from './dtos/createQuotationOfferReq.dto';
+import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
 import { AgendaUnavailableTime } from './entities/agendaUnavailableTime.entity';
 
 // DTOs
-import { AddEventReqDto } from './dtos/addEventReq.dto';
-import { ArtistQuotationActionDto } from './dtos/artistQuotationAction.dto';
-import { ChangeEventStatusReqDto } from './dtos/changeEventStatusReq.dto';
-import { CreateQuotationReqDto } from './dtos/createQuotationReq.dto';
 import { CustomerQuotationActionDto } from './dtos/customerQuotationAction.dto';
 import { GetQuotationResDto } from './dtos/getQuotationRes.dto';
 import { GetQuotationsQueryDto } from './dtos/getQuotationsQuery.dto';
@@ -49,10 +73,13 @@ import { SetWorkingHoursReqDto } from './dtos/setWorkingHoursReq.dto';
 import { CreateUnavailableTimeReqDto } from './dtos/createUnavailableTimeReq.dto';
 import { RescheduleEventReqDto } from './dtos/rescheduleEventReq.dto';
 import { UpdateEventNotesReqDto } from './dtos/updateEventNotesReq.dto';
-import { ArtistAvailabilityQueryDto } from './dtos/artistAvailabilityQuery.dto';
 import { UpdateAgendaSettingsReqDto } from './dtos/updateAgendaSettingsReq.dto';
 import { GetAgendaSettingsResDto } from './dtos/getAgendaSettingsRes.dto';
+
 import { GetAgendaSettingsUseCase } from '../usecases/agenda/getAgendaSettings.usecase';
+
+import { GetSchedulerViewQueryDto } from './dtos/getSchedulerViewQuery.dto';
+import { GetSchedulerViewResDto } from './dtos/getSchedulerViewRes.dto';
 
 // New Use Case Imports for Open Quotations
 import { SubmitQuotationOfferUseCase } from '../usecases/offer/submitQuotationOffer.usecase';
@@ -60,39 +87,47 @@ import { ListQuotationOffersUseCase } from '../usecases/offer/listQuotationOffer
 import { AcceptQuotationOfferUseCase } from '../usecases/offer/acceptQuotationOffer.usecase';
 
 // New DTO Imports for Open Quotations
-import { ListOpenQuotationsQueryDto, GetOpenQuotationsResDto } from './dtos/listOpenQuotationsQuery.dto';
-import { CreateQuotationOfferReqDto } from './dtos/createQuotationOfferReq.dto';
+import {
+  GetOpenQuotationsResDto,
+  ListOpenQuotationsQueryDto,
+} from './dtos/listOpenQuotationsQuery.dto';
 import { ListQuotationOffersResDto } from './dtos/listQuotationOffersRes.dto';
-import { UserType as RequestContextUserType, UserType } from '../../users/domain/enums/userType.enum';
 
 // Import necessary types for the new method
 import { SendOfferMessageUseCase } from '../usecases/offer/sendOfferMessage.usecase';
+
 import { SendOfferMessageReqDto } from './dtos/sendOfferMessageReq.dto';
-import { OfferMessageDto } from '../domain/dtos/offerMessage.dto';
 
 // Import the new use case and DTO
 import { ListParticipatingQuotationsUseCase } from '../usecases/openQuotation/listParticipatingQuotations.usecase';
-import { ListParticipatingQuotationsResDto } from '../domain/dtos/participatingQuotationOffer.dto';
 // Import the GetQuotationOfferUseCase
 import { GetQuotationOfferUseCase } from '../usecases/offer/getQuotationOffer.usecase';
-import { ParticipatingQuotationOfferDto } from '../domain/dtos/participatingQuotationOffer.dto';
 import { ListCustomerOpenQuotationsUseCase } from '../usecases/quotation/listCutomerOpenQuotations.usecase';
+
 // Import the UpdateQuotationOfferUseCase and DTO
 import { UpdateQuotationOfferReqDto } from './dtos/updateQuotationOfferReq.dto';
+
 import { UpdateQuotationOfferUseCase } from '../usecases/offer/updateQuotationOffer.usecase';
+
 // Potentially import Query DTO if pagination is implemented
 import { UpdateOpenQuotationReqDto } from './dtos/updateOpenQuotationReq.dto';
+
 import { UpdateOpenQuotationUseCase } from '../usecases/openQuotation/updateOpenQuotation.usecase';
 import { ListOpenQuotationsUseCase } from '../usecases/openQuotation/listOpenQuotations.usecase';
-import { EventActionsResultDto } from '../domain/dtos/eventActionsResult.dto';
+
 import { SendEventMessageReqDto } from './dtos/sendEventMessageReq.dto';
 import { EventMessageDto } from './dtos/eventMessage.dto';
+
 import { SendEventMessageUseCase } from '../usecases/event/sendEventMessage.usecase';
 import { GetEventMessagesUseCase } from '../usecases/event/getEventMessages.usecase';
 import { GetCustomerAppointmentsViewUseCase } from '../usecases/event/getCustomerAppointmentsView.usecase';
+
 import { GetCustomerAppointmentsViewResDto } from './dtos/getCustomerAppointmentsViewRes.dto';
+
 import { AddWorkEvidenceUseCase } from '../usecases/event/addWorkEvidence.usecase';
+
 import { AgendaEvent } from './entities/agendaEvent.entity';
+
 import { DeleteWorkEvidenceUseCase } from '../usecases/event/deleteWorkEvidence.usecase';
 
 @Injectable()
@@ -130,6 +165,7 @@ export class AgendaHandler {
     private readonly getSuggestedTimeSlotsUseCase: GetSuggestedTimeSlotsUseCase,
     private readonly updateAgendaSettingsUseCase: UpdateAgendaSettingsUseCase,
     private readonly getAgendaSettingsUseCase: GetAgendaSettingsUseCase,
+    private readonly getSchedulerViewUseCase: GetSchedulerViewUseCase,
     // New Open Quotation Use Cases
     private readonly listOpenQuotationsUseCase: ListOpenQuotationsUseCase,
     private readonly submitQuotationOfferUseCase: SubmitQuotationOfferUseCase,
@@ -163,7 +199,11 @@ export class AgendaHandler {
     // return this.updateEventUseCase.execute(dto, id);
   }
 
-  async handleCancelEvent(eventId: string, agendaId: string, reason: string): Promise<any> {
+  async handleCancelEvent(
+    eventId: string,
+    agendaId: string,
+    reason: string,
+  ): Promise<any> {
     const { userTypeId, userType } = this.requestContext;
 
     return this.cancelEventAndApplyPenaltyUseCase.execute(
@@ -187,7 +227,7 @@ export class AgendaHandler {
     if (userType === UserType.CUSTOMER) {
       return this.getCustomerAppointmentsViewUseCase.execute(userTypeId);
     }
-    
+
     // Keep original behavior for artists
     return this.listEventFromArtistAgenda.execute(userTypeId, userType, status);
   }
@@ -276,7 +316,11 @@ export class AgendaHandler {
     referenceImages: FileInterface[],
   ): Promise<any> {
     const { userTypeId } = this.requestContext;
-    return this.createQuotationUseCase.execute(dto, userTypeId, referenceImages);
+    return this.createQuotationUseCase.execute(
+      dto,
+      userTypeId,
+      referenceImages,
+    );
   }
 
   async getQuotation(id: string): Promise<GetQuotationResDto> {
@@ -354,7 +398,11 @@ export class AgendaHandler {
     eventId: string,
     reviewData: ReviewArtistRequestDto,
   ): Promise<any> {
-    return this.eventReviewIntegrationUsecase.execute(agendaId, eventId, reviewData);
+    return this.eventReviewIntegrationUsecase.execute(
+      agendaId,
+      eventId,
+      reviewData,
+    );
   }
 
   // New methods for Artist Workflow Improvements
@@ -373,11 +421,16 @@ export class AgendaHandler {
     return this.createUnavailableTimeUseCase.execute(agendaId, dto);
   }
 
-  async handleGetUnavailableTimes(agendaId: string): Promise<AgendaUnavailableTime[]> {
+  async handleGetUnavailableTimes(
+    agendaId: string,
+  ): Promise<AgendaUnavailableTime[]> {
     return this.getUnavailableTimesUseCase.execute(agendaId);
   }
 
-  async handleDeleteUnavailableTime(agendaId: string, id: string): Promise<void> {
+  async handleDeleteUnavailableTime(
+    agendaId: string,
+    id: string,
+  ): Promise<void> {
     return this.deleteUnavailableTimeUseCase.execute(agendaId, id);
   }
 
@@ -409,7 +462,9 @@ export class AgendaHandler {
     return this.getSuggestedTimeSlotsUseCase.execute(quotationId);
   }
 
-  async handleGetAgendaSettings(agendaId: string): Promise<GetAgendaSettingsResDto> {
+  async handleGetAgendaSettings(
+    agendaId: string,
+  ): Promise<GetAgendaSettingsResDto> {
     return this.getAgendaSettingsUseCase.execute(agendaId);
   }
 
@@ -423,7 +478,7 @@ export class AgendaHandler {
   // New methods for Open Quotations
 
   async listOpenQuotations(
-    query: ListOpenQuotationsQueryDto
+    query: ListOpenQuotationsQueryDto,
   ): Promise<GetOpenQuotationsResDto> {
     const { userType, userTypeId } = this.requestContext;
     if (userType == RequestContextUserType.ARTIST) {
@@ -434,7 +489,7 @@ export class AgendaHandler {
 
   async submitOffer(
     quotationId: string,
-    dto: CreateQuotationOfferReqDto
+    dto: CreateQuotationOfferReqDto,
   ): Promise<{ id: string; created: boolean }> {
     const { userTypeId, userType } = this.requestContext;
     if (userType !== RequestContextUserType.ARTIST) {
@@ -442,12 +497,14 @@ export class AgendaHandler {
         'You dont have permission to access this resource',
       );
     }
-    return this.submitQuotationOfferUseCase.execute(quotationId, userTypeId, dto);
+    return this.submitQuotationOfferUseCase.execute(
+      quotationId,
+      userTypeId,
+      dto,
+    );
   }
 
-  async listOffers(
-    quotationId: string,
-  ): Promise<ListQuotationOffersResDto> {
+  async listOffers(quotationId: string): Promise<ListQuotationOffersResDto> {
     const { userTypeId, userType } = this.requestContext;
     if (userType !== RequestContextUserType.CUSTOMER) {
       throw new UnauthorizedException(
@@ -467,7 +524,11 @@ export class AgendaHandler {
         'You dont have permission to access this resource',
       );
     }
-    return this.acceptQuotationOfferUseCase.execute(quotationId, offerId, userTypeId);
+    return this.acceptQuotationOfferUseCase.execute(
+      quotationId,
+      offerId,
+      userTypeId,
+    );
   }
 
   // Add the new handler method
@@ -506,17 +567,16 @@ export class AgendaHandler {
   }
 
   // Add the new handler method for listing participating quotations
-  async listParticipatingQuotations(
-    // query?: ListParticipatingQuotationsQueryDto // Add query DTO if needed
-  ): Promise<ListParticipatingQuotationsResDto> {
+  async listParticipatingQuotations(): // query?: ListParticipatingQuotationsQueryDto // Add query DTO if needed
+  Promise<ListParticipatingQuotationsResDto> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== RequestContextUserType.ARTIST) {
-      throw new UnauthorizedException(
-        'Only artists can access this resource.',
-      );
+      throw new UnauthorizedException('Only artists can access this resource.');
     }
     // Pass the artist ID and potentially the query DTO to the use case
-    return this.listParticipatingQuotationsUseCase.execute(userTypeId /*, query */);
+    return this.listParticipatingQuotationsUseCase.execute(
+      userTypeId /*, query */,
+    );
   }
 
   // Method to handle fetching a single quotation offer
@@ -527,14 +587,18 @@ export class AgendaHandler {
 
     // Authorize access (only artist who created the offer or customer who received it)
     // For now, we'll just check if the user is an artist, the use case will check if it's their offer
-    if (userType !== RequestContextUserType.ARTIST && userType !== RequestContextUserType.CUSTOMER) {
+    if (
+      userType !== RequestContextUserType.ARTIST &&
+      userType !== RequestContextUserType.CUSTOMER
+    ) {
       throw new UnauthorizedException(
         'You do not have permission to access this resource',
       );
     }
 
     // If artist, pass their ID for authorization check
-    const currentArtistId = userType === RequestContextUserType.ARTIST ? userTypeId : undefined;
+    const currentArtistId =
+      userType === RequestContextUserType.ARTIST ? userTypeId : undefined;
 
     return this.getQuotationOfferUseCase.execute(offerId, currentArtistId);
   }
@@ -550,11 +614,16 @@ export class AgendaHandler {
     // Only artists can update their own offers
     if (userType !== RequestContextUserType.ARTIST) {
       throw new UnauthorizedException(
-        'Only artists can update their quotation offers'
+        'Only artists can update their quotation offers',
       );
     }
 
-    return this.updateQuotationOfferUseCase.execute(quotationId, offerId, userTypeId, dto);
+    return this.updateQuotationOfferUseCase.execute(
+      quotationId,
+      offerId,
+      userTypeId,
+      dto,
+    );
   }
 
   // Método para actualizar cotización abierta (customer)
@@ -564,7 +633,9 @@ export class AgendaHandler {
   ): Promise<void> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== RequestContextUserType.CUSTOMER) {
-      throw new UnauthorizedException('Solo el customer puede actualizar su cotización abierta');
+      throw new UnauthorizedException(
+        'Solo el customer puede actualizar su cotización abierta',
+      );
     }
     await this.updateOpenQuotationUseCase.execute(quotationId, userTypeId, dto);
   }
@@ -574,7 +645,8 @@ export class AgendaHandler {
     eventId: string,
     dto: SendEventMessageReqDto,
     imageFile?: FileInterface,
-  ): Promise<any> { // Update response type as per use case
+  ): Promise<any> {
+    // Update response type as per use case
     this.logger.log(
       `Handling send event message for event ${eventId} in agenda ${agendaId}`,
     );
@@ -584,7 +656,7 @@ export class AgendaHandler {
   async handleGetEventMessages(
     agendaId: string, // May not be directly used if eventId is sufficient and globally unique
     eventId: string,
-  ): Promise<EventMessageDto[]> { 
+  ): Promise<EventMessageDto[]> {
     this.logger.log(
       `Handling get event messages for event ${eventId} in agenda ${agendaId}`,
     );
@@ -600,7 +672,7 @@ export class AgendaHandler {
     if (userType !== UserType.ARTIST) {
       throw new UnauthorizedException('Only artists can upload work evidence.');
     }
-    
+
     const command = {
       actor: {
         id: userId,
@@ -629,5 +701,12 @@ export class AgendaHandler {
     };
 
     return this.deleteWorkEvidenceUseCase.execute(command);
+  }
+
+  async handleGetSchedulerView(
+    artistId: string,
+    query: GetSchedulerViewQueryDto,
+  ): Promise<GetSchedulerViewResDto> {
+    return this.getSchedulerViewUseCase.execute(artistId, query);
   }
 }

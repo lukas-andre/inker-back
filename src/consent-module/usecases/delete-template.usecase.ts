@@ -1,4 +1,11 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+
 import { IFormTemplateRepository } from '../domain/interfaces/form-template-repository.interface';
 import { ISignedConsentRepository } from '../domain/interfaces/signed-consent-repository.interface';
 
@@ -13,7 +20,9 @@ export class DeleteTemplateUseCase {
 
   async execute(templateId: string, callingArtistId: string): Promise<void> {
     // First, verify the template exists
-    const existingTemplate = await this.formTemplateRepository.findById(templateId);
+    const existingTemplate = await this.formTemplateRepository.findById(
+      templateId,
+    );
     if (!existingTemplate) {
       throw new NotFoundException('Template not found');
     }
@@ -24,9 +33,13 @@ export class DeleteTemplateUseCase {
     }
 
     // Check if the template is being used in any signed consents
-    const signedConsents = await this.signedConsentRepository.findByTemplateId(templateId);
+    const signedConsents = await this.signedConsentRepository.findByTemplateId(
+      templateId,
+    );
     if (signedConsents.length > 0) {
-      throw new BadRequestException('Cannot delete template that has been used in signed consents. Consider deactivating it instead.');
+      throw new BadRequestException(
+        'Cannot delete template that has been used in signed consents. Consider deactivating it instead.',
+      );
     }
 
     // Perform the deletion
@@ -35,4 +48,4 @@ export class DeleteTemplateUseCase {
       throw new NotFoundException('Template not found during deletion');
     }
   }
-} 
+}

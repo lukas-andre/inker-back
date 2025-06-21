@@ -1,8 +1,8 @@
 import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { ReviewReactionEnum } from '../../reviews.controller';
 import { ReviewReactionInterface } from '../../interfaces/reviewReaction.interface';
+import { ReviewReactionEnum } from '../../reviews.controller';
 
 @Entity()
 export class ReviewReaction

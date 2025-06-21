@@ -16,4 +16,4 @@ export class AnalyticsInteractionResponseDto {
     uniqueViewCount: number;
     engagementRate?: number;
   };
-} 
+}

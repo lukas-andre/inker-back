@@ -1,8 +1,5 @@
-import {
-  Column,
-  Entity,
-  Index,
-} from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
+
 import { BaseEntity } from '../../../../global/infrastructure/entities/base.entity';
 import { InteractionType } from '../../../domain/interactionType';
 

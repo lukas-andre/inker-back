@@ -13,6 +13,10 @@ import {
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { MultimediasService } from '../../../multimedias/services/multimedias.service';
+import {
+  QuotationArtistActionJobIdType,
+  QuotationArtistActionJobType,
+} from '../../../queues/notifications/domain/schemas/quotation';
 import { queues } from '../../../queues/queues';
 import { QuotationStateMachine } from '../../domain/quotation.statemachine';
 import {
@@ -21,10 +25,6 @@ import {
 } from '../../infrastructure/dtos/artistQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
-import {
-  QuotationArtistActionJobIdType,
-  QuotationArtistActionJobType,
-} from '../../../queues/notifications/domain/schemas/quotation';
 
 @Injectable()
 export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
@@ -85,7 +85,11 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
     }
 
     let multimedias: MultimediasMetadataInterface;
-    if (proposedDesigns && proposedDesigns.length > 0 && Array.isArray(proposedDesigns)) {
+    if (
+      proposedDesigns &&
+      proposedDesigns.length > 0 &&
+      Array.isArray(proposedDesigns)
+    ) {
       multimedias = await this.multimediasService.uploadProposedDesigns(
         proposedDesigns,
         quotationId,

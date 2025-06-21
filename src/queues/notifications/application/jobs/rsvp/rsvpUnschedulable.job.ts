@@ -24,9 +24,9 @@ export class RsvpUnschedulableJob implements NotificationJob {
     console.log(
       `Handling EMAIL for RSVP unschedulable for customer ${job.jobId}`,
     );
-    
+
     const { artistId, customerId, eventId } = job.metadata;
-    
+
     try {
       const [agendaEvent, artist, customer] = await Promise.all([
         this.agendaEventProvider.findById(eventId),

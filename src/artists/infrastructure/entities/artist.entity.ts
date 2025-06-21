@@ -9,14 +9,16 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { ArtistType } from '../../domain/artistType';
-import { Service } from './service.entity';
-import { Contact } from './contact.entity';
-import { Work } from './work.entity';
-import { Stencil } from './stencil.entity';
-import { ArtistStyle } from './artistStyle.entity';
 import { Tag } from '../../../tags/tag.entity';
+import { ArtistType } from '../../domain/artistType';
+
+import { ArtistStyle } from './artistStyle.entity';
+import { Contact } from './contact.entity';
+import { Service } from './service.entity';
+import { Stencil } from './stencil.entity';
+import { Work } from './work.entity';
 
 @Entity()
 @Index(['firstName', 'lastName', 'username'])
@@ -88,16 +90,32 @@ export class Artist extends BaseEntity implements ArtistType {
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
 
-  @Column({ name: 'works_count', default: 0, comment: 'Count of all works (including hidden)' })
+  @Column({
+    name: 'works_count',
+    default: 0,
+    comment: 'Count of all works (including hidden)',
+  })
   worksCount: number;
 
-  @Column({ name: 'stencils_count', default: 0, comment: 'Count of all stencils (including hidden)' })
+  @Column({
+    name: 'stencils_count',
+    default: 0,
+    comment: 'Count of all stencils (including hidden)',
+  })
   stencilsCount: number;
 
-  @Column({ name: 'visible_works_count', default: 0, comment: 'Count of visible works only (is_hidden=false)' })
+  @Column({
+    name: 'visible_works_count',
+    default: 0,
+    comment: 'Count of visible works only (is_hidden=false)',
+  })
   visibleWorksCount: number;
 
-  @Column({ name: 'visible_stencils_count', default: 0, comment: 'Count of visible stencils only (is_hidden=false)' })
+  @Column({
+    name: 'visible_stencils_count',
+    default: 0,
+    comment: 'Count of visible stencils only (is_hidden=false)',
+  })
   visibleStencilsCount: number;
 
   @OneToMany(() => Work, work => work.artist)

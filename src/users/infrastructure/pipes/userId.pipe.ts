@@ -7,15 +7,13 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 
-import {
-  USER_NOT_ACCEPTED,
-} from '../../domain/errors/codes';
+import { USER_NOT_ACCEPTED } from '../../domain/errors/codes';
 import { UsersRepository } from '../repositories/users.repository';
 
 @Injectable()
 export class UserIdPipe implements PipeTransform<string, Promise<string>> {
   private readonly logger = new Logger(UserIdPipe.name);
-  constructor(private readonly usersRepository: UsersRepository) { }
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || this.invalidIdType(metatype)) {

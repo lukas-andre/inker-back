@@ -4,4 +4,4 @@ export enum AppointmentUrgencyLevel {
   UPCOMING = 'UPCOMING', // On the horizon (e.g., this week)
   INFO = 'INFO', // Everything is okay, just informational
   PAST = 'PAST', // Historical record
-} 
+}

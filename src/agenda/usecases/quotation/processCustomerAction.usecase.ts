@@ -10,7 +10,13 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
+import {
+  QuotationCustomerActionJobIdType,
+  QuotationCustomerActionJobType,
+  QuotationJobIdType,
+} from '../../../queues/notifications/domain/schemas/quotation';
 import { queues } from '../../../queues/queues';
+import { CreateAgendaEventJobType } from '../../../queues/sync/jobs';
 import { QuotationStateMachine } from '../../domain/quotation.statemachine';
 import {
   CustomerQuotationAction,
@@ -18,12 +24,6 @@ import {
 } from '../../infrastructure/dtos/customerQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
-import {
-  QuotationCustomerActionJobIdType,
-  QuotationCustomerActionJobType,
-  QuotationJobIdType,
-} from '../../../queues/notifications/domain/schemas/quotation';
-import { CreateAgendaEventJobType } from '../../../queues/sync/jobs';
 
 @Injectable()
 export class ProcessCustomerActionUseCase

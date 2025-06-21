@@ -6,12 +6,14 @@ import {
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { UserType } from '../../../users/domain/enums/userType.enum';
+import {
+  AgendaEventTransition,
+  EventStateMachineService,
+  StateMachineContext,
+} from '../../domain/services/eventStateMachine.service';
 import { ChangeEventStatusReqDto } from '../../infrastructure/dtos/changeEventStatusReq.dto';
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
-
-
-import { EventStateMachineService, AgendaEventTransition, StateMachineContext } from '../../domain/services/eventStateMachine.service';
-import { UserType } from '../../../users/domain/enums/userType.enum';
 
 @Injectable()
 export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
@@ -29,7 +31,12 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
     dto: ChangeEventStatusReqDto,
   ): Promise<void> {
     const { eventAction, reason, notes, newStartDate, newEndDate } = dto;
-    const { userTypeId: roleSpecificId, userId: authenticatedUserId, isNotArtist, userType } = this.requestContext;
+    const {
+      userTypeId: roleSpecificId,
+      userId: authenticatedUserId,
+      isNotArtist,
+      userType,
+    } = this.requestContext;
 
     const event = await this.agendaEventProvider.findOne({
       where: { id: eventId },
@@ -41,7 +48,9 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
     }
 
     if (event.agenda.id !== agendaId) {
-      throw new DomainUnProcessableEntity('Event does not belong to the specified agenda.');
+      throw new DomainUnProcessableEntity(
+        'Event does not belong to the specified agenda.',
+      );
     }
 
     const eventArtistId = event.agenda.artistId;
@@ -50,12 +59,19 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
     let authorized = false;
 
     if (!isNotArtist && roleSpecificId === eventArtistId) {
-      if (eventAction === AgendaEventTransition.CONFIRM || eventAction === AgendaEventTransition.REJECT) {
+      if (
+        eventAction === AgendaEventTransition.CONFIRM ||
+        eventAction === AgendaEventTransition.REJECT
+      ) {
         authorized = false;
       } else {
         authorized = true;
       }
-    } else if (isNotArtist && eventCustomerId && roleSpecificId === eventCustomerId) {
+    } else if (
+      isNotArtist &&
+      eventCustomerId &&
+      roleSpecificId === eventCustomerId
+    ) {
       switch (eventAction) {
         case AgendaEventTransition.CONFIRM:
         case AgendaEventTransition.REJECT:
@@ -81,7 +97,12 @@ export class ChangeEventStatusUsecase extends BaseUseCase implements UseCase {
       actor: {
         userId: authenticatedUserId,
         roleId: roleSpecificId,
-        role: userType === UserType.ARTIST ? UserType.ARTIST : (userType === UserType.CUSTOMER ? UserType.CUSTOMER : UserType.SYSTEM),
+        role:
+          userType === UserType.ARTIST
+            ? UserType.ARTIST
+            : userType === UserType.CUSTOMER
+            ? UserType.CUSTOMER
+            : UserType.SYSTEM,
       },
       payload: {
         reason,

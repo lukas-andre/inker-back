@@ -8,4 +8,4 @@ export class PenaltyAppliedEvent implements IDomainEvent {
   constructor(public readonly penalty: CancellationPenalty) {
     this.occurredAt = new Date();
   }
-} 
+}

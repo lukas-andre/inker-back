@@ -8,8 +8,9 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { WorkSource, WorkType } from '../workType';
+
 import { TagDto } from '../../../tags/tag.dto';
+import { WorkSource, WorkType } from '../workType';
 
 export class WorkDto implements WorkType {
   @ApiProperty({ description: 'Work ID' })
@@ -58,7 +59,7 @@ export class WorkDto implements WorkType {
   @ApiProperty({
     description: 'Source of the work (APP or EXTERNAL)',
     enum: WorkSource,
-    default: WorkSource.EXTERNAL
+    default: WorkSource.EXTERNAL,
   })
   @IsEnum(WorkSource)
   source: WorkSource;
@@ -128,7 +129,7 @@ export class CreateWorkDto {
   @ApiProperty({
     description: 'Source of the work (APP or EXTERNAL)',
     enum: WorkSource,
-    default: WorkSource.EXTERNAL
+    default: WorkSource.EXTERNAL,
   })
   @IsEnum(WorkSource)
   @IsOptional()
@@ -175,7 +176,7 @@ export class UpdateWorkDto {
 
   @ApiPropertyOptional({
     description: 'Source of the work (APP or EXTERNAL)',
-    enum: WorkSource
+    enum: WorkSource,
   })
   @IsEnum(WorkSource)
   @IsOptional()

@@ -23,10 +23,10 @@ import {
   DbServiceNotFound,
 } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
+import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { AddEventReqDto } from '../dtos/addEventReq.dto';
 import { Agenda } from '../entities/agenda.entity';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
-import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 
 class FindAgendaEventForMarkAsDoneQueryResult {
   @Expose()
@@ -258,7 +258,7 @@ export class AgendaEventRepository extends BaseComponent {
       );
     }
   }
-  
+
   async updateEventStatus(
     eventId: string,
     agendaId: string,
@@ -333,7 +333,7 @@ export class AgendaEventRepository extends BaseComponent {
       .getOne();
   }
 
-  async update(id: string, agendaEvent: DeepPartial<AgendaEvent>){
+  async update(id: string, agendaEvent: DeepPartial<AgendaEvent>) {
     return this.agendaEventRepository.update(id, agendaEvent);
   }
 
@@ -343,11 +343,11 @@ export class AgendaEventRepository extends BaseComponent {
   async findEventsForReminder(
     startTime: string,
     endTime: string,
-    statuses: AgendaEventStatus[]
+    statuses: AgendaEventStatus[],
   ): Promise<AgendaEvent[]> {
     try {
       const statusPlaceholders = statuses.map((_, i) => `$${i + 3}`).join(', ');
-      
+
       const events = await this.agendaEventRepository.query(
         `SELECT 
           ae.id,
@@ -374,7 +374,7 @@ export class AgendaEventRepository extends BaseComponent {
           AND ae.status IN (${statusPlaceholders})
           AND ae.deleted_at IS NULL
         ORDER BY ae.start_date ASC`,
-        [startTime, endTime, ...statuses]
+        [startTime, endTime, ...statuses],
       );
 
       return events;
@@ -392,7 +392,7 @@ export class AgendaEventRepository extends BaseComponent {
    */
   async findEventsNeedingConsentReminder(
     startTime: string,
-    endTime: string
+    endTime: string,
   ): Promise<AgendaEvent[]> {
     try {
       const events = await this.agendaEventRepository.query(
@@ -416,7 +416,12 @@ export class AgendaEventRepository extends BaseComponent {
           AND ae.status IN ($3, $4)
           AND sc.id IS NULL
           AND ae.deleted_at IS NULL`,
-        [startTime, endTime, AgendaEventStatus.CONFIRMED, AgendaEventStatus.PENDING_CONFIRMATION]
+        [
+          startTime,
+          endTime,
+          AgendaEventStatus.CONFIRMED,
+          AgendaEventStatus.PENDING_CONFIRMATION,
+        ],
       );
 
       return events;
@@ -432,10 +437,14 @@ export class AgendaEventRepository extends BaseComponent {
   /**
    * Find events in PENDING_CONFIRMATION status older than specified hours
    */
-  async findPendingConfirmationEvents(hoursOld: number): Promise<AgendaEvent[]> {
+  async findPendingConfirmationEvents(
+    hoursOld: number,
+  ): Promise<AgendaEvent[]> {
     try {
-      const cutoffTime = new Date(Date.now() - (hoursOld * 60 * 60 * 1000)).toISOString();
-      
+      const cutoffTime = new Date(
+        Date.now() - hoursOld * 60 * 60 * 1000,
+      ).toISOString();
+
       const events = await this.agendaEventRepository.query(
         `SELECT 
           ae.id,
@@ -454,7 +463,7 @@ export class AgendaEventRepository extends BaseComponent {
         WHERE ae.status = $1
           AND ae.created_at <= $2
           AND ae.deleted_at IS NULL`,
-        [AgendaEventStatus.PENDING_CONFIRMATION, cutoffTime]
+        [AgendaEventStatus.PENDING_CONFIRMATION, cutoffTime],
       );
 
       return events;
@@ -472,7 +481,7 @@ export class AgendaEventRepository extends BaseComponent {
    */
   async findCompletedEventsForReview(
     startTime: string,
-    endTime: string
+    endTime: string,
   ): Promise<AgendaEvent[]> {
     try {
       const events = await this.agendaEventRepository.query(
@@ -495,7 +504,12 @@ export class AgendaEventRepository extends BaseComponent {
           AND ae.status IN ($3, $4)
           AND ae.review_id IS NULL
           AND ae.deleted_at IS NULL`,
-        [startTime, endTime, AgendaEventStatus.COMPLETED, AgendaEventStatus.WAITING_FOR_REVIEW]
+        [
+          startTime,
+          endTime,
+          AgendaEventStatus.COMPLETED,
+          AgendaEventStatus.WAITING_FOR_REVIEW,
+        ],
       );
 
       return events;
@@ -513,7 +527,7 @@ export class AgendaEventRepository extends BaseComponent {
    */
   async findEventsNeedingPhotos(
     startTime: string,
-    endTime: string
+    endTime: string,
   ): Promise<AgendaEvent[]> {
     try {
       const events = await this.agendaEventRepository.query(
@@ -536,7 +550,12 @@ export class AgendaEventRepository extends BaseComponent {
           AND ae.status IN ($3, $4)
           AND (ae.work_evidence IS NULL OR ae.work_evidence = '{}')
           AND ae.deleted_at IS NULL`,
-        [startTime, endTime, AgendaEventStatus.COMPLETED, AgendaEventStatus.WAITING_FOR_PHOTOS]
+        [
+          startTime,
+          endTime,
+          AgendaEventStatus.COMPLETED,
+          AgendaEventStatus.WAITING_FOR_PHOTOS,
+        ],
       );
 
       return events;
@@ -552,23 +571,25 @@ export class AgendaEventRepository extends BaseComponent {
   /**
    * Mark specific reminder types as sent for given events using native SQL
    */
-  async markRemindersAsSent(eventIds: string[], reminderType: string): Promise<void> {
+  async markRemindersAsSent(
+    eventIds: string[],
+    reminderType: string,
+  ): Promise<void> {
     if (eventIds.length === 0) return;
 
     try {
       const placeholders = eventIds.map((_, i) => `$${i + 2}`).join(', ');
-      
+
       await this.agendaEventRepository.query(
         `UPDATE agenda_event 
          SET reminder_sent = COALESCE(reminder_sent, '{}'::jsonb) || $1::jsonb
          WHERE id IN (${placeholders})`,
-        [
-          JSON.stringify({ [reminderType]: true }),
-          ...eventIds
-        ]
+        [JSON.stringify({ [reminderType]: true }), ...eventIds],
       );
 
-      this.logger.log(`Marked ${reminderType} as sent for ${eventIds.length} events`);
+      this.logger.log(
+        `Marked ${reminderType} as sent for ${eventIds.length} events`,
+      );
     } catch (error) {
       this.logger.error(`Error marking reminders as sent:`, error);
       throw error;
@@ -578,13 +599,16 @@ export class AgendaEventRepository extends BaseComponent {
   /**
    * Check if a reminder has been sent for an event
    */
-  async hasReminderBeenSent(eventId: string, reminderType: string): Promise<boolean> {
+  async hasReminderBeenSent(
+    eventId: string,
+    reminderType: string,
+  ): Promise<boolean> {
     try {
       const [result] = await this.agendaEventRepository.query(
         `SELECT reminder_sent->$2 as sent
          FROM agenda_event 
          WHERE id = $1`,
-        [eventId, reminderType]
+        [eventId, reminderType],
       );
 
       return result?.sent === true;
@@ -600,13 +624,13 @@ export class AgendaEventRepository extends BaseComponent {
   async getEventsForMonthlyReport(
     artistIds: string[],
     year: number,
-    month: number
+    month: number,
   ): Promise<any[]> {
     if (artistIds.length === 0) return [];
 
     try {
       const placeholders = artistIds.map((_, i) => `$${i + 3}`).join(', ');
-      
+
       const events = await this.agendaEventRepository.query(
         `SELECT 
           a.artist_id as "artistId",
@@ -624,7 +648,7 @@ export class AgendaEventRepository extends BaseComponent {
           AND EXTRACT(MONTH FROM ae.start_date) = $2
           AND ae.deleted_at IS NULL
         GROUP BY a.artist_id`,
-        [year, month, ...artistIds]
+        [year, month, ...artistIds],
       );
 
       return events;
@@ -643,11 +667,11 @@ export class AgendaEventRepository extends BaseComponent {
   async findEventsNeedingConsent(
     startTime: string,
     endTime: string,
-    statuses: AgendaEventStatus[]
+    statuses: AgendaEventStatus[],
   ): Promise<AgendaEvent[]> {
     try {
       const statusPlaceholders = statuses.map((_, i) => `$${i + 3}`).join(', ');
-      
+
       const events = await this.agendaEventRepository.query(
         `SELECT 
           ae.id,
@@ -671,7 +695,7 @@ export class AgendaEventRepository extends BaseComponent {
           AND ae.status IN (${statusPlaceholders})
           AND sc.id IS NULL  -- No consent signed yet
         ORDER BY ae.start_date ASC`,
-        [startTime, endTime, ...statuses]
+        [startTime, endTime, ...statuses],
       );
 
       return events.map(event => ({
@@ -687,10 +711,12 @@ export class AgendaEventRepository extends BaseComponent {
   /**
    * Find events by status
    */
-  async findEventsByStatus(statuses: AgendaEventStatus[]): Promise<AgendaEvent[]> {
+  async findEventsByStatus(
+    statuses: AgendaEventStatus[],
+  ): Promise<AgendaEvent[]> {
     try {
       const statusPlaceholders = statuses.map((_, i) => `$${i + 1}`).join(', ');
-      
+
       const events = await this.agendaEventRepository.query(
         `SELECT 
           ae.id,
@@ -711,7 +737,7 @@ export class AgendaEventRepository extends BaseComponent {
         INNER JOIN agenda a ON ae.agenda_id = a.id
         WHERE ae.status IN (${statusPlaceholders})
         ORDER BY ae.created_at ASC`,
-        [...statuses]
+        [...statuses],
       );
 
       return events.map(event => ({
@@ -729,8 +755,8 @@ export class AgendaEventRepository extends BaseComponent {
    */
   async findExpiredPendingEvents(): Promise<AgendaEvent[]> {
     try {
-      const fortyEightHoursAgo = new Date(Date.now() - (48 * 60 * 60 * 1000));
-      
+      const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+
       const events = await this.agendaEventRepository.query(
         `SELECT 
           ae.id,
@@ -755,8 +781,8 @@ export class AgendaEventRepository extends BaseComponent {
         [
           AgendaEventStatus.PENDING_CONFIRMATION,
           AgendaEventStatus.CREATED,
-          fortyEightHoursAgo.toISOString()
-        ]
+          fortyEightHoursAgo.toISOString(),
+        ],
       );
 
       return events.map(event => ({
@@ -775,11 +801,11 @@ export class AgendaEventRepository extends BaseComponent {
   async findCompletedEventsForReviewReminder(
     startTime: string,
     endTime: string,
-    statuses: AgendaEventStatus[]
+    statuses: AgendaEventStatus[],
   ): Promise<AgendaEvent[]> {
     try {
       const statusPlaceholders = statuses.map((_, i) => `$${i + 3}`).join(', ');
-      
+
       const events = await this.agendaEventRepository.query(
         `SELECT 
           ae.id,
@@ -802,7 +828,7 @@ export class AgendaEventRepository extends BaseComponent {
           AND ae.status IN (${statusPlaceholders})
           AND r.id IS NULL  -- No review exists yet
         ORDER BY ae.end_date ASC`,
-        [startTime, endTime, ...statuses]
+        [startTime, endTime, ...statuses],
       );
 
       return events.map(event => ({
@@ -810,7 +836,10 @@ export class AgendaEventRepository extends BaseComponent {
         artistId: event.agenda.artistId,
       }));
     } catch (error) {
-      this.logger.error('Error finding completed events for review reminder:', error);
+      this.logger.error(
+        'Error finding completed events for review reminder:',
+        error,
+      );
       throw error;
     }
   }

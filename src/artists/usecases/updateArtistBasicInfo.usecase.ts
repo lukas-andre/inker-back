@@ -5,9 +5,9 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from '../infrastructure/dtos/updateArtist.dto';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 
 @Injectable()
 export class UpdateArtistBasicInfoUseCase

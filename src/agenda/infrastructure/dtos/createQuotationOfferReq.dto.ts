@@ -1,6 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsNumber, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from 'class-validator';
+
 import { MoneyDto } from '../../../global/domain/dtos/money.dto';
 
 export class CreateQuotationOfferReqDto {
@@ -30,4 +38,4 @@ export class CreateQuotationOfferReqDto {
   @IsString()
   @MaxLength(1000)
   readonly message?: string;
-} 
+}

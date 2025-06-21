@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { AppointmentAction } from '../enum/appointmentAction.enum';
-import { AppointmentUrgencyLevel } from '../enum/appointmentUrgencyLevel.enum';
-import { AppointmentContextualInfo } from './appointmentContextualInfo.dto';
+
 import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
 import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
 import { GetQuotationResDto } from '../../infrastructure/dtos/getQuotationRes.dto';
+import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
+import { AppointmentAction } from '../enum/appointmentAction.enum';
+import { AppointmentUrgencyLevel } from '../enum/appointmentUrgencyLevel.enum';
+
+import { AppointmentContextualInfo } from './appointmentContextualInfo.dto';
 
 export class CustomerAppointmentDto {
   @ApiProperty({
@@ -51,4 +53,4 @@ export class CustomerAppointmentDto {
     required: true,
   })
   quotation: GetQuotationResDto;
-} 
+}

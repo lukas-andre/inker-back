@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { AgendaEventRepository } from '../../../../agenda/infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../../../agenda/infrastructure/repositories/quotation.provider';
 import { ArtistRepository } from '../../../../artists/infrastructure/repositories/artist.repository';
@@ -11,6 +12,7 @@ import {
   PENALTY_APPLIED_NOTIFICATION_V1,
   PenaltyAppliedNotificationV1Job,
 } from '../../domain/schemas/penaltyNotification.schema';
+
 import { NotificationJob } from './notification.job';
 
 @Injectable()
@@ -67,7 +69,9 @@ export class PenaltyAppliedNotificationJob extends NotificationJob {
           },
           job.recipientLocale,
         );
-        this.logger.log(`Email sent for ${PENALTY_APPLIED_NOTIFICATION_V1} to ${job.recipientEmail}`);
+        this.logger.log(
+          `Email sent for ${PENALTY_APPLIED_NOTIFICATION_V1} to ${job.recipientEmail}`,
+        );
       } catch (error) {
         this.logger.error(
           `Failed to send email for ${PENALTY_APPLIED_NOTIFICATION_V1} to ${job.recipientEmail}`,
@@ -116,4 +120,4 @@ export class PenaltyAppliedNotificationJob extends NotificationJob {
       `Finished processing ${PENALTY_APPLIED_NOTIFICATION_V1} job for user ${job.userId}`,
     );
   }
-} 
+}

@@ -1,19 +1,25 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { In } from 'typeorm';
 
+import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
+import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { QuotationOfferRepository } from '../../infrastructure/repositories/quotationOffer.repository';
-import { QuotationStatus, QuotationType } from '../../infrastructure/entities/quotation.entity';
-import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
-import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
-import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
-import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
-import { ParticipatingQuotationOfferDto, NestedQuotationDto } from '../../domain/dtos/participatingQuotationOffer.dto';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
+import {
+  NestedQuotationDto,
+  ParticipatingQuotationOfferDto,
+} from '../../domain/dtos/participatingQuotationOffer.dto';
+import {
+  QuotationStatus,
+  QuotationType,
+} from '../../infrastructure/entities/quotation.entity';
 import { QuotationOfferStatus } from '../../infrastructure/entities/quotationOffer.entity';
+import { QuotationOfferRepository } from '../../infrastructure/repositories/quotationOffer.repository';
 
 /**
  * Use case for retrieving a single quotation offer with detailed information
@@ -41,7 +47,8 @@ export class GetQuotationOfferUseCase extends BaseUseCase implements UseCase {
     this.logger.log(`Retrieving quotation offer with ID: ${offerId}`);
 
     // 1. Fetch the offer with its quotation
-    const queryBuilder = this.quotationOfferRepo.repo.createQueryBuilder('offer');
+    const queryBuilder =
+      this.quotationOfferRepo.repo.createQueryBuilder('offer');
 
     queryBuilder
       .innerJoinAndSelect('offer.quotation', 'q')
@@ -73,13 +80,17 @@ export class GetQuotationOfferUseCase extends BaseUseCase implements UseCase {
 
     // Optional authorization check
     if (currentArtistId) {
-      queryBuilder.andWhere('offer.artistId = :currentArtistId', { currentArtistId });
+      queryBuilder.andWhere('offer.artistId = :currentArtistId', {
+        currentArtistId,
+      });
     }
 
     const offer = await queryBuilder.getOne();
 
     if (!offer) {
-      throw new NotFoundException(`Quotation offer with ID ${offerId} not found`);
+      throw new NotFoundException(
+        `Quotation offer with ID ${offerId} not found`,
+      );
     }
 
     // 2. Fetch customer and artist data
@@ -89,7 +100,9 @@ export class GetQuotationOfferUseCase extends BaseUseCase implements UseCase {
     ]);
 
     if (!customer) {
-      this.logger.warn(`Customer with ID ${offer.quotation.customerId} not found`);
+      this.logger.warn(
+        `Customer with ID ${offer.quotation.customerId} not found`,
+      );
       throw new NotFoundException(`Customer for this offer not found`);
     }
 
@@ -109,19 +122,21 @@ export class GetQuotationOfferUseCase extends BaseUseCase implements UseCase {
       shortDescription: customer.shortDescription,
     };
 
-    const artistDto: ArtistDto | undefined = artist ? {
-      id: artist.id,
-      userId: artist.userId,
-      username: artist.username,
-      firstName: artist.firstName,
-      lastName: artist.lastName,
-      profileThumbnail: artist.profileThumbnail,
-      rating: artist.rating,
-      createdAt: artist.createdAt,
-      updatedAt: artist.updatedAt,
-      shortDescription: artist.shortDescription,
-      studioPhoto: artist.studioPhoto,
-    } : undefined;
+    const artistDto: ArtistDto | undefined = artist
+      ? {
+          id: artist.id,
+          userId: artist.userId,
+          username: artist.username,
+          firstName: artist.firstName,
+          lastName: artist.lastName,
+          profileThumbnail: artist.profileThumbnail,
+          rating: artist.rating,
+          createdAt: artist.createdAt,
+          updatedAt: artist.updatedAt,
+          shortDescription: artist.shortDescription,
+          studioPhoto: artist.studioPhoto,
+        }
+      : undefined;
 
     // Create nested quotation DTO
     const quotationDto: NestedQuotationDto = {
@@ -129,7 +144,9 @@ export class GetQuotationOfferUseCase extends BaseUseCase implements UseCase {
       description: offer.quotation.description,
       status: offer.quotation.status,
       type: offer.quotation.type as QuotationType,
-      referenceImages: offer.quotation.referenceImages as unknown as string[] | undefined,
+      referenceImages: offer.quotation.referenceImages as unknown as
+        | string[]
+        | undefined,
       createdAt: offer.quotation.createdAt,
       updatedAt: offer.quotation.updatedAt,
     };
@@ -149,4 +166,4 @@ export class GetQuotationOfferUseCase extends BaseUseCase implements UseCase {
       status: offer.status,
     };
   }
-} 
+}

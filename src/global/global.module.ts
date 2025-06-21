@@ -17,13 +17,13 @@ import { runwareConfigSchema } from '../config/runware.config';
 import { sendGridSchema } from '../config/sendgrid.config';
 import { verificationHashConfigSchema } from '../config/verificationHash';
 
+import { DomainEventsService } from './domain/events/domainEvents.service';
 import { BaseHandler } from './infrastructure/base.handler';
 import { CloudflareImagesClient } from './infrastructure/clients/cloudflare-images.client';
 import { S3Client } from './infrastructure/clients/s3.client';
 import { SMSClient } from './infrastructure/clients/sms.client';
 import { RequestContextService } from './infrastructure/services/requestContext.service';
 import { UniqueIdService } from './infrastructure/services/uniqueId.service';
-import { DomainEventsService } from './domain/events/domainEvents.service';
 
 @Global()
 @Module({
@@ -59,7 +59,15 @@ import { DomainEventsService } from './domain/events/domainEvents.service';
     }),
   ],
   controllers: [],
-  providers: [BaseHandler, CloudflareImagesClient, S3Client, SMSClient, RequestContextService, UniqueIdService, DomainEventsService],
+  providers: [
+    BaseHandler,
+    CloudflareImagesClient,
+    S3Client,
+    SMSClient,
+    RequestContextService,
+    UniqueIdService,
+    DomainEventsService,
+  ],
   exports: [
     ConfigModule,
     CloudflareImagesClient,
@@ -68,7 +76,7 @@ import { DomainEventsService } from './domain/events/domainEvents.service';
     JwtModule,
     RequestContextService,
     UniqueIdService,
-    DomainEventsService
+    DomainEventsService,
   ],
 })
 export class GlobalModule {

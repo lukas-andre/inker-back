@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsPositive, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import {
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  ValidateNested,
+} from 'class-validator';
+
 import { MoneyDto } from '../../../global/domain/dtos/money.dto';
 
 export class UpdateQuotationOfferReqDto {
@@ -23,4 +29,4 @@ export class UpdateQuotationOfferReqDto {
   @IsNumber()
   @IsPositive()
   estimatedDuration?: number;
-} 
+}

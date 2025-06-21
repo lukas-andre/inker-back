@@ -1,9 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { QuotationStatus, QuotationType } from '../../infrastructure/entities/quotation.entity';
+
 import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
-import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
-import { OpenQuotationOfferDto } from './openQuotationOffer.dto';
 import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
+import {
+  QuotationStatus,
+  QuotationType,
+} from '../../infrastructure/entities/quotation.entity';
+
+import { OpenQuotationOfferDto } from './openQuotationOffer.dto';
 
 export class OpenQuotationListItemDto {
   @ApiProperty()
@@ -37,14 +42,18 @@ export class OpenQuotationListItemDto {
   createdAt: Date;
 
   @ApiPropertyOptional({
-    description: 'Estimated distance from artists primary location to customer location in KM',
+    description:
+      'Estimated distance from artists primary location to customer location in KM',
   })
   distanceToArtistKm?: number;
 
   @ApiPropertyOptional({ type: () => CustomerDto })
   customer?: CustomerDto; // Include basic customer info
 
-  @ApiPropertyOptional({ type: [OpenQuotationOfferDto], description: 'Offers submitted by artists for this quotation' })
+  @ApiPropertyOptional({
+    type: [OpenQuotationOfferDto],
+    description: 'Offers submitted by artists for this quotation',
+  })
   offers?: OpenQuotationOfferDto[]; // Added offers field
 
   @ApiPropertyOptional({ type: () => MoneyEntity })
@@ -58,4 +67,4 @@ export class OpenQuotationListItemDto {
 
   @ApiPropertyOptional({ description: 'ID de la imagen generada (si existe)' })
   generatedImageId?: string;
-} 
+}

@@ -1,4 +1,13 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
 import { ContentMetrics } from './content-metrics.entity';
 
 @Entity('content_metrics_viewers')
@@ -16,7 +25,9 @@ export class ContentMetricsViewer {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @ManyToOne(() => ContentMetrics, metrics => metrics.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => ContentMetrics, metrics => metrics.id, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'metrics_id' })
   metrics: ContentMetrics;
-} 
+}

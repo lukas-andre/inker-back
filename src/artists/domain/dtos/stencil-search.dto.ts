@@ -1,17 +1,31 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
+
 import { StencilStatus } from '../stencilType';
 
 export class StencilSearchQueryDto {
-  @ApiPropertyOptional({ 
-    description: 'Término de búsqueda en texto libre. Se utilizará para buscar coincidencias en títulos, descripciones y etiquetas.' 
+  @ApiPropertyOptional({
+    description:
+      'Término de búsqueda en texto libre. Se utilizará para buscar coincidencias en títulos, descripciones y etiquetas.',
   })
   @IsOptional()
   @IsString()
   query?: string;
 
-  @ApiPropertyOptional({ description: 'IDs de etiquetas para filtrar separadas por coma', type: String })
+  @ApiPropertyOptional({
+    description: 'IDs de etiquetas para filtrar separadas por coma',
+    type: String,
+  })
   @IsOptional()
   tagIds?: string;
 
@@ -20,30 +34,36 @@ export class StencilSearchQueryDto {
   @IsString()
   artistId?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Filtrar por estado del estencil',
-    enum: StencilStatus
+    enum: StencilStatus,
   })
   @IsOptional()
   @IsEnum(StencilStatus)
   status?: StencilStatus;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Incluir estenciles ocultos en los resultados',
-    default: false
+    default: false,
   })
   @IsOptional()
   @Type(() => Boolean)
   includeHidden?: boolean;
 
-  @ApiPropertyOptional({ 
-    description: 'Ordenar por', 
+  @ApiPropertyOptional({
+    description: 'Ordenar por',
     enum: ['relevance', 'newest', 'oldest', 'price_low', 'price_high'],
-    default: 'relevance'
+    default: 'relevance',
   })
   @IsOptional()
   @IsString()
-  sortBy?: 'relevance' | 'newest' | 'oldest' | 'price_low' | 'price_high' | 'relevance';
+  sortBy?:
+    | 'relevance'
+    | 'newest'
+    | 'oldest'
+    | 'price_low'
+    | 'price_high'
+    | 'relevance';
 
   @ApiPropertyOptional({ description: 'Página', default: 1 })
   @IsOptional()
@@ -67,7 +87,10 @@ export class TagSuggestionQueryDto {
   @IsString()
   prefix: string;
 
-  @ApiPropertyOptional({ description: 'Número máximo de sugerencias', default: 10 })
+  @ApiPropertyOptional({
+    description: 'Número máximo de sugerencias',
+    default: 10,
+  })
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -83,6 +106,8 @@ export class TagSuggestionResponseDto {
   @ApiProperty({ description: 'Nombre de la etiqueta' })
   name: string;
 
-  @ApiPropertyOptional({ description: 'Número de estenciles con esta etiqueta' })
+  @ApiPropertyOptional({
+    description: 'Número de estenciles con esta etiqueta',
+  })
   count?: number;
-} 
+}

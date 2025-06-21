@@ -6,12 +6,14 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { ArtistLocationRepository } from '../infrastructure/database/artistLocation.repository';
-import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
 import { ArtistLocation } from '../infrastructure/database/entities/artistLocation.entity';
+import { AddLocationDto } from '../infrastructure/dtos/addLocation.dto';
 
 @Injectable()
 export class AddLocationByApiUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly artistLocationProvider: ArtistLocationRepository) {
+  constructor(
+    private readonly artistLocationProvider: ArtistLocationRepository,
+  ) {
     super(AddLocationByApiUseCase.name);
   }
 

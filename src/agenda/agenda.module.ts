@@ -1,14 +1,24 @@
-import { Module, CacheModule, forwardRef } from '@nestjs/common';
+import { CacheModule, Module, forwardRef } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ArtistsRepositoryModule } from '../artists/infrastructure/repositories/artistRepository.module';
 import { StencilRepositoryModule } from '../artists/infrastructure/repositories/stencilRepository.module';
+import { ConsentModule } from '../consent-module/consent.module';
+import { SignedConsentRepository } from '../consent-module/infrastructure/repositories/signed-consent.repository';
 import { CustomerRepositoryModule } from '../customers/infrastructure/providers/customerProvider.module';
+import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
 import { LocationRepositoryModule } from '../locations/infrastructure/database/locationRepository.module';
 import { MultimediasModule } from '../multimedias/multimedias.module';
 import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
+import { PenaltyQueuesModule } from '../queues/penalty/penaltyQueues.module';
+import { SyncQueueModule } from '../queues/sync/sync.queue.module';
 import { ReviewRepositoryModule } from '../reviews/database/reviewRepository.module';
+import { TattooGeneratorDatabaseModule } from '../tattoo-generator/infrastructure/database/tattoGeneratorDatabase.module';
+import { UserRepositoryModule } from '../users/infrastructure/repositories/userRepository.module';
 
 import { QuotationStateMachine } from './domain/quotation.statemachine';
+import { EventActionEngineService } from './domain/services';
+import { CreateAgendaEventService } from './domain/services/createAgendaEvent.service';
 import { AgendaHandler } from './infrastructure/agenda.handler';
 import { AgendaController } from './infrastructure/controllers/agenda.controller';
 import { QuotationController } from './infrastructure/controllers/quotation.controller';
@@ -30,7 +40,6 @@ import { UpdateEventUseCase } from './usecases/event/updateEvent.usecase';
 import { MarkQuotationAsReadUseCase } from './usecases/quotation/markQuotationAsRead.usecase';
 import { ChangeEventStatusUsecase } from './usecases/event/changeEventStatus.usecase';
 import { EventReviewIntegrationUsecase } from './usecases/event/eventReviewIntegration.usecase';
-import { SyncQueueModule } from '../queues/sync/sync.queue.module';
 
 // New imports for Artist Workflow Improvements
 import { AgendaSettingsService } from './services/agendaSettings.service';
@@ -43,18 +52,16 @@ import { RescheduleEventUseCase } from './usecases/event/rescheduleEvent.usecase
 import { UpdateEventNotesUseCase } from './usecases/event/updateEventNotes.usecase';
 import { GetArtistAvailabilityUseCase } from './usecases/agenda/getArtistAvailability.usecase';
 import { GetSuggestedTimeSlotsUseCase } from './usecases/agenda/getSuggestedTimeSlots.usecase';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgendaUnavailableTime } from './infrastructure/entities/agendaUnavailableTime.entity';
-import { AGENDA_DB_CONNECTION_NAME } from '../databases/constants';
 import { AgendaUnavailableTimeRepository } from './infrastructure/repositories/agendaUnavailableTime.provider';
 import { UpdateAgendaSettingsUseCase } from './usecases/agenda/updateAgendaSettings.usecase';
 import { GetAgendaSettingsUseCase } from './usecases/agenda/getAgendaSettings.usecase';
-import { CreateAgendaEventService } from './domain/services/createAgendaEvent.service';
-import { UserRepositoryModule } from '../users/infrastructure/repositories/userRepository.module';
+
 import { SubmitQuotationOfferUseCase } from './usecases/offer/submitQuotationOffer.usecase';
 import { ListQuotationOffersUseCase } from './usecases/offer/listQuotationOffers.usecase';
 import { AcceptQuotationOfferUseCase } from './usecases/offer/acceptQuotationOffer.usecase';
-import { TattooGeneratorDatabaseModule } from '../tattoo-generator/infrastructure/database/tattoGeneratorDatabase.module';
+
+
 import { SendOfferMessageUseCase } from './usecases/offer/sendOfferMessage.usecase';
 import { ListParticipatingQuotationsUseCase } from './usecases/openQuotation/listParticipatingQuotations.usecase';
 import { GetQuotationOfferUseCase } from './usecases/offer/getQuotationOffer.usecase';
@@ -63,22 +70,19 @@ import { UpdateQuotationOfferUseCase } from './usecases/offer/updateQuotationOff
 import { UpdateOpenQuotationUseCase } from './usecases/openQuotation/updateOpenQuotation.usecase';
 import { QuotationEnrichmentService } from './domain/services/quotationEnrichment.service';
 import { ListOpenQuotationsUseCase } from './usecases/openQuotation/listOpenQuotations.usecase';
-import { EventActionEngineService } from './domain/services';
 
 // Imports for Cancellation Penalty System
 import { CancellationPenalty } from './infrastructure/entities/cancellationPenalty.entity';
 import { CancellationPenaltyRepository } from './infrastructure/repositories/cancellationPenalty.repository';
 import { PenaltyCalculationService } from './domain/services/penaltyCalculation.service';
 import { CancelEventAndApplyPenaltyUseCase } from './usecases/event/cancelEventAndApplyPenalty.usecase';
-import { PenaltyQueuesModule } from '../queues/penalty/penaltyQueues.module';
 import { EventStateMachineService } from './domain/services/eventStateMachine.service';
 import { SendEventMessageUseCase } from './usecases/event/sendEventMessage.usecase';
 import { GetEventMessagesUseCase } from './usecases/event/getEventMessages.usecase';
-import { SignedConsentRepository } from '../consent-module/infrastructure/repositories/signed-consent.repository';
-import { ConsentModule } from '../consent-module/consent.module';
 import { GetCustomerAppointmentsViewUseCase } from './usecases/event/getCustomerAppointmentsView.usecase';
 import { AddWorkEvidenceUseCase } from './usecases/event/addWorkEvidence.usecase';
 import { DeleteWorkEvidenceUseCase } from './usecases/event/deleteWorkEvidence.usecase';
+import { GetSchedulerViewUseCase } from './usecases/scheduler/getSchedulerView.usecase';
 
 @Module({
   imports: [
@@ -96,10 +100,10 @@ import { DeleteWorkEvidenceUseCase } from './usecases/event/deleteWorkEvidence.u
     TattooGeneratorDatabaseModule,
     ConsentModule,
     forwardRef(() => SyncQueueModule),
-    TypeOrmModule.forFeature([
-        AgendaUnavailableTime, 
-        CancellationPenalty
-    ], AGENDA_DB_CONNECTION_NAME),
+    TypeOrmModule.forFeature(
+      [AgendaUnavailableTime, CancellationPenalty],
+      AGENDA_DB_CONNECTION_NAME,
+    ),
   ],
   providers: [
     QuotationEnrichmentService,
@@ -157,10 +161,9 @@ import { DeleteWorkEvidenceUseCase } from './usecases/event/deleteWorkEvidence.u
     GetCustomerAppointmentsViewUseCase,
     AddWorkEvidenceUseCase,
     DeleteWorkEvidenceUseCase,
+    GetSchedulerViewUseCase,
   ],
   controllers: [AgendaController, QuotationController],
-  exports: [
-    CreateAgendaEventService,
-  ]
+  exports: [CreateAgendaEventService],
 })
 export class AgendaModule {}

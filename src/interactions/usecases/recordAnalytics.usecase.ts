@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { RecordInteractionUseCase } from '../../analytics/usecases/recordInteraction.usecase';
-import { RecordArtistViewUseCase } from '../../analytics/usecases/recordArtistView.usecase';
+
 import { ContentType } from '../../analytics/domain/enums/content-types.enum';
 import { InteractionType } from '../../analytics/domain/enums/interaction-types.enum';
+import { RecordArtistViewUseCase } from '../../analytics/usecases/recordArtistView.usecase';
+import { RecordInteractionUseCase } from '../../analytics/usecases/recordInteraction.usecase';
 import { CreateInteractionDto } from '../domain/dtos/interaction.dto';
 
 @Injectable()
@@ -12,12 +13,15 @@ export class RecordAnalyticsUseCase {
     private readonly recordArtistViewUseCase: RecordArtistViewUseCase,
   ) {}
 
-  async execute(params: { userId: string; dto: CreateInteractionDto }): Promise<void> {
+  async execute(params: {
+    userId: string;
+    dto: CreateInteractionDto;
+  }): Promise<void> {
     const { userId, dto } = params;
-    
+
     // Map interaction entity types to analytics content types
     let contentType: ContentType;
-    
+
     switch (dto.entityType) {
       case 'stencil':
         contentType = ContentType.STENCIL;
@@ -35,10 +39,10 @@ export class RecordAnalyticsUseCase {
         // Skip recording for unsupported entity types
         return;
     }
-    
+
     // Map interaction types to analytics interaction types
     let interactionType: InteractionType;
-    
+
     switch (dto.interactionType) {
       case 'view':
         interactionType = InteractionType.VIEW;
@@ -50,7 +54,7 @@ export class RecordAnalyticsUseCase {
         // Skip recording for unsupported interaction types
         return;
     }
-    
+
     // Record the interaction in analytics
     await this.recordInteractionUseCase.execute(userId, {
       contentId: dto.entityId,
@@ -58,4 +62,4 @@ export class RecordAnalyticsUseCase {
       interactionType: interactionType,
     });
   }
-} 
+}

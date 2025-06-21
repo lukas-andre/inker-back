@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+
+import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
-import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
-import { DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
 import { UserType } from '../../../users/domain/enums/userType.enum';
+import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 
 @Injectable()
 export class MarkQuotationAsReadUseCase extends BaseUseCase implements UseCase {

@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
+import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
+import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
+import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
+import { TattooDesignCacheEntity } from '../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
+import { UserType } from '../../../users/domain/enums/userType.enum';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
 import { Quotation } from '../../infrastructure/entities/quotation.entity';
 import { QuotationOffer } from '../../infrastructure/entities/quotationOffer.entity';
-import { Artist } from '../../../artists/infrastructure/entities/artist.entity';
-import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
-import { TattooDesignCacheEntity } from '../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
-import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
-import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
 import { EventActionsResultDto } from '../dtos/eventActionsResult.dto';
-import { UserType } from '../../../users/domain/enums/userType.enum';
+import { AgendaEventStatus } from '../enum/agendaEventStatus.enum';
 
 export interface EventActionContext {
   userId: string;
@@ -226,15 +227,18 @@ export class EventActionEngineService {
   ) {
     if (!actions.canEdit) {
       if (isArtist && hoursTillAppointment < 24) {
-        reasons.canEdit = 'Artists need at least 24 hours notice to edit event details.';
+        reasons.canEdit =
+          'Artists need at least 24 hours notice to edit event details.';
       } else if (isArtist) {
-        reasons.canEdit = 'Only artists can edit event details in the current state.';
+        reasons.canEdit =
+          'Only artists can edit event details in the current state.';
       }
     }
 
     if (!actions.canCancel) {
       if (isCustomer && hoursTillAppointment < 24) {
-        reasons.canCancel = 'Customers need at least 24 hours notice to cancel.';
+        reasons.canCancel =
+          'Customers need at least 24 hours notice to cancel.';
       } else if (isArtist && hoursTillAppointment < 1) {
         reasons.canCancel = 'Artists need at least 1 hour notice to cancel.';
       } else {
@@ -247,7 +251,8 @@ export class EventActionEngineService {
         reasons.canReschedule =
           'Customers need at least 48 hours notice to reschedule.';
       } else if (isArtist && hoursTillAppointment < 1) {
-        reasons.canReschedule = 'Artists need at least 1 hour notice to reschedule.';
+        reasons.canReschedule =
+          'Artists need at least 1 hour notice to reschedule.';
       } else {
         reasons.canReschedule =
           'Event cannot be rescheduled in its current state.';
@@ -291,4 +296,4 @@ export class EventActionEngineService {
         "Session can only be finished by the artist if it's in progress.";
     }
   }
-} 
+}
