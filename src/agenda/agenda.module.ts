@@ -83,6 +83,7 @@ import { GetCustomerAppointmentsViewUseCase } from './usecases/event/getCustomer
 import { AddWorkEvidenceUseCase } from './usecases/event/addWorkEvidence.usecase';
 import { DeleteWorkEvidenceUseCase } from './usecases/event/deleteWorkEvidence.usecase';
 import { GetSchedulerViewUseCase } from './usecases/scheduler/getSchedulerView.usecase';
+import { GetAgendaFromArtistIdUseCase } from './usecases/agenda/getAgendaFromArtistId.usecase';
 
 @Module({
   imports: [
@@ -150,6 +151,7 @@ import { GetSchedulerViewUseCase } from './usecases/scheduler/getSchedulerView.u
     UpdateQuotationOfferUseCase,
     UpdateOpenQuotationUseCase,
     EventActionEngineService,
+    GetAgendaFromArtistIdUseCase,
 
     // Providers for Cancellation Penalty System
     CancellationPenaltyRepository,

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
-import { OpenQuotationOfferDto } from '../../domain/dtos/openQuotationOffer.dto';
+import { SchedulerQuotationOfferDto } from '../../domain/dtos/schedulerQuotationOffer.dto';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import {
   AvailabilityCalendar,
@@ -131,8 +131,8 @@ export class SchedulerQuotationDto {
   @ApiProperty({ required: false })
   actionDeadline?: Date;
 
-  @ApiProperty({ required: false, type: [OpenQuotationOfferDto] })
-  offers?: OpenQuotationOfferDto[];
+  @ApiProperty({ required: false, type: [SchedulerQuotationOfferDto] })
+  offers?: SchedulerQuotationOfferDto[];
 
   @ApiProperty()
   canRespond: boolean;

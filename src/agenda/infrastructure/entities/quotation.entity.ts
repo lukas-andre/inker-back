@@ -90,7 +90,11 @@ export enum QuotationType {
 }
 
 @Entity({ name: 'quotation' })
+@Index(['type', 'status']) // For filtering by type and status
+@Index(['artistId', 'status', 'type']) // For artist-specific queries
+@Index(['appointmentDate']) // For date range filtering
 export class Quotation extends BaseEntity {
+  @Index()
   @Column({ name: 'customer_id' })
   customerId: string;
 
@@ -98,6 +102,7 @@ export class Quotation extends BaseEntity {
   @Column({ name: 'artist_id', nullable: true })
   artistId?: string;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: QuotationType,
