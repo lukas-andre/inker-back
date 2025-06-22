@@ -93,13 +93,13 @@ export class SchedulingService {
     const endDateObj = new Date(endDate);
 
     while (currentDate <= endDateObj) {
-      // Check if today is a working day
+      // Check if today is a working day (using UTC day)
       const dayOfWeek = (
-        currentDate.getDay() === 0 ? 7 : currentDate.getDay()
+        currentDate.getUTCDay() === 0 ? 7 : currentDate.getUTCDay()
       ).toString();
       if (!agenda.workingDays.includes(dayOfWeek)) {
         // Skip non-working days
-        currentDate.setDate(currentDate.getDate() + 1);
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
         continue;
       }
 
@@ -117,14 +117,18 @@ export class SchedulingService {
 
       if (daySlots.length > 0) {
         // Add to the calendar
+        // Format date in UTC to ensure consistency
+        const year = currentDate.getUTCFullYear();
+        const month = String(currentDate.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getUTCDate()).padStart(2, '0');
         availabilityCalendar.push({
-          date: currentDate.toISOString().split('T')[0],
+          date: `${year}-${month}-${day}`,
           slots: daySlots,
         });
       }
 
       // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
     }
 
     return availabilityCalendar;
@@ -271,7 +275,7 @@ export class SchedulingService {
     this.logger.log(`Validating appointment time for artist ${artistId}`);
 
     const endTime = new Date(startTime);
-    endTime.setMinutes(endTime.getMinutes() + durationMinutes);
+    endTime.setUTCMinutes(endTime.getUTCMinutes() + durationMinutes);
 
     // Get the artist's agenda
     const agenda = await this.agendaProvider.findOne({
@@ -288,9 +292,9 @@ export class SchedulingService {
       agenda.workingHoursEnd = '17:00';
     }
 
-    // Check if the day is a working day
+    // Check if the day is a working day (using UTC)
     const dayOfWeek = (
-      startTime.getDay() === 0 ? 7 : startTime.getDay()
+      startTime.getUTCDay() === 0 ? 7 : startTime.getUTCDay()
     ).toString();
     if (!agenda.workingDays.includes(dayOfWeek)) {
       return {
@@ -307,12 +311,12 @@ export class SchedulingService {
       .split(':')
       .map(n => parseInt(n, 10));
 
-    // Check if appointment is within working hours
+    // Check if appointment is within working hours (using UTC)
     const dayStart = new Date(startTime);
-    dayStart.setHours(startHour, startMinute, 0, 0);
+    dayStart.setUTCHours(startHour, startMinute, 0, 0);
 
     const dayEnd = new Date(startTime);
-    dayEnd.setHours(endHour, endMinute, 0, 0);
+    dayEnd.setUTCHours(endHour, endMinute, 0, 0);
 
     if (startTime < dayStart) {
       return {
@@ -375,11 +379,16 @@ export class SchedulingService {
     unavailableTimes: any[],
   ): Promise<TimeSlot[]> {
     const slots: TimeSlot[] = [];
-    const dayStart = new Date(date);
-    dayStart.setHours(startHour, startMinute, 0, 0);
+    // Create date at midnight UTC for the given day
+    const baseDate = new Date(date);
+    baseDate.setUTCHours(0, 0, 0, 0);
+    
+    // Create start and end times in UTC
+    const dayStart = new Date(baseDate);
+    dayStart.setUTCHours(startHour, startMinute, 0, 0);
 
-    const dayEnd = new Date(date);
-    dayEnd.setHours(endHour, endMinute, 0, 0);
+    const dayEnd = new Date(baseDate);
+    dayEnd.setUTCHours(endHour, endMinute, 0, 0);
 
     // If we're checking for today, use current time as start
     if (this.isToday(date)) {
@@ -389,8 +398,8 @@ export class SchedulingService {
         // Round up to next interval
         const minutesToAdd =
           this.SLOT_INTERVAL_MINUTES -
-          (dayStart.getMinutes() % this.SLOT_INTERVAL_MINUTES);
-        dayStart.setMinutes(dayStart.getMinutes() + minutesToAdd);
+          (dayStart.getUTCMinutes() % this.SLOT_INTERVAL_MINUTES);
+        dayStart.setUTCMinutes(dayStart.getUTCMinutes() + minutesToAdd);
       }
     }
 
@@ -398,10 +407,11 @@ export class SchedulingService {
     const slotStart = new Date(dayStart);
     while (true) {
       const slotEnd = new Date(slotStart);
-      slotEnd.setMinutes(slotEnd.getMinutes() + durationMinutes);
+      slotEnd.setUTCMinutes(slotEnd.getUTCMinutes() + durationMinutes);
 
       // Stop if this slot would extend past the end of the working day
-      if (slotEnd > dayEnd) {
+      // Allow slots that end exactly at closing time
+      if (slotEnd.getTime() > dayEnd.getTime()) {
         break;
       }
 
@@ -436,7 +446,7 @@ export class SchedulingService {
       }
 
       // Move to next slot
-      slotStart.setMinutes(slotStart.getMinutes() + this.SLOT_INTERVAL_MINUTES);
+      slotStart.setUTCMinutes(slotStart.getUTCMinutes() + this.SLOT_INTERVAL_MINUTES);
     }
 
     return slots;
@@ -454,10 +464,10 @@ export class SchedulingService {
     const slotsWithDensity = await Promise.all(
       slots.map(async slot => {
         const windowStart = new Date(slot.startTime);
-        windowStart.setHours(windowStart.getHours() - 3);
+        windowStart.setUTCHours(windowStart.getUTCHours() - 3);
 
         const windowEnd = new Date(slot.endTime);
-        windowEnd.setHours(windowEnd.getHours() + 3);
+        windowEnd.setUTCHours(windowEnd.getUTCHours() + 3);
 
         // Find appointments in the window
         const agenda = await this.agendaProvider.findOne({
@@ -501,9 +511,9 @@ export class SchedulingService {
   private isToday(date: Date): boolean {
     const today = new Date();
     return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
+      date.getUTCDate() === today.getUTCDate() &&
+      date.getUTCMonth() === today.getUTCMonth() &&
+      date.getUTCFullYear() === today.getUTCFullYear()
     );
   }
 }

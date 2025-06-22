@@ -56,6 +56,8 @@ export interface EventMessage {
 @Entity()
 @Index(['startDate', 'endDate'])
 @Index('idx_agenda_id', ['agenda'])
+@Index(['agenda', 'startDate', 'status']) // Composite index for scheduler queries
+@Index(['status', 'deletedAt']) // For filtering active events
 export class AgendaEvent extends BaseEntity {
   @ManyToOne(() => Agenda, agenda => agenda.agendaEvent)
   @JoinColumn({ name: 'agenda_id' })

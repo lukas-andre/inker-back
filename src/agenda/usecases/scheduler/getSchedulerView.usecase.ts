@@ -7,6 +7,7 @@ import {
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
 import { UserType } from '../../../users/domain/enums/userType.enum';
+import { SchedulerQuotationOfferDto } from '../../domain/dtos/schedulerQuotationOffer.dto';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { EventActionEngineService } from '../../domain/services/eventActionEngine.service';
 import { GetSchedulerViewQueryDto } from '../../infrastructure/dtos/getSchedulerViewQuery.dto';
@@ -26,8 +27,8 @@ import { AgendaRepository } from '../../infrastructure/repositories/agenda.repos
 import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
 import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 import {
-  SchedulingService,
   AvailabilityCalendar,
+  SchedulingService,
   TimeSlot,
 } from '../../services/scheduling.service';
 
@@ -88,29 +89,42 @@ export class GetSchedulerViewUseCase extends BaseUseCase implements UseCase {
     });
 
     // Step 3: Fetch relevant quotations
+    const fromDate = new Date(query.fromDate);
+    const toDate = new Date(query.toDate);
+    
+    // Fetch DIRECT quotations that need artist response with cache
     const directQuotations = await this.quotationProvider.find({
       where: {
         artistId,
         status: In([QuotationStatus.QUOTED, QuotationStatus.APPEALED]),
         type: QuotationType.DIRECT,
       },
-    });
-
-    const openQuotations = await this.quotationProvider.find({
-      where: {
-        type: QuotationType.OPEN,
-        status: QuotationStatus.OPEN,
+      cache: {
+        id: `direct_quotations_${artistId}_active`,
+        milliseconds: 15000, // 15 seconds cache - short because these need quick updates
       },
-      relations: ['offers'],
+    });
+    
+    // Filter direct quotations to only include those with proposed dates in range (if they have dates)
+    const relevantDirectQuotations = directQuotations.filter(q => {
+      if (!q.appointmentDate) {
+        // If no date proposed, include it as it needs artist action
+        return true;
+      }
+      const quotationDate = new Date(q.appointmentDate);
+      return quotationDate >= fromDate && quotationDate <= toDate;
     });
 
-    const openOpportunities = openQuotations.filter(
-      q => !q.offers?.some(o => o.artistId === artistId),
+    // Fetch OPEN quotations where this artist has made offers in the date range
+    const relevantOpenQuotations = await this.quotationProvider.getOpenQuotationsForScheduler(
+      artistId,
+      fromDate,
+      toDate,
     );
 
-    const allQuotations = [...directQuotations, ...openOpportunities];
+    const allQuotations = [...relevantDirectQuotations, ...relevantOpenQuotations];
 
-    // Step 4: Get customer data
+    // Step 4: Get customer data with cache
     const customerIds = new Set([
       ...events.map(e => e.customerId).filter(Boolean),
       ...allQuotations.map(q => q.customerId).filter(Boolean),
@@ -120,6 +134,10 @@ export class GetSchedulerViewUseCase extends BaseUseCase implements UseCase {
       customerIds.size > 0
         ? await this.customerRepository.find({
           where: { id: In([...customerIds]) },
+          cache: {
+            id: `customers_batch_${[...customerIds].sort().join('_')}`,
+            milliseconds: 60000, // 1 minute cache
+          },
         })
         : [];
 
@@ -243,9 +261,9 @@ export class GetSchedulerViewUseCase extends BaseUseCase implements UseCase {
             conflictingEventIds.length > 0 ? conflictingEventIds : undefined,
           actionRequired: isDirectQuotation,
           actionDeadline: this.calculateActionDeadline(quotation),
-          offers: quotation.offers as any,
+          offers: this.transformOffersWithStandardTimes(quotation.offers),
           canRespond: isDirectQuotation,
-          canSubmitOffer: isOpenQuotation,
+          canSubmitOffer: isOpenQuotation && !quotation.offers?.some(o => o.artistId === artistId),
         };
 
         return schedulerQuotation;
@@ -257,6 +275,7 @@ export class GetSchedulerViewUseCase extends BaseUseCase implements UseCase {
     let suggestedSlots: TimeSlot[] = [];
 
     if (query.includeAvailability) {
+      // Note: Availability should not be heavily cached as it changes frequently
       availability = await this.schedulingService.findAvailableSlots(
         artistId,
         query.defaultDuration,
@@ -376,5 +395,31 @@ export class GetSchedulerViewUseCase extends BaseUseCase implements UseCase {
     }
 
     return undefined;
+  }
+
+  private transformOffersWithStandardTimes(offers?: any[]): SchedulerQuotationOfferDto[] | undefined {
+    if (!offers || offers.length === 0) return undefined;
+    
+    return offers.map(offer => {
+      const start = offer.estimatedDate ? new Date(offer.estimatedDate) : new Date();
+      const durationMinutes = offer.estimatedDuration || 60;
+      const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
+      
+      return {
+        id: offer.id,
+        createdAt: offer.createdAt,
+        updatedAt: offer.updatedAt,
+        quotationId: offer.quotationId,
+        artistId: offer.artistId,
+        estimatedCost: offer.estimatedCost,
+        start,
+        end,
+        estimatedDate: offer.estimatedDate,
+        estimatedDuration: offer.estimatedDuration,
+        message: offer.message,
+        status: offer.status,
+        messages: offer.messages || [],
+      };
+    });
   }
 }

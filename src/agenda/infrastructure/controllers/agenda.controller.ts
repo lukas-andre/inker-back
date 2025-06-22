@@ -76,6 +76,7 @@ import { UpdateAgendaSettingsReqDto } from '../dtos/updateAgendaSettingsReq.dto'
 import { AgendaUnavailableTime } from '../entities/agendaUnavailableTime.entity';
 import { AgendaEvent } from '../entities/agendaEvent.entity';
 import { GetSchedulerViewResDto } from '../dtos/getSchedulerViewRes.dto';
+import { Agenda } from '../entities/agenda.entity';
 
 @ApiTags('agenda')
 @Controller('agenda')
@@ -555,6 +556,16 @@ export class AgendaController {
     @Param('agendaId', AgendaIdPipe) agendaId: string,
   ): Promise<GetAgendaSettingsResDto> {
     return this.agendaHandler.handleGetAgendaSettings(agendaId);
+  }
+
+  // GET AGENDA FROM ARTIST ID 
+  @ApiOperation({ summary: 'Get agenda from artist id' })
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Agenda retrieved successfully' })
+  @ApiParam({ name: 'artistId', required: true, type: Number, example: 1 })
+  @Get('artists/:artistId/agenda')
+  async getAgendaFromArtistId(@Param('artistId') artistId: string): Promise<Agenda> {
+    return this.agendaHandler.handleGetAgendaFromArtistId(artistId);
   }
 
   @ApiOperation({ summary: 'Update agenda visibility and open/closed status' })

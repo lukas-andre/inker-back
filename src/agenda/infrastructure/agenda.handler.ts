@@ -129,9 +129,12 @@ import { AddWorkEvidenceUseCase } from '../usecases/event/addWorkEvidence.usecas
 import { AgendaEvent } from './entities/agendaEvent.entity';
 
 import { DeleteWorkEvidenceUseCase } from '../usecases/event/deleteWorkEvidence.usecase';
+import { Agenda } from './entities/agenda.entity';
+import { GetAgendaFromArtistIdUseCase } from '../usecases/agenda/getAgendaFromArtistId.usecase';
 
 @Injectable()
 export class AgendaHandler {
+
   private readonly logger = new Logger(AgendaHandler.name);
 
   constructor(
@@ -187,6 +190,7 @@ export class AgendaHandler {
     private readonly getCustomerAppointmentsViewUseCase: GetCustomerAppointmentsViewUseCase,
     private readonly addWorkEvidenceUseCase: AddWorkEvidenceUseCase,
     private readonly deleteWorkEvidenceUseCase: DeleteWorkEvidenceUseCase,
+    private readonly getAgendaFromArtistIdUseCase: GetAgendaFromArtistIdUseCase,
   ) {
     this.logger.log('Initializing AgendaHandler');
   }
@@ -568,7 +572,7 @@ export class AgendaHandler {
 
   // Add the new handler method for listing participating quotations
   async listParticipatingQuotations(): // query?: ListParticipatingQuotationsQueryDto // Add query DTO if needed
-  Promise<ListParticipatingQuotationsResDto> {
+    Promise<ListParticipatingQuotationsResDto> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== RequestContextUserType.ARTIST) {
       throw new UnauthorizedException('Only artists can access this resource.');
@@ -708,5 +712,9 @@ export class AgendaHandler {
     query: GetSchedulerViewQueryDto,
   ): Promise<GetSchedulerViewResDto> {
     return this.getSchedulerViewUseCase.execute(artistId, query);
+  }
+
+  async handleGetAgendaFromArtistId(artistId: string): Promise<Agenda> {
+    return this.getAgendaFromArtistIdUseCase.execute(artistId);
   }
 }

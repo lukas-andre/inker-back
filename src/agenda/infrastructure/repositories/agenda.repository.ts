@@ -107,6 +107,10 @@ export class AgendaRepository extends BaseComponent {
     return this.agendaRepository.findOne({ where: { id } });
   }
 
+  async findByArtistId(artistId: string) {
+    return this.agendaRepository.findOne({ where: { artistId } });
+  }
+
   async find(options: FindManyOptions<Agenda>) {
     return this.agendaRepository.find(options);
   }

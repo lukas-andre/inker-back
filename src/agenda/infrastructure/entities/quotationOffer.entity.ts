@@ -24,6 +24,7 @@ export interface OfferMessage {
 }
 
 @Entity({ name: 'quotation_offers' })
+@Index(['quotationId', 'artistId', 'estimatedDate']) // Composite index for scheduler queries
 export class QuotationOffer extends BaseEntity {
   @Index()
   @Column({ name: 'quotation_id' })

@@ -476,7 +476,7 @@ export class QuotationRepository extends BaseComponent {
   }
 
   /**
-   * Get quotation IDs for completed eventsq  aáaq
+   * Get quotation IDs for completed events
    */
   async getQuotationIdsByEventIds(eventIds: string[]): Promise<string[]> {
     if (eventIds.length === 0) return [];
@@ -498,6 +498,71 @@ export class QuotationRepository extends BaseComponent {
       throw new DBServiceSaveException(
         this,
         'Problems getting quotation IDs by event IDs',
+        error,
+      );
+    }
+  }
+
+  /**
+   * Get open quotations with offers relevant for the scheduler view
+   * Only returns quotations where this artist has made an offer within the date range
+   */
+  async getOpenQuotationsForScheduler(
+    artistId: string,
+    fromDate: Date,
+    toDate: Date,
+  ): Promise<Quotation[]> {
+    try {
+      // Create a cache key based on parameters
+      const cacheKey = `open_quotations_scheduler_${artistId}_${fromDate.toISOString()}_${toDate.toISOString()}`;
+      
+      const results = await this.quotationRepository.query(
+        `
+        SELECT 
+          q.*,
+          COALESCE(
+            json_agg(
+              json_build_object(
+                'id', qo.id,
+                'createdAt', qo.created_at,
+                'updatedAt', qo.updated_at,
+                'quotationId', qo.quotation_id,
+                'artistId', qo.artist_id,
+                'estimatedCost', qo.estimated_cost,
+                'estimatedDate', qo.estimated_date,
+                'estimatedDuration', qo.estimated_duration,
+                'message', qo.message,
+                'status', qo.status,
+                'messages', qo.messages
+              ) ORDER BY qo.created_at
+            ) FILTER (WHERE qo.id IS NOT NULL), 
+            '[]'::json
+          ) as offers
+        FROM quotation q
+        LEFT JOIN quotation_offers qo ON q.id = qo.quotation_id
+        WHERE q.type = 'OPEN'
+          AND q.status = 'open'
+          AND EXISTS (
+            -- Only include if THIS artist has an offer in the date range
+            SELECT 1 FROM quotation_offers qo2
+            WHERE qo2.quotation_id = q.id 
+              AND qo2.artist_id = $1
+              AND qo2.estimated_date >= $2 
+              AND qo2.estimated_date <= $3
+          )
+        GROUP BY q.id
+        `,
+        [artistId, fromDate, toDate],
+      );
+
+      return results.map((row: any) => ({
+        ...row,
+        offers: row.offers || [],
+      }));
+    } catch (error) {
+      throw new DBServiceSaveException(
+        this,
+        'Problems getting open quotations for scheduler',
         error,
       );
     }
