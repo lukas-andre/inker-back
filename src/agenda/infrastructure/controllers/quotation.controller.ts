@@ -142,7 +142,7 @@ export class QuotationController {
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @ApiBody({ type: CreateQuotationOfferReqDto })
   @Post(':id/offers')
-  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
+  @UseInterceptors(FilesFastifyInterceptor('proposedDesigns', 10))
   async submitOffer(
     @Param('id') quotationId: string,
     @Body() dto: CreateQuotationOfferReqDto,
