@@ -240,7 +240,7 @@ export class ArtistRepository extends BaseComponent {
           'artist.firstName',
           'artist.lastName',
           'artist.shortDescription',
-          'artist.profilePhoto',
+          'artist.profileThumbnail',
           'artist.rating',
           'artist.studioPhoto',
           'contact.email',

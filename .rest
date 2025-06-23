@@ -432,3 +432,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA4ZDczYjRlL
 Content-Type: application/json
 Accept: application/json
 
+
+
+### Get Cloudflare Image Data
+### Get Cloudflare Image Data
+GET https://api.cloudflare.com/client/v4/accounts/ba3244d3509ab16fc96d0672d34080c0/images/v1/e401632b-aa12-45ff-0acd-20ef45d86800 HTTP/1.1
+Authorization: Bearer {{$dotenv CLOUDFLARE_API_TOKEN}}
+Content-Type: application/json
+Accept: application/json
