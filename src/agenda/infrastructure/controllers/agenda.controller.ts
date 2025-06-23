@@ -14,6 +14,7 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -30,7 +31,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
+import { FileFastifyInterceptor, FilesFastifyInterceptor } from 'fastify-file-interceptor';
 
 import { SendEventMessageReqDto } from 'src/agenda/infrastructure/dtos/sendEventMessageReq.dto';
 
@@ -660,20 +661,19 @@ export class AgendaController {
     description: 'Event ID to send message to',
   })
   @Post(':agendaId/event/:eventId/message')
-  @UseInterceptors(FilesFastifyInterceptor('imageFile', 1))
+  @UseInterceptors(FileFastifyInterceptor('image', 1))
   @HttpCode(200)
   async sendEventMessage(
     @Param('agendaId', AgendaIdPipe) agendaId: string,
     @Param('eventId', AgendaEventIdPipe) eventId: string,
     @Body() sendEventMessageReqDto: SendEventMessageReqDto,
-    @UploadedFiles() imageFile?: FileInterface[],
+    @UploadedFile() imageFile?: FileInterface,
   ): Promise<any> {
-    const file = imageFile && imageFile.length > 0 ? imageFile[0] : undefined;
     return this.agendaHandler.handleSendEventMessage(
       agendaId,
       eventId,
       sendEventMessageReqDto,
-      file,
+      imageFile,
     );
   }
 

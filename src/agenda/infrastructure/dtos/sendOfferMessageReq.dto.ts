@@ -2,8 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class SendOfferMessageReqDto {
-  @ApiProperty({ description: 'Message text content', maxLength: 1000 })
-  @IsNotEmpty()
+  @ApiProperty({ description: 'Message text content', maxLength: 1000, required: false })
+  @IsOptional()
   @IsString()
   @MaxLength(1000)
   message: string;

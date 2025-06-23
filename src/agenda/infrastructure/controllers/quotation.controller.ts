@@ -62,7 +62,7 @@ import { UpdateQuotationOfferReqDto } from '../dtos/updateQuotationOfferReq.dto'
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
 export class QuotationController {
-  constructor(private readonly quotationHandler: AgendaHandler) {}
+  constructor(private readonly quotationHandler: AgendaHandler) { }
 
   @ApiOperation({ summary: 'Create a direct or open quotation' })
   @HttpCode(201)
@@ -142,7 +142,7 @@ export class QuotationController {
   @ApiParam({ name: 'id', description: 'Quotation ID' })
   @ApiBody({ type: CreateQuotationOfferReqDto })
   @Post(':id/offers')
-  @UseInterceptors(FileFastifyInterceptor('files[]', 10))
+  @UseInterceptors(FilesFastifyInterceptor('files[]', 10))
   async submitOffer(
     @Param('id') quotationId: string,
     @Body() dto: CreateQuotationOfferReqDto,
@@ -201,11 +201,11 @@ export class QuotationController {
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ description: 'Artist Action', type: ArtistQuotationActionDto })
-  @UseInterceptors(FileFastifyInterceptor('proposedDesigns', 10))
+  @UseInterceptors(FilesFastifyInterceptor('proposedDesigns', 10))
   async processArtistAction(
     @Param('id') id: string,
     @Body() dto: ArtistQuotationActionDto,
-    @UploadedFile() proposedDesigns: FileInterface[],
+    @UploadedFiles() proposedDesigns: FileInterface[],
   ): Promise<void> {
     await this.quotationHandler.processArtistAction(id, dto, proposedDesigns);
   }
