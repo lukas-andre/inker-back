@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 
 import { BaseComponent } from '../../global/domain/components/base.component';
 import { RequestContext } from '../../global/infrastructure/services/requestContext.service';
