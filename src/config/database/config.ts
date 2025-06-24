@@ -19,6 +19,7 @@ import { reactionDatabaseConf } from './reaction.config';
 import { ratingDatabaseConf } from './review.config';
 import { tagDatabaseConf } from './tag.config';
 import { tattooTranslationDatabaseConf } from './tattooTranslation.config';
+import { tokensDatabaseConf } from './tokens.config';
 import { userDatabaseConf } from './user.config';
 
 type DataBaseTypes = 'postgres';
@@ -104,4 +105,5 @@ export const databaseConfigs = [
   notificationsDatabaseConf,
   analyticsDatabaseConf,
   tattooTranslationDatabaseConf,
+  tokensDatabaseConf,
 ];
