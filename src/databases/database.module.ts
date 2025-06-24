@@ -31,6 +31,8 @@ import {
   TAG_DB_CONNECTION_NAME,
   TATTOO_TRANSLATION_DB_CONFIG_NAME,
   TATTOO_TRANSLATION_DB_CONNECTION_NAME,
+  TOKENS_DB_CONFIG_NAME,
+  TOKENS_DB_CONNECTION_NAME,
   USER_DB_CONFIG_NAME,
   USER_DB_CONNECTION_NAME,
 } from './constants';
@@ -140,6 +142,13 @@ import {
       name: TATTOO_TRANSLATION_DB_CONNECTION_NAME,
       useFactory: (configService: ConfigService) =>
         configService.get(TATTOO_TRANSLATION_DB_CONFIG_NAME),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      name: TOKENS_DB_CONNECTION_NAME,
+      useFactory: (configService: ConfigService) =>
+        configService.get(TOKENS_DB_CONFIG_NAME),
       inject: [ConfigService],
     }),
   ],

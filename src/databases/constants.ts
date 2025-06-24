@@ -42,3 +42,6 @@ export const ANALYTICS_DB_CONFIG_NAME = 'analyticsDb';
 
 export const TATTOO_TRANSLATION_DB_CONNECTION_NAME = 'tattoo-translation-db';
 export const TATTOO_TRANSLATION_DB_CONFIG_NAME = 'tattooTranslationDb';
+
+export const TOKENS_DB_CONNECTION_NAME = 'tokens-db';
+export const TOKENS_DB_CONFIG_NAME = 'tokensDb';
