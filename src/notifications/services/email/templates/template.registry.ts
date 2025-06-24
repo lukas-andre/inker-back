@@ -23,6 +23,9 @@ import {
   RsvpAcceptedSchema,
   RsvpDeclinedSchema,
   RsvpUnschedulableSchema,
+  LowTokenBalanceEmailSchema,
+  TokenPurchaseConfirmationEmailSchema,
+  TokenGrantNotificationEmailSchema,
 } from '../schemas/email';
 
 export const TemplateRegistry: Record<
@@ -139,5 +142,21 @@ export const TemplateRegistry: Record<
     schema: MonthlyReportEmailSchema,
     path: path.join(__dirname, './monthlyReport.hbs'),
     subject: '📊 :artistName Tu reporte mensual está listo',
+  },
+  // Token notifications
+  LOW_TOKEN_BALANCE: {
+    schema: LowTokenBalanceEmailSchema,
+    path: path.join(__dirname, './lowTokenBalance.hbs'),
+    subject: '⚠️ Tu saldo de tokens está bajo',
+  },
+  TOKEN_PURCHASE_CONFIRMATION: {
+    schema: TokenPurchaseConfirmationEmailSchema,
+    path: path.join(__dirname, './tokenPurchaseConfirmation.hbs'),
+    subject: '✅ Compra de tokens confirmada',
+  },
+  TOKEN_GRANT_NOTIFICATION: {
+    schema: TokenGrantNotificationEmailSchema,
+    path: path.join(__dirname, './tokenGrantNotification.hbs'),
+    subject: '🎁 ¡Has recibido tokens gratis!',
   },
 };

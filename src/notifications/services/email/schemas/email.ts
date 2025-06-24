@@ -22,6 +22,10 @@ export const MailIdSchema = z.enum([
   'EVENT_AUTO_CANCELED',
   'REVIEW_REMINDER',
   'MONTHLY_REPORT',
+  // Token notifications
+  'LOW_TOKEN_BALANCE',
+  'TOKEN_PURCHASE_CONFIRMATION',
+  'TOKEN_GRANT_NOTIFICATION',
 ]);
 export type MailIdType = z.infer<typeof MailIdSchema>;
 
@@ -281,6 +285,38 @@ const MonthlyReportEmailSchema = BaseEmailSchema.extend({
   }),
 });
 export type MonthlyReportEmailType = z.infer<typeof MonthlyReportEmailSchema>;
+// Token notification email schemas
+const LowTokenBalanceEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.LOW_TOKEN_BALANCE),
+  userName: z.string(),
+  currentBalance: z.number(),
+  threshold: z.number(),
+});
+export type LowTokenBalanceEmailType = z.infer<typeof LowTokenBalanceEmailSchema>;
+
+const TokenPurchaseConfirmationEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.TOKEN_PURCHASE_CONFIRMATION),
+  userName: z.string(),
+  transactionId: z.string(),
+  packageName: z.string(),
+  tokensAmount: z.number(),
+  price: z.string(), // Formatted price string
+  newBalance: z.number(),
+  paymentMethod: z.string(),
+  purchaseDate: z.date(),
+});
+export type TokenPurchaseConfirmationEmailType = z.infer<typeof TokenPurchaseConfirmationEmailSchema>;
+
+const TokenGrantNotificationEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.TOKEN_GRANT_NOTIFICATION),
+  userName: z.string(),
+  tokensGranted: z.number(),
+  reason: z.string(),
+  newBalance: z.number(),
+  grantDate: z.date(),
+});
+export type TokenGrantNotificationEmailType = z.infer<typeof TokenGrantNotificationEmailSchema>;
+
 
 export const EmailSchema = z.union([
   AgendaEventCreatedSchema,
@@ -304,6 +340,10 @@ export const EmailSchema = z.union([
   EventAutoCanceledEmailSchema,
   ReviewReminderEmailSchema,
   MonthlyReportEmailSchema,
+  // Token notifications
+  LowTokenBalanceEmailSchema,
+  TokenPurchaseConfirmationEmailSchema,
+  TokenGrantNotificationEmailSchema,
 ]);
 
 export type EmailType = z.infer<typeof EmailSchema>;
@@ -330,4 +370,16 @@ export {
   EventAutoCanceledEmailSchema,
   ReviewReminderEmailSchema,
   MonthlyReportEmailSchema,
+  // Token schemas
+  // LowTokenBalanceEmailSchema,
+  // TokenPurchaseConfirmationEmailSchema,
+  // TokenGrantNotificationEmailSchema,
+};
+
+
+// Re-export token email schemas
+export {
+  LowTokenBalanceEmailSchema,
+  TokenPurchaseConfirmationEmailSchema,
+  TokenGrantNotificationEmailSchema,
 };

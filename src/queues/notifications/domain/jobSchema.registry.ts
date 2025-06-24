@@ -34,6 +34,14 @@ import {
   OfferAcceptedJobSchema,
   OfferRejectedJobSchema,
 } from './schemas/quotationOffer.schema';
+import {
+  LOW_TOKEN_BALANCE,
+  TOKEN_PURCHASE_CONFIRMATION,
+  TOKEN_GRANT_NOTIFICATION,
+  LowTokenBalanceJobSchema,
+  TokenPurchaseConfirmationJobSchema,
+  TokenGrantNotificationJobSchema,
+} from './schemas/tokens';
 
 export const JobTypeSchemaRegistry = {
   EVENT_CREATED: AgendaEventCreatedJobSchema,
@@ -63,6 +71,10 @@ export const JobTypeSchemaRegistry = {
   REVIEW_REMINDER: ReviewReminderJobSchema,
   PHOTO_UPLOAD_REMINDER: PhotoUploadReminderJobSchema,
   MONTHLY_REPORT: MonthlyReportJobSchema,
+  // Token notifications
+  [LOW_TOKEN_BALANCE]: LowTokenBalanceJobSchema,
+  [TOKEN_PURCHASE_CONFIRMATION]: TokenPurchaseConfirmationJobSchema,
+  [TOKEN_GRANT_NOTIFICATION]: TokenGrantNotificationJobSchema,
 };
 
 // export jobtype keys

@@ -43,6 +43,14 @@ import { PenaltyAppliedNotificationJob } from './jobs/penaltyAppliedNotification
 // New scheduled notification jobs
 import { ReviewReminderJob } from './jobs/agenda/reviewReminder.job';
 import { PhotoUploadReminderJob } from './jobs/agenda/photoUploadReminder.job';
+import { LowTokenBalanceJob } from './jobs/tokens/lowTokenBalance.job';
+import { TokenPurchaseConfirmationJob } from './jobs/tokens/tokenPurchaseConfirmation.job';
+import { TokenGrantNotificationJob } from './jobs/tokens/tokenGrantNotification.job';
+import { 
+  LOW_TOKEN_BALANCE,
+  TOKEN_PURCHASE_CONFIRMATION,
+  TOKEN_GRANT_NOTIFICATION
+} from '../domain/schemas/tokens';
 
 type NotificationJobConstructor = new (
   emailNotificationService: EmailNotificationService,
@@ -96,6 +104,11 @@ export class NotificationJobRegistry {
     this.jobMap.set('MONTHLY_REPORT', MonthlyReportJob);
     this.jobMap.set('EVENT_AUTO_CANCELED', EventAutoCanceledJob);
     this.jobMap.set('PHOTO_UPLOAD_REMINDER', PhotoUploadReminderJob);
+    
+    // Token notification jobs
+    this.jobMap.set(LOW_TOKEN_BALANCE as JobTypeKey, LowTokenBalanceJob);
+    this.jobMap.set(TOKEN_PURCHASE_CONFIRMATION as JobTypeKey, TokenPurchaseConfirmationJob);
+    this.jobMap.set(TOKEN_GRANT_NOTIFICATION as JobTypeKey, TokenGrantNotificationJob);
   }
 
   getJobConstructor(jobId: JobTypeKey): NotificationJobConstructor | undefined {

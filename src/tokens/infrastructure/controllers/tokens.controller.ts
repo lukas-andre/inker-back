@@ -17,9 +17,9 @@ import { TokenBalanceDto } from '../../domain/dtos/token-balance.dto';
 import { TokenTransactionDto } from '../../domain/dtos/token-transaction.dto';
 import { PurchaseTokensDto } from '../../domain/dtos/purchase-tokens.dto';
 import { TokenPackageDto } from '../../domain/dtos/token-package.dto';
-import { TOKEN_PACKAGES } from '../../domain/constants/token-packages';
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { TokenPackageService } from '../services/token-package.service';
 
 @ApiTags('Tokens')
 @Controller('tokens')
@@ -31,6 +31,7 @@ export class TokensController {
     private readonly getTransactionHistoryUseCase: GetTransactionHistoryUseCase,
     private readonly purchaseTokensUseCase: PurchaseTokensUseCase,
     private readonly requestContext: RequestContextService,
+    private readonly tokenPackageService: TokenPackageService,
   ) {}
 
   @Get('balance')
@@ -59,7 +60,8 @@ export class TokensController {
     type: [TokenPackageDto],
   })
   async getPackages(): Promise<TokenPackageDto[]> {
-    return TOKEN_PACKAGES.map(pkg => TokenPackageDto.fromPackage(pkg));
+    const packages = this.tokenPackageService.getAllPackages();
+    return packages.map(pkg => TokenPackageDto.fromPackage(pkg));
   }
 
   @Post('purchase')
