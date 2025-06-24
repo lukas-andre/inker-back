@@ -5,7 +5,7 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
-import { TokenBalanceDto } from '../domain/dtos/token-balance.dto';
+import { TokenBalance } from '../infrastructure/entities/token-balance.entity';
 import { TokenBalanceRepository } from '../infrastructure/repositories/token-balance.repository';
 
 export interface GetTokenBalanceParams {
@@ -22,7 +22,7 @@ export class GetTokenBalanceUseCase extends BaseUseCase implements UseCase {
     super(GetTokenBalanceUseCase.name);
   }
 
-  async execute(params: GetTokenBalanceParams): Promise<TokenBalanceDto> {
+  async execute(params: GetTokenBalanceParams): Promise<TokenBalance> {
     const { userId, userType, userTypeId } = params;
 
     this.logger.log(`Getting token balance for user ${userId}`);

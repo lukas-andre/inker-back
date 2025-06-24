@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { TOKENS_DB_CONNECTION_NAME } from '../../../databases/constants';
-import { TokenBalanceDto } from '../../domain/dtos/token-balance.dto';
 import { ITokenBalanceRepository } from '../../domain/interfaces/token-repository.interface';
 import { TokenBalance } from '../entities/token-balance.entity';
 
@@ -14,31 +13,40 @@ export class TokenBalanceRepository implements ITokenBalanceRepository {
     private readonly repository: Repository<TokenBalance>,
   ) {}
 
-  async findByUserId(userId: string): Promise<TokenBalanceDto | null> {
+  get repo(): Repository<TokenBalance> {
+    return this.repository;
+  }
+
+  async findByUserId(userId: string): Promise<TokenBalance | null> {
     const balance = await this.repository.findOne({
       where: { userId },
     });
     return balance;
   }
 
-  async create(balance: Partial<TokenBalanceDto>): Promise<TokenBalanceDto> {
+  async create(balance: Partial<TokenBalance>): Promise<TokenBalance> {
     const entity = this.repository.create(balance);
     return await this.repository.save(entity);
   }
 
-  async update(userId: string, balance: Partial<TokenBalanceDto>): Promise<TokenBalanceDto> {
+  async update(userId: string, balance: Partial<TokenBalance>): Promise<TokenBalance> {
     await this.repository.update({ userId }, balance);
     return await this.findByUserId(userId);
   }
 
-  async incrementBalance(userId: string, amount: number): Promise<TokenBalanceDto> {
+  async incrementBalance(userId: string, amount: number, isGrant: boolean = true): Promise<TokenBalance> {
+    const updateSet: any = {
+      balance: () => `balance + ${amount}`,
+    };
+    
+    if (isGrant) {
+      updateSet.totalGranted = () => `total_granted + ${amount}`;
+    }
+    
     const result = await this.repository
       .createQueryBuilder()
       .update(TokenBalance)
-      .set({
-        balance: () => `balance + ${amount}`,
-        totalGranted: () => `total_granted + ${amount}`,
-      })
+      .set(updateSet)
       .where('user_id = :userId', { userId })
       .returning('*')
       .execute();
@@ -46,7 +54,7 @@ export class TokenBalanceRepository implements ITokenBalanceRepository {
     return result.raw[0];
   }
 
-  async decrementBalance(userId: string, amount: number): Promise<TokenBalanceDto> {
+  async decrementBalance(userId: string, amount: number): Promise<TokenBalance> {
     const result = await this.repository
       .createQueryBuilder()
       .update(TokenBalance)

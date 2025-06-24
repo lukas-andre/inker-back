@@ -84,6 +84,10 @@ export class TokenTransaction {
     grantedAt?: Date;
     grantedVia?: string;
     timestamp?: Date;
+    
+    // Para errores
+    error?: string;
+    failureReason?: string;
   };
 
   @Column({ name: 'ip_address', type: 'varchar', length: 45, nullable: true })

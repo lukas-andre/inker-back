@@ -436,6 +436,8 @@ const PRICING_CONFIG = {
 
 ## 🚀 Plan de Implementación
 
+### Estado Actual: Fase 3 Completada ✅
+
 ### Fase 1: Infraestructura Base (3-4 días) ✅ COMPLETADA
 
 1. **Configuración de Base de Datos**
@@ -474,18 +476,34 @@ const PRICING_CONFIG = {
    - [x] Tests de integración
    - [x] Tests E2E del flujo completo
 
-### Fase 3: API de Compra (2-3 días)
+### Fase 3: API de Compra (2-3 días) ✅ COMPLETADA
 
-1. **Controllers y Endpoints**
-   - [ ] GET /tokens/balance
-   - [ ] GET /tokens/packages
-   - [ ] POST /tokens/purchase
-   - [ ] GET /tokens/transactions
+1. **Controllers y Endpoints** ✅
+   - [x] GET /tokens/balance
+   - [x] GET /tokens/packages
+   - [x] POST /tokens/purchase
+   - [x] GET /tokens/transactions
 
-2. **Payment Gateway (Caja Negra)**
-   - [ ] Crear interfaz IPaymentGateway
-   - [ ] Implementar MockPaymentGateway para desarrollo
-   - [ ] Documentar requerimientos para integración real
+2. **Payment Gateway (Caja Negra)** ✅
+   - [x] Crear interfaz IPaymentGateway
+   - [x] Implementar MockPaymentGateway para desarrollo
+   - [x] Documentar requerimientos para integración real
+
+### Resumen de Implementación - Fase 3
+
+#### Endpoints Implementados:
+- **GET /tokens/balance**: Obtiene el balance actual del usuario
+- **GET /tokens/packages**: Lista los paquetes de tokens disponibles
+- **POST /tokens/purchase**: Procesa la compra de tokens (con mock gateway)
+- **GET /tokens/transactions**: Historial de transacciones con paginación
+
+#### Componentes Creados:
+- `TokensController`: Controlador REST con autenticación JWT
+- DTOs: `TokenBalanceDto`, `TokenTransactionDto`, `PurchaseTokensDto`, `TokenPackageDto`
+- `GetTransactionHistoryUseCase`: Para consultar historial
+- `PurchaseTokensUseCase`: Lógica de compra con transacciones atómicas
+- `MockPaymentGatewayService`: Simulador de pagos para desarrollo
+- Documentación de requerimientos para gateways reales (Stripe, PayPal, MercadoPago)
 
 ### Fase 4: Funcionalidades Adicionales (2-3 días)
 
