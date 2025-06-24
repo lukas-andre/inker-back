@@ -26,6 +26,7 @@ import { SyncQueueModule } from './queues/sync/sync.queue.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { SchedulerModule } from './schedulers/scheduler.module';
 import { TattooGeneratorModule } from './tattoo-generator/tattooGenerator.module';
+import { TokensModule } from './tokens/tokens.module';
 import { UsersModule } from './users/users.module';
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { UsersModule } from './users/users.module';
     ReviewsModule,
     // ReactionsModule,
     TattooGeneratorModule,
+    TokensModule,
     UsersModule,
     NotificationQueueModule,
     SyncQueueModule,
