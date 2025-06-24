@@ -1,13 +1,16 @@
 import { Injectable, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 import { BaseUseCase, UseCase } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { TokenBalance } from '../infrastructure/entities/token-balance.entity';
+import { TOKEN_PURCHASE_CONFIRMATION } from '../../queues/notifications/domain/schemas/tokens';
 import { TokenBalanceRepository } from '../infrastructure/repositories/token-balance.repository';
 import { TokenTransactionRepository } from '../infrastructure/repositories/token-transaction.repository';
 import { TransactionType } from '../domain/enums/transaction-type.enum';
 import { TransactionStatus } from '../domain/enums/transaction-status.enum';
-import { TOKEN_PACKAGES } from '../domain/constants/token-packages';
 import { IPaymentGateway } from '../domain/interfaces/payment-gateway.interface';
+import { TokenPackageService } from '../infrastructure/services/token-package.service';
 
 export interface PurchaseTokensParams {
   userId: string;
@@ -30,6 +33,8 @@ export class PurchaseTokensUseCase extends BaseUseCase implements UseCase {
     private readonly tokenBalanceRepository: TokenBalanceRepository,
     private readonly tokenTransactionRepository: TokenTransactionRepository,
     private readonly paymentGateway: IPaymentGateway,
+    @InjectQueue('notification') private readonly notificationQueue: Queue,
+    private readonly tokenPackageService: TokenPackageService,
   ) {
     super(PurchaseTokensUseCase.name);
   }
@@ -40,7 +45,7 @@ export class PurchaseTokensUseCase extends BaseUseCase implements UseCase {
     this.logger.log(`Processing token purchase for user ${userId}, package: ${packageId}`);
 
     // Validate package
-    const tokenPackage = TOKEN_PACKAGES.find(pkg => pkg.id === packageId);
+    const tokenPackage = this.tokenPackageService.getPackageById(packageId);
     if (!tokenPackage) {
       throw new BadRequestException(`Invalid package ID: ${packageId}`);
     }
@@ -122,9 +127,31 @@ export class PurchaseTokensUseCase extends BaseUseCase implements UseCase {
 
         this.logger.log(`Token purchase completed for user ${userId}: ${tokenPackage.tokens} tokens`);
 
+        const finalBalance = await this.tokenBalanceRepository.findByUserId(userId);
+
+        // Queue purchase confirmation notification
+        await this.notificationQueue.add({
+          jobId: TOKEN_PURCHASE_CONFIRMATION,
+          userId,
+          userTypeId,
+          metadata: {
+            transactionId: transaction.id,
+            packageId: tokenPackage.id,
+            packageName: tokenPackage.name,
+            tokensAmount: tokenPackage.tokens,
+            price: tokenPackage.price,
+            currency: tokenPackage.currency,
+            paymentMethod: paymentResult.paymentMethod,
+            newBalance: finalBalance.balance,
+          },
+        }).catch(error => {
+          // Don't fail the transaction if notification fails
+          this.logger.error(`Failed to queue purchase confirmation notification for user ${userId}`, error);
+        });
+
         return {
           success: true,
-          balance: await this.tokenBalanceRepository.findByUserId(userId),
+          balance: finalBalance,
           transactionId: transaction.id,
           paymentConfirmation: paymentResult.confirmation,
         };

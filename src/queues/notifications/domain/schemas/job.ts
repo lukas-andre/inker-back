@@ -34,6 +34,11 @@ import {
   OfferAcceptedJobSchema,
   OfferRejectedJobSchema,
 } from './quotationOffer.schema';
+import {
+  LowTokenBalanceJobSchema,
+  TokenPurchaseConfirmationJobSchema,
+  TokenGrantNotificationJobSchema,
+} from './tokens';
 
 export const JobSchema = z.union([
   // Agenda
@@ -71,6 +76,10 @@ export const JobSchema = z.union([
   ReviewReminderJobSchema,
   PhotoUploadReminderJobSchema,
   MonthlyReportJobSchema,
+  // Token notifications
+  LowTokenBalanceJobSchema,
+  TokenPurchaseConfirmationJobSchema,
+  TokenGrantNotificationJobSchema,
 ]);
 
 export type JobType = z.infer<typeof JobSchema>;

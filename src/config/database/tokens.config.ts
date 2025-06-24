@@ -8,7 +8,7 @@ import {
 
 import { createDatabaseConnection } from './config';
 
-const DB_NAME = 'inker_tokens';
+const DB_NAME = 'inker-tokens';
 const ENTITIES = [__dirname + '/../../tokens/**/*.entity{.ts,.js}'];
 
 export type TokensDbConfig = TypeOrmModuleOptions;

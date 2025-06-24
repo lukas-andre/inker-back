@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 
 import { TOKENS_DB_CONNECTION_NAME } from '../../databases/constants';
 import {
@@ -8,6 +10,7 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { UserType } from '../../users/domain/enums/userType.enum';
 import { TokenTransactionDto } from '../domain/dtos/token-transaction.dto';
+import { TOKEN_GRANT_NOTIFICATION } from '../../queues/notifications/domain/schemas/tokens';
 import { TransactionStatus } from '../domain/enums/transaction-status.enum';
 import { TransactionType } from '../domain/enums/transaction-type.enum';
 import { TokenBalanceRepository } from '../infrastructure/repositories/token-balance.repository';
@@ -43,8 +46,7 @@ export class GrantTokensUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly tokenBalanceRepository: TokenBalanceRepository,
     private readonly tokenTransactionRepository: TokenTransactionRepository,
-    @Inject(TOKENS_DB_CONNECTION_NAME)
-    private readonly dataSource: DataSource,
+    @InjectQueue('notification') private readonly notificationQueue: Queue,
   ) {
     super(GrantTokensUseCase.name);
   }
@@ -55,14 +57,14 @@ export class GrantTokensUseCase extends BaseUseCase implements UseCase {
     this.logger.log(`Granting ${amount} tokens to user ${userId}. Reason: ${reason}`);
 
     // Use a transaction to ensure atomicity
-    const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = this.tokenBalanceRepository.repo.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       // Get or create balance
       let currentBalance = await this.tokenBalanceRepository.findByUserId(userId);
-      
+
       if (!currentBalance) {
         // Create initial balance
         currentBalance = await this.tokenBalanceRepository.create({
@@ -117,6 +119,25 @@ export class GrantTokensUseCase extends BaseUseCase implements UseCase {
         });
       }
 
+      // Queue grant notification (don't send for welcome bonuses to avoid spam)
+      const shouldNotify = metadata?.promotionType !== 'WELCOME_BONUS';
+      if (shouldNotify) {
+        await this.notificationQueue.add({
+          jobId: TOKEN_GRANT_NOTIFICATION,
+          userId,
+          userTypeId,
+          metadata: {
+            tokensGranted: amount,
+            reason,
+            newBalance: updatedBalance.balance,
+            grantedBy: metadata?.adminUserId || metadata?.grantedBy,
+          },
+        }).catch(error => {
+          // Don't fail the transaction if notification fails
+          this.logger.error(`Failed to queue grant notification for user ${userId}`, error);
+        });
+      }
+
       return {
         success: true,
         transaction,
@@ -124,7 +145,7 @@ export class GrantTokensUseCase extends BaseUseCase implements UseCase {
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      
+
       this.logger.error(`Failed to grant tokens to user ${userId}`, {
         error: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
@@ -132,7 +153,7 @@ export class GrantTokensUseCase extends BaseUseCase implements UseCase {
         amount,
         reason,
       });
-      
+
       throw error;
     } finally {
       await queryRunner.release();
