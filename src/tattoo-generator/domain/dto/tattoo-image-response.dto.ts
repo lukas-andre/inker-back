@@ -73,4 +73,22 @@ export class TattooImageResponseDto {
   @IsNumber()
   @IsOptional()
   similarityScore?: number;
+
+  @ApiPropertyOptional({
+    description: 'Remaining token balance after generation',
+    example: 23,
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  tokenBalance?: number;
+
+  @ApiPropertyOptional({
+    description: 'Number of tokens consumed for this generation',
+    example: 1,
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  tokensConsumed?: number;
 }

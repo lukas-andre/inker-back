@@ -24,6 +24,7 @@ import { TypeTransform } from '../../../global/domain/utils/typeTransform';
 import { DbServiceException } from '../../../global/infrastructure/exceptions/dbService.exception';
 import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
 import { ArtistLocation } from '../../../locations/infrastructure/database/entities/artistLocation.entity';
+import { GrantTokensUseCase } from '../../../tokens/usecases/grant-tokens.usecase';
 import { UserType } from '../../domain/enums/userType.enum';
 import {
   CreateArtistUserResDto,
@@ -44,6 +45,7 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
     private readonly agendaProvider: AgendaRepository,
     private readonly artistLocationProvider: ArtistLocationRepository,
     private readonly configService: ConfigService,
+    private readonly grantTokensUseCase?: GrantTokensUseCase,
   ) {
     super(CreateUserByTypeUseCase.name);
   }
@@ -70,6 +72,9 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
         created.id,
         createUserParams,
       );
+
+      // Grant welcome tokens
+      await this.grantWelcomeTokens(created.id, createUserParams.userType, response);
 
       if (response instanceof Artist) {
         const resp = await TypeTransform.to(CreateArtistUserResDto, response);
@@ -228,5 +233,41 @@ export class CreateUserByTypeUseCase extends BaseUseCase implements UseCase {
       contactEmail: dto.email,
       phoneNumber: dto.phoneNumberDetails.number,
     };
+  }
+
+  private async grantWelcomeTokens(
+    userId: string,
+    userType: UserType,
+    createdEntity: Customer | Artist,
+  ): Promise<void> {
+    if (!this.grantTokensUseCase) {
+      this.logger.warn('GrantTokensUseCase not available, skipping welcome tokens');
+      return;
+    }
+
+    try {
+      const welcomeTokens = this.configService.get<number>('TOKENS_WELCOME_BONUS', 3);
+      
+      if (welcomeTokens > 0) {
+        const userTypeId = createdEntity.id; // ID del Customer o Artist creado
+        
+        await this.grantTokensUseCase.execute({
+          userId,
+          userType,
+          userTypeId,
+          amount: welcomeTokens,
+          reason: 'Bono de bienvenida - Registro nuevo usuario',
+          metadata: {
+            promotionType: 'WELCOME_BONUS',
+            registrationDate: new Date(),
+          },
+        });
+        
+        this.logger.log(`🎁 Welcome tokens granted: ${welcomeTokens} tokens to user ${userId}`);
+      }
+    } catch (error) {
+      // No fallar la creación del usuario si falla el otorgamiento de tokens
+      this.logger.error(`Failed to grant welcome tokens to user ${userId}`, error);
+    }
   }
 }
