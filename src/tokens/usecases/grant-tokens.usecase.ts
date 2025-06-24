@@ -105,7 +105,7 @@ export class GrantTokensUseCase extends BaseUseCase implements UseCase {
 
       // Log for audit purposes
       if (metadata?.adminUserId) {
-        this.logger.info('Manual token grant', {
+        this.logger.log('Manual token grant', {
           action: 'MANUAL_GRANT',
           adminUserId: metadata.adminUserId,
           targetUserId: userId,
@@ -126,8 +126,8 @@ export class GrantTokensUseCase extends BaseUseCase implements UseCase {
       await queryRunner.rollbackTransaction();
       
       this.logger.error(`Failed to grant tokens to user ${userId}`, {
-        error: error.message,
-        stack: error.stack,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
         userId,
         amount,
         reason,

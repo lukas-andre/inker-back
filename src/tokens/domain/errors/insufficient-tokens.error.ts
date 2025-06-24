@@ -1,6 +1,6 @@
-import { DomainException } from '../../../global/domain/exceptions/domain.exception';
+import { HttpException } from '@nestjs/common';
 
-export class InsufficientTokensError extends DomainException {
+export class InsufficientTokensError extends HttpException {
   constructor(
     public readonly currentBalance: number,
     public readonly requestedAmount: number,

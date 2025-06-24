@@ -1,7 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 
 import { BaseComponent } from '../../global/domain/components/base.component';
 import { RequestContext } from '../../global/infrastructure/services/requestContext.service';
+import { InsufficientTokensError } from '../../tokens/domain/errors/insufficient-tokens.error';
+import { ConsumeTokensUseCase } from '../../tokens/usecases/consume-tokens.usecase';
+import { GetTokenBalanceUseCase } from '../../tokens/usecases/get-token-balance.usecase';
 import {
   TattooImageDto,
   TattooImageResponseDto,
@@ -24,6 +27,8 @@ export class GenerateTattooImagesUseCase extends BaseComponent {
   constructor(
     private readonly imageGenerationService: RunwareImageGenerationService,
     private readonly promptEnhancementService: TattooPromptEnhancementService,
+    private readonly consumeTokensUseCase: ConsumeTokensUseCase,
+    private readonly getTokenBalanceUseCase: GetTokenBalanceUseCase,
     private readonly designCacheRepository?: TattooDesignCacheRepository,
   ) {
     super(GenerateTattooImagesUseCase.name);
@@ -68,11 +73,20 @@ export class GenerateTattooImagesUseCase extends BaseComponent {
             }),
           );
 
+          // Get current balance but don't consume tokens for cached results
+          const balance = await this.getTokenBalanceUseCase.execute({
+            userId: id,
+            userType,
+            userTypeId,
+          });
+
           return {
             images,
             totalCost: 0,
             fromCache: true,
             similarityScore: bestMatch.similarity,
+            tokenBalance: balance.balance,
+            tokensConsumed: 0,
           };
         }
       } catch (error: any) {
@@ -82,6 +96,44 @@ export class GenerateTattooImagesUseCase extends BaseComponent {
           }`,
         );
       }
+    }
+
+    // Consume tokens before generating new images
+    let tokenBalance: number;
+    let transactionId: string | undefined;
+    const tokensToConsume = 1; // 1 token per generation
+    
+    try {
+      const consumeResult = await this.consumeTokensUseCase.execute({
+        userId: id,
+        userType,
+        userTypeId,
+        amount: tokensToConsume,
+        metadata: {
+          tattooGenerationId: `${Date.now()}-${id}`,
+          prompt: userInput,
+          runwareCost: 0.06,          // runwareCost will be updated after generation
+        },
+      });
+      
+      tokenBalance = consumeResult.newBalance;
+      transactionId = consumeResult.transaction?.id;
+      this.logger.log(`Consumed ${tokensToConsume} token(s). New balance: ${tokenBalance}`);
+    } catch (error) {
+      if (error instanceof InsufficientTokensError) {
+        this.logger.warn(`Insufficient tokens for user ${id}. Balance: ${error.currentBalance}, Required: ${error.requestedAmount}`);
+        throw new HttpException(
+          {
+            statusCode: 402,
+            message: 'Insufficient tokens to generate images',
+            error: 'Payment Required',
+            currentBalance: error.currentBalance,
+            requiredTokens: error.requestedAmount,
+          },
+          402,
+        );
+      }
+      throw error;
     }
 
     const enhancedPrompt = await this.promptEnhancementService.enhancePrompt({
@@ -149,6 +201,11 @@ export class GenerateTattooImagesUseCase extends BaseComponent {
       totalCost,
     });
 
+    // Log the actual Runware cost
+    if (totalCost !== undefined) {
+      this.logger.log(`Runware generation cost: $${totalCost} for transaction ${transactionId}`);
+    }
+
     return {
       images: images.map(image => ({
         ...image,
@@ -156,6 +213,8 @@ export class GenerateTattooImagesUseCase extends BaseComponent {
       })),
       totalCost,
       fromCache: false,
+      tokenBalance,
+      tokensConsumed: tokensToConsume,
     };
   }
 }

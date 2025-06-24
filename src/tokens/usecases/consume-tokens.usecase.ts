@@ -103,8 +103,8 @@ export class ConsumeTokensUseCase extends BaseUseCase implements UseCase {
       await queryRunner.rollbackTransaction();
       
       this.logger.error(`Failed to consume tokens for user ${userId}`, {
-        error: error.message,
-        stack: error.stack,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
         userId,
         amount,
       });

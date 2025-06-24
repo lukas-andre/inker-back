@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import libreTranslateConfig from '../config/libretranslate.config';
+import { TokensModule } from '../tokens/tokens.module';
 
 import { TattooGeneratorController } from './infrastructure/controllers/tattooGenerator.controller';
 import { TattooGeneratorDatabaseModule } from './infrastructure/database/tattoGeneratorDatabase.module';
@@ -18,6 +19,7 @@ import { UpdateTattooFavoriteUseCase } from './usecases/updateTattooFavorite.use
     HttpModule,
     ConfigModule.forFeature(libreTranslateConfig),
     TattooGeneratorDatabaseModule,
+    TokensModule,
   ],
   controllers: [TattooGeneratorController],
   providers: [

@@ -5,6 +5,7 @@ import { ArtistsRepositoryModule } from '../artists/infrastructure/repositories/
 import { CustomerRepositoryModule } from '../customers/infrastructure/providers/customerProvider.module';
 import { LocationRepositoryModule } from '../locations/infrastructure/database/locationRepository.module';
 import { NotificationQueueModule } from '../queues/notifications/notification.queue.module';
+import { TokensModule } from '../tokens/tokens.module';
 
 import { PermissionsController } from './infrastructure/controllers/permissions.controller';
 import { RolesController } from './infrastructure/controllers/roles.controller';
@@ -48,6 +49,7 @@ import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPas
     LocationRepositoryModule,
     UserRepositoryModule,
     NotificationQueueModule,
+    TokensModule,
   ],
   providers: [
     UsersHandler,

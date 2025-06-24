@@ -455,21 +455,21 @@ const PRICING_CONFIG = {
    - [x] ConsumeTokens
    - [x] GrantTokens (para testing y promociones)
 
-### Fase 2: Integración con Generador (2-3 días)
+### Fase 2: Integración con Generador (2-3 días) ✅ PARCIALMENTE COMPLETADA
 
-1. **Modificar TattooGenerator**
-   - [ ] Inyectar ConsumeTokens UseCase
-   - [ ] Agregar verificación de balance antes de generar
-   - [ ] Manejar InsufficientTokensError
-   - [ ] Actualizar respuestas para incluir balance restante
+1. **Modificar TattooGenerator** ✅
+   - [x] Inyectar ConsumeTokens UseCase
+   - [x] Agregar verificación de balance antes de generar
+   - [x] Manejar InsufficientTokensError
+   - [x] Actualizar respuestas para incluir balance restante
 
-2. **Integración con Creación de Usuarios**
-   - [ ] Modificar `CreateUserByTypeUseCase` para otorgar tokens de bienvenida
-   - [ ] Inyectar GrantTokens UseCase
-   - [ ] Agregar lógica después de crear Customer/Artist exitosamente
-   - [ ] Configurar cantidad de tokens via ConfigService
+2. **Integración con Creación de Usuarios** ✅
+   - [x] Modificar `CreateUserByTypeUseCase` para otorgar tokens de bienvenida
+   - [x] Inyectar GrantTokens UseCase
+   - [x] Agregar lógica después de crear Customer/Artist exitosamente
+   - [x] Configurar cantidad de tokens via ConfigService
 
-3. **Testing**
+3. **Testing** ⏳ PENDIENTE
    - [ ] Tests unitarios para use cases
    - [ ] Tests de integración
    - [ ] Tests E2E del flujo completo
