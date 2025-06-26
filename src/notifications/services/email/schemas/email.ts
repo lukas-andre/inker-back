@@ -26,6 +26,10 @@ export const MailIdSchema = z.enum([
   'LOW_TOKEN_BALANCE',
   'TOKEN_PURCHASE_CONFIRMATION',
   'TOKEN_GRANT_NOTIFICATION',
+  // Beta signup
+  'BETA_SIGNUP',
+  // Contact/Feedback
+  'CONTACT_MESSAGE',
 ]);
 export type MailIdType = z.infer<typeof MailIdSchema>;
 
@@ -317,6 +321,26 @@ const TokenGrantNotificationEmailSchema = BaseEmailSchema.extend({
 });
 export type TokenGrantNotificationEmailType = z.infer<typeof TokenGrantNotificationEmailSchema>;
 
+const BetaSignupEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.BETA_SIGNUP),
+  name: z.string(),
+  email: z.string(),
+  phone: z.string().optional(),
+  message: z.string().optional(),
+  userType: z.enum(['artist', 'customer']),
+});
+export type BetaSignupEmailType = z.infer<typeof BetaSignupEmailSchema>;
+
+const ContactMessageEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.CONTACT_MESSAGE),
+  name: z.string(),
+  email: z.string(),
+  subject: z.string(),
+  message: z.string(),
+  userType: z.enum(['artist', 'customer', 'other']),
+  messageType: z.enum(['suggestion', 'bug_report', 'general_inquiry', 'feature_request', 'other']),
+});
+export type ContactMessageEmailType = z.infer<typeof ContactMessageEmailSchema>;
 
 export const EmailSchema = z.union([
   AgendaEventCreatedSchema,
@@ -344,6 +368,10 @@ export const EmailSchema = z.union([
   LowTokenBalanceEmailSchema,
   TokenPurchaseConfirmationEmailSchema,
   TokenGrantNotificationEmailSchema,
+  // Beta signup
+  BetaSignupEmailSchema,
+  // Contact/Feedback
+  ContactMessageEmailSchema,
 ]);
 
 export type EmailType = z.infer<typeof EmailSchema>;
@@ -382,4 +410,6 @@ export {
   LowTokenBalanceEmailSchema,
   TokenPurchaseConfirmationEmailSchema,
   TokenGrantNotificationEmailSchema,
+  BetaSignupEmailSchema,
+  ContactMessageEmailSchema,
 };

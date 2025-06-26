@@ -26,6 +26,8 @@ import {
   LowTokenBalanceEmailSchema,
   TokenPurchaseConfirmationEmailSchema,
   TokenGrantNotificationEmailSchema,
+  BetaSignupEmailSchema,
+  ContactMessageEmailSchema,
 } from '../schemas/email';
 
 export const TemplateRegistry: Record<
@@ -158,5 +160,15 @@ export const TemplateRegistry: Record<
     schema: TokenGrantNotificationEmailSchema,
     path: path.join(__dirname, './tokenGrantNotification.hbs'),
     subject: '🎁 ¡Has recibido tokens gratis!',
+  },
+  BETA_SIGNUP: {
+    schema: BetaSignupEmailSchema,
+    path: path.join(__dirname, './betaSignup.hbs'),
+    subject: '🚀 Nueva solicitud de Beta para Inker',
+  },
+  CONTACT_MESSAGE: {
+    schema: ContactMessageEmailSchema,
+    path: path.join(__dirname, './contactMessage.hbs'),
+    subject: '📧 Nuevo mensaje de contacto de Inker',
   },
 };
