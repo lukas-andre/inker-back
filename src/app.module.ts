@@ -7,8 +7,10 @@ import { AlertGateway } from './alert/alert.gateway';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ArtistsModule } from './artists/artists.module';
 import { AuthModule } from './auth/auth.module';
+import { BetaSignupModule } from './beta-signup/betaSignup.module';
 import { ChatGateway } from './chat/chat.gateway';
 import { ConsentModule } from './consent-module/consent.module';
+import { ContactModule } from './contact/contact.module';
 import { CustomersModule } from './customers/customers.module';
 import { DatabasesModule } from './databases/database.module';
 import { FollowsModule } from './follows/follows.module';
@@ -44,6 +46,8 @@ import { UsersModule } from './users/users.module';
     AnalyticsModule,
     ArtistsModule,
     AuthModule,
+    BetaSignupModule,
+    ContactModule,
     CustomersModule,
     DatabasesModule,
     FollowsModule,
