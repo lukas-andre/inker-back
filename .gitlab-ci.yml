@@ -34,7 +34,7 @@ Install Dependencies:
     - .node-job
     - .setup-cache
   script:
-    - npm ci --prefer-offline --no-audit
+    - npm ci --prefer-offline --no-audit --include=dev
     - npm run prepare || true
   artifacts:
     paths:
