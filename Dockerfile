@@ -21,7 +21,7 @@ WORKDIR /app
 COPY dist/ ./dist/
 COPY package*.json ./
 
-# Install dependencies including sharp
+# Install production dependencies including sharp
 RUN npm install sharp@0.32.6 --platform=linuxmusl --arch=x64 && \
     npm ci --only=production && \
     npm cache clean --force
