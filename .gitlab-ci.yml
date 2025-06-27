@@ -54,8 +54,8 @@ Verify:
   dependencies:
     - Install Dependencies
   script:
-    # - npm run lint || true
-    # - npm run test -- --ci --coverage || true
+    - npm run lint || true
+    - npm run test -- --ci --coverage || true
     - npm run build --configuration production
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
@@ -156,7 +156,11 @@ Deploy to Staging:
       when: on_success
     - if: '$CI_COMMIT_BRANCH == "staging"'
       when: on_success
-    - when: manual
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
+      allow_failure: true
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
       allow_failure: true
 
 # Stage: Deploy - Production
