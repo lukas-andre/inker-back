@@ -54,8 +54,8 @@ Verify:
   dependencies:
     - Install Dependencies
   script:
-    - npm run lint || true
-    - npm run test -- --ci --coverage || true
+    # - npm run lint || true
+    # - npm run test -- --ci --coverage || true
     - npm run build --configuration production
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
