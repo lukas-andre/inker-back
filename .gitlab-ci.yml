@@ -139,7 +139,6 @@ Deploy to Staging:
     FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON}
   script:
     - cd /apps/api
-    - env
     - docker network ls
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
     # Stop and remove old container if exists
@@ -252,7 +251,6 @@ Deploy to Production:
     FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON}
   script:
     - cd /apps/api
-    - env
     - docker network ls
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
     # Stop and remove old container if exists
