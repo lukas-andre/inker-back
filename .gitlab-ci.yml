@@ -103,9 +103,9 @@ Deploy to Staging:
     # Application configuration for staging
     PORT: 3000
     DB_HOST: postgresql_development
-    DB_PASSWORD: ${STAGING_DB_PASSWORD:-devpassword123}
-    DB_USERNAME: ${STAGING_DB_USERNAME:-postgres_dev}
-    DB_PORT: 5432
+    DB_PASSWORD: ${DB_PASSWORD:-devpassword123}
+    DB_USERNAME: ${DB_USERNAME:-postgres_dev}
+    DB_PORT: ${DB_PORT:-5432}
     TYPEORM_SYNC: "true"
     AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
     AWS_ACCESS_SECRET: ${AWS_ACCESS_SECRET}
