@@ -100,6 +100,7 @@ Deploy to Staging:
     DOCKER_DRIVER: overlay2
     # Environment
     ENV: development
+    DOMAIN: staging.inker.studio
     # Application configuration for staging
     PORT: 3000
     DB_HOST: postgresql_development
@@ -182,6 +183,7 @@ Deploy to Staging:
       CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN} \
       CLOUDFLARE_IMAGES_DELIVERY_URL=${CLOUDFLARE_IMAGES_DELIVERY_URL} \
       FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON} \
+      DOMAIN=${DOMAIN} \
       CI_COMMIT_SHA=${CI_COMMIT_SHA} \
       docker compose --project-name inkerstudio_development -f docker-compose.yml up -d
   environment:
@@ -212,6 +214,7 @@ Deploy to Production:
     DOCKER_DRIVER: overlay2
     # Environment
     ENV: production
+    DOMAIN: www.inker.studio
     # Application configuration for production
     PORT: 3000
     DB_HOST: postgresql_production
@@ -294,6 +297,7 @@ Deploy to Production:
       CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN} \
       CLOUDFLARE_IMAGES_DELIVERY_URL=${CLOUDFLARE_IMAGES_DELIVERY_URL} \
       FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON} \
+      DOMAIN=${DOMAIN} \
       CI_COMMIT_SHA=${CI_COMMIT_SHA} \
       docker compose --project-name inkerstudio_production -f docker-compose.yml up -d
   environment:
