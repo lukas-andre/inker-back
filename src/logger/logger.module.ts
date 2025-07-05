@@ -7,7 +7,7 @@ import { trace, context } from '@opentelemetry/api';
   imports: [
     LoggerModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
-        const isProduction = configService.get('app.environment') !== 'local';
+        const isProduction = true;
         
         return {
           pinoHttp: {
