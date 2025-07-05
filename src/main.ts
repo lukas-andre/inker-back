@@ -14,7 +14,7 @@ import { SERVICE_NAME } from './constants';
 
 // test
 async function bootstrap() {
-  // Start OpenTelemetry SDK before creating the NestJS application
+  // Start OpenTelemetry SDK before creating the NestJS  application
   otelSDK.start();
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
