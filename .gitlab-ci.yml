@@ -198,7 +198,7 @@ Deploy to Staging:
       TRAEFIK_ENTRYPOINT=${TRAEFIK_ENTRYPOINT} \
       TRAEFIK_TLS=${TRAEFIK_TLS} \
       CI_COMMIT_SHA=${CI_COMMIT_SHA} \
-      docker compose --project-name inkerstudio_${ENV} -f docker-compose.yml up -d inker-back-${ENV}
+      docker compose --project-name inkerstudio_${ENV} -f docker-compose.yml up -d inker-back
   environment:
     name: staging
     url: https://staging.inker.studio
