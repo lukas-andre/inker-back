@@ -12,6 +12,7 @@ import { cloudflareConfigSchema } from '../config/cloudflare.config';
 import { config } from '../config/config';
 import { databaseConfigSchema } from '../config/database/config';
 import { oasConfigSchema } from '../config/oas.config';
+import { otelConfigSchema } from '../config/otel.config';
 import { PlacesConfigSchema } from '../config/places.config';
 import { runwareConfigSchema } from '../config/runware.config';
 import { sendGridSchema } from '../config/sendgrid.config';
@@ -42,7 +43,8 @@ import { UniqueIdService } from './infrastructure/services/uniqueId.service';
         .concat(databaseConfigSchema)
         .concat(sendGridSchema)
         .concat(PlacesConfigSchema)
-        .concat(runwareConfigSchema),
+        .concat(runwareConfigSchema)
+        .concat(otelConfigSchema),
     }),
     ClsModule.forRoot({
       global: true,
