@@ -99,13 +99,13 @@ Deploy to Staging:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     # Environment
-    ENV: development
+    ENV: staging
     DOMAIN: staging.inker.studio
     # Application configuration for staging
     PORT: 3000
-    DB_HOST: postgresql_development
+    DB_HOST: postgresql_staging
     DB_PASSWORD: ${DB_PASSWORD:-devpassword123}
-    DB_USERNAME: ${DB_USERNAME:-postgres_dev}
+    DB_USERNAME: ${DB_USERNAME:-postgres}
     DB_PORT: ${DB_PORT:-5432}
     TYPEORM_SYNC: "true"
     AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
@@ -138,12 +138,23 @@ Deploy to Staging:
     CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
     CLOUDFLARE_IMAGES_DELIVERY_URL: ${CLOUDFLARE_IMAGES_DELIVERY_URL}
     FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON}
+    # Additional variables for Traefik configuration
+    TRAEFIK_ENTRYPOINT: websecure
+    TRAEFIK_TLS: "true"
   script:
     - cd /apps/api
-    - docker network ls
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
-    # Stop and remove old container if exists
-    - docker compose --project-name inkerstudio_staging down || true
+    
+    # Ensure networks exist
+    - docker network create backend_${ENV} 2>/dev/null || true
+    - docker network create proxy_${ENV} 2>/dev/null || true
+    
+    # Stop only the inker-back service (not the entire stack)
+    - docker compose --project-name inkerstudio_${ENV} stop inker-back || true
+    - docker compose --project-name inkerstudio_${ENV} rm -f inker-back || true
+    
+    # Pull latest image
+    - docker pull $REGISTRY_URL/$CI_PROJECT_PATH:${CI_COMMIT_SHA}
     # Deploy with all environment variables
     - |
       ENV=${ENV} \
@@ -184,8 +195,10 @@ Deploy to Staging:
       CLOUDFLARE_IMAGES_DELIVERY_URL=${CLOUDFLARE_IMAGES_DELIVERY_URL} \
       FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON} \
       DOMAIN=${DOMAIN} \
+      TRAEFIK_ENTRYPOINT=${TRAEFIK_ENTRYPOINT} \
+      TRAEFIK_TLS=${TRAEFIK_TLS} \
       CI_COMMIT_SHA=${CI_COMMIT_SHA} \
-      docker compose --project-name inkerstudio_staging -f docker-compose.yml up -d
+      docker compose --project-name inkerstudio_${ENV} -f docker-compose.yml up -d inker-back-${ENV}
   environment:
     name: staging
     url: https://staging.inker.studio
