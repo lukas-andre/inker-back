@@ -143,7 +143,7 @@ Deploy to Staging:
     - docker network ls
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
     # Stop and remove old container if exists
-    - docker compose --project-name inkerstudio_development down || true
+    - docker compose --project-name inkerstudio_staging down || true
     # Deploy with all environment variables
     - |
       ENV=${ENV} \
@@ -185,7 +185,7 @@ Deploy to Staging:
       FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON} \
       DOMAIN=${DOMAIN} \
       CI_COMMIT_SHA=${CI_COMMIT_SHA} \
-      docker compose --project-name inkerstudio_development -f docker-compose.yml up -d
+      docker compose --project-name inkerstudio_staging -f docker-compose.yml up -d
   environment:
     name: staging
     url: https://staging.inker.studio
