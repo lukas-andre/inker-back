@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bull';
 import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
+import { OpenTelemetryModule } from 'nestjs-otel';
 
 import { AgendaModule } from './agenda/agenda.module';
 import { AlertGateway } from './alert/alert.gateway';
@@ -19,6 +20,7 @@ import { GlobalModule } from './global/global.module';
 import { HealthModule } from './health/health.module';
 import { InteractionsModule } from './interactions/interactions.module';
 import { LocationsModule } from './locations/locations.module';
+import { AppLoggerModule } from './logger/logger.module';
 import { MultimediasModule } from './multimedias/multimedias.module';
 import { PlacesModule } from './places/places.module';
 import { PostsModule } from './posts/posts.module';
@@ -38,10 +40,24 @@ import { UsersModule } from './users/users.module';
         port: 6379,
       },
     }),
+    OpenTelemetryModule.forRoot({
+      metrics: {
+        hostMetrics: true,
+        apiMetrics: {
+          enable: true,
+          defaultAttributes: {
+            service: 'inker-backend',
+          },
+          ignoreRoutes: ['/health', '/metrics'],
+          ignoreUndefinedRoutes: false,
+        },
+      },
+    }),
     // DevtoolsModule.register({
     //   http: process.env.NODE_ENV !== 'production',
     //   port: 8000,
     // }),
+    AppLoggerModule,
     AgendaModule,
     AnalyticsModule,
     ArtistsModule,
