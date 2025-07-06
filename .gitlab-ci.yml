@@ -158,6 +158,9 @@ Deploy to Staging:
     
     # Pull latest image
     - docker pull $REGISTRY_URL/$CI_PROJECT_PATH:${CI_COMMIT_SHA}
+    - echo $REDIS_PASSWORD
+    - echo $REDIS_HOST
+    - echo $REDIS_PORT
     # Deploy with all environment variables
     - |
       ENV=${ENV} \
