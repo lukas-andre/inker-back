@@ -141,6 +141,9 @@ Deploy to Staging:
     # Additional variables for Traefik configuration
     TRAEFIK_ENTRYPOINT: websecure
     TRAEFIK_TLS: "true"
+    REDIS_PASSWORD: ${REDIS_PASSWORD}
+    REDIS_HOST: ${REDIS_HOST}
+    REDIS_PORT: ${REDIS_PORT}
   script:
     - cd /apps/api
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
@@ -197,6 +200,9 @@ Deploy to Staging:
       DOMAIN=${DOMAIN} \
       TRAEFIK_ENTRYPOINT=${TRAEFIK_ENTRYPOINT} \
       TRAEFIK_TLS=${TRAEFIK_TLS} \
+      REDIS_PASSWORD=${REDIS_PASSWORD} \
+      REDIS_HOST=${REDIS_HOST} \
+      REDIS_PORT=${REDIS_PORT} \
       CI_COMMIT_SHA=${CI_COMMIT_SHA} \
       docker compose --project-name inkerstudio_${ENV} -f docker-compose.yml up -d inker-back
   environment:
@@ -265,12 +271,26 @@ Deploy to Production:
     CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
     CLOUDFLARE_IMAGES_DELIVERY_URL: ${CLOUDFLARE_IMAGES_DELIVERY_URL}
     FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON}
+    # Additional variables for Traefik configuration
+    TRAEFIK_ENTRYPOINT: websecure
+    TRAEFIK_TLS: "true"
+    REDIS_PASSWORD: ${REDIS_PASSWORD}
+    REDIS_HOST: ${REDIS_HOST}
+    REDIS_PORT: ${REDIS_PORT}
   script:
     - cd /apps/api
-    - docker network ls
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY_URL
-    # Stop and remove old container if exists
-    - docker compose --project-name inkerstudio_production down || true
+    
+    # Ensure networks exist
+    - docker network create backend_${ENV} 2>/dev/null || true
+    - docker network create proxy_${ENV} 2>/dev/null || true
+    
+    # Stop only the inker-back service (not the entire stack)
+    - docker compose --project-name inkerstudio_${ENV} stop inker-back || true
+    - docker compose --project-name inkerstudio_${ENV} rm -f inker-back || true
+    
+    # Pull latest image
+    - docker pull $REGISTRY_URL/$CI_PROJECT_PATH:${CI_COMMIT_SHA}
     # Deploy with all environment variables
     - |
       ENV=${ENV} \
@@ -311,8 +331,13 @@ Deploy to Production:
       CLOUDFLARE_IMAGES_DELIVERY_URL=${CLOUDFLARE_IMAGES_DELIVERY_URL} \
       FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON} \
       DOMAIN=${DOMAIN} \
+      TRAEFIK_ENTRYPOINT=${TRAEFIK_ENTRYPOINT} \
+      TRAEFIK_TLS=${TRAEFIK_TLS} \
+      REDIS_PASSWORD=${REDIS_PASSWORD} \
+      REDIS_HOST=${REDIS_HOST} \
+      REDIS_PORT=${REDIS_PORT} \
       CI_COMMIT_SHA=${CI_COMMIT_SHA} \
-      docker compose --project-name inkerstudio_production -f docker-compose.yml up -d
+      docker compose --project-name inkerstudio_${ENV} -f docker-compose.yml up -d inker-back
   environment:
     name: production
     url: https://www.inker.studio

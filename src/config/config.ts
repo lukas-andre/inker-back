@@ -6,6 +6,7 @@ import { databaseConfigs } from './database/config';
 import { oasConfig } from './oas.config';
 import { otelConfig } from './otel.config';
 import { PlacesConfig } from './places.config';
+import { redisConfig } from './redis.config';
 import { runwareConfig } from './runware.config';
 import { sendGridConfig } from './sendgrid.config';
 import { verificationHashConf } from './verificationHash';
@@ -19,6 +20,7 @@ export const config = [
   oasConfig,
   otelConfig,
   PlacesConfig,
+  redisConfig,
   runwareConfig,
   sendGridConfig,
   ...databaseConfigs,

@@ -1,9 +1,11 @@
 import { BullModule } from '@nestjs/bull';
 import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { ModulesContainer } from '@nestjs/core';
 import { OpenTelemetryModule } from 'nestjs-otel';
 
 import { AgendaModule } from './agenda/agenda.module';
+import { redisConfig } from './config/redis.config';
 import { AlertGateway } from './alert/alert.gateway';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ArtistsModule } from './artists/artists.module';
@@ -34,11 +36,20 @@ import { TokensModule } from './tokens/tokens.module';
 import { UsersModule } from './users/users.module';
 @Module({
   imports: [
-    BullModule.forRoot({
-      redis: {
-        host: 'localhost',
-        port: 6379,
-      },
+    BullModule.forRootAsync({
+      inject: [redisConfig.KEY],
+      useFactory: (config: ConfigType<typeof redisConfig>) => ({
+        redis: {
+          host: config.host,
+          port: config.port,
+          password: config.password,
+          retryStrategy: (times) => {
+            const delay = Math.min(times * config.retryDelay, 30000);
+            return delay;
+          },
+          connectTimeout: config.connectTimeout,
+        },
+      }),
     }),
     OpenTelemetryModule.forRoot({
       metrics: {

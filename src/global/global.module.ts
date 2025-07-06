@@ -14,6 +14,7 @@ import { databaseConfigSchema } from '../config/database/config';
 import { oasConfigSchema } from '../config/oas.config';
 import { otelConfigSchema } from '../config/otel.config';
 import { PlacesConfigSchema } from '../config/places.config';
+import { redisConfigSchema } from '../config/redis.config';
 import { runwareConfigSchema } from '../config/runware.config';
 import { sendGridSchema } from '../config/sendgrid.config';
 import { verificationHashConfigSchema } from '../config/verificationHash';
@@ -43,6 +44,7 @@ import { UniqueIdService } from './infrastructure/services/uniqueId.service';
         .concat(databaseConfigSchema)
         .concat(sendGridSchema)
         .concat(PlacesConfigSchema)
+        .concat(redisConfigSchema)
         .concat(runwareConfigSchema)
         .concat(otelConfigSchema),
     }),
