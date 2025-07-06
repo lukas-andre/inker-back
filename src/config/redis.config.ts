@@ -12,7 +12,7 @@ export const redisConfig = registerAs('redis', () => ({
 
 export const redisConfigSchema = Joi.object({
   REDIS_HOST: Joi.string().default('localhost'),
-  REDIS_PORT: Joi.number().port().default(6379),
+  REDIS_PORT: Joi.string().default('6379'),
   REDIS_PASSWORD: Joi.string().optional().allow(''),
   REDIS_RETRY_ATTEMPTS: Joi.number().integer().min(0).default(10),
   REDIS_RETRY_DELAY: Joi.number().integer().min(0).default(3000),
