@@ -37,6 +37,7 @@ import { UpdateUserEmailUseCase } from './usecases/user/updateUserEmail.usecase'
 import { UpdateUserPasswordUseCase } from './usecases/user/updateUserPassword.usecase';
 import { UpdateUserUsernameUseCase } from './usecases/user/updateUserUsername.usecase';
 import { ValidateSMSAccountVerificationCodeUseCase } from './usecases/user/validateSMSAccountVerificationCode.usecase';
+import { ValidateEmailAccountVerificationCodeUseCase } from './usecases/user/validateEmailAccountVerificationCode.usecase';
 import { SendEmailVerificationCodeUseCase } from './usecases/user/verification-code/sendEmailVerificationCode.usecase';
 import { SendSMSVerificationCodeUseCase } from './usecases/user/verification-code/sendSmsVerificationCode.usecase';
 import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPasswordWithCode.usecase';
@@ -70,6 +71,7 @@ import { UpdateUserPasswordWithCodeUseCase } from './usecases/user/updateUserPas
     UpdateUserPasswordUseCase,
     UpdateUserUsernameUseCase,
     ValidateSMSAccountVerificationCodeUseCase,
+    ValidateEmailAccountVerificationCodeUseCase,
     GetSettingsUseCase,
     UpdateNotificationsUseCase,
     UpdateLocationServicesUseCase,
