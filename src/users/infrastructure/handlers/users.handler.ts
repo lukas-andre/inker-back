@@ -17,6 +17,7 @@ import { UpdateUserPasswordUseCase } from '../../usecases/user/updateUserPasswor
 import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
 import { UpdateUserUsernameUseCase } from '../../usecases/user/updateUserUsername.usecase';
 import { ValidateSMSAccountVerificationCodeUseCase } from '../../usecases/user/validateSMSAccountVerificationCode.usecase';
+import { ValidateEmailAccountVerificationCodeUseCase } from '../../usecases/user/validateEmailAccountVerificationCode.usecase';
 import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verification-code/sendEmailVerificationCode.usecase';
 import { SendSMSVerificationCodeUseCase } from '../../usecases/user/verification-code/sendSmsVerificationCode.usecase';
 import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
@@ -39,6 +40,7 @@ export class UsersHandler {
     private readonly sendSMSAccountVerificationCodeUseCase: SendSMSAccountVerificationCodeUseCase,
     private readonly sendSMSForgotPasswordCodeUseCase: SendSMSForgotPasswordCodeUseCase,
     private readonly validateSMSAccountVerificationCodeUseCase: ValidateSMSAccountVerificationCodeUseCase,
+    private readonly validateEmailAccountVerificationCodeUseCase: ValidateEmailAccountVerificationCodeUseCase,
     private readonly updateUserEmailUseCase: UpdateUserEmailUseCase,
     private readonly updateUserUsernameUseCase: UpdateUserUsernameUseCase,
     private readonly updateUserPasswordUseCase: UpdateUserPasswordUseCase,
@@ -133,7 +135,10 @@ export class UsersHandler {
   ) {
     switch (type) {
       case NotificationType.EMAIL:
-        throw new Error('Function not implemented.');
+        return this.validateEmailAccountVerificationCodeUseCase.execute(
+          userId,
+          code,
+        );
 
       case NotificationType.SMS:
         return this.validateSMSAccountVerificationCodeUseCase.execute(
