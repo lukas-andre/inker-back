@@ -59,6 +59,20 @@ export class NewOfferReceivedJob implements NotificationJob {
         },
       };
 
+      // Store notification in database
+      await this.notificationStorageService.storeNotification(
+        customer.userId,
+        payload.notification.title,
+        payload.notification.body,
+        'NEW_OFFER_RECEIVED',
+        {
+          quotationId,
+          offerId,
+          artistId,
+          artistName,
+        },
+      );
+
       // 4. Send Push Notification via PushNotificationService using customer.userId
       await this.pushNotificationService.sendToUser(
         customer.userId,

@@ -5,6 +5,7 @@ import { GlobalModule } from '../global/global.module';
 import { SendGridClient } from './clients/sendGrid.client';
 import { FirebaseFcmConfig } from './config/firebaseFcm.config';
 import { NotificationsRepositoryModule } from './database/notificactionsRepository.module';
+import { FcmController } from './infrastructure/controllers/fcm.controller';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsHandler } from './notifications.handler';
 import { EmailNotificationService } from './services/email/email.notification';
@@ -15,6 +16,8 @@ import { DeleteNotificationUsecase } from './usecases/delete-notification.usecas
 import { GetNotificationsUsecase } from './usecases/get-notifications.usecase';
 import { MarkAllNotificationsReadUsecase } from './usecases/mark-all-notifications-read.usecase';
 import { MarkNotificationReadUsecase } from './usecases/mark-notification-read.usecase';
+import { RegisterFcmTokenUseCase } from './usecases/registerFcmToken.usecase';
+import { RemoveFcmTokenUseCase } from './usecases/removeFcmToken.usecase';
 
 @Module({
   imports: [NotificationsRepositoryModule, GlobalModule],
@@ -34,8 +37,10 @@ import { MarkNotificationReadUsecase } from './usecases/mark-notification-read.u
     MarkNotificationReadUsecase,
     MarkAllNotificationsReadUsecase,
     DeleteNotificationUsecase,
+    RegisterFcmTokenUseCase,
+    RemoveFcmTokenUseCase,
   ],
-  controllers: [NotificationsController],
+  controllers: [NotificationsController, FcmController],
   exports: [
     EmailNotificationService,
     PushNotificationService,
