@@ -56,6 +56,19 @@ export class OfferAcceptedJob implements NotificationJob {
         },
       };
 
+      // Store notification in database
+      await this.notificationStorageService.storeNotification(
+        artist.userId,
+        payload.notification.title,
+        payload.notification.body,
+        'OFFER_ACCEPTED',
+        {
+          quotationId,
+          offerId,
+          artistId: acceptedArtistId,
+        },
+      );
+
       // 3. Send Push Notification via PushNotificationService using artist.userId
       await this.pushNotificationService.sendToUser(
         artist.userId,

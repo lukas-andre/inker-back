@@ -519,7 +519,50 @@ export class QuotationRepository extends BaseComponent {
       const results = await this.quotationRepository.query(
         `
         SELECT 
-          q.*,
+          json_build_object(
+            'id', q.id,
+            'createdAt', q.created_at,
+            'updatedAt', q.updated_at,
+            'customerId', q.customer_id,
+            'artistId', q.artist_id,
+            'description', q.description,
+            'referenceImages', q.reference_images,
+            'proposedDesigns', q.proposed_designs,
+            'status', q.status,
+            'estimatedCost', q.estimated_cost,
+            'responseDate', q.response_date,
+            'appointmentDate', q.appointment_date,
+            'appointmentDuration', q.appointment_duration,
+            'rejectBy', q.reject_by,
+            'customerRejectReason', q.customer_reject_reason,
+            'artistRejectReason', q.artist_reject_reason,
+            'rejectReasonDetails', q.reject_reason_details,
+            'rejectedDate', q.rejected_date,
+            'appealedReason', q.appealed_reason,
+            'appealedDate', q.appealed_date,
+            'canceledBy', q.canceled_by,
+            'customerCancelReason', q.customer_cancel_reason,
+            'systemCancelReason', q.system_cancel_reason,
+            'cancelReasonDetails', q.cancel_reason_details,
+            'canceledDate', q.canceled_date,
+            'lastUpdatedBy', q.last_updated_by,
+            'lastUpdatedByUserType', q.last_updated_by_user_type,
+            'readByArtist', q.read_by_artist,
+            'readByCustomer', q.read_by_customer,
+            'artistReadAt', q.artist_read_at,
+            'customerReadAt', q.customer_read_at,
+            'stencilId', q.stencil_id,
+            'type', q.type,
+            'customerLat', q.customer_lat,
+            'customerLon', q.customer_lon,
+            'customerTravelRadiusKm', q.customer_travel_radius_km,
+            'tattooDesignCacheId', q.tattoo_design_cache_id,
+            'tattooDesignImageUrl', q.tattoo_design_image_url,
+            'minBudget', q.min_budget,
+            'maxBudget', q.max_budget,
+            'referenceBudget', q.reference_budget,
+            'generatedImageId', q.generated_image_id
+          ) as quotation,
           COALESCE(
             json_agg(
               json_build_object(
@@ -556,7 +599,7 @@ export class QuotationRepository extends BaseComponent {
       );
 
       return results.map((row: any) => ({
-        ...row,
+        ...row.quotation,
         offers: row.offers || [],
       }));
     } catch (error) {
