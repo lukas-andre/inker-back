@@ -56,7 +56,7 @@ export class CreateQuotationUseCase
     message: string;
     created: boolean;
   }> {
-    const {
+    let {
       type,
       artistId,
       description,
@@ -66,6 +66,7 @@ export class CreateQuotationUseCase
       customerTravelRadiusKm,
       tattooDesignCacheId,
       tattooDesignImageUrl,
+      desiredBodyLocation,
     } = createQuotationDto;
 
     // 1. Validate Customer
@@ -95,6 +96,11 @@ export class CreateQuotationUseCase
         throw new DomainBadRule(
           'customerLat, customerLon, and customerTravelRadiusKm are required for OPEN quotations',
         );
+      }
+      
+      // Convert 0 to 999 for unlimited distance (backwards compatibility)
+      if (customerTravelRadiusKm === 0) {
+        customerTravelRadiusKm = 999;
       }
       if (stencilId) {
         throw new DomainBadRule(
@@ -170,6 +176,7 @@ export class CreateQuotationUseCase
         'customer_travel_radius_km',
         'tattoo_design_cache_id',
         'tattoo_design_image_url',
+        'desired_body_location',
         'created_at',
         'updated_at',
       ];
@@ -185,6 +192,7 @@ export class CreateQuotationUseCase
         customerTravelRadiusKm ?? null,
         tattooDesignCacheId || null,
         tattooDesignImageUrl || null,
+        desiredBodyLocation || null,
         'NOW()', // Use SQL function for timestamp
         'NOW()',
       ];

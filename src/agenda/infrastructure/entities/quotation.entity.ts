@@ -59,6 +59,32 @@ export const QUOTATION_USER_TYPE = [
   'system',
 ] as const;
 
+export const BODY_LOCATIONS = [
+  // Arms
+  'arm_shoulder',
+  'arm_bicep', 
+  'arm_forearm',
+  'arm_wrist',
+  'arm_full',
+  // Legs
+  'leg_thigh',
+  'leg_calf',
+  'leg_ankle',
+  'leg_full',
+  // Torso
+  'torso_chest',
+  'torso_back',
+  'torso_ribs',
+  'torso_abdomen',
+  // Head/Neck
+  'head_neck',
+  // Hands/Feet
+  'hand',
+  'foot',
+  // Other
+  'other',
+] as const;
+
 export type QuotationCustomerCancelReason =
   (typeof CUSTOMER_CANCEL_REASONS)[number];
 export type QuotationCustomerRejectReason =
@@ -73,6 +99,7 @@ export type QuotationCancelBy = (typeof QUOTATION_CANCELED_BY)[number];
 export type QuotationRejectBy = (typeof QUOTATION_REJECTED_BY)[number];
 
 export type QuotationUserType = (typeof QUOTATION_USER_TYPE)[number];
+export type BodyLocation = (typeof BODY_LOCATIONS)[number];
 
 export enum QuotationStatus {
   PENDING = 'pending',
@@ -347,4 +374,13 @@ export class Quotation extends BaseEntity {
 
   @Column({ name: 'generated_image_id', type: 'varchar', nullable: true })
   generatedImageId?: string;
+
+  @Column({ 
+    name: 'desired_body_location', 
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+    comment: 'Optional field indicating where on the body the customer wants the tattoo'
+  })
+  desiredBodyLocation?: string;
 }

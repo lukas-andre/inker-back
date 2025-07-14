@@ -16,7 +16,7 @@ import {
 } from 'class-validator';
 
 import { MoneyDto } from '../../../global/domain/dtos/money.dto';
-import { QuotationType } from '../entities/quotation.entity';
+import { QuotationType, BODY_LOCATIONS } from '../entities/quotation.entity';
 
 export class CreateQuotationReqDto {
   @ApiProperty({
@@ -112,7 +112,7 @@ export class CreateQuotationReqDto {
 
   @ApiPropertyOptional({
     description:
-      'Max distance customer is willing to travel in KM (Required for OPEN quotations)',
+      'Max distance customer is willing to travel in KM (Required for OPEN quotations). Use 999 for unlimited distance.',
     example: 50,
   })
   @ValidateIf(o => o.type === QuotationType.OPEN)
@@ -120,7 +120,7 @@ export class CreateQuotationReqDto {
     message: 'customerTravelRadiusKm is required for OPEN quotations',
   })
   @IsNumber()
-  @Min(1)
+  @Min(0) // Allow 0 to maintain backwards compatibility, will convert to 999 in use case
   @Max(1000)
   readonly customerTravelRadiusKm?: number;
 
@@ -159,4 +159,16 @@ export class CreateQuotationReqDto {
   @ValidateIf(o => o.type === QuotationType.OPEN)
   @IsString()
   readonly generatedImageId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Desired body location for the tattoo (optional)',
+    enum: BODY_LOCATIONS,
+    example: 'arm_forearm',
+  })
+  @IsOptional()
+  @IsString()
+  @IsEnum(BODY_LOCATIONS, {
+    message: 'desiredBodyLocation must be a valid body location',
+  })
+  readonly desiredBodyLocation?: string;
 }
