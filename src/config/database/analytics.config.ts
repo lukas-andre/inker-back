@@ -20,7 +20,7 @@ export const analyticsDatabaseConf = registerAs<AnalyticsDbConfig>(
       name: ANALYTICS_DB_CONNECTION_NAME,
       database: DB_NAME,
       entities: ENTITIES,
-      logging: ['info', 'query', 'error'],
+      logging: ['error'],
       keepConnectionAlive: true,
       cache: true,
     }),

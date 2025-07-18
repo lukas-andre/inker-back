@@ -30,7 +30,7 @@ export class SchedulingService {
     private readonly unavailableTimeProvider: AgendaUnavailableTimeRepository,
     private readonly slotDensityRepository: AgendaSlotDensityRepository,
     private readonly cacheService: SchedulerCacheService,
-  ) {}
+  ) { }
 
   /**
    * Find available time slots for an artist based on their working hours,
@@ -151,7 +151,7 @@ export class SchedulingService {
     const agenda = await this.agendaProvider.findOne({
       where: { artistId },
     });
-    
+
     if (!agenda) {
       throw new NotFoundException(`Artist ${artistId} not found or has no agenda`);
     }
@@ -166,28 +166,37 @@ export class SchedulingService {
     );
 
     // Try to get pre-calculated low density slots first
-    const lowDensitySlots = await this.slotDensityRepository.findLowDensitySlots(
-      agenda.id,
-      startDate,
-      endDate,
-      50, // Max density score
-      numberOfSuggestions * 3, // Get extra slots for filtering
-    );
+    let lowDensitySlots = [];
+    try {
+      lowDensitySlots = await this.slotDensityRepository.findLowDensitySlots(
+        agenda.id,
+        startDate,
+        endDate,
+        50, // Max density score
+        numberOfSuggestions * 3, // Get extra slots for filtering
+      );
+    } catch (error) {
+      // Table might not exist yet, fallback to real-time calculation
+      if (error instanceof Error) {
+        this.logger.warn('Could not fetch pre-calculated density data, falling back to real-time calculation', error.message);
+      }
+      this.logger.warn('Could not fetch pre-calculated density data, falling back to real-time calculation', JSON.stringify(error));
+    }
 
     let allSlots: TimeSlot[] = [];
-    
+
     if (lowDensitySlots.length >= numberOfSuggestions) {
       // Use pre-calculated density data
       this.logger.log(`Using ${lowDensitySlots.length} pre-calculated density slots`);
-      
+
       allSlots = lowDensitySlots.map(slot => {
         const [hour, minute] = slot.slotTime.split(':').map(Number);
         const slotStart = new Date(slot.slotDate);
         slotStart.setHours(hour, minute, 0, 0);
-        
+
         const slotEnd = new Date(slotStart);
         slotEnd.setMinutes(slotEnd.getMinutes() + durationMinutes);
-        
+
         return {
           startTime: slotStart,
           endTime: slotEnd,
@@ -197,7 +206,7 @@ export class SchedulingService {
     } else {
       // Fallback to real-time calculation
       this.logger.log('Falling back to real-time density calculation');
-      
+
       // Get available slots in the date range
       const allAvailability = await this.findAvailableSlots(
         artistId,
@@ -431,7 +440,7 @@ export class SchedulingService {
     // Create date at midnight UTC for the given day
     const baseDate = new Date(date);
     baseDate.setUTCHours(0, 0, 0, 0);
-    
+
     // Create start and end times in UTC
     const dayStart = new Date(baseDate);
     dayStart.setUTCHours(startHour, startMinute, 0, 0);
