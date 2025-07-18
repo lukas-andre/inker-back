@@ -14,25 +14,25 @@ import { Agenda } from './agenda.entity';
 @Index('idx_slot_density_lookup', ['agendaId', 'slotDate', 'slotTime'])
 @Index('idx_slot_density_date', ['slotDate'])
 export class AgendaSlotDensity {
-  @PrimaryColumn({ type: 'uuid' })
+  @PrimaryColumn({ type: 'uuid', name: 'agenda_id' })
   agendaId: string;
 
-  @PrimaryColumn({ type: 'date' })
+  @PrimaryColumn({ type: 'date', name: 'slot_date' })
   slotDate: Date;
 
-  @PrimaryColumn({ type: 'time' })
+  @PrimaryColumn({ type: 'time', name: 'slot_time' })
   slotTime: string; // HH:mm format
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, default: 0 })
+  @Column({ type: 'decimal', precision: 5, scale: 2, default: 0, name: 'density_score' })
   densityScore: number;
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: 'int', default: 0, name: 'nearby_events_count' })
   nearbyEventsCount: number;
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: 'int', default: 0, name: 'conflicting_events_count' })
   conflictingEventsCount: number;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'boolean', default: false, name: 'is_unavailable' })
   isUnavailable: boolean;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -46,14 +46,14 @@ export class AgendaSlotDensity {
     };
   };
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ManyToOne(() => Agenda, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'agendaId' })
+  @JoinColumn({ name: 'agenda_id' })
   agenda: Agenda;
 
   // Static helper method to calculate composite density score

@@ -20,7 +20,7 @@ export const tokensDatabaseConf = registerAs<TokensDbConfig>(
       name: TOKENS_DB_CONNECTION_NAME,
       database: DB_NAME,
       entities: ENTITIES,
-      logging: ['error', 'warn', 'info', 'log', 'migration'],
+      logging: ['error'],
       keepConnectionAlive: true,
     }),
 );

@@ -20,7 +20,7 @@ export const agendaDatabaseConf = registerAs<AgendaDbConfig>(
       name: AGENDA_DB_CONNECTION_NAME,
       database: DB_NAME,
       entities: ENTITIES,
-      logging: ['error', 'warn', 'info', 'log', 'migration', 'query', 'schema'],
+      logging: ['error'],
       keepConnectionAlive: true,
     }),
 );

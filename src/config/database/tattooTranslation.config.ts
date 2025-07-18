@@ -23,7 +23,7 @@ export const tattooTranslationDatabaseConf = registerAs(
           '../../tattoo-generator/infrastructure/entities/*.entity{.ts,.js}',
         ),
       ],
-      logging: 'all',
+      logging: ['error'],
       keepConnectionAlive: true,
       cache: true,
     }),

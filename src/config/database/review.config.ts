@@ -20,7 +20,7 @@ export const ratingDatabaseConf = registerAs<ReactionDbConfig>(
       name: REVIEW_DB_CONNECTION_NAME,
       database: DB_NAME,
       entities: ENTITIES,
-      logging: ['error', 'warn', 'info', 'log', 'migration', 'query', 'schema'],
+      logging: ['error'],
       keepConnectionAlive: true,
     }),
 );
