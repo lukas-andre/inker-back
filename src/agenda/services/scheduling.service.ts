@@ -5,6 +5,8 @@ import { AgendaEventStatus } from '../domain/enum/agendaEventStatus.enum';
 import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
 import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 import { AgendaUnavailableTimeRepository } from '../infrastructure/repositories/agendaUnavailableTime.provider';
+import { AgendaSlotDensityRepository } from '../infrastructure/repositories/agendaSlotDensity.repository';
+import { SchedulerCacheService } from './schedulerCache.service';
 
 export interface TimeSlot {
   startTime: Date;
@@ -26,6 +28,8 @@ export class SchedulingService {
     private readonly agendaProvider: AgendaRepository,
     private readonly agendaEventProvider: AgendaEventRepository,
     private readonly unavailableTimeProvider: AgendaUnavailableTimeRepository,
+    private readonly slotDensityRepository: AgendaSlotDensityRepository,
+    private readonly cacheService: SchedulerCacheService,
   ) {}
 
   /**
@@ -143,6 +147,15 @@ export class SchedulingService {
     durationMinutes: number,
     numberOfSuggestions = 8,
   ): Promise<TimeSlot[]> {
+    // Get artist's agenda
+    const agenda = await this.agendaProvider.findOne({
+      where: { artistId },
+    });
+    
+    if (!agenda) {
+      throw new NotFoundException(`Artist ${artistId} not found or has no agenda`);
+    }
+
     // Look ahead 14 days for suggested times
     const startDate = new Date();
     const endDate = new Date();
@@ -152,23 +165,56 @@ export class SchedulingService {
       `Looking for optimal slots from ${startDate.toISOString()} to ${endDate.toISOString()}`,
     );
 
-    // Get available slots in the date range
-    const allAvailability = await this.findAvailableSlots(
-      artistId,
-      durationMinutes,
+    // Try to get pre-calculated low density slots first
+    const lowDensitySlots = await this.slotDensityRepository.findLowDensitySlots(
+      agenda.id,
       startDate,
       endDate,
+      50, // Max density score
+      numberOfSuggestions * 3, // Get extra slots for filtering
     );
 
-    // Flatten all slots and calculate density score
     let allSlots: TimeSlot[] = [];
-    for (const day of allAvailability) {
-      this.logger.log(`Processing slots for day ${day.date}`);
-      const slotsWithDensity = await this.calculateDensityScores(
+    
+    if (lowDensitySlots.length >= numberOfSuggestions) {
+      // Use pre-calculated density data
+      this.logger.log(`Using ${lowDensitySlots.length} pre-calculated density slots`);
+      
+      allSlots = lowDensitySlots.map(slot => {
+        const [hour, minute] = slot.slotTime.split(':').map(Number);
+        const slotStart = new Date(slot.slotDate);
+        slotStart.setHours(hour, minute, 0, 0);
+        
+        const slotEnd = new Date(slotStart);
+        slotEnd.setMinutes(slotEnd.getMinutes() + durationMinutes);
+        
+        return {
+          startTime: slotStart,
+          endTime: slotEnd,
+          density: slot.densityScore,
+        };
+      });
+    } else {
+      // Fallback to real-time calculation
+      this.logger.log('Falling back to real-time density calculation');
+      
+      // Get available slots in the date range
+      const allAvailability = await this.findAvailableSlots(
         artistId,
-        day.slots,
+        durationMinutes,
+        startDate,
+        endDate,
       );
-      allSlots = [...allSlots, ...slotsWithDensity];
+
+      // Flatten all slots and calculate density score
+      for (const day of allAvailability) {
+        this.logger.log(`Processing slots for day ${day.date}`);
+        const slotsWithDensity = await this.calculateDensityScores(
+          artistId,
+          day.slots,
+        );
+        allSlots = [...allSlots, ...slotsWithDensity];
+      }
     }
 
     // If we don't have enough slots, extend the search
@@ -190,7 +236,10 @@ export class SchedulingService {
       // Add more slots from extended range
       for (const day of extendedAvailability) {
         // Skip days we already processed
-        if (allAvailability.some(a => a.date === day.date)) {
+        if (allSlots.some(slot => {
+          const slotDate = new Date(slot.startTime).toDateString();
+          return slotDate === new Date(day.date).toDateString();
+        })) {
           continue;
         }
 

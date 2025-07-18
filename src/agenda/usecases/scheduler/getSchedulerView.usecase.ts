@@ -1,5 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { Between, In, IsNull } from 'typeorm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
 import {
@@ -10,6 +12,7 @@ import { UserType } from '../../../users/domain/enums/userType.enum';
 import { SchedulerQuotationOfferDto } from '../../domain/dtos/schedulerQuotationOffer.dto';
 import { AgendaEventStatus } from '../../domain/enum/agendaEventStatus.enum';
 import { EventActionEngineService } from '../../domain/services/eventActionEngine.service';
+import { EventActionsDataLoaderService } from '../../domain/services/eventActionsDataLoader.service';
 import { GetSchedulerViewQueryDto } from '../../infrastructure/dtos/getSchedulerViewQuery.dto';
 import {
   GetSchedulerViewResDto,
@@ -58,7 +61,9 @@ export class GetSchedulerViewUseCase extends BaseUseCase implements UseCase {
     private readonly quotationProvider: QuotationRepository,
     private readonly schedulingService: SchedulingService,
     private readonly eventActionEngineService: EventActionEngineService,
+    private readonly eventActionsDataLoader: EventActionsDataLoaderService,
     private readonly customerRepository: CustomerRepository,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     super(GetSchedulerViewUseCase.name);
   }
@@ -147,14 +152,13 @@ export class GetSchedulerViewUseCase extends BaseUseCase implements UseCase {
     const schedulerEvents = await Promise.all(
       events.map(async event => {
         const customer = customerMap.get(event.customerId);
-        const actionContext = {
-          userId: artistId,
-          userType: UserType.ARTIST,
+        
+        // Use DataLoader to batch eventAction requests
+        const actions = await this.eventActionsDataLoader.load(
+          event.id,
+          artistId,
+          UserType.ARTIST,
           event,
-        };
-
-        const actions = await this.eventActionEngineService.getAvailableActions(
-          actionContext,
         );
         const isBlocking = this.BLOCKING_EVENT_STATES.includes(event.status);
 
@@ -270,46 +274,67 @@ export class GetSchedulerViewUseCase extends BaseUseCase implements UseCase {
       }),
     );
 
-    // Step 7: Calculate availability and suggestions
+    // Step 7: Calculate availability and suggestions with caching
     let availability: AvailabilityCalendar[] = [];
     let suggestedSlots: TimeSlot[] = [];
 
     if (query.includeAvailability) {
-      // Note: Availability should not be heavily cached as it changes frequently
-      availability = await this.schedulingService.findAvailableSlots(
-        artistId,
-        query.defaultDuration,
-        new Date(query.fromDate),
-        new Date(query.toDate),
-      );
+      // Cache availability for 1 hour
+      const availabilityCacheKey = `availability:${artistId}:${query.fromDate}:${query.toDate}:${query.defaultDuration}`;
+      const cachedAvailability = await this.cacheManager.get<AvailabilityCalendar[]>(availabilityCacheKey);
+      
+      if (cachedAvailability) {
+        availability = cachedAvailability;
+      } else {
+        availability = await this.schedulingService.findAvailableSlots(
+          artistId,
+          query.defaultDuration,
+          new Date(query.fromDate),
+          new Date(query.toDate),
+        );
+        
+        // Cache for 1 hour (3600 seconds)
+        await this.cacheManager.set(availabilityCacheKey, availability, 3600);
+      }
     }
 
     if (query.includeSuggestions) {
-      const quotationProposedTimes = allQuotations
-        .filter(
-          q =>
-            q.appointmentDate &&
-            !schedulerQuotations.find(sq => sq.id === q.id)?.hasConflict,
-        )
-        .map(q => ({
-          startTime: q.appointmentDate,
-          endTime: new Date(
-            new Date(q.appointmentDate).getTime() +
-            (q.appointmentDuration || 60) * 60000,
-          ),
-          density: -1,
-        }));
+      // Cache suggested slots for 30 minutes
+      const suggestionsCacheKey = `suggestions:${artistId}:${query.defaultDuration}`;
+      const cachedSuggestions = await this.cacheManager.get<TimeSlot[]>(suggestionsCacheKey);
+      
+      if (cachedSuggestions) {
+        suggestedSlots = cachedSuggestions;
+      } else {
+        const quotationProposedTimes = allQuotations
+          .filter(
+            q =>
+              q.appointmentDate &&
+              !schedulerQuotations.find(sq => sq.id === q.id)?.hasConflict,
+          )
+          .map(q => ({
+            startTime: q.appointmentDate,
+            endTime: new Date(
+              new Date(q.appointmentDate).getTime() +
+              (q.appointmentDuration || 60) * 60000,
+            ),
+            density: -1,
+          }));
 
-      suggestedSlots = await this.schedulingService.suggestOptimalTimes(
-        artistId,
-        query.defaultDuration,
-        8,
-      );
+        suggestedSlots = await this.schedulingService.suggestOptimalTimes(
+          artistId,
+          query.defaultDuration,
+          8,
+        );
 
-      if (quotationProposedTimes.length > 0) {
-        suggestedSlots = [...quotationProposedTimes, ...suggestedSlots]
-          .sort((a, b) => (a.density || 0) - (b.density || 0))
-          .slice(0, 8);
+        if (quotationProposedTimes.length > 0) {
+          suggestedSlots = [...quotationProposedTimes, ...suggestedSlots]
+            .sort((a, b) => (a.density || 0) - (b.density || 0))
+            .slice(0, 8);
+        }
+        
+        // Cache for 30 minutes (1800 seconds)
+        await this.cacheManager.set(suggestionsCacheKey, suggestedSlots, 1800);
       }
     }
 
