@@ -19,6 +19,7 @@ import { UserRepositoryModule } from '../users/infrastructure/repositories/userR
 import { QuotationStateMachine } from './domain/quotation.statemachine';
 import { EventActionEngineService } from './domain/services';
 import { CreateAgendaEventService } from './domain/services/createAgendaEvent.service';
+import { EventActionsDataLoaderService } from './domain/services/eventActionsDataLoader.service';
 import { AgendaHandler } from './infrastructure/agenda.handler';
 import { AgendaController } from './infrastructure/controllers/agenda.controller';
 import { QuotationController } from './infrastructure/controllers/quotation.controller';
@@ -44,6 +45,7 @@ import { EventReviewIntegrationUsecase } from './usecases/event/eventReviewInteg
 // New imports for Artist Workflow Improvements
 import { AgendaSettingsService } from './services/agendaSettings.service';
 import { SchedulingService } from './services/scheduling.service';
+import { SchedulerCacheService } from './services/schedulerCache.service';
 import { SetWorkingHoursUseCase } from './usecases/agenda/setWorkingHours.usecase';
 import { CreateUnavailableTimeUseCase } from './usecases/agenda/createUnavailableTime.usecase';
 import { GetUnavailableTimesUseCase } from './usecases/agenda/getUnavailableTimes.usecase';
@@ -53,7 +55,10 @@ import { UpdateEventNotesUseCase } from './usecases/event/updateEventNotes.useca
 import { GetArtistAvailabilityUseCase } from './usecases/agenda/getArtistAvailability.usecase';
 import { GetSuggestedTimeSlotsUseCase } from './usecases/agenda/getSuggestedTimeSlots.usecase';
 import { AgendaUnavailableTime } from './infrastructure/entities/agendaUnavailableTime.entity';
+import { AgendaSlotDensity } from './infrastructure/entities/agendaSlotDensity.entity';
 import { AgendaUnavailableTimeRepository } from './infrastructure/repositories/agendaUnavailableTime.provider';
+import { AgendaSlotDensityRepository } from './infrastructure/repositories/agendaSlotDensity.repository';
+import { SlotDensityCalculatorService } from './services/slotDensityCalculator.service';
 import { UpdateAgendaSettingsUseCase } from './usecases/agenda/updateAgendaSettings.usecase';
 import { GetAgendaSettingsUseCase } from './usecases/agenda/getAgendaSettings.usecase';
 
@@ -102,7 +107,7 @@ import { GetAgendaFromArtistIdUseCase } from './usecases/agenda/getAgendaFromArt
     ConsentModule,
     forwardRef(() => SyncQueueModule),
     TypeOrmModule.forFeature(
-      [AgendaUnavailableTime, CancellationPenalty],
+      [AgendaUnavailableTime, AgendaSlotDensity, CancellationPenalty],
       AGENDA_DB_CONNECTION_NAME,
     ),
   ],
@@ -129,6 +134,8 @@ import { GetAgendaFromArtistIdUseCase } from './usecases/agenda/getAgendaFromArt
     CreateAgendaEventService,
     AgendaSettingsService,
     SchedulingService,
+    SchedulerCacheService,
+    SlotDensityCalculatorService,
     SetWorkingHoursUseCase,
     CreateUnavailableTimeUseCase,
     GetUnavailableTimesUseCase,
@@ -140,6 +147,7 @@ import { GetAgendaFromArtistIdUseCase } from './usecases/agenda/getAgendaFromArt
     UpdateAgendaSettingsUseCase,
     GetAgendaSettingsUseCase,
     AgendaUnavailableTimeRepository,
+    AgendaSlotDensityRepository,
     ListOpenQuotationsUseCase,
     SubmitQuotationOfferUseCase,
     ListQuotationOffersUseCase,
@@ -151,6 +159,7 @@ import { GetAgendaFromArtistIdUseCase } from './usecases/agenda/getAgendaFromArt
     UpdateQuotationOfferUseCase,
     UpdateOpenQuotationUseCase,
     EventActionEngineService,
+    EventActionsDataLoaderService,
     GetAgendaFromArtistIdUseCase,
 
     // Providers for Cancellation Penalty System
