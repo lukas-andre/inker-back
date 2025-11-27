@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class TagDto {
   @ApiProperty({ description: 'Tag ID' })
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Tag name' })
   @IsString()

@@ -1,13 +1,17 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { DeleteArtistLocationParams } from '../../domain/interfaces/artistLocation.interface';
-import { ArtistLocationProvider } from '../../infrastructure/database/artistLocation.provider';
+import { ArtistLocationRepository } from '../../infrastructure/database/artistLocation.repository';
 
 @Injectable()
 export class DeleteArtistLocationUseCase extends BaseUseCase {
   constructor(
-    private readonly artistLocationProvider: ArtistLocationProvider,
+    private readonly artistLocationProvider: ArtistLocationRepository,
   ) {
     super(DeleteArtistLocationUseCase.name);
   }
@@ -26,15 +30,21 @@ export class DeleteArtistLocationUseCase extends BaseUseCase {
       if (!location) {
         return false;
       }
-      
+
       if (location.artistId !== params.artistId) {
-        throw new ForbiddenException('You do not have permission to delete this location');
+        throw new ForbiddenException(
+          'You do not have permission to delete this location',
+        );
       }
 
       // Check if this is the last location for the artist
-      const locationCount = await this.artistLocationProvider.countByArtistId(params.artistId);
+      const locationCount = await this.artistLocationProvider.countByArtistId(
+        params.artistId,
+      );
       if (locationCount <= 1) {
-        throw new BadRequestException('Cannot delete the last location. Artists must have at least one location.');
+        throw new BadRequestException(
+          'Cannot delete the last location. Artists must have at least one location.',
+        );
       }
 
       // Delete the artist location

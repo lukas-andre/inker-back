@@ -23,7 +23,7 @@ export class GenresService {
     private readonly genresRepository: Repository<Genrer>,
   ) {}
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.genresRepository.findOne({ where: { id } });
   }
 

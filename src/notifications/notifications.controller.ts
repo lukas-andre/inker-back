@@ -1,26 +1,28 @@
-import { 
-  Controller, 
-  Get, 
-  Param, 
-  Delete, 
-  Patch, 
-  Query, 
-  UseGuards,
+import {
+  Controller,
+  Delete,
+  Get,
   HttpCode,
+  Param,
   ParseUUIDPipe,
-  Put
+  Patch,
+  Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiParam, 
+import {
+  ApiHeader,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiResponse,
-  ApiOkResponse,
-  ApiHeader,
-  ApiNoContentResponse
+  ApiTags,
 } from '@nestjs/swagger';
+
 import { AuthGuard } from '../global/infrastructure/guards/auth.guard';
+
 import { NotificationQueryDto } from './dtos/notification-query.dto';
 import { PaginatedNotificationsResponseDto } from './dtos/notification-response.dto';
 import { NotificationsHandler } from './notifications.handler';
@@ -40,9 +42,9 @@ export class NotificationsController {
     description: 'Bearer token',
     required: true,
   })
-  @ApiOkResponse({ 
-    description: 'List of notifications with pagination', 
-    type: PaginatedNotificationsResponseDto 
+  @ApiOkResponse({
+    description: 'List of notifications with pagination',
+    type: PaginatedNotificationsResponseDto,
   })
   @Get()
   async getNotifications(
@@ -88,7 +90,9 @@ export class NotificationsController {
   @ApiNoContentResponse({ description: 'Notification deleted' })
   @HttpCode(204)
   @Delete(':id')
-  async deleteNotification(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async deleteNotification(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
     await this.notificationsHandler.deleteNotification(id);
   }
 }

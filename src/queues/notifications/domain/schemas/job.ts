@@ -6,10 +6,21 @@ import {
   AgendaEventReminderJobSchema,
   AgendaEventStatusChangedJobSchema,
   AgendaEventUpdatedJobSchema,
+  NewEventMessageJobSchema,
   RsvpAcceptedJobSchema,
   RsvpDeclinedJobSchema,
   RsvpUnschedulableJobSchema,
+  // New scheduled notification schemas
+  AppointmentReminderJobSchema,
+  ConsentReminderJobSchema,
+  ConfirmationReminderJobSchema,
+  EventAutoCanceledJobSchema,
+  ReviewReminderJobSchema,
+  PhotoUploadReminderJobSchema,
+  MonthlyReportJobSchema,
 } from './agenda';
+import { SendVerificationCodeJobSchema } from './codes';
+import { PenaltyAppliedNotificationV1JobSchema } from './penaltyNotification.schema';
 import {
   QuotationAcceptedJobSchema,
   QuotationAppealedJobSchema,
@@ -18,8 +29,16 @@ import {
   QuotationRejectedJobSchema,
   QuotationRepliedJobSchema,
 } from './quotation';
-
-import { SendVerificationCodeJobSchema } from './codes';
+import {
+  NewOfferReceivedJobSchema,
+  OfferAcceptedJobSchema,
+  OfferRejectedJobSchema,
+} from './quotationOffer.schema';
+import {
+  LowTokenBalanceJobSchema,
+  TokenPurchaseConfirmationJobSchema,
+  TokenGrantNotificationJobSchema,
+} from './tokens';
 
 export const JobSchema = z.union([
   // Agenda
@@ -41,6 +60,26 @@ export const JobSchema = z.union([
   QuotationRepliedJobSchema,
   // Codes
   SendVerificationCodeJobSchema,
+  // Quotation Offers
+  NewOfferReceivedJobSchema,
+  OfferAcceptedJobSchema,
+  OfferRejectedJobSchema,
+  // Penalty Notifications
+  PenaltyAppliedNotificationV1JobSchema,
+  // New Event Message Notification
+  NewEventMessageJobSchema,
+  // New scheduled notifications
+  AppointmentReminderJobSchema,
+  ConsentReminderJobSchema,
+  ConfirmationReminderJobSchema,
+  EventAutoCanceledJobSchema,
+  ReviewReminderJobSchema,
+  PhotoUploadReminderJobSchema,
+  MonthlyReportJobSchema,
+  // Token notifications
+  LowTokenBalanceJobSchema,
+  TokenPurchaseConfirmationJobSchema,
+  TokenGrantNotificationJobSchema,
 ]);
 
 export type JobType = z.infer<typeof JobSchema>;

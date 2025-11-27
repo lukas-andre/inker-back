@@ -8,11 +8,11 @@ import { AgendaUnavailableTime } from './agendaUnavailableTime.entity';
 @Entity()
 export class Agenda extends BaseEntity {
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Index()
-  @Column({ name: 'artist_id', default: 0 })
-  artistId: number;
+  @Column({ name: 'artist_id', default: '0' })
+  artistId: string;
 
   @Column({
     name: 'working_days',
@@ -36,7 +36,10 @@ export class Agenda extends BaseEntity {
   @OneToMany(() => AgendaEvent, agendaEvent => agendaEvent.agenda)
   agendaEvent: AgendaEvent[];
 
-  @OneToMany(() => AgendaUnavailableTime, unavailableTime => unavailableTime.agenda)
+  @OneToMany(
+    () => AgendaUnavailableTime,
+    unavailableTime => unavailableTime.agenda,
+  )
   unavailableTimes: AgendaUnavailableTime[];
 
   @DeleteDateColumn({ name: 'deleted_at' })

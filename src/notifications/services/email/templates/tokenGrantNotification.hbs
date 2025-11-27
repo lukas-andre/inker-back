@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+    <!-- Header Part -->
+    {{> header message="¡Has recibido tokens gratis!"}}
+
+    <!-- Main Content -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff;">
+        <tr>
+            <td align="center">
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="margin: 0 auto;">
+                    <tr>
+                        <td style="padding: 20px; font-family: Arial, sans-serif;">
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <img src="https://i.ibb.co/qkzvLtM/Gift-Emoji.png" alt="Gift" style="width: 80px;">
+                            </div>
+                            
+                            <h2 style="color: #292929; font-size: 24px; line-height: 28px; text-align: center; margin-top: 0; margin-bottom: 20px;">
+                                ¡Felicidades {{userName}}!
+                            </h2>
+                            
+                            <div style="background-color: #e3f2fd; border: 1px solid #90caf9; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                                <p style="color: #1565c0; font-size: 20px; text-align: center; margin: 0;">
+                                    <strong>🎁 Has recibido {{tokensGranted}} tokens gratis</strong>
+                                </p>
+                            </div>
+
+                            <p style="color: #101112; font-size: 16px; line-height: 24px; text-align: center; margin: 20px 0;">
+                                <strong>Motivo:</strong> {{reason}}
+                            </p>
+
+                            <!-- New Balance -->
+                            <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
+                                <p style="color: #666666; font-size: 16px; margin: 0 0 10px 0;">Tu nuevo saldo es:</p>
+                                <p style="color: #3e2d9c; font-size: 32px; font-weight: bold; margin: 0;">{{newBalance}} tokens</p>
+                            </div>
+
+                            <p style="color: #101112; font-size: 16px; line-height: 24px; text-align: center; margin-top: 30px;">
+                                ¡Aprovecha estos tokens para crear diseños únicos de tatuajes con nuestra IA!
+                            </p>
+
+                            <table align="center" style="margin: 30px auto;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="#" style="background-color: #3e2d9c; color: #ffffff; display: inline-block; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 48px; text-align: center; text-decoration: none; width: 250px; border-radius: 24px;">
+                                            Crear mi primer diseño
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div style="border-top: 1px solid #e0e0e0; margin-top: 40px; padding-top: 20px;">
+                                <p style="color: #666666; font-size: 14px; text-align: center;">
+                                    💡 <strong>¿Sabías que?</strong> Cada token te permite generar una imagen única de tatuaje. 
+                                    Puedes guardar tus diseños favoritos y compartirlos con tu tatuador.
+                                </p>
+                            </div>
+
+                            <p style="color: #999999; font-size: 12px; text-align: center; margin-top: 20px;">
+                                Fecha de otorgamiento: {{formatDate grantDate "DD/MM/YYYY HH:mm"}}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Footer Part -->
+    {{> footer}}
+</body>
+</html>

@@ -1,10 +1,10 @@
 import {
   Column,
-  Entity,
   CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
+  Entity,
   Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export enum DeviceType {
@@ -20,7 +20,7 @@ export class UserFcmToken {
   id: string;
 
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Column()
   token: string;

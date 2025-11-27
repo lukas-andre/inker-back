@@ -5,7 +5,7 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 
-import { ReviewReactionEnum } from '../../reactions/domain/enums/reviewReaction.enum';
+import { ReviewReactionEnum } from '../reviews.controller';
 
 @Injectable()
 export class ReviewReactionPipe implements PipeTransform<string> {

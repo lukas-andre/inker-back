@@ -20,12 +20,12 @@ export class JwtPermissionDto {
 
 export class LoginResDto {
   @ApiProperty({
-    example: 25,
+    example: '1',
     description: 'UserId',
-    type: Number,
+    type: String,
   })
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 
   @ApiProperty({
     example: 'lilpeep',
@@ -42,12 +42,12 @@ export class LoginResDto {
   email?: string;
 
   @ApiProperty({
-    example: 20,
+    example: '1',
     description: 'User Type Id',
-    type: Number,
+    type: String,
   })
-  @IsNumber()
-  userTypeId?: number;
+  @IsString()
+  userTypeId?: string;
 
   @ApiProperty({
     example: 'ARTIST',

@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsProvider } from '../infrastructure/database/analytics.provider';
+
 import { ArtistMetricsDto } from '../domain/dtos/metrics.dto';
+import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
 
 @Injectable()
 export class GetArtistMetricsUseCase {
-  constructor(private readonly analyticsProvider: AnalyticsProvider) {}
+  constructor(private readonly analyticsRepository: AnalyticsRepository) {}
 
-  async execute(artistId: number): Promise<ArtistMetricsDto> {
-    const metrics = await this.analyticsProvider.findArtistMetrics(artistId);
-    
+  async execute(artistId: string): Promise<ArtistMetricsDto> {
+    const metrics = await this.analyticsRepository.findArtistMetrics(artistId);
+
     if (!metrics) {
       return {
         artistId,
@@ -31,4 +32,4 @@ export class GetArtistMetricsUseCase {
 
     return response;
   }
-} 
+}

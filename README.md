@@ -418,3 +418,181 @@ When developing a frontend for this API, consider the following:
    - Consider implementing image optimization and caching strategies
 
 By following these guidelines, an AI can effectively implement a frontend that interacts with this backend API, providing different experiences for artists and customers.
+
+# Open Quotations Extension Analysis
+
+## Current System Overview
+
+The current quotation system follows a direct flow where:
+1. A user creates a quotation request for a specific artist
+2. The artist reviews and can accept/reject the request
+3. If accepted, the artist provides a quote with cost, date, and duration
+4. The user can accept, reject, or appeal the quote
+5. When accepted, an event is created in the agenda
+
+The system currently uses a state machine with the following states:
+- `pending`: Initial state when a user creates a quotation request
+- `quoted`: When an artist provides a quotation
+- `accepted`: When a user accepts the quotation
+- `rejected`: When either party rejects the quotation
+- `appealed`: When a user requests changes (e.g., date change)
+- `canceled`: When a quotation is canceled
+
+## Proposed Extension: Open Quotations
+
+### Core Concept
+Allow users to create "open quotations" that any artist can respond to, enabling a marketplace-like experience where:
+- Users describe their tattoo needs without specifying an artist
+- Multiple artists can provide quotations
+- Users can compare offers and choose an artist
+- Artists can compete for business
+
+### Implementation Approach
+
+#### 1. Database Changes
+
+**New Entity: OpenQuotation**
+```typescript
+@Entity()
+export class OpenQuotation extends BaseEntity {
+  @Index()
+  @Column({ name: 'customer_id' })
+  customerId: string;
+
+  @Column()
+  description: string;
+
+  @Column({ name: 'reference_images', type: 'jsonb', nullable: true })
+  referenceImages?: MultimediasMetadataInterface;
+
+  @Column({
+    type: 'enum',
+    name: 'status',
+    enum: ['open', 'in_progress', 'completed', 'expired', 'canceled'],
+    enumName: 'open_quotation_status',
+    default: 'open',
+  })
+  status: OpenQuotationStatus;
+
+  // Preferences
+  @Column({ name: 'preferred_date_range_start', nullable: true })
+  preferredDateRangeStart?: Date;
+
+  @Column({ name: 'preferred_date_range_end', nullable: true })
+  preferredDateRangeEnd?: Date;
+
+  @Column({ name: 'budget_range_min', type: 'jsonb', nullable: true })
+  budgetRangeMin?: MoneyEntity;
+
+  @Column({ name: 'budget_range_max', type: 'jsonb', nullable: true })
+  budgetRangeMax?: MoneyEntity;
+
+  @Column({ name: 'expiration_date', nullable: true })
+  expirationDate?: Date;
+
+  // Relationship to connect to the regular quotations that artists submit
+  @OneToMany(() => Quotation, quotation => quotation.openQuotation)
+  quotations?: Quotation[];
+}
+```
+
+**Update Quotation Entity**
+```typescript
+// Add to existing Quotation entity
+@ManyToOne(() => OpenQuotation, openQuotation => openQuotation.quotations, { nullable: true })
+@JoinColumn({ name: 'open_quotation_id' })
+openQuotation?: OpenQuotation;
+
+@Column({ name: 'open_quotation_id', nullable: true })
+openQuotationId?: string;
+```
+
+#### 2. Create New Use Cases
+
+- **CreateOpenQuotationUseCase**: Allow users to create open quotations
+- **GetOpenQuotationsUseCase**: Display available open quotations to artists
+- **SubmitQuotationForOpenRequestUseCase**: Allow artists to submit quotations
+- **GetQuotationsForOpenRequestUseCase**: Show a user all quotations for their open request
+- **SelectQuotationUseCase**: User selects a winning quotation
+
+#### 3. Notification System Extension
+Extend existing notification jobs to include:
+- Notify artists about new open quotations
+- Notify users when artists submit quotations
+- Notify artists when their quotation is selected
+
+#### 4. API Endpoints
+Create new endpoints:
+- POST `/open-quotations`: Create an open quotation
+- GET `/open-quotations`: List open quotations with filtering
+- GET `/open-quotations/:id`: Get details of a specific open quotation
+- POST `/open-quotations/:id/quotations`: Submit a quotation for an open request
+- GET `/open-quotations/:id/quotations`: Get all quotations for an open request
+- PUT `/open-quotations/:id/select/:quotationId`: Select a quotation
+
+#### 5. State Machine Extension
+Create a new state machine for open quotations:
+```typescript
+@Injectable()
+export class OpenQuotationStateMachine implements StateMachine<OpenQuotation, OpenQuotationStatus> {
+  private readonly transitions: Record<OpenQuotationStatus, OpenQuotationStatus[]> = {
+    open: ['in_progress', 'expired', 'canceled'],
+    in_progress: ['completed', 'expired', 'canceled'],
+    completed: [],
+    expired: [],
+    canceled: [],
+  };
+
+  getCurrentState(openQuotation: OpenQuotation): OpenQuotationStatus {
+    return openQuotation.status;
+  }
+
+  transition(openQuotation: OpenQuotation, newState: OpenQuotationStatus): OpenQuotationStatus {
+    const currentState = this.getCurrentState(openQuotation);
+    const validTransitions = this.transitions[currentState];
+
+    if (!validTransitions.includes(newState)) {
+      throw new StateMachineException(
+        `Invalid state transition from ${currentState} to ${newState}`,
+      );
+    }
+
+    return newState;
+  }
+}
+```
+
+## Implementation Strategy
+
+### Phase 1: Foundation
+1. Create the OpenQuotation entity and update the Quotation entity
+2. Implement the OpenQuotationStateMachine
+3. Create basic CRUD operations for open quotations
+
+### Phase 2: Core Functionality
+1. Implement the submission of quotations for open requests
+2. Implement the selection of a quotation
+3. Create the notification system for open quotations
+
+### Phase 3: Integration
+1. Connect the open quotation flow to the existing quotation flow
+2. Ensure proper event creation in the agenda when a quotation is selected
+3. Implement expiration of open quotations
+
+### Phase 4: Enhancements
+1. Add search and filtering for open quotations
+2. Implement analytics for open quotations
+3. Add recommendation features for artists based on open quotation requirements
+
+## Migration Considerations
+- No data migration needed as this is a new feature
+- Ensure backward compatibility with existing quotation APIs
+- Consider adding feature flags to gradually roll out the functionality
+
+## Testing Strategy
+1. Unit tests for all new use cases
+2. Integration tests for the connection between open quotations and regular quotations
+3. E2E tests for the complete flow from creating an open quotation to selecting a winner
+
+## Summary
+By implementing open quotations as an extension to the existing system, we can provide a marketplace experience without significantly altering the current functionality. This approach leverages the existing quotation infrastructure while adding new capabilities, making it a scalable and maintainable solution.

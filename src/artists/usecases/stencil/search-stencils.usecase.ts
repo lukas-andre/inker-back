@@ -1,44 +1,69 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { StencilProvider } from '../../infrastructure/database/stencil.provider';
-import { StencilSearchQueryDto } from '../../domain/dtos/stencil-search.dto';
-import { PaginatedStencilResponseDto, StencilWithRelevanceDto } from '../../domain/dtos/paginated-stencil-response.dto';
-import { InteractionProvider } from '../../../interactions/infrastructure/database/interaction.provider';
-import { ContentMetricsEnricherService, WithMetrics, MetricsOptions } from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
+
 import { ContentType } from '../../../analytics/domain/enums/content-types.enum';
+import {
+  ContentMetricsEnricherService,
+  MetricsOptions,
+  WithMetrics,
+} from '../../../analytics/infrastructure/services/content-metrics-enricher.service';
+import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
+import { InteractionRepository } from '../../../interactions/infrastructure/database/repositories/interaction.repository';
+import {
+  PaginatedStencilResponseDto,
+  StencilWithRelevanceDto,
+} from '../../domain/dtos/paginated-stencil-response.dto';
+import { StencilSearchQueryDto } from '../../domain/dtos/stencil-search.dto';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 
 type StencilWithRelevanceAndMetrics = StencilWithRelevanceDto & WithMetrics;
 
-interface PaginatedStencilResponseWithMetrics extends Omit<PaginatedStencilResponseDto, 'items'> {
+interface PaginatedStencilResponseWithMetrics
+  extends Omit<PaginatedStencilResponseDto, 'items'> {
   items: StencilWithRelevanceAndMetrics[];
 }
 
 @Injectable()
 export class SearchStencilsUseCase extends BaseUseCase {
   constructor(
-    private readonly stencilProvider: StencilProvider,
-    private readonly interactionProvider: InteractionProvider,
+    private readonly stencilRepository: StencilRepository,
+    private readonly interactionRepository: InteractionRepository,
     private readonly metricsEnricher: ContentMetricsEnricherService,
   ) {
     super(SearchStencilsUseCase.name);
   }
 
-  async execute(params: StencilSearchQueryDto & { 
-    includeMetrics?: boolean; 
-    userId?: number;
-    disableCache?: boolean;
-  }): Promise<PaginatedStencilResponseWithMetrics> {
-    const { query, page = 1, limit = 10, sortBy = 'relevance', includeMetrics = true, userId, disableCache } = params;
+  async execute(
+    params: StencilSearchQueryDto & {
+      includeMetrics?: boolean;
+      userId?: string;
+      disableCache?: boolean;
+    },
+  ): Promise<PaginatedStencilResponseWithMetrics> {
+    const {
+      query,
+      page = 1,
+      limit = 10,
+      sortBy = 'relevance',
+      includeMetrics = true,
+      userId,
+      disableCache,
+    } = params;
 
     // Usar el método searchStencils del provider para buscar estenciles
-    const [stencils, total] = await this.stencilProvider.searchStencils(params);
+    const [stencils, total] = await this.stencilRepository.searchStencils(
+      params,
+    );
 
     // Enriquecer los resultados con información de relevancia y popularidad
-    const stencilsWithRelevance = await this.enrichSearchResults(stencils, query, sortBy);
+    const stencilsWithRelevance = await this.enrichSearchResults(
+      stencils,
+      query,
+      sortBy,
+    );
 
     // Calcular páginas totales
     const pages = Math.ceil(total / limit);
-    
+
     const paginatedResponse = {
       items: stencilsWithRelevance,
       page,
@@ -46,15 +71,22 @@ export class SearchStencilsUseCase extends BaseUseCase {
       total,
       pages,
     };
-    
+
     const options: MetricsOptions = { disableCache };
-    
+
     // Add metrics if requested
-    return includeMetrics 
-      ? await this.metricsEnricher.enrichPaginatedWithMetrics(paginatedResponse, ContentType.STENCIL, userId, options)
+    return includeMetrics
+      ? await this.metricsEnricher.enrichPaginatedWithMetrics(
+          paginatedResponse,
+          ContentType.STENCIL,
+          userId,
+          options,
+        )
       : {
           ...paginatedResponse,
-          items: this.metricsEnricher.addEmptyMetricsToAll(stencilsWithRelevance)
+          items: this.metricsEnricher.addEmptyMetricsToAll(
+            stencilsWithRelevance,
+          ),
         };
   }
 
@@ -62,9 +94,9 @@ export class SearchStencilsUseCase extends BaseUseCase {
    * Enriquece los resultados de búsqueda con información de relevancia
    */
   private async enrichSearchResults(
-    stencils: any[], 
-    searchQuery?: string, 
-    sortBy: string = 'relevance'
+    stencils: any[],
+    searchQuery?: string,
+    sortBy = 'relevance',
   ): Promise<StencilWithRelevanceDto[]> {
     // Si no hay estenciles, devolver array vacío
     if (!stencils.length) return [];
@@ -73,35 +105,38 @@ export class SearchStencilsUseCase extends BaseUseCase {
     if (sortBy === 'relevance' && searchQuery && searchQuery.trim() !== '') {
       // Obtener métricas de popularidad para los estenciles
       const stencilIds = stencils.map(stencil => stencil.id);
-      let popularityData: { entityId: number; count: number }[] = [];
-      
+      let popularityData: { entityId: string; count: number }[] = [];
+
       try {
-        popularityData = await this.interactionProvider.getRecentPopularEntities(
-          'stencil',
-          'view',
-          stencilIds.length,
-          30 // Últimos 30 días
-        );
+        popularityData =
+          await this.interactionRepository.getRecentPopularEntities(
+            'stencil',
+            'view',
+            stencilIds.length,
+            30, // Últimos 30 días
+          );
       } catch (error) {
         this.logger.error('Error al obtener datos de popularidad', error);
       }
 
       // Crear mapa de popularidad
-      const popularityMap = new Map<number, number>();
+      const popularityMap = new Map<string, number>();
       popularityData.forEach(item => {
         popularityMap.set(item.entityId, item.count);
       });
 
       // Regex para verificar coincidencias de palabras completas
       const searchTerms = searchQuery.trim().toLowerCase().split(/\s+/);
-      const searchRegexes = searchTerms.map(term => new RegExp(`\\b${term}\\b`, 'i'));
+      const searchRegexes = searchTerms.map(
+        term => new RegExp(`\\b${term}\\b`, 'i'),
+      );
 
       // Enriquecer cada estencil
       return stencils.map(stencil => {
         const result: StencilWithRelevanceDto = { ...stencil };
         const relevanceFactors: string[] = [];
         let baseScore = 0.5; // Puntuación base
-        
+
         // Factor 1: Coincidencia en título
         if (stencil.title && typeof stencil.title === 'string') {
           const titleLower = stencil.title.toLowerCase();
@@ -111,7 +146,9 @@ export class SearchStencilsUseCase extends BaseUseCase {
             relevanceFactors.push('title_exact_match');
           } else {
             // Verificar coincidencia de palabras individuales
-            const matchCount = searchRegexes.filter(regex => regex.test(titleLower)).length;
+            const matchCount = searchRegexes.filter(regex =>
+              regex.test(titleLower),
+            ).length;
             if (matchCount > 0) {
               const matchScore = Math.min(0.2, matchCount * 0.05);
               baseScore += matchScore;
@@ -119,7 +156,7 @@ export class SearchStencilsUseCase extends BaseUseCase {
             }
           }
         }
-        
+
         // Factor 2: Coincidencia en descripción
         if (stencil.description && typeof stencil.description === 'string') {
           const descLower = stencil.description.toLowerCase();
@@ -128,14 +165,20 @@ export class SearchStencilsUseCase extends BaseUseCase {
             relevanceFactors.push('description_match');
           }
         }
-        
+
         // Factor 3: Reciente
-        const createdAt = stencil.createdAt ? new Date(stencil.createdAt) : null;
+        const createdAt = stencil.createdAt
+          ? new Date(stencil.createdAt)
+          : null;
         if (createdAt) {
           const now = new Date();
-          const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-          const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-          
+          const thirtyDaysAgo = new Date(
+            now.getTime() - 30 * 24 * 60 * 60 * 1000,
+          );
+          const ninetyDaysAgo = new Date(
+            now.getTime() - 90 * 24 * 60 * 60 * 1000,
+          );
+
           if (createdAt > thirtyDaysAgo) {
             baseScore += 0.15;
             relevanceFactors.push('recent');
@@ -144,13 +187,13 @@ export class SearchStencilsUseCase extends BaseUseCase {
             relevanceFactors.push('fairly_recent');
           }
         }
-        
+
         // Factor 4: Disponibilidad
         if (stencil.isAvailable) {
           baseScore += 0.1;
           relevanceFactors.push('available');
         }
-        
+
         // Factor 5: Popularidad (basada en visualizaciones)
         const viewCount = popularityMap.get(stencil.id) || 0;
         if (viewCount > 0) {
@@ -159,26 +202,27 @@ export class SearchStencilsUseCase extends BaseUseCase {
           baseScore += viewScore;
           relevanceFactors.push('popular');
         }
-        
+
         // Asignar puntuación final (máximo 1.0)
         result.relevanceScore = Math.min(1.0, baseScore);
         result.relevanceFactors = relevanceFactors;
-        
+
         return result;
       });
     } else if (sortBy === 'popularity') {
       // Si ordenamos por popularidad, obtener datos de popularidad
       try {
         const stencilIds = stencils.map(stencil => stencil.id);
-        const popularStencils = await this.interactionProvider.getRecentPopularEntities(
-          'stencil',
-          'view',
-          stencilIds.length,
-          30
-        );
+        const popularStencils =
+          await this.interactionRepository.getRecentPopularEntities(
+            'stencil',
+            'view',
+            stencilIds.length,
+            30,
+          );
 
         // Crear mapa de popularidad
-        const popularityMap = new Map<number, number>();
+        const popularityMap = new Map<string, number>();
         popularStencils.forEach(item => {
           popularityMap.set(item.entityId, item.count);
         });
@@ -194,20 +238,20 @@ export class SearchStencilsUseCase extends BaseUseCase {
         return stencils.map(stencil => {
           const viewCount = popularityMap.get(stencil.id) || 0;
           const result: StencilWithRelevanceDto = { ...stencil };
-          
+
           if (viewCount > 0) {
             result.relevanceScore = Math.min(1.0, viewCount * 0.01);
             result.relevanceFactors = ['popular'];
           }
-          
+
           return result;
         });
       } catch (error) {
         this.logger.error('Error ordenando por popularidad', error);
       }
     }
-    
+
     // Para otros casos, devolver los estenciles sin información de relevancia
     return stencils.map(stencil => ({ ...stencil }));
   }
-} 
+}

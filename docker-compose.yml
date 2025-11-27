@@ -1,0 +1,15 @@
+version: '3'
+services:
+  libretranslate:
+    image: libretranslate/libretranslate
+    ports:
+      - "5001:5000"
+    environment:
+      - LT_API_KEYS=false
+      - LT_LOAD_ONLY=en,es
+    restart: unless-stopped
+    volumes:
+      - libretranslate-data:/app/db
+
+volumes:
+  libretranslate-data: 

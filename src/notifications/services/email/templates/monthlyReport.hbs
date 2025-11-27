@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Monthly Report</title>
+</head>
+<body>
+    <p>Hi {{artistName}},</p>
+    <p>Here is your summary for {{month}} {{year}}:</p>
+    <ul>
+        <li>Completed Appointments: {{summary.completedCount}}</li>
+        <li>Canceled Appointments: {{summary.canceledCount}}</li>
+        <li>Rescheduled Appointments: {{summary.rescheduledCount}}</li>
+        <li>Total Appointments: {{summary.totalCount}}</li>
+        <li>Unique Customers: {{summary.uniqueCustomers}}</li>
+    </ul>
+    <p>Keep up the great work!</p>
+    <p>Thanks,</p>
+    <p>The Inker Team</p>
+</body>
+</html> 

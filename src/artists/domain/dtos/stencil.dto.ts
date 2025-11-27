@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -10,10 +11,10 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { StencilStatus, StencilType } from '../stencilType';
-import { TagDto } from '../../../tags/tag.dto';
-import { Transform, Type } from 'class-transformer';
+
 import { ToBoolean } from '../../../global/infrastructure/dtos/toBoolean';
+import { TagDto } from '../../../tags/tag.dto';
+import { StencilStatus, StencilType } from '../stencilType';
 
 // DTO para las dimensiones del stencil
 export class StencilDimensionsDto {
@@ -28,12 +29,11 @@ export class StencilDimensionsDto {
 
 export class StencilDto implements StencilType {
   @ApiProperty({ description: 'Stencil ID' })
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Artist ID' })
-  @IsInt()
-  @Min(1)
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({ description: 'Stencil title' })
   @IsString()
@@ -83,7 +83,7 @@ export class StencilDto implements StencilType {
   @ApiProperty({
     description: 'Stencil status',
     enum: StencilStatus,
-    default: StencilStatus.AVAILABLE
+    default: StencilStatus.AVAILABLE,
   })
   @IsEnum(StencilStatus)
   status: StencilStatus;
@@ -104,28 +104,43 @@ export class StencilDto implements StencilType {
   @ApiPropertyOptional({ description: 'Stencil tags', type: [TagDto] })
   tags?: TagDto[];
 
-  @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
+  @ApiPropertyOptional({
+    description: 'Stencil dimensions',
+    type: StencilDimensionsDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => StencilDimensionsDto)
   dimensions?: { width: number; height: number };
 
-  @ApiPropertyOptional({ description: 'Recommended placement areas', type: 'string' })
+  @ApiPropertyOptional({
+    description: 'Recommended placement areas',
+    type: 'string',
+  })
   @IsString()
   @IsOptional()
   recommendedPlacements?: string;
 
-  @ApiPropertyOptional({ description: 'Estimated time in minutes to complete', type: 'number' })
+  @ApiPropertyOptional({
+    description: 'Estimated time in minutes to complete',
+    type: 'number',
+  })
   @IsInt()
   @IsOptional()
   estimatedTime?: number;
 
-  @ApiPropertyOptional({ description: 'Whether the stencil can be customized', default: false })
+  @ApiPropertyOptional({
+    description: 'Whether the stencil can be customized',
+    default: false,
+  })
   @ToBoolean()
   @IsOptional()
   isCustomizable?: boolean;
 
-  @ApiPropertyOptional({ description: 'Whether the stencil can be downloaded', default: false })
+  @ApiPropertyOptional({
+    description: 'Whether the stencil can be downloaded',
+    default: false,
+  })
   @ToBoolean()
   @IsOptional()
   isDownloadable?: boolean;
@@ -189,7 +204,7 @@ export class CreateStencilDto {
   @ApiPropertyOptional({
     description: 'Stencil status',
     enum: StencilStatus,
-    default: StencilStatus.AVAILABLE
+    default: StencilStatus.AVAILABLE,
   })
   @IsEnum(StencilStatus)
   @IsOptional()
@@ -199,32 +214,47 @@ export class CreateStencilDto {
   @IsOptional()
   isHidden?: string | boolean;
 
-  @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
+  @ApiPropertyOptional({ description: 'Tag IDs', type: [String] })
   @IsOptional()
-  tagIds?: number[] | string;
+  tagIds?: string[] | string;
 
-  @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
+  @ApiPropertyOptional({
+    description: 'Stencil dimensions',
+    type: StencilDimensionsDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => StencilDimensionsDto)
   dimensions?: { width: number; height: number };
 
-  @ApiPropertyOptional({ description: 'Recommended placement areas', type: 'string' })
+  @ApiPropertyOptional({
+    description: 'Recommended placement areas',
+    type: 'string',
+  })
   @IsString()
   @IsOptional()
   recommendedPlacements?: string;
 
-  @ApiPropertyOptional({ description: 'Estimated time in minutes to complete', type: 'number' })
+  @ApiPropertyOptional({
+    description: 'Estimated time in minutes to complete',
+    type: 'number',
+  })
   @IsInt()
   @IsOptional()
   estimatedTime?: number;
 
-  @ApiPropertyOptional({ description: 'Whether the stencil can be customized', default: false })
+  @ApiPropertyOptional({
+    description: 'Whether the stencil can be customized',
+    default: false,
+  })
   @ToBoolean()
   @IsOptional()
   isCustomizable?: boolean;
 
-  @ApiPropertyOptional({ description: 'Whether the stencil can be downloaded', default: false })
+  @ApiPropertyOptional({
+    description: 'Whether the stencil can be downloaded',
+    default: false,
+  })
   @ToBoolean()
   @IsOptional()
   isDownloadable?: boolean;
@@ -287,7 +317,7 @@ export class UpdateStencilDto {
 
   @ApiPropertyOptional({
     description: 'Stencil status',
-    enum: StencilStatus
+    enum: StencilStatus,
   })
   @IsEnum(StencilStatus)
   @IsOptional()
@@ -297,32 +327,47 @@ export class UpdateStencilDto {
   @IsOptional()
   isHidden?: string | boolean;
 
-  @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
+  @ApiPropertyOptional({ description: 'Tag IDs', type: [String] })
   @IsOptional()
-  tagIds?: number[] | string;
+  tagIds?: string[] | string;
 
-  @ApiPropertyOptional({ description: 'Stencil dimensions', type: StencilDimensionsDto })
+  @ApiPropertyOptional({
+    description: 'Stencil dimensions',
+    type: StencilDimensionsDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => StencilDimensionsDto)
   dimensions?: { width: number; height: number };
 
-  @ApiPropertyOptional({ description: 'Recommended placement areas', type: 'string' })
+  @ApiPropertyOptional({
+    description: 'Recommended placement areas',
+    type: 'string',
+  })
   @IsString()
   @IsOptional()
   recommendedPlacements?: string;
 
-  @ApiPropertyOptional({ description: 'Estimated time in minutes to complete', type: 'number' })
+  @ApiPropertyOptional({
+    description: 'Estimated time in minutes to complete',
+    type: 'number',
+  })
   @IsInt()
   @IsOptional()
   estimatedTime?: number;
 
-  @ApiPropertyOptional({ description: 'Whether the stencil can be customized', default: false })
+  @ApiPropertyOptional({
+    description: 'Whether the stencil can be customized',
+    default: false,
+  })
   @ToBoolean()
   @IsOptional()
   isCustomizable?: boolean;
 
-  @ApiPropertyOptional({ description: 'Whether the stencil can be downloaded', default: false })
+  @ApiPropertyOptional({
+    description: 'Whether the stencil can be downloaded',
+    default: false,
+  })
   @ToBoolean()
   @IsOptional()
   isDownloadable?: boolean;

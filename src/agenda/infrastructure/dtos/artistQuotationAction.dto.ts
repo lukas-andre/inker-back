@@ -8,11 +8,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+import { MoneyDto } from '../../../global/domain/dtos/money.dto';
 import {
   ARTIST_REJECT_REASONS,
   QuotationArtistRejectReason,
 } from '../entities/quotation.entity';
-import { MoneyDto } from '../../../global/domain/dtos/money.dto';
 
 export enum ArtistQuoteAction {
   QUOTE = 'quote',

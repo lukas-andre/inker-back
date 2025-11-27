@@ -1,11 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { WorkDto } from './work.dto';
 
 export class WorkWithRelevanceDto extends WorkDto {
-  @ApiProperty({ description: 'Relevance score for search results', example: 0.85 })
+  @ApiProperty({
+    description: 'Relevance score for search results',
+    example: 0.85,
+  })
   relevanceScore?: number;
 
-  @ApiProperty({ description: 'Factors that contributed to the relevance score', example: ['title_match', 'recent'] })
+  @ApiProperty({
+    description: 'Factors that contributed to the relevance score',
+    example: ['title_match', 'recent'],
+  })
   relevanceFactors?: string[];
 }
 
@@ -25,4 +32,3 @@ export class PaginatedWorkResponseDto {
   @ApiProperty({ example: 5 })
   pages: number;
 }
-

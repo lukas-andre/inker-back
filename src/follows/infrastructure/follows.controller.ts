@@ -29,10 +29,7 @@ export class FollowsController {
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Post(':userId')
-  async follow(
-    @Param('userId', ParseIntPipe) userId: number,
-    @Request() request,
-  ) {
+  async follow(@Param('userId') userId: string, @Request() request) {
     return this.followsHandler.handleFollow(userId, request);
   }
 
@@ -43,10 +40,7 @@ export class FollowsController {
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Post(':userId/unfollow')
-  async unfollow(
-    @Param('userId', ParseIntPipe) userId: number,
-    @Request() request,
-  ) {
+  async unfollow(@Param('userId') userId: string, @Request() request) {
     return this.followsHandler.handleUnfollow(userId, request);
   }
 
@@ -58,7 +52,7 @@ export class FollowsController {
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Get(':userId/followers')
-  async findArtistFollowers(@Param('userId', ParseIntPipe) userId: number) {
+  async findArtistFollowers(@Param('userId') userId: string) {
     return this.followsHandler.handleFindArtistFollowers(userId);
   }
 
@@ -70,7 +64,7 @@ export class FollowsController {
   })
   @ApiParam({ name: 'userId', required: true, type: Number })
   @Get(':userId/follows')
-  async findArtistFollows(@Param('userId', ParseIntPipe) userId: number) {
+  async findArtistFollows(@Param('userId') userId: string) {
     return this.followsHandler.findArtistFollows(userId);
   }
 }

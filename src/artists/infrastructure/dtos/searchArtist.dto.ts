@@ -1,11 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsInt,
+  IsNumber,
   IsOptional,
   IsString,
-  IsInt,
-  Min,
   Max,
-  IsNumber,
+  Min,
 } from 'class-validator';
 
 export class SearchArtistDto {

@@ -26,7 +26,7 @@ export class PostsService extends BaseComponent {
     super(PostsService.name);
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.postsRepository.findOne({ where: { id } });
   }
 
@@ -73,7 +73,7 @@ export class PostsService extends BaseComponent {
   }
 
   async findByUserId(
-    userId: number,
+    userId: string,
     genres: string[],
     tags: string[],
     pagination: PaginationDto,

@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 
-import { PermissionsProvider } from '../../infrastructure/providers/permissions.service';
-import { RolesProvider } from '../../infrastructure/providers/roles.service';
+import { PermissionsRepository } from '../../infrastructure/repositories/permissions.repository';
+import { RolesRepository } from '../../infrastructure/repositories/roles.repository';
 
 @Injectable()
 export class InitRolesUseCase {
   constructor(
-    private readonly rolesProvider: RolesProvider,
-    private readonly permissionsProvider: PermissionsProvider,
+    private readonly rolesRepository: RolesRepository,
+    private readonly permissionsRepository: PermissionsRepository,
   ) {}
 
   async execute() {
-    const permissions = await this.permissionsProvider.findAll({});
-    return this.rolesProvider.initRoles(permissions);
+    const permissions = await this.permissionsRepository.findAll({});
+    return this.rolesRepository.initRoles(permissions);
   }
 }

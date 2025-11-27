@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
+
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { WorkProvider } from '../../infrastructure/database/work.provider';
-import { WorkTagSuggestionQueryDto, WorkTagSuggestionResponseDto } from '../../domain/dtos/work-search.dto';
+import {
+  WorkTagSuggestionQueryDto,
+  WorkTagSuggestionResponseDto,
+} from '../../domain/dtos/work-search.dto';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 
 @Injectable()
 export class GetWorkTagSuggestionsUseCase extends BaseUseCase {
-  constructor(private readonly workProvider: WorkProvider) {
+  constructor(private readonly workProvider: WorkRepository) {
     super(GetWorkTagSuggestionsUseCase.name);
   }
 
-  async execute(params: WorkTagSuggestionQueryDto): Promise<WorkTagSuggestionResponseDto[]> {
+  async execute(
+    params: WorkTagSuggestionQueryDto,
+  ): Promise<WorkTagSuggestionResponseDto[]> {
     const { prefix, limit = 10 } = params;
 
     try {
@@ -29,8 +35,11 @@ export class GetWorkTagSuggestionsUseCase extends BaseUseCase {
         // No incluimos el recuento aquí, ya que no es calculado en findTagSuggestions
       }));
     } catch (error) {
-      this.logger.error(`Error al obtener sugerencias de etiquetas para trabajos`, error);
+      this.logger.error(
+        `Error al obtener sugerencias de etiquetas para trabajos`,
+        error,
+      );
       return [];
     }
   }
-} 
+}

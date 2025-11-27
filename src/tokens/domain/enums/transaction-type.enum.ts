@@ -1,0 +1,7 @@
+export enum TransactionType {
+  PURCHASE = 'PURCHASE',
+  CONSUME = 'CONSUME',
+  GRANT = 'GRANT',
+  REFUND = 'REFUND',
+  MANUAL_ADJUSTMENT = 'MANUAL_ADJUSTMENT',
+}

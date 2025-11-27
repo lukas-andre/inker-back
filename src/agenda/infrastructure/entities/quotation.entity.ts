@@ -1,10 +1,18 @@
-import { Column, Entity, Index, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 
+import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 
 import { QuotationHistory } from './quotationHistory.entity';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { QuotationOffer } from './quotationOffer.entity';
 
 export const CUSTOMER_CANCEL_REASONS = [
   'change_of_mind',
@@ -51,6 +59,32 @@ export const QUOTATION_USER_TYPE = [
   'system',
 ] as const;
 
+export const BODY_LOCATIONS = [
+  // Arms
+  'arm_shoulder',
+  'arm_bicep', 
+  'arm_forearm',
+  'arm_wrist',
+  'arm_full',
+  // Legs
+  'leg_thigh',
+  'leg_calf',
+  'leg_ankle',
+  'leg_full',
+  // Torso
+  'torso_chest',
+  'torso_back',
+  'torso_ribs',
+  'torso_abdomen',
+  // Head/Neck
+  'head_neck',
+  // Hands/Feet
+  'hand',
+  'foot',
+  // Other
+  'other',
+] as const;
+
 export type QuotationCustomerCancelReason =
   (typeof CUSTOMER_CANCEL_REASONS)[number];
 export type QuotationCustomerRejectReason =
@@ -65,24 +99,56 @@ export type QuotationCancelBy = (typeof QUOTATION_CANCELED_BY)[number];
 export type QuotationRejectBy = (typeof QUOTATION_REJECTED_BY)[number];
 
 export type QuotationUserType = (typeof QUOTATION_USER_TYPE)[number];
+export type BodyLocation = (typeof BODY_LOCATIONS)[number];
 
-export type QuotationStatus =
-  | 'pending'
-  | 'quoted'
-  | 'accepted'
-  | 'rejected'
-  | 'appealed'
-  | 'canceled';
+export enum QuotationStatus {
+  PENDING = 'pending',
+  QUOTED = 'quoted',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+  APPEALED = 'appealed',
+  CANCELED = 'canceled',
+  OPEN = 'open',
+}
 
-@Entity()
+export enum QuotationType {
+  DIRECT = 'DIRECT',
+  OPEN = 'OPEN',
+}
+
+@Entity({ name: 'quotation' })
+@Index(['type', 'status']) // For filtering by type and status
+@Index(['artistId', 'status', 'type']) // For artist-specific queries
+@Index(['appointmentDate']) // For date range filtering
 export class Quotation extends BaseEntity {
   @Index()
   @Column({ name: 'customer_id' })
-  customerId: number;
+  customerId: string;
 
   @Index()
-  @Column({ name: 'artist_id' })
-  artistId: number;
+  @Column({ name: 'artist_id', nullable: true })
+  artistId?: string;
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: QuotationType,
+    default: QuotationType.DIRECT,
+  })
+  type: QuotationType;
+
+  @Column({ name: 'customer_lat', type: 'float', nullable: true })
+  customerLat?: number;
+
+  @Column({ name: 'customer_lon', type: 'float', nullable: true })
+  customerLon?: number;
+
+  @Column({
+    name: 'customer_travel_radius_km',
+    type: 'integer',
+    nullable: true,
+  })
+  customerTravelRadiusKm?: number;
 
   @Column()
   description: string;
@@ -96,9 +162,9 @@ export class Quotation extends BaseEntity {
   @Column({
     type: 'enum',
     name: 'status',
-    enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
+    enum: QuotationStatus,
     enumName: 'quotation_status',
-    default: 'pending',
+    default: QuotationStatus.PENDING,
   })
   status: QuotationStatus;
 
@@ -126,11 +192,9 @@ export class Quotation extends BaseEntity {
   @Column({ name: 'response_date', nullable: true })
   responseDate?: Date;
 
-  // Eg: 2024-09-15 01:53:00.000
   @Column({ name: 'appointment_date', nullable: true })
   appointmentDate?: Date;
 
-  // in minutes
   @Column({ name: 'appointment_duration', nullable: true })
   appointmentDuration?: number;
 
@@ -217,7 +281,7 @@ export class Quotation extends BaseEntity {
     nullable: true,
     comment: 'User ID of the last person who updated the quotation',
   })
-  lastUpdatedBy?: number;
+  lastUpdatedBy?: string;
 
   @Column({
     name: 'last_updated_by_user_type',
@@ -257,8 +321,66 @@ export class Quotation extends BaseEntity {
   customerReadAt?: Date;
 
   @Column({ name: 'stencil_id', nullable: true })
-  stencilId?: number;
+  stencilId?: string;
+
+  @Index()
+  @Column({ name: 'tattoo_design_cache_id', nullable: true })
+  tattooDesignCacheId?: string;
+
+  @Column({ name: 'tattoo_design_image_url', type: 'text', nullable: true })
+  tattooDesignImageUrl?: string;
 
   @OneToMany(() => QuotationHistory, history => history.quotation)
   history?: QuotationHistory[];
+
+  @OneToMany(() => QuotationOffer, offer => offer.quotation)
+  offers?: QuotationOffer[];
+
+  @Column({
+    name: 'min_budget',
+    type: 'jsonb',
+    nullable: true,
+    transformer: {
+      to: (v: MoneyEntity) => (v ? v.toJSON() : null),
+      from: (v: any) =>
+        v ? new MoneyEntity(v.amount, v.currency, v.scale) : null,
+    },
+  })
+  minBudget?: MoneyEntity;
+
+  @Column({
+    name: 'max_budget',
+    type: 'jsonb',
+    nullable: true,
+    transformer: {
+      to: (v: MoneyEntity) => (v ? v.toJSON() : null),
+      from: (v: any) =>
+        v ? new MoneyEntity(v.amount, v.currency, v.scale) : null,
+    },
+  })
+  maxBudget?: MoneyEntity;
+
+  @Column({
+    name: 'reference_budget',
+    type: 'jsonb',
+    nullable: true,
+    transformer: {
+      to: (v: MoneyEntity) => (v ? v.toJSON() : null),
+      from: (v: any) =>
+        v ? new MoneyEntity(v.amount, v.currency, v.scale) : null,
+    },
+  })
+  referenceBudget?: MoneyEntity;
+
+  @Column({ name: 'generated_image_id', type: 'varchar', nullable: true })
+  generatedImageId?: string;
+
+  @Column({ 
+    name: 'desired_body_location', 
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+    comment: 'Optional field indicating where on the body the customer wants the tattoo'
+  })
+  desiredBodyLocation?: string;
 }

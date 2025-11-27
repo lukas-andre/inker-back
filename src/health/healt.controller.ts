@@ -1,15 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { Controller, Get, Logger } from '@nestjs/common';
 import {
   HealthCheck,
   HealthCheckService,
+  HealthIndicatorResult,
   HttpHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 import { InjectDataSource } from '@nestjs/typeorm';
+import { Queue } from 'bull';
 import { DataSource } from 'typeorm';
 
 @Controller('health')
 export class HealthController {
+  private readonly logger = new Logger(HealthController.name);
   constructor(
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
@@ -33,16 +37,38 @@ export class HealthController {
     @InjectDataSource('agenda-db')
     private agendaDbDataSource: DataSource,
     @InjectDataSource('location-db')
-    private locationDbDataSource: DataSource,
-    // @InjectDataSource('customer-feed-db')
-    // private customerFeedDbDataSource: DataSource,
-  ) {}
+    private locationDbDataSource: DataSource, // @InjectDataSource('customer-feed-db') // private customerFeedDbDataSource: DataSource,
+    @InjectQueue('notification')
+    private notificationQueue: Queue,
+  ) { }
+
+  private async checkRedis(timeout: number = 1500): Promise<HealthIndicatorResult> {
+    try {
+      const client = await this.notificationQueue.client;
+      await Promise.race([
+        client.ping(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Redis connection timeout')), timeout)),
+      ]);
+      return {
+        redis: {
+          status: 'up',
+          message: 'Redis is healthy',
+        },
+      };
+    } catch (error) {
+      return {
+        redis: {
+          status: 'down',
+          message: error instanceof Error ? error.message : 'Redis connection failed',
+        },
+      };
+    }
+  }
 
   @Get()
   @HealthCheck()
-  check() {
-    return this.health.check([
-      () => this.http.pingCheck('nestjs', 'https://docs.nestjs.com'),
+  async check() {
+    const result = await this.health.check([
       () =>
         this.db.pingCheck('inker-user', {
           connection: this.userDbDataSource,
@@ -83,21 +109,16 @@ export class HealthController {
           connection: this.tagDbDataSource,
           timeout: 1500,
         }),
-      // () =>
-      //   this.db.pingCheck('inker-agenda', {
-      //     connection: this.agendaDbDataSource,
-      //     timeout: 1500,
-      //   }),
+
       () =>
         this.db.pingCheck('inker-location', {
           connection: this.locationDbDataSource,
           timeout: 1500,
         }),
-      // () =>
-      //   this.db.pingCheck('inker-customer-feed', {
-      //     connection: this.customerFeedDbDataSource,
-      //     timeout: 1500,
-      //   }),
+      () => this.checkRedis(1500),
     ]);
+
+    this.logger.log({ result });
+    return result;
   }
 }

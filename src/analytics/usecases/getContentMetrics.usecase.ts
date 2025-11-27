@@ -1,15 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsProvider } from '../infrastructure/database/analytics.provider';
-import { ContentType } from '../domain/enums/content-types.enum';
+
 import { ContentMetricsDto } from '../domain/dtos/metrics.dto';
+import { ContentType } from '../domain/enums/content-types.enum';
+import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
 
 @Injectable()
 export class GetContentMetricsUseCase {
-  constructor(private readonly analyticsProvider: AnalyticsProvider) {}
+  constructor(private readonly analyticsRepository: AnalyticsRepository) {}
 
-  async execute(contentId: number, contentType: ContentType, userId?: number): Promise<ContentMetricsDto> {
-    const metrics = await this.analyticsProvider.findContentMetrics(contentId, contentType);
-    
+  async execute(
+    contentId: string,
+    contentType: ContentType,
+    userId?: string,
+  ): Promise<ContentMetricsDto> {
+    const metrics = await this.analyticsRepository.findContentMetrics(
+      contentId,
+      contentType,
+    );
+
     if (!metrics) {
       return {
         contentId,
@@ -31,10 +39,10 @@ export class GetContentMetricsUseCase {
 
     // Add user-specific data if userId is provided
     if (userId) {
-      response.userHasLiked = await this.analyticsProvider.checkUserHasLiked(
+      response.userHasLiked = await this.analyticsRepository.checkUserHasLiked(
         contentId,
         contentType,
-        userId
+        userId,
       );
     }
 
@@ -61,4 +69,4 @@ export class GetContentMetricsUseCase {
 
     return response;
   }
-} 
+}

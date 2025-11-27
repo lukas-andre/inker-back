@@ -1,8 +1,8 @@
-import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
-import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
+import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
+import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerRepository } from '../../../../../customers/infrastructure/providers/customer.repository';
+import { ArtistLocationRepository } from '../../../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { QuotationCreatedType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
@@ -18,11 +18,11 @@ const QUOTATION_NOTIFICATIONS = {
 export class QuotationCreatedJob implements NotificationJob {
   constructor(
     readonly emailNotificationService: EmailNotificationService,
-    readonly agendaEventProvider: AgendaEventProvider,
-    readonly artistProvider: ArtistProvider,
-    readonly customerProvider: CustomerProvider,
-    readonly locationProvider: ArtistLocationProvider,
-    readonly quotationProvider: QuotationProvider,
+    readonly agendaEventProvider: AgendaEventRepository,
+    readonly artistProvider: ArtistRepository,
+    readonly customerProvider: CustomerRepository,
+    readonly locationProvider: ArtistLocationRepository,
+    readonly quotationProvider: QuotationRepository,
     readonly pushNotificationService: PushNotificationService,
     readonly notificationStorageService: NotificationStorageService,
   ) {}

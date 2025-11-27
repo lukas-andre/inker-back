@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 
 import { Agenda } from '../../agenda/infrastructure/entities/agenda.entity';
-import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
+import { AgendaRepository } from '../../agenda/infrastructure/repositories/agenda.repository';
 import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { Artist } from '../infrastructure/entities/artist.entity';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 
 import { CreateArtistParams } from './interfaces/createArtist.params';
 
 @Injectable()
 export class CreateArtistUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly artistProvider: ArtistProvider,
-    private readonly agendaProvider: AgendaProvider,
+    private readonly artistProvider: ArtistRepository,
+    private readonly agendaProvider: AgendaRepository,
   ) {
     super(CreateArtistUseCase.name);
   }

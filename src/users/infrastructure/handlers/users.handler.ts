@@ -3,14 +3,25 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { BaseHandler } from '../../../global/infrastructure/base.handler';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { ActivateUserByEmailUseCase } from '../../usecases/user/activateUserByEmail.usecase';
+import { ActivateUserWithSecretUseCase } from '../../usecases/user/activateUserWithSecret.usecase';
 import { CreateUserByTypeUseCase } from '../../usecases/user/createUserByType.usecase';
+import { DeleteUserUseCase } from '../../usecases/user/deleteUser.usecase';
 import { CreateUserByTypeParams } from '../../usecases/user/interfaces/createUserByType.params';
+import { SendForgotPasswordCodeUseCase } from '../../usecases/user/sendForgotPasswordCode.usecase';
 import { SendSMSAccountVerificationCodeUseCase } from '../../usecases/user/sendSMSAccountVerificationCode.usecase';
 import { SendSMSForgotPasswordCodeUseCase } from '../../usecases/user/sendSMSForgotPasswordCode.usecase';
 import { UpdateUserEmailUseCase } from '../../usecases/user/updateUserEmail.usecase';
 import { UpdateUserPasswordUseCase } from '../../usecases/user/updateUserPassword.usecase';
+import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
 import { UpdateUserUsernameUseCase } from '../../usecases/user/updateUserUsername.usecase';
 import { ValidateSMSAccountVerificationCodeUseCase } from '../../usecases/user/validateSMSAccountVerificationCode.usecase';
+import { ValidateEmailAccountVerificationCodeUseCase } from '../../usecases/user/validateEmailAccountVerificationCode.usecase';
+import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verification-code/sendEmailVerificationCode.usecase';
+import { SendSMSVerificationCodeUseCase } from '../../usecases/user/verification-code/sendSmsVerificationCode.usecase';
+import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
+import { ActivateUserWithSecretReqDto } from '../dtos/activateUserWithSecret.dto';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
 import { GetForgotPasswordCodeQueryDto } from '../dtos/getForgotPasswordCodeQuery.dto';
 import { SendAccountVerificationCodeQueryDto } from '../dtos/sendAccountVerificationCodeQuery.dto';
@@ -20,21 +31,16 @@ import { UpdateUserPasswordReqDto } from '../dtos/updateUserPasswordReq.dto';
 import { UpdateUserUsernameReqDto } from '../dtos/updateUserUsernameReq.dto';
 import { NotificationType } from '../entities/verificationHash.entity';
 import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { DeleteUserUseCase } from '../../usecases/user/deleteUser.usecase';
-import { SendSMSVerificationCodeUseCase } from '../../usecases/user/verification-code/sendSmsVerificationCode.usecase';
-import { SendEmailVerificationCodeUseCase } from '../../usecases/user/verification-code/sendEmailVerificationCode.usecase';
 import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
-import { SendForgotPasswordCodeUseCase } from '../../usecases/user/sendForgotPasswordCode.usecase';
-import { UpdateUserPasswordWithCodeUseCase } from '../../usecases/user/updateUserPasswordWithCode.usecase';
 
 @Injectable()
-export class UsersHandler extends BaseHandler {
+export class UsersHandler {
   constructor(
     private readonly createUserByTypeUseCase: CreateUserByTypeUseCase,
     private readonly sendSMSAccountVerificationCodeUseCase: SendSMSAccountVerificationCodeUseCase,
     private readonly sendSMSForgotPasswordCodeUseCase: SendSMSForgotPasswordCodeUseCase,
     private readonly validateSMSAccountVerificationCodeUseCase: ValidateSMSAccountVerificationCodeUseCase,
+    private readonly validateEmailAccountVerificationCodeUseCase: ValidateEmailAccountVerificationCodeUseCase,
     private readonly updateUserEmailUseCase: UpdateUserEmailUseCase,
     private readonly updateUserUsernameUseCase: UpdateUserUsernameUseCase,
     private readonly updateUserPasswordUseCase: UpdateUserPasswordUseCase,
@@ -43,33 +49,31 @@ export class UsersHandler extends BaseHandler {
     private readonly sendEmailVerificationCodeUseCase: SendEmailVerificationCodeUseCase,
     private readonly sendForgotPasswordCodeUseCase: SendForgotPasswordCodeUseCase,
     private readonly updateUserPasswordWithCodeUseCase: UpdateUserPasswordWithCodeUseCase,
-    private readonly configService: ConfigService,
-    private readonly jwtService: JwtService,
+    private readonly activateUserWithSecretUseCase: ActivateUserWithSecretUseCase,
+    private readonly activateUserByEmailUseCase: ActivateUserByEmailUseCase,
     private readonly requestContext: RequestContextService,
-  ) {
-    super(jwtService);
-  }
+  ) {}
 
   public async handleCreate(dto: CreateUserReqDto): Promise<any> {
     return this.createUserByTypeUseCase.execute(dto as CreateUserByTypeParams);
   }
 
   public async handleUpdateUserEmail(
-    userId: number,
+    userId: string,
     dto: UpdateUserEmailReqDto,
   ) {
     return this.updateUserEmailUseCase.execute(userId, dto.email);
   }
 
   public async handleUpdateUserUsername(
-    userId: number,
+    userId: string,
     dto: UpdateUserUsernameReqDto,
   ) {
     return this.updateUserUsernameUseCase.execute(userId, dto.username);
   }
 
   public async handleUpdateUserPassword(
-    userId: number,
+    userId: string,
     code: string,
     query: UpdateUserPasswordQueryDto,
     dto: UpdateUserPasswordReqDto,
@@ -84,7 +88,7 @@ export class UsersHandler extends BaseHandler {
   }
 
   public async handleGetForgotPasswordCode(
-    userId: number,
+    userId: string,
     query: GetForgotPasswordCodeQueryDto,
   ) {
     switch (query.notificationType) {
@@ -99,7 +103,7 @@ export class UsersHandler extends BaseHandler {
   }
 
   public async handleSendAccountValidationCode(
-    userId: number,
+    userId: string,
     query: SendAccountVerificationCodeQueryDto,
   ) {
     switch (query.notificationType) {
@@ -125,13 +129,16 @@ export class UsersHandler extends BaseHandler {
   }
 
   public async handleValidateAccountVerificationCode(
-    userId: number,
+    userId: string,
     code: string,
     type: NotificationType,
   ) {
     switch (type) {
       case NotificationType.EMAIL:
-        throw new Error('Function not implemented.');
+        return this.validateEmailAccountVerificationCodeUseCase.execute(
+          userId,
+          code,
+        );
 
       case NotificationType.SMS:
         return this.validateSMSAccountVerificationCodeUseCase.execute(
@@ -164,5 +171,16 @@ export class UsersHandler extends BaseHandler {
   public async handleDeleteMe(dto: DeleteUserReqDto) {
     const { userId } = this.requestContext;
     return this.deleteUserUseCase.execute(userId, dto.password);
+  }
+
+  public async handleActivateUserWithSecret(
+    userId: string,
+    dto: ActivateUserWithSecretReqDto,
+  ) {
+    return this.activateUserWithSecretUseCase.execute(userId, dto.secretKey);
+  }
+
+  public async handleActivateUserByEmail(dto: ActivateUserByEmailReqDto) {
+    return this.activateUserByEmailUseCase.execute(dto.email);
   }
 }

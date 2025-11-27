@@ -9,8 +9,8 @@ export class ArtistPostResponseDto {
   @ApiProperty({
     description: 'Post id',
   })
-  @IsNumber()
-  readonly id: number;
+  @IsString()
+  readonly id: string;
 
   @ApiProperty({
     description: 'Post content',
@@ -28,13 +28,13 @@ export class ArtistPostResponseDto {
     description: 'Post user Id',
   })
   @IsString()
-  readonly userId: number;
+  readonly userId: string;
 
   @ApiProperty({
     description: 'Post user type id',
   })
   @IsString()
-  readonly userTypeId: number;
+  readonly userTypeId: string;
 
   @ApiProperty({
     description: 'Post user type',

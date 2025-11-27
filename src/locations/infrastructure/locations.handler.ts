@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common';
 
-import { BaseHandler } from '../../global/infrastructure/base.handler';
+import { BaseComponent } from '../../global/domain/components/base.component';
 import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
+import {
+  ArtistLocationCreateDto,
+  ArtistLocationDto,
+  ArtistLocationUpdateDto,
+  DeleteArtistLocationParams,
+} from '../domain/interfaces/artistLocation.interface';
+import { CreateArtistLocationUseCase } from '../usecases/artistLocations/createArtistLocation.usecase';
+import { DeleteArtistLocationUseCase } from '../usecases/artistLocations/deleteArtistLocation.usecase';
+import { GetArtistLocationsUseCase } from '../usecases/artistLocations/getArtistLocations.usecase';
+import { UpdateArtistLocationUseCase } from '../usecases/artistLocations/updateArtistLocation.usecase';
 import { AddLocationByApiUseCase } from '../usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from '../usecases/findArtistByRange.usecase';
-import { CreateArtistLocationUseCase } from '../useCases/artistLocations/createArtistLocation.usecase';
-import { GetArtistLocationsUseCase } from '../useCases/artistLocations/getArtistLocations.usecase';
-import { UpdateArtistLocationUseCase } from '../useCases/artistLocations/updateArtistLocation.usecase';
-import { DeleteArtistLocationUseCase } from '../useCases/artistLocations/deleteArtistLocation.usecase';
 
 import { AddLocationDto } from './dtos/addLocation.dto';
 import { FindArtistByRangeDTORequest } from './dtos/findArtistByRangeRequest.dto';
 import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
-import { 
-  ArtistLocationCreateDto, 
-  ArtistLocationDto, 
-  ArtistLocationUpdateDto,
-  DeleteArtistLocationParams
-} from '../domain/interfaces/artistLocation.interface';
-import { BaseComponent } from '../../global/domain/components/base.component';
 
 @Injectable()
 export class LocationsHandler extends BaseComponent {
@@ -49,51 +48,51 @@ export class LocationsHandler extends BaseComponent {
   }
 
   // New methods for artist locations CRUD operations
-  
+
   public async handleCreateArtistLocation(
-    artistId: number,
+    artistId: string,
     dto: ArtistLocationCreateDto,
   ): Promise<ArtistLocationDto> {
     this.logger.log('Creating artist location', { artistId, dto });
-    
+
     // Ensure artist ID is set
     dto.artistId = artistId;
-    
+
     return this.createArtistLocationUseCase.execute(dto);
   }
 
   public async handleGetArtistLocations(
-    artistId: number,
+    artistId: string,
   ): Promise<ArtistLocationDto[]> {
     this.logger.log('Getting artist locations', { artistId });
-    
+
     return this.getArtistLocationsUseCase.execute({ artistId });
   }
 
   public async handleUpdateArtistLocation(
-    artistId: number,
-    locationId: number,
+    artistId: string,
+    locationId: string,
     dto: ArtistLocationUpdateDto,
   ): Promise<ArtistLocationDto> {
     this.logger.log('Updating artist location', { artistId, locationId, dto });
-    
+
     // Set the ID in the DTO
     dto.id = locationId;
-    
+
     return this.updateArtistLocationUseCase.execute(dto);
   }
 
   public async handleDeleteArtistLocation(
-    artistId: number,
-    locationId: number,
+    artistId: string,
+    locationId: string,
   ): Promise<boolean> {
     this.logger.log('Deleting artist location', { artistId, locationId });
-    
+
     const params: DeleteArtistLocationParams = {
       id: locationId,
       artistId,
     };
-    
+
     return this.deleteArtistLocationUseCase.execute(params);
   }
 }

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 
 import { BaseDTO } from '../../global/domain/dtos/base.dto';
-import { ReviewReactionEnum } from '../../reactions/domain/enums/reviewReaction.enum';
 import { ReviewReactionInterface } from '../interfaces/reviewReaction.interface';
+import { ReviewReactionEnum } from '../reviews.controller';
 
 export class ReviewReactionDTO
   extends BaseDTO
@@ -14,7 +14,7 @@ export class ReviewReactionDTO
     description: 'The id of the user',
     example: 1,
   })
-  customerId: number;
+  customerId: string;
 
   @ApiProperty({
     type: String,
@@ -27,8 +27,8 @@ export class ReviewReactionDTO
   @ApiProperty({
     type: Number,
     description: 'The id of the review',
-    example: 1,
+    example: '1',
   })
-  @IsNumber()
-  reviewId: number;
+  @IsString()
+  reviewId: string;
 }

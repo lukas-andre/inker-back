@@ -2,16 +2,16 @@ import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
 import {
-  defaultRatingMap,
   RatingRate,
   ReviewAvgInterface,
+  defaultRatingMap,
 } from '../../interfaces/reviewAvg.interface';
 
 @Entity()
 export class ReviewAvg extends BaseEntity implements ReviewAvgInterface {
-  @Column({ type: 'int', nullable: false, name: 'artist_id' })
+  @Column({ nullable: false, name: 'artist_id' })
   @Index()
-  artistId: number;
+  artistId: string;
 
   @Column({ type: 'real', nullable: false })
   value: number;

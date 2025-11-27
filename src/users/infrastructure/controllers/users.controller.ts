@@ -14,9 +14,13 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
+import { ActivateUserByEmailReqDto } from '../dtos/activateUserByEmail.dto';
+import { ActivateUserWithSecretReqDto } from '../dtos/activateUserWithSecret.dto';
 import { CreateUserReqDto } from '../dtos/createUserReq.dto';
+import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
 import { GetForgotPasswordCodeQueryDto } from '../dtos/getForgotPasswordCodeQuery.dto';
 import { SendAccountVerificationCodeQueryDto } from '../dtos/sendAccountVerificationCodeQuery.dto';
+import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
 import { UpdateUserEmailReqDto } from '../dtos/updateUserEmailReq.dto';
 import { UpdateUserPasswordQueryDto } from '../dtos/updateUserPasswordQuery.dto';
 import { UpdateUserPasswordReqDto } from '../dtos/updateUserPasswordReq.dto';
@@ -25,6 +29,9 @@ import { ValidateAccountVerificationCodeQueryDto } from '../dtos/validateAccount
 import { UsersHandler } from '../handlers/users.handler';
 import { UserIdPipe } from '../pipes/userId.pipe';
 
+import { ActivateUserByEmailDoc } from './docs/activateUserByEmail.doc';
+import { ActivateUserWithSecretDoc } from './docs/activateUserWithSecret.doc';
+import { DeleteUserDoc } from './docs/deleteUser.doc';
 import { GetForgotPasswordCode } from './docs/getForgotPasswordCode.doc';
 import { UpdateUserPasswordDoc } from './docs/updateUserPassword.doc';
 import { UpdateUserUsernameDoc } from './docs/updateUserUsername.doc';
@@ -34,9 +41,6 @@ import {
   UpdateUserEmailDoc,
   ValidateAccountVerificationCodeDoc,
 } from './docs/users.doc';
-import { DeleteUserDoc } from './docs/deleteUser.doc';
-import { DeleteUserReqDto } from '../dtos/deleteUser.dto';
-import { SendForgotPasswordCodeReqDto } from '../dtos/sendForgotPasswordCodeReq.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -55,7 +59,7 @@ export class UsersController {
   @HttpCode(200)
   @Put(':userId/email')
   async updateUserEmail(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Body() updateUserEmailReqDto: UpdateUserEmailReqDto,
   ) {
     return this.usersHandler.handleUpdateUserEmail(
@@ -68,7 +72,7 @@ export class UsersController {
   @HttpCode(200)
   @Put(':userId/username')
   async updateUserUsername(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Body() updateUserUsernameReqDto: UpdateUserUsernameReqDto,
   ) {
     return this.usersHandler.handleUpdateUserUsername(
@@ -81,7 +85,7 @@ export class UsersController {
   @HttpCode(200)
   @Put(':userId/password/:code')
   async updateUserPassword(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Param('code') code: string,
     @Query() updateUserPasswordQueryDto: UpdateUserPasswordQueryDto,
     @Body() updateUserPasswordReqDto: UpdateUserPasswordReqDto,
@@ -99,7 +103,7 @@ export class UsersController {
   @HttpCode(200)
   @Get(':userId/forgot-password-code')
   async getForgotPasswordCode(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Query() getForgotPasswordCodeQueryDto: GetForgotPasswordCodeQueryDto,
   ) {
     return this.usersHandler.handleGetForgotPasswordCode(
@@ -124,7 +128,7 @@ export class UsersController {
   @HttpCode(200)
   @Post(':userId/send-account-verification-code')
   async sendAccountValidationCode(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Query()
     sendAccountVerificationCodeQueryDto: SendAccountVerificationCodeQueryDto,
   ) {
@@ -152,7 +156,7 @@ export class UsersController {
   @HttpCode(200)
   @Post(':userId/validate-account-verification-code/:code')
   async validateAccountVerificationCode(
-    @Param('userId', UserIdPipe) userId: number,
+    @Param('userId', UserIdPipe) userId: string,
     @Param('code') code: string,
     @Query()
     { notificationType }: ValidateAccountVerificationCodeQueryDto,
@@ -185,5 +189,29 @@ export class UsersController {
   @UseGuards(AuthGuard)
   async deleteMe(@Body() deleteUserReqDto: DeleteUserReqDto) {
     return this.usersHandler.handleDeleteMe(deleteUserReqDto);
+  }
+
+  @ActivateUserWithSecretDoc()
+  @HttpCode(200)
+  @Post(':userId/activate')
+  async activateUserWithSecret(
+    @Param('userId', UserIdPipe) userId: string,
+    @Body() activateUserWithSecretReqDto: ActivateUserWithSecretReqDto,
+  ) {
+    return this.usersHandler.handleActivateUserWithSecret(
+      userId,
+      activateUserWithSecretReqDto,
+    );
+  }
+
+  @ActivateUserByEmailDoc()
+  @HttpCode(200)
+  @Post('activate-by-email')
+  async activateUserByEmail(
+    @Body() activateUserByEmailReqDto: ActivateUserByEmailReqDto,
+  ) {
+    return this.usersHandler.handleActivateUserByEmail(
+      activateUserByEmailReqDto,
+    );
   }
 }

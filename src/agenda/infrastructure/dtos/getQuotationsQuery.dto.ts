@@ -1,30 +1,53 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import {
+  IsEnum,
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
+
+import { QuotationStatus, QuotationType } from '../entities/quotation.entity';
 
 export class GetQuotationsQueryDto {
-  @ApiProperty({
-    required: false,
-    enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
+  @ApiPropertyOptional({
+    description: 'Filter by quotation status (comma-separated)',
+    example: 'PENDING,APPROVED',
   })
   @IsOptional()
-  //   @IsEnum(['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'])
-  status?:
-    | 'pending'
-    | 'quoted'
-    | 'accepted'
-    | 'rejected'
-    | 'appealed'
-    | 'canceled';
+  @IsString()
+  readonly status?: string;
 
-  @ApiProperty({ required: false, minimum: 1 })
+  @ApiPropertyOptional({
+    description: 'Filter by quotation type',
+    enum: QuotationType,
+  })
   @IsOptional()
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
+  @IsEnum(QuotationType)
+  readonly type?: QuotationType;
 
-  @ApiProperty({ required: false, minimum: 1 })
+  @ApiPropertyOptional({
+    description: 'Page number for pagination',
+    default: 1,
+    type: Number,
+  })
   @IsOptional()
-  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @IsNumber()
   @Min(1)
-  limit?: number = 10;
+  readonly page?: number = 1;
+
+  @ApiPropertyOptional({
+    description: 'Number of items per page',
+    default: 10,
+    type: Number,
+  })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @IsNumber()
+  @Min(1)
+  readonly limit?: number = 10;
 }

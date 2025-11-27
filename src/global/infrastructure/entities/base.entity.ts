@@ -1,14 +1,14 @@
 import {
   CreateDateColumn,
   Entity,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class BaseEntity {
-  @PrimaryColumn({ generated: 'increment', primary: true, type: 'integer' })
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

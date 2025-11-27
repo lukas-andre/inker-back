@@ -1,0 +1,10 @@
+ALTER TABLE public.agenda_invitation ADD CONSTRAINT "FK_a4be6d79f7ac6e0ff252361f5f7" FOREIGN KEY (event_id) REFERENCES agenda_event(id);
+ALTER TABLE public.agenda_invitation ADD CONSTRAINT "REL_a4be6d79f7ac6e0ff252361f5f" UNIQUE (event_id);
+ALTER TABLE public.agenda_unavailable_time ADD CONSTRAINT "FK_f8ca0c062bf614bbcb27172e890" FOREIGN KEY (agenda_id) REFERENCES agenda(id);
+ALTER TABLE public.agenda_event ADD CONSTRAINT "FK_52830e038af1114957b8f95a507" FOREIGN KEY (agenda_id) REFERENCES agenda(id);
+ALTER TABLE public.quotation_history ADD CONSTRAINT "FK_17ee753f917de8c53ca06c6425f" FOREIGN KEY (quotation_id) REFERENCES quotation(id);
+ALTER TABLE public.quotation ADD CONSTRAINT chk_quotation_tattoo_cache_for_open CHECK ((((tattoo_design_cache_id IS NULL) AND (tattoo_design_image_url IS NULL)) OR (type = 'OPEN'::quotation_type)));
+ALTER TABLE public.signed_consents ADD CONSTRAINT fk_form_template FOREIGN KEY (form_template_id) REFERENCES form_templates(id) ON DELETE SET NULL;
+ALTER TABLE public.signed_consents ADD CONSTRAINT fk_event FOREIGN KEY (event_id) REFERENCES agenda_event(id) ON DELETE CASCADE;
+ALTER TABLE public.spatial_ref_sys ADD CONSTRAINT spatial_ref_sys_srid_check CHECK (((srid > 0) AND (srid <= 998999)));
+ALTER TABLE public.quotation_offers ADD CONSTRAINT "FK_quotation_offers_quotation_id" FOREIGN KEY (quotation_id) REFERENCES quotation(id) ON UPDATE CASCADE ON DELETE CASCADE;

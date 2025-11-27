@@ -1,5 +1,5 @@
 export interface ArtistByRangeLocation {
-  location_id: number;
+  location_id: string;
   location_created_at: string;
   location_updated_at: string;
   location_address1: string;
@@ -11,7 +11,7 @@ export interface ArtistByRangeLocation {
   location_latitud: number;
   location_longitud: number;
   location_location: LocationLocation;
-  location_artist_id: number;
+  location_artist_id: string;
   location_name: string;
   location_profile_thumbnail: null;
   distance: number;

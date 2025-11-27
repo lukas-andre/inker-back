@@ -1,15 +1,17 @@
-import { Column, Entity, OneToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { User } from '../../../users/infrastructure/entities/user.entity';
+
+import { User } from './user.entity';
 
 @Entity()
 export class Settings extends BaseEntity {
-  @Column()
-  userId: number;
-
-  @OneToOne(() => User)
+  @OneToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @Column({ name: 'user_id', type: 'uuid' })
+  userId: string;
 
   @Column({ default: true })
   notificationsEnabled: boolean;

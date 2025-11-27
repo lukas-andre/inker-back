@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsString, IsUUID } from 'class-validator';
 
 import { IsEndDate } from '../../../global/domain/validators/isEndDate.validator';
 import { ValidateDateFormat } from '../../../global/domain/validators/isOnlyDate.validator';
@@ -8,11 +8,11 @@ import { IsStartDate } from '../../../global/domain/validators/isStartDate.valid
 
 export class AddEventReqDto {
   @ApiProperty({
-    example: 1,
-    description: 'User Email or User Username',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'Agenda Id',
   })
-  @IsNumber()
-  readonly agendaId: number;
+  @IsUUID()
+  readonly agendaId: string;
 
   @ApiProperty({
     example: '2021-05-18 16:00:00',
@@ -64,9 +64,9 @@ export class AddEventReqDto {
   readonly notification: boolean;
 
   @ApiProperty({
-    example: 1,
+    example: '123e4567-e89b-12d3-a456-426614174000',
     description: 'Customer Id',
   })
-  @IsNumber()
-  readonly customerId: number;
+  @IsUUID()
+  readonly customerId: string;
 }

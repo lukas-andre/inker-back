@@ -1,7 +1,7 @@
 import {
-  registerDecorator,
   ValidationArguments,
   ValidationOptions,
+  registerDecorator,
 } from 'class-validator';
 
 // Validates that the start date is less than the end date

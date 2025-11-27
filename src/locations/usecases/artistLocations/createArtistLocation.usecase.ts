@@ -1,13 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { ArtistLocationCreateDto, ArtistLocationDto } from '../../domain/interfaces/artistLocation.interface';
-import { ArtistLocationProvider } from '../../infrastructure/database/artistLocation.provider';
+import {
+  ArtistLocationCreateDto,
+  ArtistLocationDto,
+} from '../../domain/interfaces/artistLocation.interface';
+import { ArtistLocationRepository } from '../../infrastructure/database/artistLocation.repository';
 
 @Injectable()
 export class CreateArtistLocationUseCase extends BaseUseCase {
   constructor(
-    private readonly artistLocationProvider: ArtistLocationProvider,
+    private readonly artistLocationProvider: ArtistLocationRepository,
   ) {
     super(CreateArtistLocationUseCase.name);
   }
@@ -17,14 +20,28 @@ export class CreateArtistLocationUseCase extends BaseUseCase {
 
     try {
       // Validate required fields
-      if (!data.artistId || !data.name || !data.address1 || !data.address2 || !data.city || data.lat === undefined || data.lng === undefined) {
-        throw new BadRequestException('Missing required fields for artist location');
+      if (
+        !data.artistId ||
+        !data.name ||
+        !data.address1 ||
+        !data.address2 ||
+        !data.city ||
+        data.lat === undefined ||
+        data.lng === undefined
+      ) {
+        throw new BadRequestException(
+          'Missing required fields for artist location',
+        );
       }
 
       // Check location count limit (3)
-      const locationCount = await this.artistLocationProvider.countByArtistId(data.artistId);
+      const locationCount = await this.artistLocationProvider.countByArtistId(
+        data.artistId,
+      );
       if (locationCount >= 3) {
-        throw new BadRequestException('Artist cannot have more than 3 locations');
+        throw new BadRequestException(
+          'Artist cannot have more than 3 locations',
+        );
       }
 
       // Set the locationOrder if not provided

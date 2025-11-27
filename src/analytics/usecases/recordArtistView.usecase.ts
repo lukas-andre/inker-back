@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsProvider } from '../infrastructure/database/analytics.provider';
+
 import { RecordArtistViewDto } from '../domain/dtos/metrics.dto';
+import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
 
 @Injectable()
 export class RecordArtistViewUseCase {
-  constructor(private readonly analyticsProvider: AnalyticsProvider) {}
+  constructor(private readonly analyticsProvider: AnalyticsRepository) {}
 
-  async execute(userId: number, dto: RecordArtistViewDto): Promise<void> {
-    await this.analyticsProvider.incrementArtistView(
-      dto.artistId,
-      userId
-    );
+  async execute(userId: string, dto: RecordArtistViewDto): Promise<void> {
+    await this.analyticsProvider.incrementArtistView(dto.artistId, userId);
   }
-} 
+}

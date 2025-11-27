@@ -3,12 +3,12 @@ import { Test } from '@nestjs/testing/test';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
 
-import { AgendaEventProvider } from '../agenda/infrastructure/providers/agendaEvent.provider';
-import { ArtistProvider } from '../artists/infrastructure/database/artist.provider';
+import { AgendaEventRepository } from '../agenda/infrastructure/repositories/agendaEvent.repository';
+import { ArtistRepository } from '../artists/infrastructure/repositories/artist.repository';
 import { ReviewReactionEnum } from '../reactions/domain/enums/reviewReaction.enum';
-import { UsersProvider } from '../users/infrastructure/providers/users.provider';
+import { UsersRepository } from '../users/infrastructure/repositories/users.repository';
 
-import { ReviewProvider } from './database/providers/review.provider';
+import { ReviewRepository } from './database/repositories/review.repository';
 import { ReviewsController } from './reviews.controller';
 import { ReviewHandler } from './reviews.handler';
 
@@ -29,21 +29,21 @@ describe('ReviewsController', () => {
           }),
         },
         {
-          provide: ReviewProvider,
-          useValue: createMock<ReviewProvider>(),
+          provide: ReviewRepository,
+          useValue: createMock<ReviewRepository>(),
         },
       ],
     })
       .useMocker(token => {
-        if (token === UsersProvider) {
+        if (token === UsersRepository) {
           return jest.fn();
         }
 
-        if (token === AgendaEventProvider) {
+        if (token === AgendaEventRepository) {
           return jest.fn();
         }
 
-        if (token === ArtistProvider) {
+        if (token === ArtistRepository) {
           return jest.fn();
         }
 
@@ -67,7 +67,7 @@ describe('ReviewsController', () => {
   });
 
   it('ReviewsController.reviewArtist should call handler.reviewArtist', async () => {
-    await controller.reviewArtist(1, 1, 1, {
+    await controller.reviewArtist('1', '1', '1', {
       displayName: 'test',
     });
 
@@ -75,7 +75,7 @@ describe('ReviewsController', () => {
   });
 
   it('ReviewsController.reactToReview should call handler.reactToReview', async () => {
-    await controller.reactToReview(1, 1, ReviewReactionEnum.like);
+    await controller.reactToReview('1', '1', ReviewReactionEnum.like);
 
     expect(handler.reactToReview).toBeCalled();
   });

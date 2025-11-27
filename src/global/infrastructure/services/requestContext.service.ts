@@ -8,9 +8,14 @@ import {
 } from '../../domain/interfaces/jwtPayload.interface';
 import { InkerClsStore } from '../guards/auth.guard';
 
+export type RequestContext = JwtPayload;
 @Injectable()
 export class RequestContextService {
   constructor(private readonly cls: ClsService<InkerClsStore>) {}
+
+  getContext(): RequestContext {
+    return this.cls.get('jwt');
+  }
 
   get isArtist(): boolean {
     return this.cls.get('jwt').userType === UserType.ARTIST;
@@ -28,7 +33,7 @@ export class RequestContextService {
     return this.cls.get('jwt').userType !== UserType.CUSTOMER;
   }
 
-  get userId(): number {
+  get userId(): string {
     return this.cls.get('jwt').id;
   }
 
@@ -36,8 +41,7 @@ export class RequestContextService {
     return this.cls.get('jwt').userType;
   }
 
-  get userTypeId(): number {
-    console.log('jwt: ', this.cls.get('jwt'));
+  get userTypeId(): string {
     return this.cls.get('jwt').userTypeId;
   }
 

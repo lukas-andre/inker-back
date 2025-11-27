@@ -16,11 +16,11 @@ export class Post extends BaseEntity {
 
   @Index()
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Index()
   @Column({ name: 'user_type_id' })
-  userTypeId: number;
+  userTypeId: string;
 
   @Index()
   @Column({ name: 'user_type' })

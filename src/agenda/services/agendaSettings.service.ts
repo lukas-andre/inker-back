@@ -1,30 +1,38 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaUnavailableTimeProvider } from '../infrastructure/providers/agendaUnavailableTime.provider';
-import { SetWorkingHoursReqDto } from '../infrastructure/dtos/setWorkingHoursReq.dto';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+
 import { CreateUnavailableTimeReqDto } from '../infrastructure/dtos/createUnavailableTimeReq.dto';
+import { SetWorkingHoursReqDto } from '../infrastructure/dtos/setWorkingHoursReq.dto';
 import { AgendaUnavailableTime } from '../infrastructure/entities/agendaUnavailableTime.entity';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaUnavailableTimeRepository } from '../infrastructure/repositories/agendaUnavailableTime.provider';
 
 @Injectable()
 export class AgendaSettingsService {
   private readonly logger = new Logger(AgendaSettingsService.name);
 
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly unavailableTimeProvider: AgendaUnavailableTimeProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly unavailableTimeProvider: AgendaUnavailableTimeRepository,
   ) {}
 
   /**
    * Set working hours and working days for an artist's agenda
    */
   async setWorkingHours(
-    agendaId: number,
+    agendaId: string,
     dto: SetWorkingHoursReqDto,
   ): Promise<void> {
     this.logger.log(`Setting working hours for agenda ${agendaId}`);
 
     // Find the agenda
-    const agenda = await this.agendaProvider.findOne({ where: { id: agendaId } });
+    const agenda = await this.agendaProvider.findOne({
+      where: { id: agendaId },
+    });
     if (!agenda) {
       throw new NotFoundException(`Agenda with ID ${agendaId} not found`);
     }
@@ -32,9 +40,11 @@ export class AgendaSettingsService {
     // Validate that end time is after start time
     const startTime = this.parseTimeString(dto.workingHoursStart);
     const endTime = this.parseTimeString(dto.workingHoursEnd);
-    
+
     if (endTime <= startTime) {
-      throw new BadRequestException('Working hours end time must be after start time');
+      throw new BadRequestException(
+        'Working hours end time must be after start time',
+      );
     }
 
     // Update the agenda
@@ -49,13 +59,15 @@ export class AgendaSettingsService {
    * Create a new unavailable time block
    */
   async createUnavailableTime(
-    agendaId: number,
+    agendaId: string,
     dto: CreateUnavailableTimeReqDto,
   ): Promise<AgendaUnavailableTime> {
     this.logger.log(`Creating unavailable time for agenda ${agendaId}`);
 
     // Find the agenda
-    const agenda = await this.agendaProvider.findOne({ where: { id: agendaId } });
+    const agenda = await this.agendaProvider.findOne({
+      where: { id: agendaId },
+    });
     if (!agenda) {
       throw new NotFoundException(`Agenda with ID ${agendaId} not found`);
     }
@@ -73,7 +85,9 @@ export class AgendaSettingsService {
     );
 
     if (overlapping.length > 0) {
-      throw new BadRequestException('This time block overlaps with an existing unavailable time');
+      throw new BadRequestException(
+        'This time block overlaps with an existing unavailable time',
+      );
     }
 
     // Create the unavailable time
@@ -88,11 +102,15 @@ export class AgendaSettingsService {
   /**
    * Get all unavailable time blocks for an agenda
    */
-  async getUnavailableTimes(agendaId: number): Promise<AgendaUnavailableTime[]> {
+  async getUnavailableTimes(
+    agendaId: string,
+  ): Promise<AgendaUnavailableTime[]> {
     this.logger.log(`Getting unavailable times for agenda ${agendaId}`);
 
     // Find the agenda
-    const agenda = await this.agendaProvider.findOne({ where: { id: agendaId } });
+    const agenda = await this.agendaProvider.findOne({
+      where: { id: agendaId },
+    });
     if (!agenda) {
       throw new NotFoundException(`Agenda with ID ${agendaId} not found`);
     }
@@ -103,7 +121,7 @@ export class AgendaSettingsService {
   /**
    * Delete an unavailable time block
    */
-  async deleteUnavailableTime(agendaId: number, id: number): Promise<void> {
+  async deleteUnavailableTime(agendaId: string, id: string): Promise<void> {
     this.logger.log(`Deleting unavailable time ${id} for agenda ${agendaId}`);
 
     // Find the unavailable time
@@ -114,7 +132,9 @@ export class AgendaSettingsService {
 
     // Check that it belongs to the provided agenda
     if (unavailableTime.agendaId !== agendaId) {
-      throw new BadRequestException(`Unavailable time ${id} does not belong to agenda ${agendaId}`);
+      throw new BadRequestException(
+        `Unavailable time ${id} does not belong to agenda ${agendaId}`,
+      );
     }
 
     await this.unavailableTimeProvider.remove(id);

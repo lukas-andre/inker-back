@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+{{> head}}
+<body>
+    {{#if (eq reminderType "CONSENT_12H_BEFORE")}}
+        {{> header message="📋 Firma tu consentimiento"}}
+    {{else if (eq reminderType "CONSENT_2H_BEFORE")}}
+        {{> header message="🚨 ¡Consentimiento URGENTE!"}}
+    {{else}}
+        {{> header message="📋 Consentimiento Requerido"}}
+    {{/if}}
+    
+    <!-- Main Content -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff;">
+        <tr>
+            <td style="padding: 40px 30px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto;">
+                    
+                    <!-- Greeting -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <h1 style="color: #2c3e50; font-size: 28px; margin: 0; text-align: center;">
+                                ¡Hola {{customerName}}! 👋
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Urgency Banner -->
+                    {{#if (eq reminderType "CONSENT_2H_BEFORE")}}
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <div style="background-color: #e74c3c; color: white; text-align: center; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                                <h2 style="margin: 0; font-size: 24px;">🚨 ¡ACCIÓN REQUERIDA!</h2>
+                                <p style="margin: 10px 0 0; font-size: 18px; font-weight: bold;">Tu cita será cancelada si no firmas el consentimiento AHORA</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/if}}
+
+                    <!-- Main Message -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            <div style="font-size: 60px; margin-bottom: 20px;">📋</div>
+                            {{#if (eq reminderType "CONSENT_12H_BEFORE")}}
+                                <h2 style="color: #3498db; font-size: 24px; margin: 0;">Consentimiento Requerido</h2>
+                                <p style="color: #666; font-size: 16px; margin: 10px 0 0;">Tu cita es mañana. Por favor, firma el formulario de consentimiento antes de tu sesión.</p>
+                            {{else if (eq reminderType "CONSENT_2H_BEFORE")}}
+                                <h2 style="color: #e74c3c; font-size: 24px; margin: 0;">¡Consentimiento URGENTE!</h2>
+                                <p style="color: #666; font-size: 16px; margin: 10px 0 0;"><strong>Tu cita es en 2 horas. DEBES firmar el consentimiento AHORA o tu cita será cancelada.</strong></p>
+                            {{else}}
+                                <h2 style="color: #f39c12; font-size: 24px; margin: 0;">Firma tu Consentimiento</h2>
+                                <p style="color: #666; font-size: 16px; margin: 10px 0 0;">Necesitas firmar el formulario de consentimiento para tu próxima cita.</p>
+                            {{/if}}
+                        </td>
+                    </tr>
+
+                    <!-- Appointment Details Card -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <div style="background-color: #f8f9fa; border: 2px solid #3498db; border-radius: 10px; padding: 25px; margin: 20px 0;">
+                                <h3 style="color: #2c3e50; font-size: 20px; margin: 0 0 15px; text-align: center;">
+                                    🎨 Detalles de tu Cita
+                                </h3>
+                                
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">🎨 Artista:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            <span style="color: #3498db; font-weight: bold;">{{artistName}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">📅 Fecha y Hora:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            {{formatDateCustom eventDate}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">🏷️ Sesión:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            {{eventName}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">📍 Ubicación:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            {{eventLocation}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0;">
+                                            <strong style="color: #2c3e50;">⏰ Tiempo restante:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; text-align: right;">
+                                            {{#if (eq reminderType "CONSENT_12H_BEFORE")}}
+                                                <span style="color: #f39c12; font-weight: bold;">~12 horas</span>
+                                            {{else if (eq reminderType "CONSENT_2H_BEFORE")}}
+                                                <span style="color: #e74c3c; font-weight: bold;">¡Solo 2 horas!</span>
+                                            {{else}}
+                                                <span style="color: #3498db; font-weight: bold;">{{hoursUntilAppointment}} horas</span>
+                                            {{/if}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Why Consent is Important -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <div style="background-color: #e8f5e8; border: 1px solid #27ae60; border-radius: 8px; padding: 20px;">
+                                <h4 style="color: #27ae60; margin: 0 0 10px; font-size: 18px;">📋 ¿Por qué necesitas firmar el consentimiento?</h4>
+                                <ul style="color: #2c3e50; margin: 0; padding-left: 20px; line-height: 1.6;">
+                                    <li>Es un <strong>requisito legal</strong> para cualquier procedimiento de tatuaje</li>
+                                    <li>Protege tanto a ti como al artista durante el proceso</li>
+                                    <li>Confirma que entiendes los cuidados posterior</li>
+                                    <li>Es <strong>obligatorio</strong> antes de cualquier sesión</li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Call to Action Button -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            {{#if (eq reminderType "CONSENT_2H_BEFORE")}}
+                                <a href="{{consentUrl}}" 
+                                   style="background-color: #e74c3c; color: white; padding: 20px 40px; text-decoration: none; border-radius: 30px; font-weight: bold; display: inline-block; font-size: 18px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);">
+                                    🚨 FIRMAR CONSENTIMIENTO AHORA
+                                </a>
+                                <p style="color: #e74c3c; font-size: 14px; margin: 15px 0 0; font-weight: bold;">
+                                    ⚠️ Tu cita será cancelada automáticamente si no firmas en las próximas 2 horas
+                                </p>
+                            {{else}}
+                                <a href="{{consentUrl}}" 
+                                   style="background-color: #27ae60; color: white; padding: 18px 35px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; font-size: 16px; transition: background-color 0.3s;">
+                                    📋 Firmar Formulario de Consentimiento
+                                </a>
+                                <p style="color: #666; font-size: 14px; margin: 15px 0 0;">
+                                    ⏱️ Solo toma 2-3 minutos completarlo
+                                </p>
+                            {{/if}}
+                        </td>
+                    </tr>
+
+                    <!-- Help Section -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px;">
+                                <h4 style="color: #2c3e50; margin: 0 0 10px;">¿Necesitas ayuda?</h4>
+                                <p style="color: #666; font-size: 14px; margin: 0 0 15px;">
+                                    Si tienes problemas para firmar el consentimiento o tienes preguntas, contáctanos:
+                                </p>
+                                <a href="mailto:support@inker.com" 
+                                   style="background-color: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 15px; font-weight: bold; display: inline-block; margin-right: 10px;">
+                                    📧 Email
+                                </a>
+                                <a href="tel:+1234567890" 
+                                   style="background-color: #9b59b6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 15px; font-weight: bold; display: inline-block;">
+                                    📞 Llamar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    {{> footer}}
+</body>
+</html> 

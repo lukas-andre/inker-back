@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { NotificationTypeSchema } from './notification';
 
 export const SendVerificationCodeJobSchema = z.object({

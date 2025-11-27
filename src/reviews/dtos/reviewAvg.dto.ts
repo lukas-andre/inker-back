@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 import { BaseDTO } from '../../global/domain/dtos/base.dto';
 import {
@@ -9,13 +9,13 @@ import {
 
 export class ReviewAvgDTO extends BaseDTO implements ReviewAvgInterface {
   @ApiProperty({
-    type: Number,
+    type: String,
     description: 'The id of the artist',
-    example: 1,
+    example: '1',
     required: true,
   })
-  @IsNumber()
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({
     type: Number,

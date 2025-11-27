@@ -6,19 +6,21 @@ import { LoggerOptions } from 'typeorm/logger/LoggerOptions';
 import { oasConfig } from '../oas.config';
 
 import { agendaDatabaseConf } from './agenda.config';
+import { analyticsDatabaseConf } from './analytics.config';
 import { artistDatabaseConf } from './artist.config';
 import { customerDatabaseConf } from './customer.config';
 import { customerFeedDatabaseConf } from './customerFeed.config';
 import { followDatabaseConf } from './follow.config';
 import { genreDatabaseConf } from './genre.config';
 import { locationDatabaseConf } from './location.config';
+import { notificationsDatabaseConf } from './notification.config';
 import { postDatabaseConf } from './post.config';
 import { reactionDatabaseConf } from './reaction.config';
 import { ratingDatabaseConf } from './review.config';
 import { tagDatabaseConf } from './tag.config';
+import { tattooTranslationDatabaseConf } from './tattooTranslation.config';
+import { tokensDatabaseConf } from './tokens.config';
 import { userDatabaseConf } from './user.config';
-import { notificationsDatabaseConf } from './notification.config';
-import { analyticsDatabaseConf } from './analytics.config';
 
 type DataBaseTypes = 'postgres';
 
@@ -60,10 +62,7 @@ export function createDatabaseConnection(
 ): TypeOrmModuleOptions {
   return {
     ...getBaseDatabaseConfig(),
-    synchronize:
-      connectionConf.synchronize === undefined
-        ? Boolean(process.env.TYPEORM_SYNC)
-        : connectionConf.synchronize,
+    synchronize: false,
     name: connectionConf.name,
     database: connectionConf.database,
     entities: connectionConf.entities,
@@ -105,4 +104,6 @@ export const databaseConfigs = [
   oasConfig,
   notificationsDatabaseConf,
   analyticsDatabaseConf,
+  tattooTranslationDatabaseConf,
+  tokensDatabaseConf,
 ];

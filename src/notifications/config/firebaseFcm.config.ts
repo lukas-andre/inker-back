@@ -7,15 +7,35 @@ export class FirebaseFcmConfig {
 
   static initialize() {
     if (this.isInitialized) return;
+    if (process.env.ENV === 'production') {
+      try {
+        const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
 
-    // Using ADC (Application Default Credentials)
-    // You should set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the path of the service account key file.
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
-    });
+        if (!serviceAccountJson) {
+          throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON environment variable is not set');
+        }
 
-    Logger.log('Firebase FCM initialized', FirebaseFcmConfig.name);
+        const serviceAccount = JSON.parse(serviceAccountJson);
 
-    this.isInitialized = true;
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+        });
+
+        Logger.log('Firebase FCM initialized', FirebaseFcmConfig.name);
+        this.isInitialized = true;
+      } catch (error) {
+        Logger.error('Failed to initialize Firebase FCM', error, FirebaseFcmConfig.name);
+        throw error;
+      }
+    } else {
+      Logger.log('Firebase FCM not initialized in development', FirebaseFcmConfig.name);
+
+      // Initialize Firebase Admin with application default credentials
+      admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+      });
+
+      this.isInitialized = true;
+    }
   }
 }

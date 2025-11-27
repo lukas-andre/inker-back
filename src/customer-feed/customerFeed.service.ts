@@ -19,7 +19,7 @@ export class CustomerFeedService {
     private readonly customerFeedRepository: Repository<CustomerFeed>,
   ) {}
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.customerFeedRepository.findOne({ where: { id } });
   }
 

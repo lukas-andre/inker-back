@@ -1,4 +1,4 @@
 // https://stackoverflow.com/questions/60670291/can-i-assign-multiple-variables-the-same-value-without-having-one-line-per-varia
-export function* always(x: number) {
+export function* always(x: string) {
   while (true) yield x;
 }

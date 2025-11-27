@@ -41,7 +41,7 @@ export class RolesController {
   @ApiOkResponse({ description: 'The role exists.', type: Role })
   @ApiNotFoundResponse({ status: 404, description: 'Role does not exist.' })
   @Get(':id')
-  async findOne(@Param('id', new ParseIntPipe()) id: number): Promise<Role> {
+  async findOne(@Param('id') id: string): Promise<Role> {
     const role = await this.rolesHandler.findOne(id);
     if (!role) {
       throw new NotFoundException();
