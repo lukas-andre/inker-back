@@ -23,7 +23,7 @@ export class PermissionsHandler {
     return this.findAllRoutesUseCase.execute();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.findOnePermissionUseCase.execute({ where: { id } });
   }
   async findAll(query: any) {

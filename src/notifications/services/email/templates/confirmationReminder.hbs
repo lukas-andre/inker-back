@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+{{> head}}
+<body>
+    {{> header message="⏰ ¡Confirma tu cita!"}}
+    
+    <!-- Main Content -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff;">
+        <tr>
+            <td style="padding: 40px 30px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto;">
+                    
+                    <!-- Greeting -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <h1 style="color: #2c3e50; font-size: 28px; margin: 0; text-align: center;">
+                                ¡Hola {{customerName}}! 👋
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Urgency Timer -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            <div style="background-color: #f39c12; color: white; text-align: center; padding: 25px; border-radius: 15px; margin-bottom: 20px;">
+                                <div style="font-size: 50px; margin-bottom: 10px;">⏰</div>
+                                <h2 style="margin: 0; font-size: 24px;">¡Tu cita expira pronto!</h2>
+                                <p style="margin: 10px 0 0; font-size: 18px; font-weight: bold;">
+                                    {{#if hoursRemaining}}
+                                        Te quedan {{hoursRemaining}} horas para confirmar
+                                    {{else}}
+                                        ¡Confirma ahora antes de que sea demasiado tarde!
+                                    {{/if}}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Main Message -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            <h2 style="color: #3498db; font-size: 24px; margin: 0;">Tu Artista Está Esperando</h2>
+                            <p style="color: #666; font-size: 16px; margin: 15px 0 0; line-height: 1.6;">
+                                {{artistName}} ha reservado tiempo especialmente para ti. 
+                                <strong>Necesitamos tu confirmación</strong> para asegurar tu cita, 
+                                de lo contrario será liberada para otros clientes.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Appointment Details Card -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <div style="background-color: #f8f9fa; border: 2px solid #3498db; border-radius: 10px; padding: 25px; margin: 20px 0;">
+                                <h3 style="color: #2c3e50; font-size: 20px; margin: 0 0 15px; text-align: center;">
+                                    🎨 Tu Cita Pendiente
+                                </h3>
+                                
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">🎨 Artista:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            <span style="color: #3498db; font-weight: bold;">{{artistName}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">📅 Fecha y Hora:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            {{formatDateCustom eventDate}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">🏷️ Sesión:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            {{eventName}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">📍 Ubicación:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            {{eventLocation}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0;">
+                                            <strong style="color: #2c3e50;">⏰ Estado:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; text-align: right;">
+                                            <span style="color: #f39c12; font-weight: bold; background-color: #fff3cd; padding: 4px 8px; border-radius: 4px;">
+                                                ⏳ Esperando Confirmación
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- What Happens Next -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <div style="background-color: #e8f5e8; border: 1px solid #27ae60; border-radius: 8px; padding: 20px;">
+                                <h4 style="color: #27ae60; margin: 0 0 15px; font-size: 18px;">✅ ¿Qué pasa después de confirmar?</h4>
+                                <div style="color: #2c3e50; line-height: 1.6;">
+                                    <p style="margin: 0 0 10px;"><strong>1.</strong> Tu cita queda asegurada y reservada</p>
+                                    <p style="margin: 0 0 10px;"><strong>2.</strong> Recibirás recordatorios antes de la sesión</p>
+                                    <p style="margin: 0 0 10px;"><strong>3.</strong> Te enviaremos el formulario de consentimiento</p>
+                                    <p style="margin: 0;"><strong>4.</strong> Todo estará listo para tu experiencia Inker ✨</p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Action Buttons -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            <h3 style="color: #2c3e50; margin: 0 0 20px;">¿Qué quieres hacer?</h3>
+                            
+                            <!-- Confirm Button -->
+                            <div style="margin-bottom: 15px;">
+                                <a href="{{confirmUrl}}" 
+                                   style="background-color: #27ae60; color: white; padding: 18px 40px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; font-size: 18px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);">
+                                    ✅ SÍ, CONFIRMO MI CITA
+                                </a>
+                            </div>
+                            
+                            <!-- Alternative Actions -->
+                            <div style="margin-top: 20px;">
+                                <a href="{{rescheduleUrl}}" 
+                                   style="background-color: #3498db; color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold; display: inline-block; margin: 0 5px; font-size: 14px;">
+                                    📅 Reprogramar
+                                </a>
+                                <a href="{{cancelUrl}}" 
+                                   style="background-color: #95a5a6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold; display: inline-block; margin: 0 5px; font-size: 14px;">
+                                    ❌ Cancelar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Warning Box -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; text-align: center;">
+                                <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
+                                <h4 style="color: #856404; margin: 0 0 10px; font-size: 16px;">¡Atención!</h4>
+                                <p style="color: #856404; margin: 0; font-size: 14px; line-height: 1.5;">
+                                    Si no confirmas tu cita en las próximas <strong>{{hoursRemaining}} horas</strong>, 
+                                    será <strong>cancelada automáticamente</strong> y el horario será liberado para otros clientes.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Help Section -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px;">
+                                <h4 style="color: #2c3e50; margin: 0 0 10px;">¿Tienes preguntas?</h4>
+                                <p style="color: #666; font-size: 14px; margin: 0 0 15px;">
+                                    Nuestro equipo está aquí para ayudarte:
+                                </p>
+                                <a href="mailto:support@inker.com" 
+                                   style="background-color: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 15px; font-weight: bold; display: inline-block; margin-right: 10px;">
+                                    📧 Email
+                                </a>
+                                <a href="tel:+1234567890" 
+                                   style="background-color: #9b59b6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 15px; font-weight: bold; display: inline-block;">
+                                    📞 Llamar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    {{> footer}}
+</body>
+</html> 

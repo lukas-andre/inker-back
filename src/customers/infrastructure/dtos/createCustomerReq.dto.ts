@@ -5,11 +5,11 @@ import { CreateCustomerParams } from '../../usecases/interfaces/createCustomer.p
 
 export class CreateCustomerReqDto implements CreateCustomerParams {
   @ApiProperty({
-    example: 1,
+    example: '1',
     description: 'User Id',
   })
   @IsString()
-  readonly userId: number;
+  readonly userId: string;
 
   @ApiProperty({
     example: 'Lucas',

@@ -1,45 +1,45 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
 import {
   DomainBadRule,
   DomainNotFound,
 } from '../../../global/domain/exceptions/domain.exception';
 import { AddEventReqDto } from '../../infrastructure/dtos/addEventReq.dto';
-import { AgendaProvider } from '../../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../../infrastructure/providers/agendaEvent.provider';
-import { AddEventUseCase } from '../addEvent.usecase';
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
+import { AddEventUseCase } from '../event/addEvent.usecase';
 
 describe('AddEventUseCase', () => {
   let useCase: AddEventUseCase;
-  let agendaProvider: DeepMocked<AgendaProvider>;
-  let agendaEventProvider: DeepMocked<AgendaEventProvider>;
-  let customerProvider: DeepMocked<CustomerProvider>;
+  let agendaProvider: DeepMocked<AgendaRepository>;
+  let agendaEventProvider: DeepMocked<AgendaEventRepository>;
+  let customerProvider: DeepMocked<CustomerRepository>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AddEventUseCase,
         {
-          provide: AgendaProvider,
-          useValue: createMock<AgendaProvider>(),
+          provide: AgendaRepository,
+          useValue: createMock<AgendaRepository>(),
         },
         {
-          provide: AgendaEventProvider,
-          useValue: createMock<AgendaEventProvider>(),
+          provide: AgendaEventRepository,
+          useValue: createMock<AgendaEventRepository>(),
         },
         {
-          provide: CustomerProvider,
-          useValue: createMock<CustomerProvider>(),
+          provide: CustomerRepository,
+          useValue: createMock<CustomerRepository>(),
         },
       ],
     }).compile();
 
     useCase = module.get<AddEventUseCase>(AddEventUseCase);
-    agendaProvider = module.get(AgendaProvider);
-    agendaEventProvider = module.get(AgendaEventProvider);
-    customerProvider = module.get(CustomerProvider);
+    agendaProvider = module.get(AgendaRepository);
+    agendaEventProvider = module.get(AgendaEventRepository);
+    customerProvider = module.get(CustomerRepository);
   });
 
   it('should throw DomainNotFound if agenda does not exist', async () => {

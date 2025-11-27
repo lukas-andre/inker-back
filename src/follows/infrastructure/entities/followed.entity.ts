@@ -7,15 +7,15 @@ import { UserType } from '../../../users/domain/enums/userType.enum';
 export class Followed extends BaseEntity {
   @Index()
   @Column({ name: 'user_followed_id' })
-  userFollowedId: number;
+  userFollowedId: string;
 
   @Index()
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Index()
   @Column({ name: 'user_type_id' })
-  userTypeId: number;
+  userTypeId: string;
 
   @Column({ name: 'user_type', enum: UserType })
   userType: string;

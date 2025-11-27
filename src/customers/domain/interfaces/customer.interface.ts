@@ -1,7 +1,7 @@
 import { CustomerFollows } from './customerFollows.interface';
 
 export interface CustomerInterface {
-  userId: number;
+  userId: string;
   firstName: string;
   lastName: string;
   contactEmail: string;

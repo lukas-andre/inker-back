@@ -1,0 +1,1 @@
+CREATE TYPE public."AddressType" AS ENUM ('HOME', 'DEPARTMENT', 'STUDIO', 'OFFICE');

@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
+
 import { AnalyticsController } from './infrastructure/analytics.controller';
-import { AnalyticsProviderModule } from './infrastructure/database/analyticsProvider.module';
-import { RecordInteractionUseCase } from './usecases/recordInteraction.usecase';
-import { RecordArtistViewUseCase } from './usecases/recordArtistView.usecase';
-import { GetContentMetricsUseCase } from './usecases/getContentMetrics.usecase';
+import { AnalyticsRepositoryModule } from './infrastructure/database/repositories/analyticsRepository.module';
+import { ContentMetricsEnricherService } from './infrastructure/services/content-metrics-enricher.service';
 import { GetArtistMetricsUseCase } from './usecases/getArtistMetrics.usecase';
 import { GetBatchContentMetricsUseCase } from './usecases/getBatchContentMetrics.usecase';
-import { RecordArtistFollowUseCase } from './usecases/recordArtistFollow.usecase';
+import { GetContentMetricsUseCase } from './usecases/getContentMetrics.usecase';
 import { GetContentSummaryMetricsUseCase } from './usecases/getContentSummaryMetrics.usecase';
-import { ContentMetricsEnricherService } from './infrastructure/services/content-metrics-enricher.service';
+import { RecordArtistFollowUseCase } from './usecases/recordArtistFollow.usecase';
+import { RecordArtistViewUseCase } from './usecases/recordArtistView.usecase';
+import { RecordInteractionUseCase } from './usecases/recordInteraction.usecase';
 
 const useCases = [
   RecordInteractionUseCase,
@@ -20,12 +21,10 @@ const useCases = [
   GetContentSummaryMetricsUseCase,
 ];
 
-const services = [
-  ContentMetricsEnricherService,
-];
+const services = [ContentMetricsEnricherService];
 
 @Module({
-  imports: [AnalyticsProviderModule],
+  imports: [AnalyticsRepositoryModule],
   controllers: [AnalyticsController],
   providers: [...useCases, ...services],
   exports: [
@@ -36,4 +35,4 @@ const services = [
     ContentMetricsEnricherService,
   ],
 })
-export class AnalyticsModule {} 
+export class AnalyticsModule {}

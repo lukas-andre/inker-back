@@ -1,17 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsProvider } from '../infrastructure/database/analytics.provider';
+
 import { ContentType } from '../domain/enums/content-types.enum';
 import { IContentSummaryMetrics } from '../domain/interfaces/content-summary-metrics.interface';
+import { AnalyticsRepository } from '../infrastructure/database/repositories/analytics.repository';
 
 @Injectable()
 export class GetContentSummaryMetricsUseCase {
-  constructor(private readonly analyticsProvider: AnalyticsProvider) {}
+  constructor(private readonly analyticsRepository: AnalyticsRepository) {}
 
-  async execute(contentId: number, contentType: ContentType, disableCache?: boolean): Promise<IContentSummaryMetrics> {
-    return this.analyticsProvider.getSummaryMetricsForContent(contentId, contentType, disableCache);
+  async execute(
+    contentId: string,
+    contentType: ContentType,
+    disableCache?: boolean,
+  ): Promise<IContentSummaryMetrics> {
+    return this.analyticsRepository.getSummaryMetricsForContent(
+      contentId,
+      contentType,
+      disableCache,
+    );
   }
 
-  async executeBatch(contentIds: number[], contentType: ContentType, disableCache?: boolean): Promise<Map<number, IContentSummaryMetrics>> {
-    return this.analyticsProvider.getBatchSummaryMetrics(contentIds, contentType, disableCache);
+  async executeBatch(
+    contentIds: string[],
+    contentType: ContentType,
+    disableCache?: boolean,
+  ): Promise<Map<string, IContentSummaryMetrics>> {
+    return this.analyticsRepository.getBatchSummaryMetrics(
+      contentIds,
+      contentType,
+      disableCache,
+    );
   }
-} 
+}

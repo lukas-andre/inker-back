@@ -52,7 +52,7 @@ export class PermissionsController {
   })
   @ApiResponse({ status: 404, description: 'Permission does not exist.' })
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Permission> {
+  async findOne(@Param('id') id: string): Promise<Permission> {
     const role = await this.permissionsHandler.findOne(id);
     if (!role) {
       throw new NotFoundException();

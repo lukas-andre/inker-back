@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { FindOneOptions } from 'typeorm';
 
 import { Permission } from '../../infrastructure/entities/permission.entity';
-import { PermissionsProvider } from '../../infrastructure/providers/permissions.service';
+import { PermissionsRepository } from '../../infrastructure/repositories/permissions.repository';
 
 @Injectable()
 export class FindAllPermissionsUseCase {
-  constructor(private readonly permissionsProvider: PermissionsProvider) {}
+  constructor(private readonly permissionsRepository: PermissionsRepository) {}
 
   async execute(options: FindOneOptions<Permission>) {
-    return this.permissionsProvider.findAll(options);
+    return this.permissionsRepository.findAll(options);
   }
 }

@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
+
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { StencilProvider } from '../../infrastructure/database/stencil.provider';
-import { TagSuggestionQueryDto, TagSuggestionResponseDto } from '../../domain/dtos/stencil-search.dto';
+import {
+  TagSuggestionQueryDto,
+  TagSuggestionResponseDto,
+} from '../../domain/dtos/stencil-search.dto';
+import { StencilRepository } from '../../infrastructure/repositories/stencil.repository';
 
 @Injectable()
 export class GetTagSuggestionsUseCase extends BaseUseCase {
-  constructor(private readonly stencilProvider: StencilProvider) {
+  constructor(private readonly stencilProvider: StencilRepository) {
     super(GetTagSuggestionsUseCase.name);
   }
 
-  async execute(params: TagSuggestionQueryDto): Promise<TagSuggestionResponseDto[]> {
+  async execute(
+    params: TagSuggestionQueryDto,
+  ): Promise<TagSuggestionResponseDto[]> {
     const { prefix, limit = 10 } = params;
 
     try {
@@ -33,4 +39,4 @@ export class GetTagSuggestionsUseCase extends BaseUseCase {
       return [];
     }
   }
-} 
+}

@@ -5,21 +5,21 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { BaseArtistResponse } from '../infrastructure/dtos/baseArtistResponse.dto';
 import { UpdateArtistDto } from '../infrastructure/dtos/updateArtist.dto';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 
 @Injectable()
 export class UpdateArtistBasicInfoUseCase
   extends BaseUseCase
   implements UseCase
 {
-  constructor(private readonly artistProvider: ArtistProvider) {
+  constructor(private readonly artistProvider: ArtistRepository) {
     super(UpdateArtistBasicInfoUseCase.name);
   }
 
   async execute(
-    id: number,
+    id: string,
     updateArtistDto: UpdateArtistDto,
   ): Promise<BaseArtistResponse> {
     const artist = await this.artistProvider.findOne({

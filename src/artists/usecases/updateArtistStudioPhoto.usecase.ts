@@ -23,7 +23,7 @@ import {
   NOT_VALID_FILE_TO_UPLOAD,
   NOT_VALID_FILE_TYPE_TO_UPLOAD,
 } from '../domain/errors/codes';
-import { ArtistProvider } from '../infrastructure/database/artist.provider';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 
 @Injectable()
 export class UpdateArtistStudioPhotoUseCase
@@ -31,14 +31,14 @@ export class UpdateArtistStudioPhotoUseCase
   implements UseCase
 {
   constructor(
-    private readonly artistProvider: ArtistProvider,
+    private readonly artistProvider: ArtistRepository,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
   ) {
     super(UpdateArtistStudioPhotoUseCase.name);
   }
 
-  async execute(id: number, file: FileInterface): Promise<ArtistDto> {
+  async execute(id: string, file: FileInterface): Promise<ArtistDto> {
     if (!file) {
       throw new DomainBadRequest(NOT_VALID_FILE_TO_UPLOAD);
     }

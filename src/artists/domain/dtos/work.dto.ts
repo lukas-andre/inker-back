@@ -8,17 +8,17 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { WorkSource, WorkType } from '../workType';
+
 import { TagDto } from '../../../tags/tag.dto';
+import { WorkSource, WorkType } from '../workType';
 
 export class WorkDto implements WorkType {
   @ApiProperty({ description: 'Work ID' })
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Artist ID' })
-  @IsInt()
-  @Min(1)
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({ description: 'Work title' })
   @IsString()
@@ -59,7 +59,7 @@ export class WorkDto implements WorkType {
   @ApiProperty({
     description: 'Source of the work (APP or EXTERNAL)',
     enum: WorkSource,
-    default: WorkSource.EXTERNAL
+    default: WorkSource.EXTERNAL,
   })
   @IsEnum(WorkSource)
   source: WorkSource;
@@ -129,7 +129,7 @@ export class CreateWorkDto {
   @ApiProperty({
     description: 'Source of the work (APP or EXTERNAL)',
     enum: WorkSource,
-    default: WorkSource.EXTERNAL
+    default: WorkSource.EXTERNAL,
   })
   @IsEnum(WorkSource)
   @IsOptional()
@@ -139,9 +139,9 @@ export class CreateWorkDto {
   @IsOptional()
   isHidden?: string | boolean;
 
-  @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
+  @ApiPropertyOptional({ description: 'Tag IDs', type: [String] })
   @IsOptional()
-  tagIds?: number[] | string;
+  tagIds?: string[] | string;
 }
 
 export class UpdateWorkDto {
@@ -176,7 +176,7 @@ export class UpdateWorkDto {
 
   @ApiPropertyOptional({
     description: 'Source of the work (APP or EXTERNAL)',
-    enum: WorkSource
+    enum: WorkSource,
   })
   @IsEnum(WorkSource)
   @IsOptional()
@@ -186,7 +186,7 @@ export class UpdateWorkDto {
   @IsOptional()
   isHidden?: string | boolean;
 
-  @ApiPropertyOptional({ description: 'Tag IDs', type: [Number] })
+  @ApiPropertyOptional({ description: 'Tag IDs', type: [String] })
   @IsOptional()
-  tagIds?: number[] | string;
+  tagIds?: string[] | string;
 }

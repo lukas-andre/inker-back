@@ -1,57 +1,174 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsLatitude,
+  IsLongitude,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
+
+import { MoneyDto } from '../../../global/domain/dtos/money.dto';
+import { QuotationType, BODY_LOCATIONS } from '../entities/quotation.entity';
 
 export class CreateQuotationReqDto {
   @ApiProperty({
-    example: 'Please make me a tattoo',
-    description: 'Quotation description, maybe should be created with IA',
+    description: 'Type of quotation',
+    enum: QuotationType,
+    default: QuotationType.DIRECT,
   })
+  @IsEnum(QuotationType)
+  @IsOptional()
+  readonly type?: QuotationType = QuotationType.DIRECT;
+
+  @ApiPropertyOptional({
+    example: 'clrk1234567890abcd',
+    description: 'Artist Id (Required if type is DIRECT, null/omitted if OPEN)',
+  })
+  @ValidateIf(o => o.type === QuotationType.DIRECT)
+  @IsNotEmpty({ message: 'artistId is required for DIRECT quotations' })
   @IsString()
-  readonly title: string;
+  readonly artistId?: string;
 
   @ApiProperty({
-    example: 'I want a tattoo bla bla bla bla ba',
-    description: 'Extra info',
+    example: 'I want a tattoo of a dragon on my left arm, about 15cm.',
+    description: 'Detailed description of the tattoo request',
   })
   @IsString()
+  @IsNotEmpty()
   readonly description: string;
 
-  @ApiProperty({
-    example: 1,
-    description: 'Customer Id (optional), is decoded from token',
-
-    required: false,
+  @ApiPropertyOptional({
+    example: 'clsk9876543210fedc',
+    description:
+      'Stencil Id (optional) - Reference to a specific stencil design',
   })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  readonly customerId?: number;
+  readonly stencilId?: string;
 
-  @ApiProperty({
-    example: 1,
-    description: 'Artist Id',
+  @ApiPropertyOptional({
+    example: 'cluv123abc...',
+    description:
+      'Tattoo Design Cache ID (optional) - Reference to a specific AI-generated design. Required if tattooDesignImageUrl is provided. Only valid for OPEN type quotations. Cannot be used with stencilId.',
   })
-  @IsNumber()
-  readonly artistId: number;
-
-  @ApiProperty({
-    example: 123,
-    description: 'Stencil Id (optional) - Reference to a specific stencil design',
-    required: false,
-  })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  readonly stencilId?: number;
+  readonly tattooDesignCacheId?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
+    example: 'https://example.com/image.png',
+    description:
+      'Specific Image URL from the Tattoo Design Cache (optional) - Required if tattooDesignCacheId is provided. Only valid for OPEN type quotations.',
+  })
+  @ValidateIf(
+    o =>
+      o.type === QuotationType.OPEN &&
+      (o.tattooDesignCacheId || o.tattooDesignImageUrl),
+  )
+  @IsNotEmpty({
+    message:
+      'tattooDesignImageUrl is required if tattooDesignCacheId is provided',
+  })
+  @IsString()
+  @IsOptional()
+  readonly tattooDesignImageUrl?: string;
+
+  @ApiPropertyOptional({
     type: 'string',
     format: 'binary',
     isArray: true,
-    description: 'proposed design',
-    required: false,
+    description: 'Reference images uploaded by the customer',
   })
   @IsOptional()
   @IsArray()
   @Type(() => String)
   readonly files?: any[];
+
+  @ApiPropertyOptional({
+    description: 'Customer latitude (Required for OPEN quotations)',
+    example: -33.45694,
+  })
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @IsNotEmpty({ message: 'customerLat is required for OPEN quotations' })
+  @IsLatitude()
+  readonly customerLat?: number;
+
+  @ApiPropertyOptional({
+    description: 'Customer longitude (Required for OPEN quotations)',
+    example: -70.64827,
+  })
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @IsNotEmpty({ message: 'customerLon is required for OPEN quotations' })
+  @IsLongitude()
+  readonly customerLon?: number;
+
+  @ApiPropertyOptional({
+    description:
+      'Max distance customer is willing to travel in KM (Required for OPEN quotations). Use 999 for unlimited distance.',
+    example: 50,
+  })
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @IsNotEmpty({
+    message: 'customerTravelRadiusKm is required for OPEN quotations',
+  })
+  @IsNumber()
+  @Min(0) // Allow 0 to maintain backwards compatibility, will convert to 999 in use case
+  @Max(1000)
+  readonly customerTravelRadiusKm?: number;
+
+  @ApiPropertyOptional({
+    type: MoneyDto,
+    description: 'Presupuesto mínimo sugerido (solo OPEN)',
+  })
+  @IsOptional()
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @ValidateNested()
+  @Type(() => MoneyDto)
+  readonly minBudget?: MoneyDto;
+
+  @ApiPropertyOptional({
+    type: MoneyDto,
+    description: 'Presupuesto máximo sugerido (solo OPEN)',
+  })
+  @IsOptional()
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @ValidateNested()
+  @Type(() => MoneyDto)
+  readonly maxBudget?: MoneyDto;
+
+  @ApiPropertyOptional({
+    type: MoneyDto,
+    description: 'Presupuesto de referencia (solo OPEN)',
+  })
+  @IsOptional()
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @ValidateNested()
+  @Type(() => MoneyDto)
+  readonly referenceBudget?: MoneyDto;
+
+  @ApiPropertyOptional({ description: 'ID de la imagen generada (solo OPEN)' })
+  @IsOptional()
+  @ValidateIf(o => o.type === QuotationType.OPEN)
+  @IsString()
+  readonly generatedImageId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Desired body location for the tattoo (optional)',
+    enum: BODY_LOCATIONS,
+    example: 'arm_forearm',
+  })
+  @IsOptional()
+  @IsString()
+  @IsEnum(BODY_LOCATIONS, {
+    message: 'desiredBodyLocation must be a valid body location',
+  })
+  readonly desiredBodyLocation?: string;
 }

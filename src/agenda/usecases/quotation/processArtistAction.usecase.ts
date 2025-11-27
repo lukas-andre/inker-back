@@ -1,3 +1,4 @@
+
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
@@ -13,6 +14,10 @@ import {
 import { FileInterface } from '../../../multimedias/interfaces/file.interface';
 import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
 import { MultimediasService } from '../../../multimedias/services/multimedias.service';
+import {
+  QuotationArtistActionJobIdType,
+  QuotationArtistActionJobType,
+} from '../../../queues/notifications/domain/schemas/quotation';
 import { queues } from '../../../queues/queues';
 import { QuotationStateMachine } from '../../domain/quotation.statemachine';
 import {
@@ -20,16 +25,12 @@ import {
   ArtistQuoteAction,
 } from '../../infrastructure/dtos/artistQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
-import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
-import {
-  QuotationArtistActionJobIdType,
-  QuotationArtistActionJobType,
-} from '../../../queues/notifications/domain/schemas/quotation';
+import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 
 @Injectable()
 export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly quotationProvider: QuotationProvider,
+    private readonly quotationProvider: QuotationRepository,
     private readonly multimediasService: MultimediasService,
     private readonly quotationStateMachine: QuotationStateMachine,
     @InjectQueue(queues.notification.name)
@@ -39,8 +40,8 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
   }
 
   async execute(
-    userId: number,
-    quotationId: number,
+    userId: string,
+    quotationId: string,
     artistQuoteDto: ArtistQuotationActionDto,
     proposedDesigns: FileInterface[],
   ): Promise<{ message: string; updated: boolean }> {
@@ -56,25 +57,25 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
         case ArtistQuoteAction.QUOTE:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'quoted',
+            QuotationStatus.QUOTED,
           );
           break;
         case ArtistQuoteAction.REJECT:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'rejected',
+            QuotationStatus.REJECTED,
           );
           break;
         case ArtistQuoteAction.ACCEPT_APPEAL:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'accepted',
+            QuotationStatus.ACCEPTED,
           );
           break;
         case ArtistQuoteAction.REJECT_APPEAL:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'rejected',
+            QuotationStatus.REJECTED,
           );
           break;
         default:
@@ -85,7 +86,11 @@ export class ProcessArtistActionUseCase extends BaseUseCase implements UseCase {
     }
 
     let multimedias: MultimediasMetadataInterface;
-    if (proposedDesigns && proposedDesigns.length > 0) {
+    if (
+      proposedDesigns &&
+      proposedDesigns.length > 0 &&
+      Array.isArray(proposedDesigns)
+    ) {
       multimedias = await this.multimediasService.uploadProposedDesigns(
         proposedDesigns,
         quotationId,

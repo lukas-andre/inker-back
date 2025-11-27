@@ -1,7 +1,7 @@
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsNull } from 'typeorm';
 
 import { NotificationType } from '../entities/verificationHash.entity';
-import { IsNull } from 'typeorm';
 
 export class SendAccountVerificationCodeQueryDto {
   @IsString()

@@ -5,9 +5,9 @@ import { IsNumber } from 'class-validator';
 import { LocationDTO } from './location.dto';
 
 export class ArtistLocationDTO extends LocationDTO {
-  @ApiProperty({ description: 'Artist id', example: 1 })
-  @IsNumber()
-  artistId: number;
+  @ApiProperty({ description: 'Artist id', example: '1' })
+  @IsString()
+  artistId: string;
 
   @ApiProperty({ description: 'Name', example: 'Juanart' })
   @IsString()

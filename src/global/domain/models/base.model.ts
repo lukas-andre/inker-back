@@ -1,6 +1,6 @@
 type BaseModelTypeProperties = 'id' | 'createdAt' | 'updatedAt';
 export type BaseModelType = {
-  id: number;
+  id: string;
   createdAt: Date;
   updatedAt: Date;
 };

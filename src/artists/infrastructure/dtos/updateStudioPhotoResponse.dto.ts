@@ -18,11 +18,11 @@ export class UpdateStudioPhotoDataDto {
   @ApiProperty({
     description: 'Artist id',
     required: true,
-    type: Number,
-    example: 1,
+    type: String,
+    example: '1',
   })
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 }
 
 export class UpdateStudioPhotoResponseDto {

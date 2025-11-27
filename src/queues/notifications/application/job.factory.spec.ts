@@ -1,11 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 
-import { AgendaEventProvider } from '../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { QuotationProvider } from '../../../agenda/infrastructure/providers/quotation.provider';
-import { ArtistProvider } from '../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../locations/infrastructure/database/artistLocation.provider';
+import { AgendaEventRepository } from '../../../agenda/infrastructure/repositories/agendaEvent.repository';
+import { QuotationRepository } from '../../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerRepository } from '../../../customers/infrastructure/providers/customer.repository';
+import { ArtistLocationRepository } from '../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../notifications/services/email/email.notification';
 import { JobType } from '../domain/schemas/job';
 
@@ -17,11 +17,11 @@ import { AgendaEventCreatedJob } from './jobs/agenda/agendaEventCreated.job';
 describe('JobHandlerFactory', () => {
   let jobHandlerFactory: JobHandlerFactory;
   let emailNotificationService: EmailNotificationService;
-  let agendaEventProvider: AgendaEventProvider;
-  let artistProvider: ArtistProvider;
-  let customerProvider: CustomerProvider;
-  let locationProvider: ArtistLocationProvider;
-  let quotationProvider: QuotationProvider;
+  let agendaEventProvider: AgendaEventRepository;
+  let artistProvider: ArtistRepository;
+  let customerProvider: CustomerRepository;
+  let locationProvider: ArtistLocationRepository;
+  let quotationProvider: QuotationRepository;
   let jobRegistry: NotificationJobRegistry;
 
   beforeEach(async () => {
@@ -32,24 +32,24 @@ describe('JobHandlerFactory', () => {
           useValue: createMock<EmailNotificationService>(),
         },
         {
-          provide: AgendaEventProvider,
-          useValue: createMock<AgendaEventProvider>(),
+          provide: AgendaEventRepository,
+          useValue: createMock<AgendaEventRepository>(),
         },
         {
-          provide: ArtistProvider,
-          useValue: createMock<ArtistProvider>(),
+          provide: ArtistRepository,
+          useValue: createMock<ArtistRepository>(),
         },
         {
-          provide: CustomerProvider,
-          useValue: createMock<CustomerProvider>(),
+          provide: CustomerRepository,
+          useValue: createMock<CustomerRepository>(),
         },
         {
-          provide: ArtistLocationProvider,
-          useValue: createMock<ArtistLocationProvider>(),
+          provide: ArtistLocationRepository,
+          useValue: createMock<ArtistLocationRepository>(),
         },
         {
-          provide: QuotationProvider,
-          useValue: createMock<QuotationProvider>(),
+          provide: QuotationRepository,
+          useValue: createMock<QuotationRepository>(),
         },
         NotificationJobRegistry,
         JobHandlerFactory,
@@ -60,13 +60,15 @@ describe('JobHandlerFactory', () => {
     emailNotificationService = module.get<EmailNotificationService>(
       EmailNotificationService,
     );
-    agendaEventProvider = module.get<AgendaEventProvider>(AgendaEventProvider);
-    artistProvider = module.get<ArtistProvider>(ArtistProvider);
-    customerProvider = module.get<CustomerProvider>(CustomerProvider);
-    locationProvider = module.get<ArtistLocationProvider>(
-      ArtistLocationProvider,
+    agendaEventProvider = module.get<AgendaEventRepository>(
+      AgendaEventRepository,
     );
-    quotationProvider = module.get<QuotationProvider>(QuotationProvider);
+    artistProvider = module.get<ArtistRepository>(ArtistRepository);
+    customerProvider = module.get<CustomerRepository>(CustomerRepository);
+    locationProvider = module.get<ArtistLocationRepository>(
+      ArtistLocationRepository,
+    );
+    quotationProvider = module.get<QuotationRepository>(QuotationRepository);
     jobRegistry = module.get<NotificationJobRegistry>(NotificationJobRegistry);
   });
 

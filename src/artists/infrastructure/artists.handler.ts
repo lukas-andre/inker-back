@@ -1,49 +1,72 @@
 import { Injectable } from '@nestjs/common';
-import { CreateArtistUseCase } from '../usecases/createArtist.usecase';
-import { Artist } from './entities/artist.entity';
-import { GetArtistStylesUseCase } from '../usecases/artistStyle/getArtistStyles.usecase';
-import { ArtistStyleDto, CreateArtistStyleDto, UpdateArtistStyleDto } from '../domain/dtos/artistStyle.dto';
+
+import { BaseComponent } from '../../global/domain/components/base.component';
+import { DomainBadRequest } from '../../global/domain/exceptions/domain.exception';
+import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
+import { FileInterface } from '../../multimedias/interfaces/file.interface';
+import { CreateTagDto } from '../../tags/tag.dto';
+import { UserType } from '../../users/domain/enums/userType.enum';
+import {
+  ArtistStyleDto,
+  CreateArtistStyleDto,
+  UpdateArtistStyleDto,
+} from '../domain/dtos/artistStyle.dto';
 import { AddArtistStyleUseCase } from '../usecases/artistStyle/addArtistStyle.usecase';
-import { UpdateArtistStyleUseCase } from '../usecases/artistStyle/updateArtistStyle.usecase';
+import { GetArtistStylesUseCase } from '../usecases/artistStyle/getArtistStyles.usecase';
 import { RemoveArtistStyleUseCase } from '../usecases/artistStyle/removeArtistStyle.usecase';
-import { GetWorksUseCase } from '../usecases/work/getWorks.usecase';
-import { WorkDto, CreateWorkDto, UpdateWorkDto } from '../domain/dtos/work.dto';
+import { UpdateArtistStyleUseCase } from '../usecases/artistStyle/updateArtistStyle.usecase';
 import { CreateWorkUseCase } from '../usecases/work/createWork.usecase';
+import { GetWorksUseCase } from '../usecases/work/getWorks.usecase';
+import { CreateWorkDto, UpdateWorkDto, WorkDto } from '../domain/dtos/work.dto';
 import { GetWorkByIdUseCase } from '../usecases/work/getWorkById.usecase';
+import { SearchWorksUseCase } from '../usecases/work/search-works.usecase';
 import { UpdateWorkUseCase } from '../usecases/work/updateWork.usecase';
 import { DeleteWorkUseCase } from '../usecases/work/deleteWork.usecase';
 import { GetStencilsUseCase } from '../usecases/stencil/getStencils.usecase';
-import { StencilDto, CreateStencilDto, UpdateStencilDto } from '../domain/dtos/stencil.dto';
+import {
+  StencilDto,
+  CreateStencilDto,
+  UpdateStencilDto,
+} from '../domain/dtos/stencil.dto';
 import { CreateStencilUseCase } from '../usecases/stencil/createStencil.usecase';
 import { GetStencilByIdUseCase } from '../usecases/stencil/getStencilById.usecase';
 import { UpdateStencilUseCase } from '../usecases/stencil/updateStencil.usecase';
 import { DeleteStencilUseCase } from '../usecases/stencil/deleteStencil.usecase';
-import { BaseComponent } from '../../global/domain/components/base.component';
 import { CreateArtistParams } from '../usecases/interfaces/createArtist.params';
-import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
 import { FindArtistsUseCases } from '../usecases/findArtist.usecases';
 import { UpdateArtistBasicInfoUseCase } from '../usecases/updateArtistBasicInfo.usecase';
+
 import { UpdateArtistDto } from './dtos/updateArtist.dto';
+
 import { UpdateArtistProfilePictureUseCase } from '../usecases/updateArtistProfilePicture.usecase';
 import { UpdateArtistStudioPhotoUseCase } from '../usecases/updateArtistStudioPhoto.usecase';
-import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { FindArtistByIdResult } from '../usecases/interfaces/findArtistById.result';
 import { FindArtistsUsecase } from '../usecases/findArtists.usecase';
-import { UserType } from '../../users/domain/enums/userType.enum';
-import { DomainBadRequest } from '../../global/domain/exceptions/domain.exception';
 import { StencilQueryDto } from '../domain/dtos/stencil-query.dto';
 import { PaginatedStencilResponseDto } from '../domain/dtos/paginated-stencil-response.dto';
-import { StencilSearchQueryDto, TagSuggestionQueryDto, TagSuggestionResponseDto } from '../domain/dtos/stencil-search.dto';
+import {
+  StencilSearchQueryDto,
+  TagSuggestionQueryDto,
+  TagSuggestionResponseDto,
+} from '../domain/dtos/stencil-search.dto';
 import { SearchStencilsUseCase } from '../usecases/stencil/search-stencils.usecase';
 import { GetTagSuggestionsUseCase } from '../usecases/stencil/get-tag-suggestions.usecase';
-import { WorkSearchQueryDto, WorkTagSuggestionQueryDto, WorkTagSuggestionResponseDto } from '../domain/dtos/work-search.dto';
+import {
+  WorkSearchQueryDto,
+  WorkTagSuggestionQueryDto,
+  WorkTagSuggestionResponseDto,
+} from '../domain/dtos/work-search.dto';
 import { PaginatedWorkResponseDto } from '../domain/dtos/paginated-work-response.dto';
-import { SearchWorksUseCase } from '../usecases/work/search-works.usecase';
 import { GetWorkTagSuggestionsUseCase } from '../usecases/work/get-tag-suggestions.usecase';
 import { WorkQueryDto } from '../domain/dtos/work-query.dto';
-import { GetWorksPaginatedUseCase, PaginatedWorkResponseWithMetrics } from '../usecases/work/get-works-paginated.usecase';
+import {
+  GetWorksPaginatedUseCase,
+  PaginatedWorkResponseWithMetrics,
+} from '../usecases/work/get-works-paginated.usecase';
 import { CreateTagUseCase } from '../usecases/stencil/create-tag.usecase';
-import { CreateTagDto } from '../../tags/tag.dto';
+import { CreateArtistUseCase } from '../usecases/createArtist.usecase';
+
+import { Artist } from './entities/artist.entity';
 
 @Injectable()
 export class ArtistsHandler extends BaseComponent {
@@ -81,9 +104,7 @@ export class ArtistsHandler extends BaseComponent {
 
   createArtist(requestCreateArtistDto: CreateArtistParams) {
     this.logger.log('Creating artist');
-    return this.createArtistUseCase.execute(
-      requestCreateArtistDto,
-    );
+    return this.createArtistUseCase.execute(requestCreateArtistDto);
   }
 
   getArtistStyles(): Promise<ArtistStyleDto[]> {
@@ -113,7 +134,11 @@ export class ArtistsHandler extends BaseComponent {
       throw new DomainBadRequest('Only artists can update styles');
     }
     this.logger.log(`Updating style ${styleName} for artist: ${userTypeId}`);
-    return this.updateArtistStyleUseCase.execute({ artistId: userTypeId, styleName, dto });
+    return this.updateArtistStyleUseCase.execute({
+      artistId: userTypeId,
+      styleName,
+      dto,
+    });
   }
 
   removeArtistStyle(styleName: string): Promise<void> {
@@ -122,29 +147,40 @@ export class ArtistsHandler extends BaseComponent {
       throw new DomainBadRequest('Only artists can remove styles');
     }
     this.logger.log(`Removing style ${styleName} from artist: ${userTypeId}`);
-    return this.removeArtistStyleUseCase.execute({ artistId: userTypeId, styleName });
-  }
-
-  // Work handlers
-  getWorks(artistId: number, onlyFeatured?: boolean, disableCache?: boolean): Promise<WorkDto[]> {
-    this.logger.log(`Getting works for artist: ${artistId}`);
-    const userId = this.requestContext.userId;
-    return this.getWorksUseCase.execute({ 
-      artistId, 
-      onlyFeatured,
-      userId,
-      disableCache
+    return this.removeArtistStyleUseCase.execute({
+      artistId: userTypeId,
+      styleName,
     });
   }
 
-  getWorksPaginated(artistId: number, query: WorkQueryDto, disableCache?: boolean): Promise<PaginatedWorkResponseWithMetrics> {
+  // Work handlers
+  getWorks(
+    artistId: string,
+    onlyFeatured?: boolean,
+    disableCache?: boolean,
+  ): Promise<WorkDto[]> {
+    this.logger.log(`Getting works for artist: ${artistId}`);
+    const userId = this.requestContext.userId;
+    return this.getWorksUseCase.execute({
+      artistId,
+      onlyFeatured,
+      userId,
+      disableCache,
+    });
+  }
+
+  getWorksPaginated(
+    artistId: string,
+    query: WorkQueryDto,
+    disableCache?: boolean,
+  ): Promise<PaginatedWorkResponseWithMetrics> {
     this.logger.log(`Getting paginated works for artist: ${artistId}`);
     const userId = this.requestContext.userId;
-    return this.getWorksPaginatedUseCase.execute({ 
-      artistId, 
+    return this.getWorksPaginatedUseCase.execute({
+      artistId,
       query,
       userId,
-      disableCache
+      disableCache,
     });
   }
 
@@ -157,17 +193,17 @@ export class ArtistsHandler extends BaseComponent {
     return this.createWorkUseCase.execute({ artistId: userTypeId, dto, file });
   }
 
-  getWorkById(id: number, disableCache?: boolean): Promise<WorkDto> {
+  getWorkById(id: string, disableCache?: boolean): Promise<WorkDto> {
     this.logger.log(`Getting work by id: ${id}`);
     const userId = this.requestContext.userId;
-    return this.getWorkByIdUseCase.execute({ 
+    return this.getWorkByIdUseCase.execute({
       id,
       userId,
-      disableCache 
+      disableCache,
     });
   }
 
-  updateWork(id: number, dto: UpdateWorkDto): Promise<WorkDto> {
+  updateWork(id: string, dto: UpdateWorkDto): Promise<WorkDto> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can update works');
@@ -176,7 +212,7 @@ export class ArtistsHandler extends BaseComponent {
     return this.updateWorkUseCase.execute({ id, artistId: userTypeId, dto });
   }
 
-  deleteWork(id: number): Promise<void> {
+  deleteWork(id: string): Promise<void> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can delete works');
@@ -186,37 +222,48 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Stencil handlers
-  getStencils(artistId: number, query: StencilQueryDto, disableCache?: boolean): Promise<PaginatedStencilResponseDto> {
+  getStencils(
+    artistId: string,
+    query: StencilQueryDto,
+    disableCache?: boolean,
+  ): Promise<PaginatedStencilResponseDto> {
     this.logger.log(`Getting stencils for artist: ${artistId}`);
     const userId = this.requestContext.userId;
-    return this.getStencilsUseCase.execute({ 
-      artistId, 
+    return this.getStencilsUseCase.execute({
+      artistId,
       query,
       userId,
-      disableCache 
+      disableCache,
     });
   }
 
-  async createStencil(dto: CreateStencilDto, file: FileInterface): Promise<StencilDto> {
+  async createStencil(
+    dto: CreateStencilDto,
+    file: FileInterface,
+  ): Promise<StencilDto> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can create stencils');
     }
     this.logger.log(`Creating stencil for artist: ${userTypeId}`);
-    return this.createStencilUseCase.execute({ artistId: userTypeId, dto, file });
-  }
-
-  getStencilById(id: number, disableCache?: boolean): Promise<StencilDto> {
-    this.logger.log(`Getting stencil by id: ${id}`);
-    const userId = this.requestContext.userId;
-    return this.getStencilByIdUseCase.execute({ 
-      id,
-      userId,
-      disableCache
+    return this.createStencilUseCase.execute({
+      artistId: userTypeId,
+      dto,
+      file,
     });
   }
 
-  updateStencil(id: number, dto: UpdateStencilDto): Promise<StencilDto> {
+  getStencilById(id: string, disableCache?: boolean): Promise<StencilDto> {
+    this.logger.log(`Getting stencil by id: ${id}`);
+    const userId = this.requestContext.userId;
+    return this.getStencilByIdUseCase.execute({
+      id,
+      userId,
+      disableCache,
+    });
+  }
+
+  updateStencil(id: string, dto: UpdateStencilDto): Promise<StencilDto> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can update stencils');
@@ -225,7 +272,7 @@ export class ArtistsHandler extends BaseComponent {
     return this.updateStencilUseCase.execute({ id, artistId: userTypeId, dto });
   }
 
-  deleteStencil(id: number): Promise<void> {
+  deleteStencil(id: string): Promise<void> {
     const { userType, userTypeId } = this.requestContext;
     if (userType !== UserType.ARTIST) {
       throw new DomainBadRequest('Only artists can delete stencils');
@@ -235,46 +282,54 @@ export class ArtistsHandler extends BaseComponent {
   }
 
   // Métodos de búsqueda de estenciles
-  searchStencils(searchParams: StencilSearchQueryDto & { disableCache?: boolean }): Promise<PaginatedStencilResponseDto> {
-    this.logger.log(`Searching stencils with params: ${JSON.stringify(searchParams)}`);
+  searchStencils(
+    searchParams: StencilSearchQueryDto & { disableCache?: boolean },
+  ): Promise<PaginatedStencilResponseDto> {
+    this.logger.log(
+      `Searching stencils with params: ${JSON.stringify(searchParams)}`,
+    );
     const userId = this.requestContext.userId;
     const { disableCache, ...restParams } = searchParams;
     return this.searchStencilsUseCase.execute({
       ...restParams,
       userId,
       includeMetrics: true,
-      disableCache
+      disableCache,
     });
   }
 
   // Métodos de sugerencias de etiquetas
-  getTagSuggestions(queryParams: TagSuggestionQueryDto): Promise<TagSuggestionResponseDto[]> {
-    this.logger.log(`Getting tag suggestions with prefix: ${queryParams.prefix}`);
+  getTagSuggestions(
+    queryParams: TagSuggestionQueryDto,
+  ): Promise<TagSuggestionResponseDto[]> {
+    this.logger.log(
+      `Getting tag suggestions with prefix: ${queryParams.prefix}`,
+    );
     return this.getTagSuggestionsUseCase.execute(queryParams);
   }
 
   // Artist basic info methods
-  getArtistByUserId(userId: number): Promise<Artist> {
+  getArtistByUserId(userId: string): Promise<Artist> {
     this.logger.log(`Getting artist by user ID: ${userId}`);
     return this.findArtistsUseCases.findOne({ where: { userId } });
   }
 
-  getArtistById(id: number): Promise<FindArtistByIdResult> {
+  getArtistById(id: string): Promise<FindArtistByIdResult> {
     this.logger.log(`Getting artist by ID: ${id}`);
     return this.findArtistsUseCases.findById(id);
   }
 
-  updateArtistBasicInfo(id: number, updateArtistDto: UpdateArtistDto) {
+  updateArtistBasicInfo(id: string, updateArtistDto: UpdateArtistDto) {
     this.logger.log(`Updating basic info for artist: ${id}`);
     return this.updateArtistBasicInfoUseCase.execute(id, updateArtistDto);
   }
 
-  updateProfilePicture(id: number, file: FileInterface) {
+  updateProfilePicture(id: string, file: FileInterface) {
     this.logger.log(`Updating profile picture for artist: ${id}`);
     return this.updateArtistProfilePictureUseCase.execute(id, file);
   }
 
-  updateStudioPhoto(id: number, file: FileInterface) {
+  updateStudioPhoto(id: string, file: FileInterface) {
     this.logger.log(`Updating studio photo for artist: ${id}`);
     return this.updateArtistStudioPhotoUseCase.execute(id, file);
   }
@@ -283,35 +338,38 @@ export class ArtistsHandler extends BaseComponent {
   handleGetAll() {
     const userId = this.requestContext.userId;
     this.logger.log('Getting all artists');
-    return this.findArtistsUseCases.findAll({}, {
-      includeWorkCounts: true,  
-      includeStencilCounts: true,
-      includeRatings: true,
-      currentUserId: userId,
-      includeUserFollow: true
-    });
+    return this.findArtistsUseCases.findAll(
+      {},
+      {
+        includeWorkCounts: true,
+        includeStencilCounts: true,
+        includeRatings: true,
+        currentUserId: userId,
+        includeUserFollow: true,
+      },
+    );
   }
 
-  handleFindById(id: number) {
+  handleFindById(id: string) {
     const userId = this.requestContext.userId;
     this.logger.log(`Finding artist by ID: ${id}`);
-    return this.findArtistsUseCases.findById(id, { 
+    return this.findArtistsUseCases.findById(id, {
       includeAll: true,
-      currentUserId: userId
+      currentUserId: userId,
     });
   }
 
   me() {
     const userId = this.requestContext.userId;
     this.logger.log(`Getting current artist profile for user ID: ${userId}`);
-    
+
     // Usar las opciones de include para obtener información completa
     return this.findArtistsUseCases.findOne(
       { where: { userId } },
-      { 
-        includeAll: true, 
-        currentUserId: userId
-      }
+      {
+        includeAll: true,
+        currentUserId: userId,
+      },
     );
   }
 
@@ -323,32 +381,42 @@ export class ArtistsHandler extends BaseComponent {
 
   handleSearchArtists(searchParams: any) {
     const userId = this.requestContext.userId;
-    this.logger.log(`Searching artists with params: ${JSON.stringify(searchParams)}`);
+    this.logger.log(
+      `Searching artists with params: ${JSON.stringify(searchParams)}`,
+    );
     return this.findArtistsUseCase.execute(searchParams, {
       includeWorkCounts: true,
       includeStencilCounts: true,
       includeRatings: true,
       currentUserId: userId,
-      includeUserFollow: true
+      includeUserFollow: true,
     });
   }
 
   // Métodos de búsqueda de trabajos
-  searchWorks(searchParams: WorkSearchQueryDto & { disableCache?: boolean }): Promise<PaginatedWorkResponseDto> {
-    this.logger.log(`Searching works with params: ${JSON.stringify(searchParams)}`);
+  searchWorks(
+    searchParams: WorkSearchQueryDto & { disableCache?: boolean },
+  ): Promise<PaginatedWorkResponseDto> {
+    this.logger.log(
+      `Searching works with params: ${JSON.stringify(searchParams)}`,
+    );
     const userId = this.requestContext.userId;
     const { disableCache, ...restParams } = searchParams;
     return this.searchWorksUseCase.execute({
       ...restParams,
       userId,
       includeMetrics: true,
-      disableCache
+      disableCache,
     });
   }
 
   // Métodos de sugerencias de etiquetas para trabajos
-  getWorkTagSuggestions(queryParams: WorkTagSuggestionQueryDto): Promise<WorkTagSuggestionResponseDto[]> {
-    this.logger.log(`Getting work tag suggestions with prefix: ${queryParams.prefix}`);
+  getWorkTagSuggestions(
+    queryParams: WorkTagSuggestionQueryDto,
+  ): Promise<WorkTagSuggestionResponseDto[]> {
+    this.logger.log(
+      `Getting work tag suggestions with prefix: ${queryParams.prefix}`,
+    );
     return this.getWorkTagSuggestionsUseCase.execute(queryParams);
   }
 

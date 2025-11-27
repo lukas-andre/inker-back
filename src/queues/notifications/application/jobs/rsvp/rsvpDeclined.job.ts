@@ -1,8 +1,8 @@
-import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
-import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
+import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
+import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerRepository } from '../../../../../customers/infrastructure/providers/customer.repository';
+import { ArtistLocationRepository } from '../../../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { RsvpDeclinedType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
@@ -13,11 +13,11 @@ import { NotificationJob, getGoogleMapsLink } from '../notification.job';
 export class RsvpDeclinedJob implements NotificationJob {
   constructor(
     readonly emailNotificationService: EmailNotificationService,
-    readonly agendaEventProvider: AgendaEventProvider,
-    readonly artistProvider: ArtistProvider,
-    readonly customerProvider: CustomerProvider,
-    readonly locationProvider: ArtistLocationProvider,
-    readonly quotationProvider: QuotationProvider,
+    readonly agendaEventProvider: AgendaEventRepository,
+    readonly artistProvider: ArtistRepository,
+    readonly customerProvider: CustomerRepository,
+    readonly locationProvider: ArtistLocationRepository,
+    readonly quotationProvider: QuotationRepository,
     readonly pushNotificationService: PushNotificationService,
     readonly notificationStorageService: NotificationStorageService,
   ) {}
@@ -39,7 +39,9 @@ export class RsvpDeclinedJob implements NotificationJob {
 
     // Build notification title and message
     const title = `Appointment Invitation Declined`;
-    const message = `${customer.firstName} has declined the invitation for "${agendaEvent.title}" on ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
+    const message = `${customer.firstName} has declined the invitation for "${
+      agendaEvent.title
+    }" on ${new Date(agendaEvent.startDate).toLocaleDateString()}`;
 
     // Store notification for artist
     await this.notificationStorageService.storeNotification(

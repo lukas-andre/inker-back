@@ -1,0 +1,12 @@
+CREATE INDEX idx_created_at ON public.token_balance CREATE INDEX idx_created_at ON token_balance USING btree (created_at);
+CREATE INDEX idx_balance ON public.token_balance CREATE INDEX idx_balance ON token_balance USING btree (balance);
+CREATE INDEX idx_user_type ON public.token_balance CREATE INDEX idx_user_type ON token_balance USING btree (user_type);
+CREATE INDEX idx_user_type_id ON public.token_balance CREATE INDEX idx_user_type_id ON token_balance USING btree (user_type_id);
+CREATE UNIQUE INDEX token_balance_user_id_key ON public.token_balance CREATE UNIQUE INDEX token_balance_user_id_key ON token_balance USING btree (user_id);
+CREATE INDEX idx_transaction_audit ON public.token_transaction CREATE INDEX idx_transaction_audit ON token_transaction USING btree (created_at, user_id, type, status);
+CREATE INDEX idx_token_transaction_metadata_gin ON public.token_transaction CREATE INDEX idx_token_transaction_metadata_gin ON token_transaction USING gin (metadata);
+CREATE INDEX idx_token_transaction_created_at ON public.token_transaction CREATE INDEX idx_token_transaction_created_at ON token_transaction USING btree (created_at);
+CREATE INDEX idx_token_transaction_status ON public.token_transaction CREATE INDEX idx_token_transaction_status ON token_transaction USING btree (status);
+CREATE INDEX idx_token_transaction_type ON public.token_transaction CREATE INDEX idx_token_transaction_type ON token_transaction USING btree (type);
+CREATE INDEX idx_token_transaction_user_type_id ON public.token_transaction CREATE INDEX idx_token_transaction_user_type_id ON token_transaction USING btree (user_type_id);
+CREATE INDEX idx_token_transaction_user_id ON public.token_transaction CREATE INDEX idx_token_transaction_user_id ON token_transaction USING btree (user_id);

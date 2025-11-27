@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
+
+import { RequestContextService } from '../global/infrastructure/services/requestContext.service';
+
 import { NotificationQueryDto } from './dtos/notification-query.dto';
 import { PaginatedNotificationsResponseDto } from './dtos/notification-response.dto';
 import { DeleteNotificationUsecase } from './usecases/delete-notification.usecase';
 import { GetNotificationsUsecase } from './usecases/get-notifications.usecase';
 import { MarkAllNotificationsReadUsecase } from './usecases/mark-all-notifications-read.usecase';
 import { MarkNotificationReadUsecase } from './usecases/mark-notification-read.usecase';
-import { RequestContextService } from '../global/infrastructure/services/requestContext.service';
 
 @Injectable()
 export class NotificationsHandler {

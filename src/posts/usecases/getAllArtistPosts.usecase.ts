@@ -16,7 +16,7 @@ export class GetAllArtistPostsUseCase extends BaseUseCase implements UseCase {
   }
 
   async execute(
-    userId: number,
+    userId: string,
     query: ListAllArtistPostsQueryDto,
     pagination: PaginationDto,
   ): Promise<Post[]> {

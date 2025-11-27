@@ -14,20 +14,20 @@ import {
   NotificationType,
   VerificationType,
 } from '../../infrastructure/entities/verificationHash.entity';
-import { UsersProvider } from '../../infrastructure/providers/users.provider';
-import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
+import { UsersRepository } from '../../infrastructure/repositories/users.repository';
+import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
 
 @Injectable()
 export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly usersProvider: UsersProvider,
-    private readonly verificationHashProvider: VerificationHashProvider,
+    private readonly usersRepository: UsersRepository,
+    private readonly verificationHashRepository: VerificationHashRepository,
   ) {
     super(UpdateUserPasswordUseCase.name);
   }
 
   public async execute(
-    userId: number,
+    userId: string,
     code: string,
     notificationType: NotificationType,
     password: string,
@@ -37,7 +37,7 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
       throw new DomainBadRule('Password must match');
     }
 
-    const userHash = await this.verificationHashProvider.findOne({
+    const userHash = await this.verificationHashRepository.findOne({
       where: {
         userId: userId,
         notificationType: notificationType,
@@ -52,7 +52,7 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
     }
 
     const isValidCode =
-      await this.verificationHashProvider.validateVerificationCode(
+      await this.verificationHashRepository.validateVerificationCode(
         code,
         userHash.hash,
       );
@@ -63,8 +63,8 @@ export class UpdateUserPasswordUseCase extends BaseUseCase implements UseCase {
       throw new DomainConflict('Invalid code');
     }
 
-    await this.usersProvider.edit(userId, {
-      password: await this.usersProvider.hashPassword(newPassword),
+    await this.usersRepository.edit(userId, {
+      password: await this.usersRepository.hashPassword(newPassword),
     });
 
     return { ...DefaultResponse.ok, data: 'Password updated!' };

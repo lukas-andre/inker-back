@@ -1,15 +1,16 @@
 import { BatchResponse } from 'firebase-admin/lib/messaging/messaging-api';
-import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
-import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
+
+import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
+import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerRepository } from '../../../../../customers/infrastructure/providers/customer.repository';
+import { ArtistLocationRepository } from '../../../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { QuotationRejectedType } from '../../../../../notifications/services/email/schemas/email';
+import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 import { PushNotificationService } from '../../../../../notifications/services/push/pushNotification.service';
 import { QuotationRejectedJobType } from '../../../domain/schemas/quotation';
 import { NotificationJob } from '../notification.job';
-import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
 
 const QUOTATION_REJECTED_NOTIFICATIONS = {
   title: 'Cotización rechazada',
@@ -19,11 +20,11 @@ const QUOTATION_REJECTED_NOTIFICATIONS = {
 export class QuotationRejectedJob implements NotificationJob {
   constructor(
     readonly emailNotificationService: EmailNotificationService,
-    readonly agendaEventProvider: AgendaEventProvider,
-    readonly artistProvider: ArtistProvider,
-    readonly customerProvider: CustomerProvider,
-    readonly locationProvider: ArtistLocationProvider,
-    readonly quotationProvider: QuotationProvider,
+    readonly agendaEventProvider: AgendaEventRepository,
+    readonly artistProvider: ArtistRepository,
+    readonly customerProvider: CustomerRepository,
+    readonly locationProvider: ArtistLocationRepository,
+    readonly quotationProvider: QuotationRepository,
     readonly pushNotificationService: PushNotificationService,
     readonly notificationStorageService: NotificationStorageService,
   ) {}
@@ -45,12 +46,14 @@ export class QuotationRejectedJob implements NotificationJob {
 
       // Build notification data based on who rejected
       let title, message;
-      
+
       if (by === 'customer') {
         // Customer rejected artist's quotation
         title = 'Quotation Rejected by Customer';
-        message = `${customer.firstName} has rejected your quotation. Reason: ${quotation.rejectReasonDetails || 'No reason provided'}`;
-        
+        message = `${customer.firstName} has rejected your quotation. Reason: ${
+          quotation.rejectReasonDetails || 'No reason provided'
+        }`;
+
         // Store notification for artist
         await this.notificationStorageService.storeNotification(
           artist.userId,
@@ -67,8 +70,10 @@ export class QuotationRejectedJob implements NotificationJob {
       } else {
         // Artist rejected customer's quotation
         title = 'Quotation Rejected by Artist';
-        message = `${artist.username} has rejected your quotation. Reason: ${quotation.rejectReasonDetails || 'No reason provided'}`;
-        
+        message = `${artist.username} has rejected your quotation. Reason: ${
+          quotation.rejectReasonDetails || 'No reason provided'
+        }`;
+
         // Store notification for customer
         await this.notificationStorageService.storeNotification(
           customer.userId,
@@ -129,7 +134,10 @@ export class QuotationRejectedJob implements NotificationJob {
         this.emailNotificationService.sendEmail(quotationRejectedEmailData),
       ]);
     } catch (error) {
-      console.error('Failed to process quotation rejected notification:', error);
+      console.error(
+        'Failed to process quotation rejected notification:',
+        error,
+      );
     }
   }
 }

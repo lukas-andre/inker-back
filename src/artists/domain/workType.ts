@@ -4,8 +4,8 @@ export enum WorkSource {
 }
 
 export interface WorkType {
-  id?: number;
-  artistId: number;
+  id?: string;
+  artistId: string;
   title: string;
   description?: string;
   imageUrl: string;

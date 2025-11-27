@@ -21,8 +21,8 @@ import {
   DomainNotAcceptable,
   DomainNotFound,
   DomainNotImplemented,
-  DomainUnauthorized,
   DomainUnProcessableEntity,
+  DomainUnauthorized,
 } from '../../domain/exceptions/domain.exception';
 
 export class HttpResolver {

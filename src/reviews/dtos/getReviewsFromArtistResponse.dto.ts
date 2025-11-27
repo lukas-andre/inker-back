@@ -12,17 +12,17 @@ export class GetReviewsFromArtistResponseDto {
     description: 'The reviews of the artist',
     example: [
       {
-        id: 8,
-        artistId: 1,
-        eventId: 8,
+        id: '8',
+        artistId: '1',
+        eventId: '8',
         value: 5,
         header: 'This artist is awesome',
         content: 'This artist is excellent  4',
-        createdBy: 7,
+        createdBy: '7',
         displayName: 'Test 4',
         isRated: true,
         customerReactionDetail: {
-          reviewReactionId: 7,
+          reviewReactionId: '7',
           liked: true,
           disliked: false,
         },

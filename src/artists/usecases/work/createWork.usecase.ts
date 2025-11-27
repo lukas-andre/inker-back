@@ -1,21 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { WorkProvider } from '../../infrastructure/database/work.provider';
-import { CreateWorkDto, WorkDto } from '../../domain/dtos/work.dto';
-import { ArtistProvider } from '../../infrastructure/database/artist.provider';
-import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { ConfigService } from '@nestjs/config';
-import { MultimediasService, UploadToS3Result } from '../../../multimedias/services/multimedias.service';
-import { FileInterface } from '../../../multimedias/interfaces/file.interface';
-import { DomainBadRequest, DomainNotFound } from '../../../global/domain/exceptions/domain.exception';
 import mime from 'mime-types';
 import sharp from 'sharp';
+
+import {
+  DomainBadRequest,
+  DomainNotFound,
+} from '../../../global/domain/exceptions/domain.exception';
+import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
 import { UniqueIdService } from '../../../global/infrastructure/services/uniqueId.service';
+import { FileInterface } from '../../../multimedias/interfaces/file.interface';
+import {
+  MultimediasService,
+  UploadToS3Result,
+} from '../../../multimedias/services/multimedias.service';
+import { CreateWorkDto, WorkDto } from '../../domain/dtos/work.dto';
+import { ArtistRepository } from '../../infrastructure/repositories/artist.repository';
+import { WorkRepository } from '../../infrastructure/repositories/work.repository';
 
 @Injectable()
 export class CreateWorkUseCase extends BaseUseCase {
   constructor(
-    private readonly workProvider: WorkProvider,
-    private readonly artistProvider: ArtistProvider,
+    private readonly workProvider: WorkRepository,
+    private readonly artistProvider: ArtistRepository,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
     private readonly uniqueIdService: UniqueIdService,
@@ -23,13 +30,17 @@ export class CreateWorkUseCase extends BaseUseCase {
     super(CreateWorkUseCase.name);
   }
 
-  async execute(params: { artistId: number; dto: CreateWorkDto; file: FileInterface }): Promise<WorkDto> {
+  async execute(params: {
+    artistId: string;
+    dto: CreateWorkDto;
+    file: FileInterface;
+  }): Promise<WorkDto> {
     const { artistId, dto, file } = params;
-    
+
     // Convert string values to booleans for proper handling in multipart/form-data
     const isFeatured = dto.isFeatured === 'true' || dto.isFeatured === true;
     const isHidden = dto.isHidden === 'true' || dto.isHidden === true;
-    
+
     // Validate artist
     const existingArtist = await this.artistProvider.findById(artistId);
     if (!existingArtist) {
@@ -55,14 +66,20 @@ export class CreateWorkUseCase extends BaseUseCase {
 
     // Define the source directory for files
     const source = `artist/${artistId}/works`;
-    
+
     // Upload different sizes of the image
     console.time('uploadWorkFile');
     let uploadResult: UploadToS3Result[];
     try {
       uploadResult = await Promise.all([
         this.uploadOriginal(file, source, fileExtension, imageId, imageVersion),
-        this.uploadThumbnail(file, source, fileExtension, imageId, imageVersion),
+        this.uploadThumbnail(
+          file,
+          source,
+          fileExtension,
+          imageId,
+          imageVersion,
+        ),
         this.uploadTiny(file, source, fileExtension, imageId, imageVersion),
       ]);
     } catch (error) {
@@ -81,8 +98,13 @@ export class CreateWorkUseCase extends BaseUseCase {
     };
 
     // Create the work using the updated DTO
-    const work = await this.workProvider.createWork(artistId, updatedDto, isFeatured, isHidden);
-    
+    const work = await this.workProvider.createWork(
+      artistId,
+      updatedDto,
+      isFeatured,
+      isHidden,
+    );
+
     return work;
   }
 
@@ -110,10 +132,10 @@ export class CreateWorkUseCase extends BaseUseCase {
       .resize({ width: 512 })
       .jpeg({ quality: 70 })
       .toBuffer();
-    
+
     // Create a new file object with the resized buffer
     const thumbnailFile = { ...file, buffer: data };
-    
+
     return this.multimediasService.upload(thumbnailFile, source, fileName);
   }
 
@@ -130,10 +152,10 @@ export class CreateWorkUseCase extends BaseUseCase {
       .resize({ width: 50 })
       .jpeg({ quality: 70 })
       .toBuffer();
-    
+
     // Create a new file object with the resized buffer
     const tinyFile = { ...file, buffer: data };
-    
+
     return this.multimediasService.upload(tinyFile, source, fileName);
   }
 }

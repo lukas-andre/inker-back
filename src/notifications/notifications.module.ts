@@ -1,25 +1,26 @@
 import { Module } from '@nestjs/common';
 
+import { GlobalModule } from '../global/global.module';
+
 import { SendGridClient } from './clients/sendGrid.client';
+import { FirebaseFcmConfig } from './config/firebaseFcm.config';
+import { NotificationsRepositoryModule } from './database/notificactionsRepository.module';
+import { FcmController } from './infrastructure/controllers/fcm.controller';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsHandler } from './notifications.handler';
 import { EmailNotificationService } from './services/email/email.notification';
 import { TemplateService } from './services/email/templates/template.service';
-import { NotificationsDatabaseModule } from './database/notificactionsDatabase.module';
-import { FirebaseFcmConfig } from './config/firebaseFcm.config';
-import { PushNotificationService } from './services/push/pushNotification.service';
 import { NotificationStorageService } from './services/notification.storage';
-import { GetNotificationsUsecase } from './usecases/get-notifications.usecase';
-import { MarkNotificationReadUsecase } from './usecases/mark-notification-read.usecase';
-import { MarkAllNotificationsReadUsecase } from './usecases/mark-all-notifications-read.usecase';
+import { PushNotificationService } from './services/push/pushNotification.service';
 import { DeleteNotificationUsecase } from './usecases/delete-notification.usecase';
-import { GlobalModule } from '../global/global.module';
+import { GetNotificationsUsecase } from './usecases/get-notifications.usecase';
+import { MarkAllNotificationsReadUsecase } from './usecases/mark-all-notifications-read.usecase';
+import { MarkNotificationReadUsecase } from './usecases/mark-notification-read.usecase';
+import { RegisterFcmTokenUseCase } from './usecases/registerFcmToken.usecase';
+import { RemoveFcmTokenUseCase } from './usecases/removeFcmToken.usecase';
 
 @Module({
-  imports: [
-    NotificationsDatabaseModule,
-    GlobalModule,
-  ],
+  imports: [NotificationsRepositoryModule, GlobalModule],
   providers: [
     // Services
     EmailNotificationService,
@@ -27,21 +28,23 @@ import { GlobalModule } from '../global/global.module';
     TemplateService,
     PushNotificationService,
     NotificationStorageService,
-    
+
     // Handler
     NotificationsHandler,
-    
+
     // Usecases
     GetNotificationsUsecase,
     MarkNotificationReadUsecase,
     MarkAllNotificationsReadUsecase,
     DeleteNotificationUsecase,
+    RegisterFcmTokenUseCase,
+    RemoveFcmTokenUseCase,
   ],
-  controllers: [NotificationsController],
+  controllers: [NotificationsController, FcmController],
   exports: [
-    EmailNotificationService, 
+    EmailNotificationService,
     PushNotificationService,
-    NotificationStorageService
+    NotificationStorageService,
   ],
 })
 export class NotificationsModule {

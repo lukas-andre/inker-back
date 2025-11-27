@@ -11,9 +11,8 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
-import { ReviewReactionEnum } from '../../reactions/domain/enums/reviewReaction.enum';
-import { ReviewProvider } from '../database/providers/review.provider';
-import { ReviewReactionProvider } from '../database/providers/reviewReaction.provider';
+import { ReviewRepository } from '../database/repositories/review.repository';
+import { ReviewReactionEnum } from '../reviews.controller';
 
 export const REVIEW_IS_PENDING_TO_RATE = 'Review is pending to rate';
 export const REVIEW_NOT_FOUND = 'Review not found';
@@ -24,16 +23,13 @@ export const ERROR_DISABLING_REVIEW_REACTION =
 
 @Injectable()
 export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
-  constructor(
-    private readonly reviewProvider: ReviewProvider,
-    private readonly reviewReactionProvider: ReviewReactionProvider,
-  ) {
+  constructor(private readonly reviewProvider: ReviewRepository) {
     super(ReactToReviewUsecase.name);
   }
 
   async execute(
-    reviewId: number,
-    customerId: number,
+    reviewId: string,
+    customerId: string,
     reaction: ReviewReactionEnum,
   ): Promise<DefaultResponseDto> {
     const isRated = await this.reviewProvider.isReviewRated(reviewId);
@@ -47,10 +43,7 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
     }
 
     const currentReviewReaction =
-      await this.reviewReactionProvider.getReviewReactionIfExists(
-        reviewId,
-        customerId,
-      );
+      await this.reviewProvider.getReviewReactionIfExists(reviewId, customerId);
 
     if (
       currentReviewReaction === ReviewReactionEnum.off &&
@@ -94,8 +87,8 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
 
   private async updateReviewReaction(
     currentReaction: ReviewReactionEnum,
-    reviewId: number,
-    customerId: number,
+    reviewId: string,
+    customerId: string,
     reaction: ReviewReactionEnum,
   ) {
     const result = await this.reviewProvider.updateReviewReactionTransaction(
@@ -114,8 +107,8 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
 
   private async offReaction(
     currentReaction: ReviewReactionEnum,
-    reviewId: number,
-    customerId: number,
+    reviewId: string,
+    customerId: string,
   ) {
     const result = await this.reviewProvider.offReviewReactionTransaction(
       currentReaction,
@@ -131,8 +124,8 @@ export class ReactToReviewUsecase extends BaseUseCase implements UseCase {
   }
 
   private async reactToReviewForTheFirstTime(
-    reviewId: number,
-    customerId: number,
+    reviewId: string,
+    customerId: string,
     reaction: ReviewReactionEnum,
   ) {
     const result = await this.reviewProvider.insertReviewReactionTransaction(

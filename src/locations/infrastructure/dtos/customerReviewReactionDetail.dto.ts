@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 
-import { CustomerReviewReactionDetailsResult } from '../../../reviews/database/providers/reviewReaction.provider';
+import { CustomerReviewReactionDetailsResult } from '../../../reviews/interfaces/reviewReaction.interface';
 
 export class CustomerReviewReactionDetailsDTO
   implements CustomerReviewReactionDetailsResult
 {
-  @ApiProperty({ description: 'Review reaction id', example: 1 })
-  @IsNumber()
-  reviewReactionId: number;
+  @ApiProperty({ description: 'Review reaction id', example: '1' })
+  @IsString()
+  reviewReactionId: string;
 
   @ApiProperty({ description: 'liked or not', example: true })
   @IsBoolean()

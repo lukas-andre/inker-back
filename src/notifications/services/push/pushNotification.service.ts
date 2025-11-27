@@ -1,16 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+
 import { DeviceType } from '../../database/entities/userFcmToken.entity';
 import { NotificationRepository } from '../../database/notification.repository';
+
 import { FCMPayloadUtil } from './utils';
 
 @Injectable()
 export class PushNotificationService {
   private readonly logger = new Logger(PushNotificationService.name);
 
-  constructor(private tokenRepository: NotificationRepository) {}
+  constructor(private tokenRepository: NotificationRepository) { }
 
-  async saveToken(userId: number, token: string, deviceType: DeviceType) {
+  async saveToken(userId: string, token: string, deviceType: DeviceType) {
     try {
       await this.tokenRepository.upsertFcmToken(
         {
@@ -35,7 +37,7 @@ export class PushNotificationService {
   }
 
   async sendToUser(
-    userId: number,
+    userId: string,
     notification: { title: string; body: string },
     data?: Record<string, any>,
   ) {
@@ -87,19 +89,26 @@ export class PushNotificationService {
             ).toString(), // 24 hours
           },
         },
-        // webpush: {
-        //     notification: {
-        //         title: notification.title,
-        //         body: notification.body,
-        //         icon: '/icon.png', // Asegúrate de tener este icono en tu app web
-        //         badge: '/badge.png',
-        //         vibrate: [200, 500, 200],
-        //         requireInteraction: true,
-        //     },
-        //     headers: {
-        //         TTL: '86400' // 24 hours in seconds
-        //     }
-        // }
+        webpush: {
+          notification: {
+            title: notification.title,
+            body: notification.body,
+            icon: '/icon-192x192.png',
+            badge: '/icon-72x72.png',
+            vibrate: [200, 500, 200],
+            requireInteraction: true,
+            data: data,
+            actions: [
+              {
+                action: 'view',
+                title: 'Ver',
+              },
+            ],
+          },
+          headers: {
+            TTL: '86400', // 24 hours in seconds
+          },
+        }
       };
 
       this.logger.log(`Message: ${JSON.stringify(message)}`);

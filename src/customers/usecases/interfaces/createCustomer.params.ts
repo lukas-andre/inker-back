@@ -1,5 +1,5 @@
 export interface CreateCustomerParams {
-  userId: number;
+  userId: string;
   firstName: string;
   lastName: string;
   contactEmail?: string;

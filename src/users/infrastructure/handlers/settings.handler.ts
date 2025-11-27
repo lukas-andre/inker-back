@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+
 import { GetSettingsUseCase } from '../../usecases/settings/getSettings.usecase';
-import { UpdateNotificationsUseCase } from '../../usecases/settings/updateNotifications.usecase';
 import { UpdateLocationServicesUseCase } from '../../usecases/settings/updateLocationService.usecase';
+import { UpdateNotificationsUseCase } from '../../usecases/settings/updateNotifications.usecase';
 
 @Injectable()
 export class SettingsHandler {
@@ -11,15 +12,15 @@ export class SettingsHandler {
     private readonly updateLocationServicesUseCase: UpdateLocationServicesUseCase,
   ) {}
 
-  async handleGetSettings(userId: number) {
+  async handleGetSettings(userId: string) {
     return this.getSettingsUseCase.execute(userId);
   }
 
-  async handleUpdateNotifications(userId: number, enabled: boolean) {
+  async handleUpdateNotifications(userId: string, enabled: boolean) {
     return this.updateNotificationsUseCase.execute(userId, enabled);
   }
 
-  async handleUpdateLocationServices(userId: number, enabled: boolean) {
+  async handleUpdateLocationServices(userId: string, enabled: boolean) {
     return this.updateLocationServicesUseCase.execute(userId, enabled);
   }
 }

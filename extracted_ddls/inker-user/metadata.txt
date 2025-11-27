@@ -1,0 +1,4 @@
+Database: inker-user
+Extraction Date: Sat Jul  5 22:21:20 -04 2025
+PostgreSQL Version:
+PostgreSQL 17.2 (Debian 17.2-1.pgdg110+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit

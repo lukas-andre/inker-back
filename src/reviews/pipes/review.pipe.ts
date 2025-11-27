@@ -14,14 +14,14 @@ import {
   REVIEW_INVALID_ID_TYPE,
   REVIEW_NOT_EXISTS,
 } from '../codes';
-import { ReviewProvider } from '../database/providers/review.provider';
+import { ReviewRepository } from '../database/repositories/review.repository';
 
 @Injectable()
 export class ReviewIdPipe
   implements PipeTransform<string, Promise<string | number>>
 {
   private readonly logger = new Logger(ReviewIdPipe.name);
-  constructor(private readonly reviewProvider: ReviewProvider) {}
+  constructor(private readonly reviewRepository: ReviewRepository) {}
 
   async transform(value: string, { metatype }: ArgumentMetadata) {
     if (!metatype || this.invalidIdType(metatype)) {
@@ -36,12 +36,11 @@ export class ReviewIdPipe
       throw new BadRequestException(REVIEW_ID_PIPE_FAILED);
     }
 
-    const id = this.parseInt(value);
-    if (!(await this.reviewProvider.exists(id))) {
+    if (!(await this.reviewRepository.exists(value))) {
       throw new NotFoundException(REVIEW_NOT_EXISTS);
     }
 
-    return id;
+    return value;
   }
 
   parseInt(val: string) {
@@ -53,7 +52,7 @@ export class ReviewIdPipe
   }
 
   private invalidIdType(metatype: Function): boolean {
-    const types: Function[] = [Number];
-    return !types.includes(metatype) || Number.isNaN(metatype);
+    const types: Function[] = [String];
+    return !types.includes(metatype);
   }
 }

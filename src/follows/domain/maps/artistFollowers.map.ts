@@ -1,5 +1,5 @@
-export class ArtistFollowersMap extends Map<number, number> {
-  addArtist(artistId: number, count: number): void {
+export class ArtistFollowersMap extends Map<string, number> {
+  addArtist(artistId: string, count: number): void {
     this.set(artistId, count);
   }
 }

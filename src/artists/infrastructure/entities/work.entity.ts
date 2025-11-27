@@ -8,10 +8,12 @@ import {
   ManyToMany,
   ManyToOne,
 } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { Artist } from './artist.entity';
 import { Tag } from '../../../tags/tag.entity';
 import { WorkSource, WorkType } from '../../domain/workType';
+
+import { Artist } from './artist.entity';
 
 @Entity('works')
 @Index(['isFeatured'])
@@ -23,7 +25,7 @@ import { WorkSource, WorkType } from '../../domain/workType';
 export class Work extends BaseEntity implements WorkType {
   @Column({ name: 'artist_id' })
   @Index()
-  artistId: number;
+  artistId: string;
 
   @ManyToOne(() => Artist, artist => artist.works)
   @JoinColumn({ name: 'artist_id' })
@@ -60,7 +62,7 @@ export class Work extends BaseEntity implements WorkType {
     name: 'source',
     type: 'enum',
     enum: WorkSource,
-    default: WorkSource.EXTERNAL
+    default: WorkSource.EXTERNAL,
   })
   source: WorkSource;
 

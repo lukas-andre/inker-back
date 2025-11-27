@@ -3,7 +3,7 @@ export enum InteractionType {
   LIKE = 'like',
   IMPRESSION = 'impression',
   CONVERSION = 'conversion',
-  FOLLOW = 'follow'
+  FOLLOW = 'follow',
 }
 
 export enum ViewSource {
@@ -11,5 +11,5 @@ export enum ViewSource {
   FEED = 'feed',
   PROFILE = 'profile',
   RELATED = 'related',
-  DIRECT = 'direct'
-} 
+  DIRECT = 'direct',
+}

@@ -1,74 +1,88 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
-import { QuotationCustomerAppealReason } from '../entities/quotation.entity';
-import { MoneyEntity } from '../../../global/domain/models/money.model';
 import { ArtistDto } from '../../../artists/domain/dtos/artist.dto';
-import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
-import { LocationDto } from '../../../global/infrastructure/dtos/geometry.dto';
 import { Stencil } from '../../../artists/infrastructure/entities/stencil.entity';
+import { CustomerDto } from '../../../customers/domain/dtos/customer.dto';
+import { MoneyEntity } from '../../../global/domain/models/money.model';
+import { LocationDto } from '../../../global/infrastructure/dtos/geometry.dto';
+import { MultimediasMetadataInterface } from '../../../multimedias/interfaces/multimediasMetadata.interface';
+import { TattooDesignCacheEntity } from '../../../tattoo-generator/infrastructure/database/entities/tattooDesignCache.entity';
+import { OpenQuotationOfferDto } from '../../domain/dtos/openQuotationOffer.dto';
+import { QuotationStatus, QuotationType } from '../entities/quotation.entity';
 
-export class QuotationDto {
+// Define local const for enum values used in decorators if not exported
+const CUSTOMER_APPEAL_REASONS = [
+  'date_change',
+  'price_change',
+  'design_change',
+  'other',
+] as const;
+type QuotationCustomerAppealReason = (typeof CUSTOMER_APPEAL_REASONS)[number];
+
+export class GetQuotationResDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
-  customerId: number;
+  customerId: string;
 
-  @ApiProperty()
-  artistId: number;
+  @ApiPropertyOptional()
+  artistId?: string;
 
-  @ApiProperty({ required: false })
-  stencilId?: number;
+  @ApiPropertyOptional()
+  stencilId?: string;
+
+  @ApiProperty({ enum: QuotationType })
+  type: QuotationType;
 
   @ApiProperty()
   description: string;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   referenceImages?: MultimediasMetadataInterface;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   proposedDesigns?: MultimediasMetadataInterface;
 
   @ApiProperty({
-    enum: ['pending', 'quoted', 'accepted', 'rejected', 'appealed', 'canceled'],
+    enum: QuotationStatus,
   })
-  status:
-    | 'pending'
-    | 'quoted'
-    | 'accepted'
-    | 'rejected'
-    | 'appealed'
-    | 'canceled';
+  status: QuotationStatus;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
+  customerLat?: number;
+
+  @ApiPropertyOptional()
+  customerLon?: number;
+
+  @ApiPropertyOptional()
+  customerTravelRadiusKm?: number;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
   estimatedCost?: MoneyEntity;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   responseDate?: Date;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   appointmentDate?: Date;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   appointmentDuration?: number;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   rejectedReason?: string;
 
-  @ApiProperty({ enum: ['dateChange'], required: false })
+  @ApiPropertyOptional({ enum: CUSTOMER_APPEAL_REASONS })
   appealedReason?: QuotationCustomerAppealReason;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   appealedDate?: Date;
 
-  @ApiProperty({
-    enum: ['customer', 'artist', 'not_attended'],
-    required: false,
-  })
-  canceledReason?: 'customer' | 'artist' | 'not_attended';
+  @ApiPropertyOptional()
+  canceledReason?: string;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   canceledDate?: Date;
 
   @ApiProperty()
@@ -77,15 +91,39 @@ export class QuotationDto {
   @ApiProperty()
   updatedAt: Date;
 
-  @ApiProperty()
-  artist: ArtistDto;
+  @ApiPropertyOptional({ type: () => ArtistDto })
+  artist?: ArtistDto;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => CustomerDto })
   customer: CustomerDto;
 
-  @ApiProperty()
-  location: LocationDto;
+  @ApiPropertyOptional({ type: () => LocationDto })
+  location?: LocationDto;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional({ type: () => Stencil })
   stencil?: Stencil;
+
+  @ApiPropertyOptional({ type: [OpenQuotationOfferDto] })
+  offers?: OpenQuotationOfferDto[];
+
+  @ApiPropertyOptional({ type: () => TattooDesignCacheEntity })
+  tattooDesignCache?: TattooDesignCacheEntity;
+
+  @ApiPropertyOptional({
+    description:
+      'Indicates if the current artist has offered on this quotation',
+  })
+  hasOffered?: boolean;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  minBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  maxBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ type: () => MoneyEntity })
+  referenceBudget?: MoneyEntity;
+
+  @ApiPropertyOptional({ description: 'ID de la imagen generada (si existe)' })
+  generatedImageId?: string;
 }

@@ -29,12 +29,16 @@ import {
   PROBLEMS_FILTERING_ARTISTS,
   TROUBLE_FINDING_LOCATIONS,
 } from '../domain/codes/codes';
+import {
+  ArtistLocationCreateDto,
+  ArtistLocationDto,
+  ArtistLocationUpdateDto,
+} from '../domain/interfaces/artistLocation.interface';
 
 import { AddLocationDto } from './dtos/addLocation.dto';
 import { FindArtistByRangeDTORequest } from './dtos/findArtistByRangeRequest.dto';
 import { FindArtistByRangeResponseDTO } from './dtos/findArtistByRangeResponse.dto';
 import { LocationsHandler } from './locations.handler';
-import { ArtistLocationCreateDto, ArtistLocationDto, ArtistLocationUpdateDto } from '../domain/interfaces/artistLocation.interface';
 
 @ApiTags('locations')
 @Controller('locations')
@@ -87,14 +91,14 @@ export class LocationsController {
   })
   @Post('artist/:artistId/locations')
   async createArtistLocation(
-    @Param('artistId') artistId: number,
+    @Param('artistId') artistId: string,
     @Body() body: ArtistLocationCreateDto,
   ): Promise<ArtistLocationDto> {
     return this.locationsHandler.handleCreateArtistLocation(artistId, body);
   }
 
   @ApiOperation({ summary: 'Get artist locations' })
-  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'number' })
+  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'string' })
   @ApiOkResponse({
     description: 'Artist locations successfully retrieved',
     type: ArtistLocationDto,
@@ -102,13 +106,13 @@ export class LocationsController {
   })
   @Get('artist/:artistId/locations')
   async getArtistLocations(
-    @Param('artistId') artistId: number,
+    @Param('artistId') artistId: string,
   ): Promise<ArtistLocationDto[]> {
     return this.locationsHandler.handleGetArtistLocations(artistId);
   }
 
   @ApiOperation({ summary: 'Update an artist location' })
-  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'number' })
+  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'string' })
   @ApiParam({ name: 'locationId', description: 'Location ID', type: 'string' })
   @ApiOkResponse({
     description: 'Artist location successfully updated',
@@ -117,15 +121,19 @@ export class LocationsController {
   @ApiNotFoundResponse({ description: 'Artist location not found' })
   @Put('artist/:artistId/locations/:locationId')
   async updateArtistLocation(
-    @Param('artistId', ParseIntPipe) artistId: number,
-    @Param('locationId', ParseIntPipe) locationId: number,
+    @Param('artistId') artistId: string,
+    @Param('locationId') locationId: string,
     @Body() body: ArtistLocationUpdateDto,
   ): Promise<ArtistLocationDto> {
-    return this.locationsHandler.handleUpdateArtistLocation(artistId, locationId, body);
+    return this.locationsHandler.handleUpdateArtistLocation(
+      artistId,
+      locationId,
+      body,
+    );
   }
 
   @ApiOperation({ summary: 'Delete an artist location' })
-  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'number' })
+  @ApiParam({ name: 'artistId', description: 'Artist ID', type: 'string' })
   @ApiParam({ name: 'locationId', description: 'Location ID', type: 'string' })
   @ApiOkResponse({
     description: 'Artist location successfully deleted',
@@ -134,9 +142,12 @@ export class LocationsController {
   @ApiNotFoundResponse({ description: 'Artist location not found' })
   @Delete('artist/:artistId/locations/:locationId')
   async deleteArtistLocation(
-    @Param('artistId', ParseIntPipe) artistId: number,
-    @Param('locationId', ParseIntPipe) locationId: number,
+    @Param('artistId') artistId: string,
+    @Param('locationId') locationId: string,
   ): Promise<boolean> {
-    return this.locationsHandler.handleDeleteArtistLocation(artistId, locationId);
+    return this.locationsHandler.handleDeleteArtistLocation(
+      artistId,
+      locationId,
+    );
   }
 }

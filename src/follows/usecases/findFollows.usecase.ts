@@ -5,20 +5,20 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
-import { UsersProvider } from '../../users/infrastructure/providers/users.provider';
+import { UsersRepository } from '../../users/infrastructure/repositories/users.repository';
 import { FollowingType } from '../domain/types/followingType';
-import { FollowingsProvider } from '../infrastructure/database/followings.provider';
+import { FollowingsRepository } from '../infrastructure/database/followings.repository';
 @Injectable()
 export class FindFollowsUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly usersProvider: UsersProvider,
-    private readonly followingProvider: FollowingsProvider,
+    private readonly usersRepository: UsersRepository,
+    private readonly followingProvider: FollowingsRepository,
   ) {
     super(FindFollowsUseCase.name);
   }
 
-  async execute(userId: number): Promise<FollowingType[]> {
-    if (!(await this.usersProvider.exists(userId))) {
+  async execute(userId: string): Promise<FollowingType[]> {
+    if (!(await this.usersRepository.exists(userId))) {
       throw new DomainNotFound('User not found');
     }
 
