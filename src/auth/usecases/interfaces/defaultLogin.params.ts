@@ -1,4 +1,5 @@
 import { IsEnum, IsString } from 'class-validator';
+
 import { DeviceType } from '../../../notifications/database/entities/userFcmToken.entity';
 import { LoginType } from '../../domain/enums/loginType.enum';
 

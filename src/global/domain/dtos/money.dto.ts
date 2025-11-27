@@ -1,13 +1,15 @@
 import { IsNumber, IsString } from 'class-validator';
+
 import { MoneyEntity } from '../models/money.model';
+import { Transform } from 'class-transformer';
 
 export class MoneyDto extends MoneyEntity {
   @IsNumber()
   amount: number;
 
   @IsString()
-  currency: string = 'USD';
+  currency = 'CLP';
 
   @IsNumber()
-  scale: number = 2;
+  scale: number = 0;
 }

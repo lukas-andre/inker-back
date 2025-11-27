@@ -1,8 +1,8 @@
 import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { ReviewReactionEnum } from '../../../reactions/domain/enums/reviewReaction.enum';
 import { ReviewReactionInterface } from '../../interfaces/reviewReaction.interface';
+import { ReviewReactionEnum } from '../../reviews.controller';
 
 @Entity()
 export class ReviewReaction
@@ -11,7 +11,7 @@ export class ReviewReaction
 {
   @Column({ name: 'customer_id' })
   @Index()
-  customerId: number;
+  customerId: string;
 
   @Column({
     type: 'enum',
@@ -23,5 +23,5 @@ export class ReviewReaction
 
   @Column({ name: 'review_id' })
   @Index()
-  reviewId: number;
+  reviewId: string;
 }

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+{{> head}}
+<body>
+    {{#if (eq reminderType "APPOINTMENT_24H_BEFORE")}}
+        {{> header message="¡Tu cita es mañana!"}}
+    {{else if (eq reminderType "APPOINTMENT_2H_BEFORE")}}
+        {{> header message="¡Tu cita es en 2 horas!"}}
+    {{else if (eq reminderType "APPOINTMENT_30MIN_BEFORE")}}
+        {{> header message="¡Tu cita es muy pronto!"}}
+    {{else}}
+        {{> header message="¡Recordatorio de tu cita!"}}
+    {{/if}}
+    
+    <!-- Main Content -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff;">
+        <tr>
+            <td style="padding: 40px 30px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto;">
+                    
+                    <!-- Greeting -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <h1 style="color: #2c3e50; font-size: 28px; margin: 0; text-align: center;">
+                                ¡Hola {{customerName}}! 👋
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Reminder Icon and Message -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            {{#if (eq reminderType "APPOINTMENT_24H_BEFORE")}}
+                                <div style="font-size: 60px; margin-bottom: 20px;">📅</div>
+                                <h2 style="color: #3498db; font-size: 24px; margin: 0;">Tu cita es mañana</h2>
+                                <p style="color: #666; font-size: 16px; margin: 10px 0 0;">¡No la olvides! Te esperamos con todo listo para tu sesión.</p>
+                            {{else if (eq reminderType "APPOINTMENT_2H_BEFORE")}}
+                                <div style="font-size: 60px; margin-bottom: 20px;">🚨</div>
+                                <h2 style="color: #e74c3c; font-size: 24px; margin: 0;">¡Tu cita es en 2 horas!</h2>
+                                <p style="color: #666; font-size: 16px; margin: 10px 0 0;">Es hora de prepararte y dirigirte al estudio.</p>
+                            {{else if (eq reminderType "APPOINTMENT_30MIN_BEFORE")}}
+                                <div style="font-size: 60px; margin-bottom: 20px;">⏰</div>
+                                <h2 style="color: #e67e22; font-size: 24px; margin: 0;">¡Tu cita es en 30 minutos!</h2>
+                                <p style="color: #666; font-size: 16px; margin: 10px 0 0;">¡Es hora de ir! El artista te está esperando.</p>
+                            {{/if}}
+                        </td>
+                    </tr>
+
+                    <!-- Appointment Details Card -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <div style="background-color: #f8f9fa; border: 2px solid #3498db; border-radius: 10px; padding: 25px; margin: 20px 0;">
+                                <h3 style="color: #2c3e50; font-size: 20px; margin: 0 0 15px; text-align: center;">
+                                    📍 Detalles de tu Cita
+                                </h3>
+                                
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">🎨 Artista:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            <span style="color: #3498db; font-weight: bold;">{{artistName}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">📅 Fecha y Hora:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            {{formatDateCustom eventDate}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                            <strong style="color: #2c3e50;">🏷️ Sesión:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                                            {{eventName}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0;">
+                                            <strong style="color: #2c3e50;">📍 Ubicación:</strong>
+                                        </td>
+                                        <td style="padding: 8px 0; text-align: right;">
+                                            {{eventLocation}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Map and Directions -->
+                    {{#if (eq reminderType "APPOINTMENT_2H_BEFORE")}}
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            <a href="{{googleMapsLink}}" 
+                               style="background-color: #27ae60; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; transition: background-color 0.3s;">
+                                🗺️ Ver Direcciones en Google Maps
+                            </a>
+                        </td>
+                    </tr>
+                    {{/if}}
+
+                    <!-- Important Notes -->
+                    <tr>
+                        <td style="padding-bottom: 30px;">
+                            <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px;">
+                                <h4 style="color: #856404; margin: 0 0 10px; font-size: 16px;">📝 Recordatorios Importantes:</h4>
+                                <ul style="color: #856404; margin: 0; padding-left: 20px;">
+                                    {{#if (eq reminderType "APPOINTMENT_24H_BEFORE")}}
+                                        <li>Revisa tu consentimiento firmado</li>
+                                        <li>Planifica tu llegada con tiempo</li>
+                                        <li>Prepara cualquier referencia o ideas</li>
+                                    {{else if (eq reminderType "APPOINTMENT_2H_BEFORE")}}
+                                        <li>Sal ahora para llegar a tiempo</li>
+                                        <li>Lleva tu documento de identidad</li>
+                                        <li>Usa ropa cómoda y adecuada</li>
+                                    {{else if (eq reminderType "APPOINTMENT_30MIN_BEFORE")}}
+                                        <li>¡Ya deberías estar en camino!</li>
+                                        <li>Si tienes algún retraso, contacta al artista</li>
+                                    {{/if}}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Call to Action -->
+                    <tr>
+                        <td style="text-align: center; padding-bottom: 30px;">
+                            <p style="color: #666; font-size: 16px; margin: 0 0 20px;">
+                                ¿Tienes alguna pregunta o necesitas reprogramar?
+                            </p>
+                            <a href="mailto:support@inker.com" 
+                               style="background-color: #3498db; color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold; display: inline-block;">
+                                📞 Contactar Soporte
+                            </a>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    {{> footer}}
+</body>
+</html> 

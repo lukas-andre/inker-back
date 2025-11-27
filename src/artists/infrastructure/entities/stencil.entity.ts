@@ -8,10 +8,12 @@ import {
   ManyToMany,
   ManyToOne,
 } from 'typeorm';
+
 import { BaseEntity } from '../../../global/infrastructure/entities/base.entity';
-import { Artist } from './artist.entity';
 import { Tag } from '../../../tags/tag.entity';
 import { StencilStatus, StencilType } from '../../domain/stencilType';
+
+import { Artist } from './artist.entity';
 
 @Entity('stencils')
 @Index(['status'])
@@ -20,7 +22,7 @@ import { StencilStatus, StencilType } from '../../domain/stencilType';
 export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'artist_id' })
   @Index()
-  artistId: number;
+  artistId: string;
 
   @ManyToOne(() => Artist, artist => artist.stencils)
   @JoinColumn({ name: 'artist_id' })
@@ -53,14 +55,20 @@ export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'order_position', default: 0 })
   orderPosition: number;
 
-  @Column({ name: 'price', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({
+    name: 'price',
+    type: 'decimal',
+    precision: 10,
+    scale: 1,
+    nullable: true,
+  })
   price?: number;
 
   @Column({
     name: 'status',
     type: 'enum',
     enum: StencilStatus,
-    default: StencilStatus.AVAILABLE
+    default: StencilStatus.AVAILABLE,
   })
   status: StencilStatus;
 
@@ -88,19 +96,39 @@ export class Stencil extends BaseEntity implements StencilType {
   @Column({ name: 'dimensions', type: 'jsonb', nullable: true })
   dimensions?: { width: number; height: number };
 
-  @Column({ name: 'recommended_placements', type: 'text', nullable: true, default: '[]' })
+  @Column({
+    name: 'recommended_placements',
+    type: 'text',
+    nullable: true,
+    default: '[]',
+  })
   recommendedPlacements?: string;
 
   @Column({ name: 'estimated_time', type: 'int', nullable: true })
   estimatedTime?: number;
 
-  @Column({ name: 'is_customizable', type: 'boolean', nullable: true, default: false })
+  @Column({
+    name: 'is_customizable',
+    type: 'boolean',
+    nullable: true,
+    default: false,
+  })
   isCustomizable?: boolean;
 
-  @Column({ name: 'is_downloadable', type: 'boolean', nullable: true, default: false })
+  @Column({
+    name: 'is_downloadable',
+    type: 'boolean',
+    nullable: true,
+    default: false,
+  })
   isDownloadable?: boolean;
 
-  @Column({ name: 'is_available', type: 'boolean', nullable: true, default: false })
+  @Column({
+    name: 'is_available',
+    type: 'boolean',
+    nullable: true,
+    default: false,
+  })
   isAvailable?: boolean;
 
   @Column({ name: 'license', type: 'text', nullable: true })

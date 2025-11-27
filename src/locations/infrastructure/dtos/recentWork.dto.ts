@@ -7,7 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { FindRecentWorksByArtistIdsResult } from '../../../agenda/infrastructure/providers/agenda.provider';
+import { FindRecentWorksByArtistIdsResult } from '../../../agenda/infrastructure/repositories/agenda.repository';
 import { MultimediasMetadataDTO } from '../../../multimedias/dtos/multimediasMetadata.dto';
 
 export class RecentWorkDTO implements FindRecentWorksByArtistIdsResult {
@@ -23,7 +23,7 @@ export class RecentWorkDTO implements FindRecentWorksByArtistIdsResult {
     example: 1,
   })
   @IsString()
-  customerId: number;
+  customerId: string;
 
   @ApiProperty({
     type: MultimediasMetadataDTO,
@@ -37,20 +37,20 @@ export class RecentWorkDTO implements FindRecentWorksByArtistIdsResult {
     description: 'The agenda ID',
     example: 1,
   })
-  @IsNumber()
-  agendaId: number;
+  @IsString()
+  agendaId: string;
 
   @ApiProperty({
     description: 'The event ID',
-    example: 1,
+    example: '1',
   })
-  @IsNumber()
-  eventId: number;
+  @IsString()
+  eventId: string;
 
   @ApiProperty({
     description: 'The artist ID',
-    example: 1,
+    example: '1',
   })
-  @IsNumber()
-  artistId: number;
+  @IsString()
+  artistId: string;
 }

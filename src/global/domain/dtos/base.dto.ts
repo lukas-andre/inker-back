@@ -1,17 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsDate, IsNumber } from 'class-validator';
+import { IsDate, IsNumber, IsString } from 'class-validator';
 
 export class BaseDTO {
   @ApiProperty({
     description: 'Resource id',
     required: true,
-    type: Number,
-    example: 1,
+    type: String,
+    example: '1',
   })
   @Expose()
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 
   @ApiProperty({
     description: 'Resource created date',

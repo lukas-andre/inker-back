@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant C as Customer (Frontend)
+    participant A as Artist (Frontend)
+    participant API as Backend API
+
+    C->>API: POST /quotations (type=OPEN, description, location...)
+    API-->>C: 201 Created (quotationId)
+
+    A->>API: GET /quotations/open (Filters?)
+    API-->>A: 200 OK (List includes quotationId)
+
+    A->>API: POST /quotations/{quotationId}/offers (Offer Details)
+    API-->>A: 201 Created (offerId)
+
+    C->>API: GET /quotations/{quotationId} (View Details & Offers)
+    API-->>C: 200 OK (Details + List of Offers including offerId)
+
+    alt Offer Communication Loop
+        C->>API: POST /quotations/{qId}/offers/{offerId}/messages (Msg Text, Optional Image)
+        API-->>C: 200 OK (New Message Added)
+
+        A->>API: POST /quotations/{qId}/offers/{offerId}/messages (Msg Text, Optional Image)
+        API-->>A: 200 OK (New Message Added)
+    end
+
+    C->>API: POST /quotations/{qId}/offers/{offerId}/accept
+    API-->>C: 200 OK (Offer Accepted, Status Updated)

@@ -1,0 +1,10 @@
+CREATE INDEX "IDX_8bd8d0985c0d077c8129fb4a20" ON public.comment CREATE INDEX "IDX_8bd8d0985c0d077c8129fb4a20" ON comment USING btree (parent_id);
+CREATE INDEX "IDX_7b65538426c45387905f0939a2" ON public.comment CREATE INDEX "IDX_7b65538426c45387905f0939a2" ON comment USING btree (parent_type);
+CREATE INDEX "IDX_f772ca433426f5104d3119ddd3" ON public.comment CREATE INDEX "IDX_f772ca433426f5104d3119ddd3" ON comment USING btree (user_type);
+CREATE INDEX "IDX_c5df8f9e8d8c44b3c3ddbdee28" ON public.comment CREATE INDEX "IDX_c5df8f9e8d8c44b3c3ddbdee28" ON comment USING btree (user_type_id);
+CREATE INDEX "IDX_bbfe153fa60aa06483ed35ff4a" ON public.comment CREATE INDEX "IDX_bbfe153fa60aa06483ed35ff4a" ON comment USING btree (user_id);
+CREATE INDEX "IDX_06786c179131975fef5fd26bfe" ON public.comment CREATE INDEX "IDX_06786c179131975fef5fd26bfe" ON comment USING btree (location);
+CREATE INDEX "IDX_62ba03774e466effeeb171af50" ON public.post CREATE INDEX "IDX_62ba03774e466effeeb171af50" ON post USING btree (user_type);
+CREATE INDEX "IDX_6f2e185b854c47a5f8dfae741a" ON public.post CREATE INDEX "IDX_6f2e185b854c47a5f8dfae741a" ON post USING btree (user_type_id);
+CREATE INDEX "IDX_52378a74ae3724bcab44036645" ON public.post CREATE INDEX "IDX_52378a74ae3724bcab44036645" ON post USING btree (user_id);
+CREATE INDEX "IDX_3dd966611c859e2bb898763f4a" ON public.post CREATE INDEX "IDX_3dd966611c859e2bb898763f4a" ON post USING btree (location);

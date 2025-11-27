@@ -77,9 +77,9 @@ export class LocationDTO extends BaseDTO implements LocationModel {
   // TODO: Create point dto
   location: Point;
 
-  @ApiProperty({ description: 'Location Id', example: 1 })
-  @IsNumber()
-  id: number;
+  @ApiProperty({ description: 'Location Id', example: '1' })
+  @IsString()
+  id: string;
 
   @ApiProperty({
     description: 'Location Created At',

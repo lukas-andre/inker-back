@@ -1,11 +1,11 @@
 import { IsNumber, IsString } from 'class-validator';
 
 export class FollowArtistParams {
-  @IsNumber()
-  readonly userId: number;
+  @IsString()
+  readonly userId: string;
 
-  @IsNumber()
-  readonly userTypeId: number;
+  @IsString()
+  readonly userTypeId: string;
 
   @IsString()
   readonly userType: string;

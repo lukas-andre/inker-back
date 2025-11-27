@@ -10,20 +10,20 @@ import {
   BaseUseCase,
   UseCase,
 } from '../../../global/domain/usecases/base.usecase';
+import {
+  QuotationCustomerActionJobIdType,
+  QuotationCustomerActionJobType,
+  QuotationJobIdType,
+} from '../../../queues/notifications/domain/schemas/quotation';
 import { queues } from '../../../queues/queues';
+import { CreateAgendaEventJobType } from '../../../queues/sync/jobs';
 import { QuotationStateMachine } from '../../domain/quotation.statemachine';
 import {
   CustomerQuotationAction,
   CustomerQuotationActionDto,
 } from '../../infrastructure/dtos/customerQuotationAction.dto';
 import { QuotationStatus } from '../../infrastructure/entities/quotation.entity';
-import { QuotationProvider } from '../../infrastructure/providers/quotation.provider';
-import {
-  QuotationCustomerActionJobIdType,
-  QuotationCustomerActionJobType,
-  QuotationJobIdType,
-} from '../../../queues/notifications/domain/schemas/quotation';
-import { CreateAgendaEventJobType } from '../../../queues/sync/jobs';
+import { QuotationRepository } from '../../infrastructure/repositories/quotation.provider';
 
 @Injectable()
 export class ProcessCustomerActionUseCase
@@ -31,7 +31,7 @@ export class ProcessCustomerActionUseCase
   implements UseCase
 {
   constructor(
-    private readonly quotationProvider: QuotationProvider,
+    private readonly quotationProvider: QuotationRepository,
     private readonly quotationStateMachine: QuotationStateMachine,
     @InjectQueue(queues.notification.name)
     private readonly notificationQueue: Queue,
@@ -42,8 +42,8 @@ export class ProcessCustomerActionUseCase
   }
 
   async execute(
-    userId: number,
-    quotationId: number,
+    userId: string,
+    quotationId: string,
     customerActionDto: CustomerQuotationActionDto,
   ): Promise<{ message: string; updated: boolean }> {
     const quotation = await this.quotationProvider.findById(quotationId);
@@ -58,25 +58,25 @@ export class ProcessCustomerActionUseCase
         case CustomerQuotationAction.ACCEPT:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'accepted',
+            QuotationStatus.ACCEPTED,
           );
           break;
         case CustomerQuotationAction.REJECT:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'rejected',
+            QuotationStatus.REJECTED,
           );
           break;
         case CustomerQuotationAction.APPEAL:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'appealed',
+            QuotationStatus.APPEALED,
           );
           break;
         case CustomerQuotationAction.CANCEL:
           newStatus = this.quotationStateMachine.transition(
             quotation,
-            'canceled',
+            QuotationStatus.CANCELED,
           );
           break;
         default:

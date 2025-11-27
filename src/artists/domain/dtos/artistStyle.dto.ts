@@ -7,13 +7,13 @@ import {
   Max,
   Min,
 } from 'class-validator';
+
 import { ArtistStyleType } from '../artistStyleType';
 
 export class ArtistStyleDto implements ArtistStyleType {
   @ApiProperty({ description: 'Artist ID' })
-  @IsInt()
-  @Min(1)
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({ description: 'Style name' })
   @IsString()

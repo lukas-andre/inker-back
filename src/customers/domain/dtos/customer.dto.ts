@@ -9,11 +9,11 @@ import { CustomerFollows } from '../interfaces/customerFollows.interface';
 export class CustomerDto extends BaseDTO implements CustomerInterface {
   @ApiProperty({
     description: 'User id',
-    type: Number,
-    example: 1,
+    type: String,
+    example: '1',
   })
   @Expose()
-  userId: number;
+  userId: string;
 
   @ApiProperty({
     description: 'Customer first name',

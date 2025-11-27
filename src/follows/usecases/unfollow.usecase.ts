@@ -11,18 +11,18 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../global/infrastructure/helpers/defaultResponse.helper';
-import { FollowedsProvider } from '../infrastructure/database/followeds.provider';
+import { FollowedsRepository } from '../infrastructure/database/followeds.repository';
 import { Followed } from '../infrastructure/entities/followed.entity';
 import { Following } from '../infrastructure/entities/following.entity';
 @Injectable()
 export class UnfollowUseCase extends BaseUseCase implements UseCase {
-  constructor(private readonly followedsProvider: FollowedsProvider) {
+  constructor(private readonly followedsProvider: FollowedsRepository) {
     super(UnfollowUseCase.name);
   }
 
   async execute(
-    artistUserId: number,
-    userId: number,
+    artistUserId: string,
+    userId: string,
   ): Promise<DefaultResponseDto> {
     let exception: DomainException;
     const dataSource = this.followedsProvider.source;

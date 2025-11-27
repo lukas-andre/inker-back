@@ -1,28 +1,32 @@
-import { Processor, InjectQueue, Process } from '@nestjs/bull';
-import { Queue, Job } from 'bull';
+import { InjectQueue, Process, Processor } from '@nestjs/bull';
+import { Job, Queue } from 'bull';
+
+import { CreateAgendaEventService } from '../../agenda/domain/services/createAgendaEvent.service';
+import { QuotationType } from '../../agenda/infrastructure/entities/quotation.entity';
+import { QuotationOfferStatus } from '../../agenda/infrastructure/entities/quotationOffer.entity';
+import { AgendaRepository } from '../../agenda/infrastructure/repositories/agenda.repository';
+import { QuotationRepository } from '../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { BaseComponent } from '../../global/domain/components/base.component';
+import { ReviewAvgRepository } from '../../reviews/database/repositories/reviewAvg.repository';
 import { queues } from '../queues';
+
 import {
   CreateAgendaEventJobType,
   SyncArtistRatingsJobType,
   SyncJobIdSchema,
   SyncJobType,
 } from './jobs';
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
-import { ReviewAvgProvider } from '../../reviews/database/providers/reviewAvg.provider';
-import { AgendaProvider } from '../../agenda/infrastructure/providers/agenda.provider';
-import { QuotationProvider } from '../../agenda/infrastructure/providers/quotation.provider';
-import { CreateAgendaEventService } from '../../agenda/usecases/common/createAgendaEvent.service';
 
 @Processor(queues.sync.name)
 export class SyncProcessor extends BaseComponent {
   constructor(
     @InjectQueue(queues.deadLetter.name)
     private readonly deadLetterQueue: Queue,
-    private readonly artistProvider: ArtistProvider,
-    private readonly reviewAvgProvider: ReviewAvgProvider,
-    private readonly agendaProvider: AgendaProvider,
-    private readonly quotationProvider: QuotationProvider,
+    private readonly artistProvider: ArtistRepository,
+    private readonly reviewAvgProvider: ReviewAvgRepository,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly quotationProvider: QuotationRepository,
     private readonly createAgendaEventService: CreateAgendaEventService,
   ) {
     super(SyncProcessor.name);
@@ -63,7 +67,17 @@ export class SyncProcessor extends BaseComponent {
 
     const quotation = await this.quotationProvider.findById(
       data.metadata.quotationId,
+      {
+        offers: true,
+      },
     );
+
+    const offer = quotation?.offers?.find(
+      offer =>
+        offer.status === QuotationOfferStatus.ACCEPTED &&
+        offer.artistId === data.metadata.artistId,
+    );
+
     if (!quotation) {
       this.logger.error(
         `Quotation not found for id ${data.metadata.quotationId}`,
@@ -79,12 +93,32 @@ export class SyncProcessor extends BaseComponent {
       return;
     }
 
-    if (!quotation.appointmentDate || !quotation.appointmentDuration) {
+    if (
+      quotation.type !== QuotationType.OPEN &&
+      (!quotation.appointmentDate || !quotation.appointmentDuration)
+    ) {
       this.logger.error(
         `Quotation ${quotation.id} missing appointment details`,
       );
       return;
     }
+
+    if (
+      quotation.type === QuotationType.OPEN &&
+      (!offer.estimatedDate || !offer.estimatedDuration)
+    ) {
+      this.logger.error(`Quotation ${quotation.id} missing offer details`);
+      return;
+    }
+
+    const estimatedDate =
+      quotation.type === QuotationType.OPEN
+        ? offer.estimatedDate
+        : quotation.appointmentDate;
+    const estimatedDuration =
+      quotation.type === QuotationType.OPEN
+        ? offer.estimatedDuration
+        : quotation.appointmentDuration;
 
     // Check for existing event to prevent duplicates (do this before using the service)
     const existingEvent = await this.agendaProvider.source.query(
@@ -101,8 +135,7 @@ export class SyncProcessor extends BaseComponent {
 
     // Calculate end date based on appointment duration
     const endDate = new Date(
-      quotation.appointmentDate.getTime() +
-        quotation.appointmentDuration * 60 * 1000,
+      estimatedDate.getTime() + estimatedDuration * 60 * 1000,
     );
 
     // Use our common event creation service to create the event with history
@@ -113,17 +146,20 @@ export class SyncProcessor extends BaseComponent {
       'Appointment from Quotation', // Title
       quotation.description || 'Appointment details', // Info
       '#000000', // Color
-      quotation.appointmentDate,
+      estimatedDate,
       endDate,
-      quotation.lastUpdatedBy, // Using whoever last updated the quotation as the creator
     );
 
     if (!result.transactionIsOK) {
-      this.logger.error(`Failed to create agenda event for quotation ${quotation.id}`);
+      this.logger.error(
+        `Failed to create agenda event for quotation ${quotation.id}`,
+      );
       return;
     }
 
-    this.logger.log(`Created agenda event (ID: ${result.eventId}) for quotation ${quotation.id}`);
+    this.logger.log(
+      `Created agenda event (ID: ${result.eventId}) for quotation ${quotation.id}`,
+    );
   }
 
   private async syncArtistRating(

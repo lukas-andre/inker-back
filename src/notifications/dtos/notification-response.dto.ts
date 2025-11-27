@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { JobTypeKey } from '../../queues/notifications/domain/jobSchema.registry';
 
 export class NotificationResponseDto {
@@ -11,18 +12,23 @@ export class NotificationResponseDto {
   @ApiProperty({ example: 'Your appointment has been confirmed' })
   body: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'EVENT_STATUS_CHANGED',
-    enum: ['EVENT_CREATED', 'EVENT_UPDATED', 'EVENT_CANCELED', 'EVENT_STATUS_CHANGED']
+    enum: [
+      'EVENT_CREATED',
+      'EVENT_UPDATED',
+      'EVENT_CANCELED',
+      'EVENT_STATUS_CHANGED',
+    ],
   })
   type: JobTypeKey;
 
-  @ApiProperty({ 
-    example: { 
-      eventId: 123, 
+  @ApiProperty({
+    example: {
+      eventId: 123,
       status: 'confirmed',
-      artistId: 456
-    } 
+      artistId: 456,
+    },
   })
   data: Record<string, any>;
 

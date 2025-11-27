@@ -1,0 +1,1 @@
+CREATE INDEX "IDX_6a9775008add570dc3e5a0bab7" ON public.tag CREATE INDEX "IDX_6a9775008add570dc3e5a0bab7" ON tag USING btree (name);

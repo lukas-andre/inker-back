@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-import { LoginType } from '../../domain/enums/loginType.enum';
 import { DeviceType } from '../../../notifications/database/entities/userFcmToken.entity';
+import { LoginType } from '../../domain/enums/loginType.enum';
 
 export class LoginReqDto {
   @ApiProperty({

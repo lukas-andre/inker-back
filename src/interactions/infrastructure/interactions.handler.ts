@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
+
+import { BaseComponent } from '../../global/domain/components/base.component';
+import {
+  CreateInteractionDto,
+  InteractionDto,
+} from '../domain/dtos/interaction.dto';
 import { CreateInteractionUseCase } from '../usecases/createInteraction.usecase';
-import { GetUserInteractionsUseCase } from '../usecases/getUserInteractions.usecase';
 import { DeleteInteractionUseCase } from '../usecases/deleteInteraction.usecase';
 import { GetTrendingContentUseCase } from '../usecases/getTrendingContent.usecase';
-import { CreateInteractionDto, InteractionDto } from '../domain/dtos/interaction.dto';
-import { BaseComponent } from '../../global/domain/components/base.component';
+import { GetUserInteractionsUseCase } from '../usecases/getUserInteractions.usecase';
 
 @Injectable()
 export class InteractionsHandler extends BaseComponent {
@@ -17,18 +21,25 @@ export class InteractionsHandler extends BaseComponent {
     super(InteractionsHandler.name);
   }
 
-  async createInteraction(userId: number, dto: CreateInteractionDto): Promise<InteractionDto> {
-    this.logger.log(`Creating interaction for user: ${userId}, type: ${dto.interactionType}`);
+  async createInteraction(
+    userId: string,
+    dto: CreateInteractionDto,
+  ): Promise<InteractionDto> {
+    this.logger.log(
+      `Creating interaction for user: ${userId}, type: ${dto.interactionType}`,
+    );
     return this.createInteractionUseCase.execute({ userId, dto });
   }
 
   async getUserInteractions(
-    userId: number,
+    userId: string,
     entityType: string,
-    entityId: number,
+    entityId: string,
     interactionType?: string,
   ): Promise<InteractionDto[]> {
-    this.logger.log(`Getting interactions for user: ${userId}, entity: ${entityType}/${entityId}`);
+    this.logger.log(
+      `Getting interactions for user: ${userId}, entity: ${entityType}/${entityId}`,
+    );
     return this.getUserInteractionsUseCase.execute({
       userId,
       entityType,
@@ -37,8 +48,13 @@ export class InteractionsHandler extends BaseComponent {
     });
   }
 
-  async deleteInteraction(userId: number, interactionId: number): Promise<void> {
-    this.logger.log(`Deleting interaction: ${interactionId} for user: ${userId}`);
+  async deleteInteraction(
+    userId: string,
+    interactionId: string,
+  ): Promise<void> {
+    this.logger.log(
+      `Deleting interaction: ${interactionId} for user: ${userId}`,
+    );
     return this.deleteInteractionUseCase.execute({ userId, interactionId });
   }
 
@@ -46,8 +62,12 @@ export class InteractionsHandler extends BaseComponent {
     entityType: string,
     limit?: number,
     daysBack?: number,
-  ): Promise<{ entityId: number; count: number }[]> {
+  ): Promise<{ entityId: string; count: number }[]> {
     this.logger.log(`Getting trending ${entityType} content`);
-    return this.getTrendingContentUseCase.execute({ entityType, limit, daysBack });
+    return this.getTrendingContentUseCase.execute({
+      entityType,
+      limit,
+      daysBack,
+    });
   }
 }

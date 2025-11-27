@@ -6,10 +6,12 @@ import {
   ObjectId,
   Repository,
 } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+
 import { NOTIFICATIONS_DB_CONNECTION_NAME } from '../../databases/constants';
+
 import { Notification } from './entities/notification.entity';
 import { UserFcmToken } from './entities/userFcmToken.entity';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export class NotificationRepository {
@@ -32,9 +34,9 @@ export class NotificationRepository {
   }
 
   async findNotificationsByUserId(
-    userId: number,
-    page: number = 1,
-    limit: number = 10,
+    userId: string,
+    page = 1,
+    limit = 10,
   ): Promise<[Notification[], number]> {
     return await this.notificationRepository.findAndCount({
       where: { userId },
@@ -43,19 +45,19 @@ export class NotificationRepository {
       take: limit,
     });
   }
-  
-  async countUnreadNotificationsByUserId(userId: number): Promise<number> {
+
+  async countUnreadNotificationsByUserId(userId: string): Promise<number> {
     return await this.notificationRepository.count({
       where: { userId, read: false },
     });
   }
-  
-  async markAllNotificationsAsRead(userId: number): Promise<void> {
+
+  async markAllNotificationsAsRead(userId: string): Promise<void> {
     await this.notificationRepository
       .createQueryBuilder()
       .update()
       .set({ read: true })
-      .where("user_id = :userId", { userId })
+      .where('user_id = :userId', { userId })
       .execute();
   }
 
@@ -72,7 +74,7 @@ export class NotificationRepository {
     return await this.userFcmTokenRepository.save(newToken);
   }
 
-  async findActiveTokensByUserId(userId: number): Promise<UserFcmToken[]> {
+  async findActiveTokensByUserId(userId: string): Promise<UserFcmToken[]> {
     return await this.userFcmTokenRepository.find({
       where: {
         userId,

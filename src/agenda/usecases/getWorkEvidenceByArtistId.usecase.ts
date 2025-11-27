@@ -5,14 +5,11 @@ import {
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { Review } from '../../reviews/database/entities/review.entity';
-import { ReviewProvider } from '../../reviews/database/providers/review.provider';
-import {
-  CustomerReviewReactionDetailsResult,
-  ReviewReactionProvider,
-} from '../../reviews/database/providers/reviewReaction.provider';
+import { ReviewRepository } from '../../reviews/database/repositories/review.repository';
+import { CustomerReviewReactionDetailsResult } from '../../reviews/interfaces/reviewReaction.interface';
 import { GetWorkEvidenceByArtistIdResponseDto } from '../infrastructure/dtos/getWorkEvidenceByArtistIdResponse.dto';
-import { AgendaProvider } from '../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../infrastructure/providers/agendaEvent.provider';
+import { AgendaRepository } from '../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../infrastructure/repositories/agendaEvent.repository';
 
 @Injectable()
 export class GetWorkEvidenceByArtistIdUseCase
@@ -20,19 +17,18 @@ export class GetWorkEvidenceByArtistIdUseCase
   implements UseCase
 {
   constructor(
-    private readonly agendaProvider: AgendaProvider,
-    private readonly agendaEventProvider: AgendaEventProvider,
-    private readonly reviewReactionProvider: ReviewReactionProvider,
-    private readonly reviewProvider: ReviewProvider,
+    private readonly agendaProvider: AgendaRepository,
+    private readonly agendaEventProvider: AgendaEventRepository,
+    private readonly reviewProvider: ReviewRepository,
   ) {
     super(GetWorkEvidenceByArtistIdUseCase.name);
   }
 
   async execute(
-    artistId: number,
+    artistId: string,
     page: number,
     limit: number,
-    customerId: number,
+    customerId: string,
   ): Promise<GetWorkEvidenceByArtistIdResponseDto> {
     const agendaEvents = await this.agendaEventProvider.paginate(
       artistId,
@@ -44,7 +40,7 @@ export class GetWorkEvidenceByArtistIdUseCase
 
     const reviews = await this.reviewProvider.findByEventIds(eventsIds);
 
-    const reviewsByEventIdMap = new Map<number, Review>();
+    const reviewsByEventIdMap = new Map<string, Review>();
 
     const reviewsIds = [];
     reviews.forEach(review => {
@@ -55,7 +51,7 @@ export class GetWorkEvidenceByArtistIdUseCase
     });
 
     const customerReviewsDetails =
-      await this.reviewReactionProvider.findCustomerReviewsReactionDetail(
+      await this.reviewProvider.findCustomerReviewsReactionDetail(
         customerId,
         reviewsIds,
       );

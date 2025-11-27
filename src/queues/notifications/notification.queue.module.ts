@@ -1,10 +1,10 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 
-import { AgendaProviderModule } from '../../agenda/infrastructure/providers/agendaProvider.module';
-import { ArtistsProviderModule } from '../../artists/infrastructure/database/artistProvider.module';
-import { CustomerProviderModule } from '../../customers/infrastructure/providers/customerProvider.module';
-import { LocationProviderModule } from '../../locations/infrastructure/database/locationProvider.module';
+import { AgendaRepositoryModule } from '../../agenda/infrastructure/repositories/agendaRepository.module';
+import { ArtistsRepositoryModule } from '../../artists/infrastructure/repositories/artistRepository.module';
+import { CustomerRepositoryModule } from '../../customers/infrastructure/providers/customerProvider.module';
+import { LocationRepositoryModule } from '../../locations/infrastructure/database/locationRepository.module';
 import { LocationsModule } from '../../locations/locations.module';
 import { NotificationsModule } from '../../notifications/notifications.module';
 import { NotificationStorageService } from '../../notifications/services/notification.storage';
@@ -28,10 +28,10 @@ import { NotificationProcessor } from './infrastructure/notification.processor';
       },
     }),
     NotificationsModule,
-    LocationProviderModule,
-    ArtistsProviderModule,
-    CustomerProviderModule,
-    AgendaProviderModule,
+    LocationRepositoryModule,
+    ArtistsRepositoryModule,
+    CustomerRepositoryModule,
+    AgendaRepositoryModule,
   ],
   providers: [
     NotificationProcessor,

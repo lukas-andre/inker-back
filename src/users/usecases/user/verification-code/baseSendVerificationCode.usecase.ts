@@ -6,10 +6,10 @@ import {
   VerificationType,
 } from '../../../infrastructure/entities/verificationHash.entity';
 import {
+  UsersRepository,
   userQueries,
-  UsersProvider,
-} from '../../../infrastructure/providers/users.provider';
-import { VerificationHashProvider } from '../../../infrastructure/providers/verificationHash.service';
+} from '../../../infrastructure/repositories/users.repository';
+import { VerificationHashRepository } from '../../../infrastructure/repositories/verificationHash.repository';
 
 const MAX_VERIFICATION_ATTEMPTS_REACHED = 'MAX_VERIFICATION_ATTEMPTS_REACHED';
 const USER_NOT_FOUND = 'USER_NOT_FOUND';
@@ -19,15 +19,15 @@ export abstract class BaseSendVerificationUseCase extends BaseUseCase {
   protected maxTries: number;
 
   constructor(
-    protected readonly verificationHashProvider: VerificationHashProvider,
-    protected readonly usersProvider: UsersProvider,
+    protected readonly verificationHashRepository: VerificationHashRepository,
+    protected readonly usersRepository: UsersRepository,
     serviceName: string,
   ) {
     super(serviceName);
   }
 
   protected async findUser(identifier: string, field: string) {
-    const [result] = await this.usersProvider.source.query(
+    const [result] = await this.usersRepository.source.query(
       userQueries.findUserWithPermissionsByIdentifier(field),
       [identifier],
     );
@@ -46,10 +46,10 @@ export abstract class BaseSendVerificationUseCase extends BaseUseCase {
   }
 
   protected async handleVerificationHash(
-    userId: number,
+    userId: string,
     verificationCode: string,
   ): Promise<void> {
-    const existingHash = await this.verificationHashProvider.findOne({
+    const existingHash = await this.verificationHashRepository.findOne({
       where: {
         userId,
         notificationType: this.notificationType,
@@ -61,15 +61,15 @@ export abstract class BaseSendVerificationUseCase extends BaseUseCase {
       if (existingHash.tries >= this.maxTries) {
         throw new DomainBadRule(MAX_VERIFICATION_ATTEMPTS_REACHED);
       }
-      await this.verificationHashProvider.edit(existingHash.id, {
+      await this.verificationHashRepository.edit(existingHash.id, {
         ...existingHash,
         tries: existingHash.tries + 1,
-        hash: await this.verificationHashProvider.hashVerificationCode(
+        hash: await this.verificationHashRepository.hashVerificationCode(
           verificationCode,
         ),
       });
     } else {
-      await this.verificationHashProvider.create(
+      await this.verificationHashRepository.create(
         userId,
         verificationCode,
         this.notificationType,

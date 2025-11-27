@@ -1,24 +1,24 @@
 import { Module } from '@nestjs/common';
 
-import { ArtistsProviderModule } from '../artists/infrastructure/database/artistProvider.module';
+import { ArtistsRepositoryModule } from '../artists/infrastructure/repositories/artistRepository.module';
 import { FollowProviderModule } from '../follows/infrastructure/database/followProvider.module';
-import { ReviewProviderModule } from '../reviews/database/reviewProvider.module';
+import { ReviewRepositoryModule } from '../reviews/database/reviewRepository.module';
 
-import { LocationProviderModule } from './infrastructure/database/locationProvider.module';
+import { LocationRepositoryModule } from './infrastructure/database/locationRepository.module';
 import { LocationsController } from './infrastructure/locations.controller';
 import { LocationsHandler } from './infrastructure/locations.handler';
+import { CreateArtistLocationUseCase } from './usecases/artistLocations/createArtistLocation.usecase';
+import { DeleteArtistLocationUseCase } from './usecases/artistLocations/deleteArtistLocation.usecase';
+import { GetArtistLocationsUseCase } from './usecases/artistLocations/getArtistLocations.usecase';
+import { UpdateArtistLocationUseCase } from './usecases/artistLocations/updateArtistLocation.usecase';
 import { AddLocationByApiUseCase } from './usecases/addLocationByApi.usecase';
 import { FindArtistByRangeUseCase } from './usecases/findArtistByRange.usecase';
-import { CreateArtistLocationUseCase } from './useCases/artistLocations/createArtistLocation.usecase';
-import { GetArtistLocationsUseCase } from './useCases/artistLocations/getArtistLocations.usecase';
-import { UpdateArtistLocationUseCase } from './useCases/artistLocations/updateArtistLocation.usecase';
-import { DeleteArtistLocationUseCase } from './useCases/artistLocations/deleteArtistLocation.usecase';
 
 @Module({
   imports: [
-    ArtistsProviderModule,
-    LocationProviderModule,
-    ReviewProviderModule,
+    ArtistsRepositoryModule,
+    LocationRepositoryModule,
+    ReviewRepositoryModule,
     FollowProviderModule,
   ],
   controllers: [LocationsController],

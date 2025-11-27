@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Point } from 'geojson';
 
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
-import { FollowingsProvider } from '../../follows/infrastructure/database/followings.provider';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
+import { FollowingsRepository } from '../../follows/infrastructure/database/followings.repository';
 import { DomainNotFound } from '../../global/domain/exceptions/domain.exception';
 import {
   BaseUseCase,
@@ -10,10 +10,10 @@ import {
 } from '../../global/domain/usecases/base.usecase';
 import {
   ReviewAvgByArtistIdsResult,
-  ReviewAvgProvider,
-} from '../../reviews/database/providers/reviewAvg.provider';
+  ReviewAvgRepository,
+} from '../../reviews/database/repositories/reviewAvg.repository';
 import { NO_ARTISTS_FOUND } from '../domain/codes/codes';
-import { ArtistLocationProvider } from '../infrastructure/database/artistLocation.provider';
+import { ArtistLocationRepository } from '../infrastructure/database/artistLocation.repository';
 import { FindArtistByRangeDTORequest } from '../infrastructure/dtos/findArtistByRangeRequest.dto';
 import {
   FindArtistByRangeResponseDTO,
@@ -23,18 +23,18 @@ import {
 @Injectable()
 export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
   constructor(
-    private readonly artistsLocationProvider: ArtistLocationProvider,
-    private readonly artistProvider: ArtistProvider,
-    private readonly reviewAvgProvider: ReviewAvgProvider,
-    private readonly followingsProvider: FollowingsProvider,
+    private readonly artistsLocationProvider: ArtistLocationRepository,
+    private readonly artistProvider: ArtistRepository,
+    private readonly reviewAvgProvider: ReviewAvgRepository,
+    private readonly followingsProvider: FollowingsRepository,
   ) {
     super(FindArtistByRangeUseCase.name);
   }
 
   async execute(
     findArtistByArtistDTO: FindArtistByRangeDTORequest,
-    customerId: number,
-    userId: number,
+    customerId: string,
+    userId: string,
   ): Promise<FindArtistByRangeResponseDTO[]> {
     console.log({ customerId });
     const origin: Point = {
@@ -61,11 +61,11 @@ export class FindArtistByRangeUseCase extends BaseUseCase implements UseCase {
         this.followingsProvider.userFollowsArtists(userId, artistIds),
       ]);
 
-    const artistByArtistId = new Map<number, RawFindByArtistIdsResponseDTO>(
+    const artistByArtistId = new Map<string, RawFindByArtistIdsResponseDTO>(
       artists.map(artist => [artist.id, artist]),
     );
 
-    const reviewsAvgByArtistId = new Map<number, ReviewAvgByArtistIdsResult>(
+    const reviewsAvgByArtistId = new Map<string, ReviewAvgByArtistIdsResult>(
       reviewsAvg.map(reviewAvg => [reviewAvg.artistId, reviewAvg]),
     );
 

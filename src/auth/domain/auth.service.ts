@@ -9,8 +9,8 @@ import {
   JwtPayload,
 } from '../../global/domain/interfaces/jwtPayload.interface';
 import { UserType } from '../../users/domain/enums/userType.enum';
-import { User } from '../../users/infrastructure/entities/user.entity';
 import { Permission } from '../../users/infrastructure/entities/permission.entity';
+import { User } from '../../users/infrastructure/entities/user.entity';
 
 @Injectable()
 export class AuthService {

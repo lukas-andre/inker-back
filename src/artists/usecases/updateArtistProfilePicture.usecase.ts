@@ -18,8 +18,8 @@ import {
   UploadToS3Result,
 } from '../../multimedias/services/multimedias.service';
 import { NOT_VALID_FILE_TYPE_TO_UPLOAD } from '../domain/errors/codes';
-import { ArtistProvider } from '../infrastructure/database/artist.provider';
 import { Artist } from '../infrastructure/entities/artist.entity';
+import { ArtistRepository } from '../infrastructure/repositories/artist.repository';
 
 @Injectable()
 export class UpdateArtistProfilePictureUseCase
@@ -27,14 +27,14 @@ export class UpdateArtistProfilePictureUseCase
   implements UseCase
 {
   constructor(
-    private readonly artistProvider: ArtistProvider,
+    private readonly artistProvider: ArtistRepository,
     private readonly multimediasService: MultimediasService,
     private readonly configService: ConfigService,
   ) {
     super(UpdateArtistProfilePictureUseCase.name);
   }
 
-  async execute(id: number, file: FileInterface): Promise<Artist> {
+  async execute(id: string, file: FileInterface): Promise<Artist> {
     if (!file) {
       throw new DomainBadRequest('Not valid file to upload');
     }

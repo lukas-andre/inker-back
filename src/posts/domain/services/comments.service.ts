@@ -25,7 +25,7 @@ export class CommentsService extends BaseComponent {
     super(CommentsService.name);
   }
 
-  async findById(id: number): Promise<Comment> {
+  async findById(id: string): Promise<Comment> {
     return this.commentsRepository.findOne({ where: { id } });
   }
 

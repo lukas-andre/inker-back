@@ -1,11 +1,15 @@
-import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
-import { SettingsHandler } from '../handlers/settings.handler';
-import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
-import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
-
-import { ApiProperty } from '@nestjs/swagger';
+import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 import { IsBoolean } from 'class-validator';
+
+import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
+import { RequestContextService } from '../../../global/infrastructure/services/requestContext.service';
+import { SettingsHandler } from '../handlers/settings.handler';
 
 export class UpdateSettingsDto {
   @ApiProperty({

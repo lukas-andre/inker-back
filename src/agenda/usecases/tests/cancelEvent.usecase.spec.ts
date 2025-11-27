@@ -12,14 +12,14 @@ import { AgendaEventCanceledJobType } from '../../../queues/notifications/domain
 import { queues } from '../../../queues/queues';
 import { Agenda } from '../../infrastructure/entities/agenda.entity';
 import { AgendaEvent } from '../../infrastructure/entities/agendaEvent.entity';
-import { AgendaProvider } from '../../infrastructure/providers/agenda.provider';
-import { AgendaEventProvider } from '../../infrastructure/providers/agendaEvent.provider';
-import { CancelEventUseCase } from '../cancelEvent.usecase';
+import { AgendaRepository } from '../../infrastructure/repositories/agenda.repository';
+import { AgendaEventRepository } from '../../infrastructure/repositories/agendaEvent.repository';
+import { CancelEventUseCase } from '../event/cancelEvent.usecase';
 
 describe('CancelEventUseCase', () => {
   let useCase: CancelEventUseCase;
-  let agendaProvider: DeepMocked<AgendaProvider>;
-  let agendaEventProvider: DeepMocked<AgendaEventProvider>;
+  let agendaProvider: DeepMocked<AgendaRepository>;
+  let agendaEventProvider: DeepMocked<AgendaEventRepository>;
   let notificationQueue: DeepMocked<Queue>;
 
   beforeEach(async () => {
@@ -27,12 +27,12 @@ describe('CancelEventUseCase', () => {
       providers: [
         CancelEventUseCase,
         {
-          provide: AgendaProvider,
-          useValue: createMock<AgendaProvider>(),
+          provide: AgendaRepository,
+          useValue: createMock<AgendaRepository>(),
         },
         {
-          provide: AgendaEventProvider,
-          useValue: createMock<AgendaEventProvider>(),
+          provide: AgendaEventRepository,
+          useValue: createMock<AgendaEventRepository>(),
         },
         {
           provide: S3Client,
@@ -46,8 +46,8 @@ describe('CancelEventUseCase', () => {
     }).compile();
 
     useCase = module.get<CancelEventUseCase>(CancelEventUseCase);
-    agendaProvider = module.get(AgendaProvider);
-    agendaEventProvider = module.get(AgendaEventProvider);
+    agendaProvider = module.get(AgendaRepository);
+    agendaEventProvider = module.get(AgendaEventRepository);
     notificationQueue = module.get(getQueueToken(queues.notification.name));
   });
 

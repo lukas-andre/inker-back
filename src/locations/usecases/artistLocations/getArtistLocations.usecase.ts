@@ -1,18 +1,23 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
-import { ArtistLocationDto, GetArtistLocationsParams } from '../../domain/interfaces/artistLocation.interface';
 import { BaseUseCase } from '../../../global/domain/usecases/base.usecase';
-import { ArtistLocationProvider } from '../../infrastructure/database/artistLocation.provider';
+import {
+  ArtistLocationDto,
+  GetArtistLocationsParams,
+} from '../../domain/interfaces/artistLocation.interface';
+import { ArtistLocationRepository } from '../../infrastructure/database/artistLocation.repository';
 
 @Injectable()
 export class GetArtistLocationsUseCase extends BaseUseCase {
   constructor(
-    private readonly artistLocationProvider: ArtistLocationProvider,
+    private readonly artistLocationProvider: ArtistLocationRepository,
   ) {
     super(GetArtistLocationsUseCase.name);
   }
 
-  async execute(params: GetArtistLocationsParams): Promise<ArtistLocationDto[]> {
+  async execute(
+    params: GetArtistLocationsParams,
+  ): Promise<ArtistLocationDto[]> {
     this.logger.log('Getting artist locations', { params });
 
     try {
@@ -22,7 +27,9 @@ export class GetArtistLocationsUseCase extends BaseUseCase {
       }
 
       // Get artist locations
-      const artistLocations = await this.artistLocationProvider.findByArtistId(params.artistId);
+      const artistLocations = await this.artistLocationProvider.findByArtistId(
+        params.artistId,
+      );
       return artistLocations;
     } catch (error) {
       this.logger.error('Error getting artist locations', { error });

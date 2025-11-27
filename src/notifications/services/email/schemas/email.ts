@@ -16,6 +16,20 @@ export const MailIdSchema = z.enum([
   'QUOTATION_APPEALED',
   'QUOTATION_CANCELED',
   'ACCOUNT_VERIFICATION_CODE',
+  'APPOINTMENT_REMINDER',
+  'CONSENT_REMINDER',
+  'CONFIRMATION_REMINDER',
+  'EVENT_AUTO_CANCELED',
+  'REVIEW_REMINDER',
+  'MONTHLY_REPORT',
+  // Token notifications
+  'LOW_TOKEN_BALANCE',
+  'TOKEN_PURCHASE_CONFIRMATION',
+  'TOKEN_GRANT_NOTIFICATION',
+  // Beta signup
+  'BETA_SIGNUP',
+  // Contact/Feedback
+  'CONTACT_MESSAGE',
 ]);
 export type MailIdType = z.infer<typeof MailIdSchema>;
 
@@ -175,7 +189,158 @@ const AgendaEventStatusChangedSchema = BaseEmailSchema.extend({
   eventDate: z.date(),
   eventStatus: z.string(),
 });
-export type AgendaEventStatusChangedType = z.infer<typeof AgendaEventStatusChangedSchema>;
+export type AgendaEventStatusChangedType = z.infer<
+  typeof AgendaEventStatusChangedSchema
+>;
+
+const AppointmentReminderEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.APPOINTMENT_REMINDER),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  eventLocation: z.string(),
+  googleMapsLink: z.string(),
+  reminderType: z.string(),
+  hoursUntilAppointment: z.number(),
+});
+export type AppointmentReminderEmailType = z.infer<
+  typeof AppointmentReminderEmailSchema
+>;
+
+const ConsentReminderEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.CONSENT_REMINDER),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  eventLocation: z.string(),
+  reminderType: z.string(),
+  hoursUntilAppointment: z.number(),
+  consentUrl: z.string(),
+});
+export type ConsentReminderEmailType = z.infer<
+  typeof ConsentReminderEmailSchema
+>;
+
+const ConfirmationReminderEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.CONFIRMATION_REMINDER),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  hoursRemaining: z.number(),
+  confirmationUrl: z.string(),
+});
+export type ConfirmationReminderEmailType = z.infer<
+  typeof ConfirmationReminderEmailSchema
+>;
+
+const EventAutoCanceledEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.EVENT_AUTO_CANCELED),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  eventDate: z.date(),
+  reason: z.string(),
+});
+export type EventAutoCanceledEmailType = z.infer<
+  typeof EventAutoCanceledEmailSchema
+>;
+
+const ReviewReminderEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.REVIEW_REMINDER),
+  customerName: z.string(),
+  artistName: z.string(),
+  eventName: z.string(),
+  completedDate: z.date(),
+  reminderType: z.string(),
+  reviewUrl: z.string(),
+});
+export type ReviewReminderEmailType = z.infer<typeof ReviewReminderEmailSchema>;
+
+const MonthlyReportEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.MONTHLY_REPORT),
+  artistName: z.string(),
+  reportMonth: z.string(),
+  appointments: z.object({
+    completedCount: z.number(),
+    canceledCount: z.number(),
+    rescheduledCount: z.number(),
+    totalCount: z.number(),
+    uniqueCustomers: z.number(),
+  }),
+  reviews: z.object({
+    totalReviews: z.number(),
+    averageRating: z.number(),
+    positiveReviews: z.number(),
+    negativeReviews: z.number(),
+  }),
+  quotations: z.object({
+    total: z.number(),
+    accepted: z.number(),
+    rejected: z.number(),
+    totalRevenue: z.number(),
+  }),
+  performance: z.object({
+    conversionRate: z.string(),
+    completionRate: z.string(),
+    customerSatisfaction: z.string(),
+  }),
+});
+export type MonthlyReportEmailType = z.infer<typeof MonthlyReportEmailSchema>;
+// Token notification email schemas
+const LowTokenBalanceEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.LOW_TOKEN_BALANCE),
+  userName: z.string(),
+  currentBalance: z.number(),
+  threshold: z.number(),
+});
+export type LowTokenBalanceEmailType = z.infer<typeof LowTokenBalanceEmailSchema>;
+
+const TokenPurchaseConfirmationEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.TOKEN_PURCHASE_CONFIRMATION),
+  userName: z.string(),
+  transactionId: z.string(),
+  packageName: z.string(),
+  tokensAmount: z.number(),
+  price: z.string(), // Formatted price string
+  newBalance: z.number(),
+  paymentMethod: z.string(),
+  purchaseDate: z.date(),
+});
+export type TokenPurchaseConfirmationEmailType = z.infer<typeof TokenPurchaseConfirmationEmailSchema>;
+
+const TokenGrantNotificationEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.TOKEN_GRANT_NOTIFICATION),
+  userName: z.string(),
+  tokensGranted: z.number(),
+  reason: z.string(),
+  newBalance: z.number(),
+  grantDate: z.date(),
+});
+export type TokenGrantNotificationEmailType = z.infer<typeof TokenGrantNotificationEmailSchema>;
+
+const BetaSignupEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.BETA_SIGNUP),
+  name: z.string(),
+  email: z.string(),
+  phone: z.string().optional(),
+  message: z.string().optional(),
+  userType: z.enum(['artist', 'customer']),
+});
+export type BetaSignupEmailType = z.infer<typeof BetaSignupEmailSchema>;
+
+const ContactMessageEmailSchema = BaseEmailSchema.extend({
+  mailId: z.literal(MailIdSchema.enum.CONTACT_MESSAGE),
+  name: z.string(),
+  email: z.string(),
+  subject: z.string(),
+  message: z.string(),
+  userType: z.enum(['artist', 'customer', 'other']),
+  messageType: z.enum(['suggestion', 'bug_report', 'general_inquiry', 'feature_request', 'other']),
+});
+export type ContactMessageEmailType = z.infer<typeof ContactMessageEmailSchema>;
 
 export const EmailSchema = z.union([
   AgendaEventCreatedSchema,
@@ -193,6 +358,20 @@ export const EmailSchema = z.union([
   QuotationAppealedSchema,
   QuotationCanceledSchema,
   AccountVerificationCodeSchema,
+  AppointmentReminderEmailSchema,
+  ConsentReminderEmailSchema,
+  ConfirmationReminderEmailSchema,
+  EventAutoCanceledEmailSchema,
+  ReviewReminderEmailSchema,
+  MonthlyReportEmailSchema,
+  // Token notifications
+  LowTokenBalanceEmailSchema,
+  TokenPurchaseConfirmationEmailSchema,
+  TokenGrantNotificationEmailSchema,
+  // Beta signup
+  BetaSignupEmailSchema,
+  // Contact/Feedback
+  ContactMessageEmailSchema,
 ]);
 
 export type EmailType = z.infer<typeof EmailSchema>;
@@ -213,4 +392,24 @@ export {
   QuotationAppealedSchema,
   QuotationCanceledSchema,
   AccountVerificationCodeSchema,
+  AppointmentReminderEmailSchema,
+  ConsentReminderEmailSchema,
+  ConfirmationReminderEmailSchema,
+  EventAutoCanceledEmailSchema,
+  ReviewReminderEmailSchema,
+  MonthlyReportEmailSchema,
+  // Token schemas
+  // LowTokenBalanceEmailSchema,
+  // TokenPurchaseConfirmationEmailSchema,
+  // TokenGrantNotificationEmailSchema,
+};
+
+
+// Re-export token email schemas
+export {
+  LowTokenBalanceEmailSchema,
+  TokenPurchaseConfirmationEmailSchema,
+  TokenGrantNotificationEmailSchema,
+  BetaSignupEmailSchema,
+  ContactMessageEmailSchema,
 };

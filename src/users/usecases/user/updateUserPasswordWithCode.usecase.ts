@@ -10,8 +10,8 @@ import {
 } from '../../../global/domain/usecases/base.usecase';
 import { DefaultResponseDto } from '../../../global/infrastructure/dtos/defaultResponse.dto';
 import { DefaultResponse } from '../../../global/infrastructure/helpers/defaultResponse.helper';
-import { UsersProvider } from '../../infrastructure/providers/users.provider';
-import { VerificationHashProvider } from '../../infrastructure/providers/verificationHash.service';
+import { UsersRepository } from '../../infrastructure/repositories/users.repository';
+import { VerificationHashRepository } from '../../infrastructure/repositories/verificationHash.repository';
 
 @Injectable()
 export class UpdateUserPasswordWithCodeUseCase
@@ -19,8 +19,8 @@ export class UpdateUserPasswordWithCodeUseCase
   implements UseCase
 {
   constructor(
-    private readonly usersProvider: UsersProvider,
-    private readonly verificationHashProvider: VerificationHashProvider,
+    private readonly usersRepository: UsersRepository,
+    private readonly verificationHashRepository: VerificationHashRepository,
   ) {
     super(UpdateUserPasswordWithCodeUseCase.name);
   }
@@ -35,7 +35,7 @@ export class UpdateUserPasswordWithCodeUseCase
       throw new DomainBadRule('Password must match');
     }
 
-    const userHash = await this.verificationHashProvider.findOne({
+    const userHash = await this.verificationHashRepository.findOne({
       where: {
         email,
       },
@@ -48,7 +48,7 @@ export class UpdateUserPasswordWithCodeUseCase
     }
 
     const isValidCode =
-      await this.verificationHashProvider.validateVerificationCode(
+      await this.verificationHashRepository.validateVerificationCode(
         code,
         userHash.hash,
       );
@@ -59,11 +59,11 @@ export class UpdateUserPasswordWithCodeUseCase
       throw new DomainConflict('Invalid code');
     }
 
-    await this.usersProvider.edit(userHash.userId, {
-      password: await this.usersProvider.hashPassword(newPassword),
+    await this.usersRepository.edit(userHash.userId, {
+      password: await this.usersRepository.hashPassword(newPassword),
     });
 
-    await this.verificationHashProvider.delete(userHash.id);
+    await this.verificationHashRepository.delete(userHash.id);
 
     return { ...DefaultResponse.ok, data: 'Password updated!' };
   }

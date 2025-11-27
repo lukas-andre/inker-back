@@ -19,7 +19,7 @@ export class GetRepliesFromCommentUseCase
   }
 
   async execute(
-    commentId: number,
+    commentId: string,
     pagination: PaginationDto,
   ): Promise<Comment[]> {
     const replies = await this.commentsService.find({

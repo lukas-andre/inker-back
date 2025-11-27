@@ -26,8 +26,8 @@ import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
 import { CustomerHandler } from './customers.handler';
 import { CreateCustomerReqDto } from './dtos/createCustomerReq.dto';
 import { CreateCustomerResDto } from './dtos/createCustomerRes.dto';
-import { Customer } from './entities/customer.entity';
 import { UpdateCustomerDto } from './dtos/updateCustomerReq.dto';
+import { Customer } from './entities/customer.entity';
 
 @ApiTags('customers')
 @Controller('customers')
@@ -58,11 +58,11 @@ export class CustomersController {
     description: 'Customer updated successfully',
     type: Customer,
   })
-  @ApiParam({ name: 'id', required: true, type: Number })
+  @ApiParam({ name: 'id', required: true, type: String })
   @Put(':id')
   @UsePipes(new ValidationPipe({ forbidUnknownValues: false }))
   async updateCustomerBasicInfo(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() body: UpdateCustomerDto,
   ) {
     return this.customerHandler.handleUpdateCustomerBasicInfo(id, body);

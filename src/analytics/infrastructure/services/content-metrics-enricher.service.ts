@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { GetContentSummaryMetricsUseCase } from '../../usecases/getContentSummaryMetrics.usecase';
+
 import { ContentType } from '../../domain/enums/content-types.enum';
 import { IContentSummaryMetrics } from '../../domain/interfaces/content-summary-metrics.interface';
-import { AnalyticsProvider } from '../database/analytics.provider';
+import { GetContentSummaryMetricsUseCase } from '../../usecases/getContentSummaryMetrics.usecase';
+import { AnalyticsRepository } from '../database/repositories/analytics.repository';
 
 export interface WithMetrics {
   metrics: IContentSummaryMetrics;
@@ -16,16 +17,16 @@ export interface MetricsOptions {
 export class ContentMetricsEnricherService {
   constructor(
     private readonly getContentSummaryMetricsUseCase: GetContentSummaryMetricsUseCase,
-    private readonly analyticsProvider: AnalyticsProvider,
+    private readonly analyticsProvider: AnalyticsRepository,
   ) {}
 
   /**
    * Enriches a single content item with metrics
    */
-  async enrichWithMetrics<T extends { id: number }>(
+  async enrichWithMetrics<T extends { id: string }>(
     content: T,
     contentType: ContentType,
-    userId?: number,
+    userId?: string,
     options?: MetricsOptions,
   ): Promise<T & WithMetrics> {
     if (!content) {
@@ -56,10 +57,10 @@ export class ContentMetricsEnricherService {
   /**
    * Enriches an array of content items with metrics
    */
-  async enrichAllWithMetrics<T extends { id: number }>(
+  async enrichAllWithMetrics<T extends { id: string }>(
     contents: T[],
     contentType: ContentType,
-    userId?: number,
+    userId?: string,
     options?: MetricsOptions,
   ): Promise<(T & WithMetrics)[]> {
     if (!contents?.length) {
@@ -74,17 +75,18 @@ export class ContentMetricsEnricherService {
     );
 
     // For user-specific likes, we need to check each content item
-    let userLikesMap: Map<number, boolean> = new Map();
-    
+    let userLikesMap: Map<string, boolean> = new Map();
+
     if (userId) {
       // We'll make parallel calls to check likes for performance
-      const likeChecks = contents.map(content => 
-        this.analyticsProvider.checkUserHasLiked(content.id, contentType, userId)
-          .then(hasLiked => [content.id, hasLiked])
+      const likeChecks = contents.map(content =>
+        this.analyticsProvider
+          .checkUserHasLiked(content.id, contentType, userId)
+          .then(hasLiked => [content.id, hasLiked]),
       );
-      
+
       const likeResults = await Promise.all(likeChecks);
-      userLikesMap = new Map(likeResults as [number, boolean][]);
+      userLikesMap = new Map(likeResults as [string, boolean][]);
     }
 
     return contents.map(content => {
@@ -92,12 +94,12 @@ export class ContentMetricsEnricherService {
         viewCount: 0,
         likeCount: 0,
       };
-      
+
       // Add userHasLiked if userId was provided
       if (userId) {
         baseMetrics.userHasLiked = userLikesMap.get(content.id) || false;
       }
-      
+
       return {
         ...content,
         metrics: baseMetrics,
@@ -108,7 +110,7 @@ export class ContentMetricsEnricherService {
   /**
    * Enriches a paginated response with metrics
    */
-  async enrichPaginatedWithMetrics<T extends { id: number }>(
+  async enrichPaginatedWithMetrics<T extends { id: string }>(
     paginatedResponse: {
       items: T[];
       page: number;
@@ -117,7 +119,7 @@ export class ContentMetricsEnricherService {
       pages: number;
     },
     contentType: ContentType,
-    userId?: number,
+    userId?: string,
     options?: MetricsOptions,
   ): Promise<{
     items: (T & WithMetrics)[];
@@ -163,11 +165,14 @@ export class ContentMetricsEnricherService {
   /**
    * Adds empty metrics to an array of content items
    */
-  addEmptyMetricsToAll<T>(contents: T[], userHasLiked?: boolean): (T & WithMetrics)[] {
+  addEmptyMetricsToAll<T>(
+    contents: T[],
+    userHasLiked?: boolean,
+  ): (T & WithMetrics)[] {
     if (!contents?.length) {
       return [];
     }
 
     return contents.map(content => this.addEmptyMetrics(content, userHasLiked));
   }
-} 
+}

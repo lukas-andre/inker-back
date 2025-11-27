@@ -7,16 +7,27 @@ import {
   AgendaEventReminderSchema,
   AgendaEventStatusChangedSchema,
   AgendaEventUpdatedSchema,
+  AppointmentReminderEmailSchema,
+  ConfirmationReminderEmailSchema,
+  ConsentReminderEmailSchema,
+  EventAutoCanceledEmailSchema,
   MailIdType,
+  MonthlyReportEmailSchema,
   QuotationAcceptedSchema,
   QuotationAppealedSchema,
   QuotationCanceledSchema,
   QuotationCreatedSchema,
   QuotationRejectedSchema,
   QuotationRepliedSchema,
+  ReviewReminderEmailSchema,
   RsvpAcceptedSchema,
   RsvpDeclinedSchema,
   RsvpUnschedulableSchema,
+  LowTokenBalanceEmailSchema,
+  TokenPurchaseConfirmationEmailSchema,
+  TokenGrantNotificationEmailSchema,
+  BetaSignupEmailSchema,
+  ContactMessageEmailSchema,
 } from '../schemas/email';
 
 export const TemplateRegistry: Record<
@@ -99,5 +110,65 @@ export const TemplateRegistry: Record<
     schema: AccountVerificationCodeSchema,
     path: path.join(__dirname, './verificationCode.hbs'),
     subject: '💈 Tu código de verificación',
+  },
+  APPOINTMENT_REMINDER: {
+    schema: AppointmentReminderEmailSchema,
+    path: path.join(__dirname, './appointmentReminder.hbs'),
+    subject: '💈 :customerName ¡Recordatorio de tu cita con :artistName!',
+  },
+  CONSENT_REMINDER: {
+    schema: ConsentReminderEmailSchema,
+    path: path.join(__dirname, './consentReminder.hbs'),
+    subject:
+      '📋 :customerName Firma el consentimiento para tu cita con :artistName',
+  },
+  CONFIRMATION_REMINDER: {
+    schema: ConfirmationReminderEmailSchema,
+    path: path.join(__dirname, './confirmationReminder.hbs'),
+    subject:
+      '⏰ :customerName ¡Confirma tu cita con :artistName antes de que expire!',
+  },
+  EVENT_AUTO_CANCELED: {
+    schema: EventAutoCanceledEmailSchema,
+    path: path.join(__dirname, './eventAutoCanceled.hbs'),
+    subject:
+      '❌ :customerName Tu cita con :artistName ha sido cancelada automáticamente',
+  },
+  REVIEW_REMINDER: {
+    schema: ReviewReminderEmailSchema,
+    path: path.join(__dirname, './reviewReminder.hbs'),
+    subject:
+      '⭐ :customerName ¡Cuéntanos sobre tu experiencia con :artistName!',
+  },
+  MONTHLY_REPORT: {
+    schema: MonthlyReportEmailSchema,
+    path: path.join(__dirname, './monthlyReport.hbs'),
+    subject: '📊 :artistName Tu reporte mensual está listo',
+  },
+  // Token notifications
+  LOW_TOKEN_BALANCE: {
+    schema: LowTokenBalanceEmailSchema,
+    path: path.join(__dirname, './lowTokenBalance.hbs'),
+    subject: '⚠️ Tu saldo de tokens está bajo',
+  },
+  TOKEN_PURCHASE_CONFIRMATION: {
+    schema: TokenPurchaseConfirmationEmailSchema,
+    path: path.join(__dirname, './tokenPurchaseConfirmation.hbs'),
+    subject: '✅ Compra de tokens confirmada',
+  },
+  TOKEN_GRANT_NOTIFICATION: {
+    schema: TokenGrantNotificationEmailSchema,
+    path: path.join(__dirname, './tokenGrantNotification.hbs'),
+    subject: '🎁 ¡Has recibido tokens gratis!',
+  },
+  BETA_SIGNUP: {
+    schema: BetaSignupEmailSchema,
+    path: path.join(__dirname, './betaSignup.hbs'),
+    subject: '🚀 Nueva solicitud de Beta para Inker',
+  },
+  CONTACT_MESSAGE: {
+    schema: ContactMessageEmailSchema,
+    path: path.join(__dirname, './contactMessage.hbs'),
+    subject: '📧 Nuevo mensaje de contacto de Inker',
   },
 };

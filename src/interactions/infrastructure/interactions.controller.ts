@@ -16,16 +16,24 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { InteractionsHandler } from './interactions.handler';
-import { CreateInteractionDto, InteractionDto } from '../domain/dtos/interaction.dto';
-import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
+
 import { AuthGuard } from '../../global/infrastructure/guards/auth.guard';
+import { RequestContextService } from '../../global/infrastructure/services/requestContext.service';
+import {
+  CreateInteractionDto,
+  InteractionDto,
+} from '../domain/dtos/interaction.dto';
+
+import { InteractionsHandler } from './interactions.handler';
 
 @ApiTags('Interactions')
 @UseGuards(AuthGuard)
 @Controller('interactions')
 export class InteractionsController {
-  constructor(private readonly interactionsHandler: InteractionsHandler, private readonly requestContext: RequestContextService) {}
+  constructor(
+    private readonly interactionsHandler: InteractionsHandler,
+    private readonly requestContext: RequestContextService,
+  ) {}
 
   @Post()
   @ApiBearerAuth()
@@ -39,7 +47,10 @@ export class InteractionsController {
     @Body() createInteractionDto: CreateInteractionDto,
   ): Promise<InteractionDto> {
     const userId = this.requestContext.userId;
-    return this.interactionsHandler.createInteraction(userId, createInteractionDto);
+    return this.interactionsHandler.createInteraction(
+      userId,
+      createInteractionDto,
+    );
   }
 
   @Get()
@@ -55,14 +66,14 @@ export class InteractionsController {
   @ApiQuery({ name: 'type', description: 'Interaction type', required: false })
   async getUserInteractions(
     @Query('entityType') entityType: string,
-    @Query('entityId') entityId: number,
+    @Query('entityId') entityId: string,
     @Query('type') interactionType?: string,
   ): Promise<InteractionDto[]> {
     const userId = this.requestContext.userId;
     return this.interactionsHandler.getUserInteractions(
       userId,
       entityType,
-      Number(entityId),
+      entityId,
       interactionType,
     );
   }
@@ -75,11 +86,9 @@ export class InteractionsController {
     description: 'Interaction deleted successfully',
   })
   @ApiParam({ name: 'id', description: 'Interaction ID' })
-  async deleteInteraction(
-    @Param('id') id: number,
-  ): Promise<void> {
+  async deleteInteraction(@Param('id') id: string): Promise<void> {
     const userId = this.requestContext.userId;
-    return this.interactionsHandler.deleteInteraction(userId, Number(id));
+    return this.interactionsHandler.deleteInteraction(userId, id);
   }
 
   @Get('trending')
@@ -89,13 +98,21 @@ export class InteractionsController {
     description: 'Trending content retrieved successfully',
   })
   @ApiQuery({ name: 'entityType', description: 'Entity type', required: true })
-  @ApiQuery({ name: 'limit', description: 'Number of results to return', required: false })
-  @ApiQuery({ name: 'daysBack', description: 'Number of days to look back', required: false })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Number of results to return',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'daysBack',
+    description: 'Number of days to look back',
+    required: false,
+  })
   async getTrendingContent(
     @Query('entityType') entityType: string,
     @Query('limit') limit?: number,
     @Query('daysBack') daysBack?: number,
-  ): Promise<{ entityId: number; count: number }[]> {
+  ): Promise<{ entityId: string; count: number }[]> {
     return this.interactionsHandler.getTrendingContent(
       entityType,
       limit ? Number(limit) : undefined,

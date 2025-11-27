@@ -1,27 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerProvider } from '../infrastructure/providers/customer.provider';
+
+import { DomainNotFound } from 'src/global/domain/exceptions/domain.exception';
+
 import {
   BaseUseCase,
   UseCase,
 } from '../../global/domain/usecases/base.usecase';
 import { UpdateCustomerDto } from '../infrastructure/dtos/updateCustomerReq.dto';
 import { Customer } from '../infrastructure/entities/customer.entity';
-import { DomainNotFound } from 'src/global/domain/exceptions/domain.exception';
+import { CustomerRepository } from '../infrastructure/providers/customer.repository';
 
 @Injectable()
 export class UpdateCustomerBasicInfoUseCase
   extends BaseUseCase
   implements UseCase
 {
-  constructor(private readonly customerProvider: CustomerProvider) {
+  constructor(private readonly customerRepository: CustomerRepository) {
     super(UpdateCustomerBasicInfoUseCase.name);
   }
 
   async execute(
-    id: number,
+    id: string,
     updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
-    const customer = await this.customerProvider.findOne({
+    const customer = await this.customerRepository.findOne({
       where: { id },
     });
 
@@ -41,7 +43,7 @@ export class UpdateCustomerBasicInfoUseCase
     if (updateCustomerDto.contactPhoneNumber)
       customer.contactPhoneNumber = updateCustomerDto.contactPhoneNumber;
 
-    const updatedCustomer = await this.customerProvider.save(customer);
+    const updatedCustomer = await this.customerRepository.save(customer);
 
     return updatedCustomer;
   }

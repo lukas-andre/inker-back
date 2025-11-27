@@ -3,31 +3,31 @@ import { FindOneOptions } from 'typeorm';
 
 import { BaseUseCase } from '../../global/domain/usecases/base.usecase';
 import { Customer } from '../infrastructure/entities/customer.entity';
-import { CustomerProvider } from '../infrastructure/providers/customer.provider';
+import { CustomerRepository } from '../infrastructure/providers/customer.repository';
 
 import { CreateCustomerParams } from './interfaces/createCustomer.params';
 
 @Injectable()
 export class CRCustomerUseCase extends BaseUseCase {
-  constructor(private readonly customerProvider: CustomerProvider) {
+  constructor(private readonly customerRepository: CustomerRepository) {
     super(CRCustomerUseCase.name);
   }
 
   async create(params: CreateCustomerParams): Promise<Customer> {
-    const created = await this.customerProvider.create(params);
+    const created = await this.customerRepository.create(params);
 
     return created;
   }
 
   async findOne(options: FindOneOptions<Customer>): Promise<Customer> {
-    return this.customerProvider.findOne(options);
+    return this.customerRepository.findOne(options);
   }
 
   async findAll(options: FindOneOptions<Customer>): Promise<Customer[]> {
-    return this.customerProvider.find(options);
+    return this.customerRepository.find(options);
   }
 
-  async findById(id: number): Promise<Customer> {
-    return this.customerProvider.findById(id);
+  async findById(id: string): Promise<Customer> {
+    return this.customerRepository.findById(id);
   }
 }

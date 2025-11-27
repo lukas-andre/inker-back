@@ -1,8 +1,8 @@
-import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
-import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
+import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
+import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerRepository } from '../../../../../customers/infrastructure/providers/customer.repository';
+import { ArtistLocationRepository } from '../../../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { QuotationRepliedType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
@@ -18,11 +18,11 @@ const QUOTATION_REPLIED_NOTIFICATIONS = {
 export class QuotationRepliedJob extends NotificationJob {
   constructor(
     emailNotificationService: EmailNotificationService,
-    agendaEventProvider: AgendaEventProvider,
-    artistProvider: ArtistProvider,
-    customerProvider: CustomerProvider,
-    locationProvider: ArtistLocationProvider,
-    quotationProvider: QuotationProvider,
+    agendaEventProvider: AgendaEventRepository,
+    artistProvider: ArtistRepository,
+    customerProvider: CustomerRepository,
+    locationProvider: ArtistLocationRepository,
+    quotationProvider: QuotationRepository,
     pushNotificationService: PushNotificationService,
     notificationStorageService: NotificationStorageService,
   ) {
@@ -34,7 +34,7 @@ export class QuotationRepliedJob extends NotificationJob {
       locationProvider,
       quotationProvider,
       pushNotificationService,
-      notificationStorageService
+      notificationStorageService,
     );
   }
 
@@ -78,7 +78,7 @@ export class QuotationRepliedJob extends NotificationJob {
         to: customer.contactEmail,
         artistName: artist.username,
         customerName: customer.firstName,
-        estimatedCost: quotation.estimatedCost?.toString() || "N/A",
+        estimatedCost: quotation.estimatedCost?.toString() || 'N/A',
         appointmentDate: quotation.appointmentDate,
         appointmentDuration: quotation.appointmentDuration,
         mailId: 'QUOTATION_REPLIED',

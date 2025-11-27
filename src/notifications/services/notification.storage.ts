@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
+
 import { JobTypeKey } from '../../queues/notifications/domain/jobSchema.registry';
-import { NotificationRepository } from '../database/notification.repository';
 import { Notification } from '../database/entities/notification.entity';
+import { NotificationRepository } from '../database/notification.repository';
 
 @Injectable()
 export class NotificationStorageService {
-  constructor(private readonly notificationRepository: NotificationRepository) {}
+  constructor(
+    private readonly notificationRepository: NotificationRepository,
+  ) {}
 
   /**
    * Store a notification in the database
@@ -17,7 +20,7 @@ export class NotificationStorageService {
    * @returns The created notification
    */
   async storeNotification(
-    userId: number,
+    userId: string,
     title: string,
     body: string,
     type: JobTypeKey,

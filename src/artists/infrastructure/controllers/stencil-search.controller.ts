@@ -1,27 +1,32 @@
 import {
+  Body,
   Controller,
   Get,
+  Headers,
+  Post,
   Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Post,
-  Body,
-  Headers,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
+  ApiProperty,
   ApiQuery,
   ApiTags,
-  ApiProperty,
 } from '@nestjs/swagger';
-import { ArtistsHandler } from '../artists.handler';
-import { StencilSearchQueryDto, TagSuggestionQueryDto, TagSuggestionResponseDto } from '../../domain/dtos/stencil-search.dto';
-import { PaginatedStencilResponseDto } from '../../domain/dtos/paginated-stencil-response.dto';
+
 import { AuthGuard } from '../../../global/infrastructure/guards/auth.guard';
 import { CreateTagDto } from '../../../tags/tag.dto';
+import { PaginatedStencilResponseDto } from '../../domain/dtos/paginated-stencil-response.dto';
+import {
+  StencilSearchQueryDto,
+  TagSuggestionQueryDto,
+  TagSuggestionResponseDto,
+} from '../../domain/dtos/stencil-search.dto';
+import { ArtistsHandler } from '../artists.handler';
 
 /**
  * Información detallada sobre el algoritmo de puntuación de relevancia
@@ -29,19 +34,20 @@ import { CreateTagDto } from '../../../tags/tag.dto';
 class SearchRankingInfoDto {
   @ApiProperty({
     description: 'Nombre del factor de relevancia',
-    example: 'title_exact_match'
+    example: 'title_exact_match',
   })
   factor: string;
 
   @ApiProperty({
     description: 'Descripción de cómo afecta este factor a la puntuación',
-    example: 'Si el título del estencil contiene exactamente la consulta de búsqueda'
+    example:
+      'Si el título del estencil contiene exactamente la consulta de búsqueda',
   })
   description: string;
 
   @ApiProperty({
     description: 'Peso del factor en la puntuación de relevancia',
-    example: 0.3
+    example: 0.3,
   })
   weight: number;
 }
@@ -53,7 +59,9 @@ export class StencilSearchController {
   constructor(private readonly artistsHandler: ArtistsHandler) {}
 
   @Get()
-  @ApiOperation({ summary: 'Búsqueda avanzada de estenciles con varios criterios' })
+  @ApiOperation({
+    summary: 'Búsqueda avanzada de estenciles con varios criterios',
+  })
   @ApiOkResponse({
     description: 'Resultados de la búsqueda',
     type: PaginatedStencilResponseDto,
@@ -61,17 +69,20 @@ export class StencilSearchController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async searchStencils(
     @Query() searchParams: StencilSearchQueryDto,
-    @Headers('cache-control') cacheControl?: string
+    @Headers('cache-control') cacheControl?: string,
   ): Promise<PaginatedStencilResponseDto> {
     const disableCache = cacheControl === 'no-cache';
     return this.artistsHandler.searchStencils({
       ...searchParams,
-      disableCache
+      disableCache,
     });
   }
 
   @Get('ranking-info')
-  @ApiOperation({ summary: 'Obtener información sobre cómo se calcula la relevancia de los resultados de búsqueda' })
+  @ApiOperation({
+    summary:
+      'Obtener información sobre cómo se calcula la relevancia de los resultados de búsqueda',
+  })
   @ApiOkResponse({
     description: 'Información sobre el algoritmo de ranking',
     type: [SearchRankingInfoDto],
@@ -81,17 +92,20 @@ export class StencilSearchController {
     return [
       {
         factor: 'title_exact_match',
-        description: 'Coincidencia exacta del término de búsqueda en el título del estencil',
+        description:
+          'Coincidencia exacta del término de búsqueda en el título del estencil',
         weight: 0.3,
       },
       {
         factor: 'title_partial_match',
-        description: 'Coincidencia parcial de palabras del término de búsqueda en el título',
+        description:
+          'Coincidencia parcial de palabras del término de búsqueda en el título',
         weight: 0.2,
       },
       {
         factor: 'description_match',
-        description: 'Coincidencia del término de búsqueda en la descripción del estencil',
+        description:
+          'Coincidencia del término de búsqueda en la descripción del estencil',
         weight: 0.2,
       },
       {
@@ -118,7 +132,9 @@ export class StencilSearchController {
   }
 
   @Get('tags/suggest')
-  @ApiOperation({ summary: 'Obtener sugerencias de etiquetas mientras el usuario escribe' })
+  @ApiOperation({
+    summary: 'Obtener sugerencias de etiquetas mientras el usuario escribe',
+  })
   @ApiOkResponse({
     description: 'Sugerencias de etiquetas',
     type: [TagSuggestionResponseDto],
@@ -154,7 +170,9 @@ export class StencilSearchController {
     description: 'Número máximo de etiquetas',
     type: Number,
   })
-  async getPopularTags(@Query('limit') limit: number = 10): Promise<TagSuggestionResponseDto[]> {
+  async getPopularTags(
+    @Query('limit') limit = 10,
+  ): Promise<TagSuggestionResponseDto[]> {
     // Utilizar el mismo método de sugerencias pero sin prefijo para obtener etiquetas populares
     return this.artistsHandler.getTagSuggestions({ prefix: '', limit });
   }
@@ -162,13 +180,18 @@ export class StencilSearchController {
   @Post('tags')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Crear una nueva etiqueta o devolver la existente si coincide el nombre' })
+  @ApiOperation({
+    summary:
+      'Crear una nueva etiqueta o devolver la existente si coincide el nombre',
+  })
   @ApiOkResponse({
     description: 'Etiqueta creada o existente',
     type: TagSuggestionResponseDto,
   })
   @UsePipes(new ValidationPipe({ transform: true }))
-  async createTag(@Body() createTagDto: CreateTagDto): Promise<TagSuggestionResponseDto> {
+  async createTag(
+    @Body() createTagDto: CreateTagDto,
+  ): Promise<TagSuggestionResponseDto> {
     return this.artistsHandler.createTag(createTagDto);
   }
-} 
+}

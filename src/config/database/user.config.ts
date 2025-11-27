@@ -20,7 +20,7 @@ export const userDatabaseConf = registerAs<UserDbConfig>(
       name: USER_DB_CONNECTION_NAME,
       database: DB_NAME,
       entities: ENTITIES,
-      logging: ['info', 'query', 'error'],
+      logging: ['error'],
       keepConnectionAlive: true,
     }),
 );

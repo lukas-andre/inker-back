@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import stringify from 'fast-safe-stringify';
 
-import { ArtistProvider } from '../../artists/infrastructure/database/artist.provider';
+import { ArtistRepository } from '../../artists/infrastructure/repositories/artist.repository';
 import { GenreInterface } from '../../genres/genre.interface';
 import { GenresService } from '../../genres/genres.service';
 import {
@@ -16,7 +16,7 @@ import {
 import { FileInterface } from '../../multimedias/interfaces/file.interface';
 import { MultimediasService } from '../../multimedias/services/multimedias.service';
 import { TagInterface } from '../../tags/tag.interface';
-import { TagsService } from '../../tags/tags.service';
+import { TagsRepository } from '../../tags/tags.service';
 import { PostsService } from '../domain/services/posts.service';
 import { CreatePostDto } from '../infrastructure/dtos/createPost.dto';
 import { Post } from '../infrastructure/entities/post.entity';
@@ -25,9 +25,9 @@ import { Post } from '../infrastructure/entities/post.entity';
 export class ArtistUploadPostUseCase extends BaseUseCase implements UseCase {
   constructor(
     private readonly postService: PostsService,
-    private readonly artistProvider: ArtistProvider,
+    private readonly artistProvider: ArtistRepository,
     private readonly genresService: GenresService,
-    private readonly tagsService: TagsService,
+    private readonly tagsService: TagsRepository,
     private readonly multimediasService: MultimediasService,
   ) {
     super(ArtistUploadPostUseCase.name);

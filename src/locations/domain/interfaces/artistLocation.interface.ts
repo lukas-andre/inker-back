@@ -1,15 +1,23 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Point } from 'geojson';
+
 import { AddressType } from '../../../global/domain/interfaces/address.interface';
 import { ViewportInterface } from '../../../global/domain/interfaces/geometry.interface';
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-
 export class ArtistLocationCreateDto {
   @ApiProperty({ description: 'Artist ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  artistId: number;
+  artistId: string;
 
   @ApiProperty({ description: 'Location name', example: 'My Studio' })
   @IsString()
@@ -21,7 +29,10 @@ export class ArtistLocationCreateDto {
   @IsNotEmpty()
   address1: string;
 
-  @ApiPropertyOptional({ description: 'Short address line 1', example: '123 Main' })
+  @ApiPropertyOptional({
+    description: 'Short address line 1',
+    example: '123 Main',
+  })
   @IsString()
   @IsOptional()
   shortAddress1?: string;
@@ -56,7 +67,10 @@ export class ArtistLocationCreateDto {
   @IsOptional()
   country?: string;
 
-  @ApiPropertyOptional({ description: 'Formatted address', example: '123 Main St, Los Angeles, CA' })
+  @ApiPropertyOptional({
+    description: 'Formatted address',
+    example: '123 Main St, Los Angeles, CA',
+  })
   @IsString()
   @IsOptional()
   formattedAddress?: string;
@@ -80,12 +94,18 @@ export class ArtistLocationCreateDto {
   @IsOptional()
   locationOrder?: number;
 
-  @ApiPropertyOptional({ description: 'Google Place ID', example: 'ChIJE9on3F3HwoAR9AhGJW_fL-I' })
+  @ApiPropertyOptional({
+    description: 'Google Place ID',
+    example: 'ChIJE9on3F3HwoAR9AhGJW_fL-I',
+  })
   @IsString()
   @IsOptional()
   googlePlaceId?: string;
 
-  @ApiPropertyOptional({ description: 'Profile thumbnail URL', example: 'https://example.com/thumbnail.jpg' })
+  @ApiPropertyOptional({
+    description: 'Profile thumbnail URL',
+    example: 'https://example.com/thumbnail.jpg',
+  })
   @IsString()
   @IsOptional()
   profileThumbnail?: string;
@@ -93,21 +113,27 @@ export class ArtistLocationCreateDto {
 
 export class ArtistLocationUpdateDto {
   @ApiProperty({ description: 'Location ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  id?: number;
+  id?: string;
 
   @ApiPropertyOptional({ description: 'Location name', example: 'My Studio' })
   @IsString()
   @IsOptional()
   name?: string;
 
-  @ApiPropertyOptional({ description: 'Address line 1', example: '123 Main St' })
+  @ApiPropertyOptional({
+    description: 'Address line 1',
+    example: '123 Main St',
+  })
   @IsString()
   @IsOptional()
   address1?: string;
 
-  @ApiPropertyOptional({ description: 'Short address line 1', example: '123 Main' })
+  @ApiPropertyOptional({
+    description: 'Short address line 1',
+    example: '123 Main',
+  })
   @IsString()
   @IsOptional()
   shortAddress1?: string;
@@ -142,7 +168,10 @@ export class ArtistLocationUpdateDto {
   @IsOptional()
   country?: string;
 
-  @ApiPropertyOptional({ description: 'Formatted address', example: '123 Main St, Los Angeles, CA' })
+  @ApiPropertyOptional({
+    description: 'Formatted address',
+    example: '123 Main St, Los Angeles, CA',
+  })
   @IsString()
   @IsOptional()
   formattedAddress?: string;
@@ -170,12 +199,18 @@ export class ArtistLocationUpdateDto {
   @IsOptional()
   locationOrder?: number;
 
-  @ApiPropertyOptional({ description: 'Google Place ID', example: 'ChIJE9on3F3HwoAR9AhGJW_fL-I' })
+  @ApiPropertyOptional({
+    description: 'Google Place ID',
+    example: 'ChIJE9on3F3HwoAR9AhGJW_fL-I',
+  })
   @IsString()
   @IsOptional()
   googlePlaceId?: string;
 
-  @ApiPropertyOptional({ description: 'Profile thumbnail URL', example: 'https://example.com/thumbnail.jpg' })
+  @ApiPropertyOptional({
+    description: 'Profile thumbnail URL',
+    example: 'https://example.com/thumbnail.jpg',
+  })
   @IsString()
   @IsOptional()
   profileThumbnail?: string;
@@ -188,12 +223,12 @@ export class ArtistLocationUpdateDto {
 
 export class ArtistLocationDto {
   @ApiProperty({ description: 'Location ID', example: 1 })
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 
   @ApiProperty({ description: 'Artist ID', example: 1 })
-  @IsNumber()
-  artistId: number;
+  @IsString()
+  artistId: string;
 
   @ApiProperty({ description: 'Location name', example: 'My Studio' })
   @IsString()
@@ -203,7 +238,10 @@ export class ArtistLocationDto {
   @IsString()
   address1: string;
 
-  @ApiPropertyOptional({ description: 'Short address line 1', example: '123 Main' })
+  @ApiPropertyOptional({
+    description: 'Short address line 1',
+    example: '123 Main',
+  })
   @IsString()
   @IsOptional()
   shortAddress1?: string;
@@ -235,7 +273,10 @@ export class ArtistLocationDto {
   @IsOptional()
   country?: string;
 
-  @ApiPropertyOptional({ description: 'Formatted address', example: '123 Main St, Los Angeles, CA' })
+  @ApiPropertyOptional({
+    description: 'Formatted address',
+    example: '123 Main St, Los Angeles, CA',
+  })
   @IsString()
   @IsOptional()
   formattedAddress?: string;
@@ -259,12 +300,18 @@ export class ArtistLocationDto {
   @IsNumber()
   locationOrder: number;
 
-  @ApiPropertyOptional({ description: 'Google Place ID', example: 'ChIJE9on3F3HwoAR9AhGJW_fL-I' })
+  @ApiPropertyOptional({
+    description: 'Google Place ID',
+    example: 'ChIJE9on3F3HwoAR9AhGJW_fL-I',
+  })
   @IsString()
   @IsOptional()
   googlePlaceId?: string;
 
-  @ApiPropertyOptional({ description: 'Profile thumbnail URL', example: 'https://example.com/thumbnail.jpg' })
+  @ApiPropertyOptional({
+    description: 'Profile thumbnail URL',
+    example: 'https://example.com/thumbnail.jpg',
+  })
   @IsString()
   @IsOptional()
   profileThumbnail?: string;
@@ -273,30 +320,36 @@ export class ArtistLocationDto {
   @IsBoolean()
   isActive: boolean;
 
-  @ApiProperty({ description: 'Creation date', example: '2023-01-01T00:00:00Z' })
+  @ApiProperty({
+    description: 'Creation date',
+    example: '2023-01-01T00:00:00Z',
+  })
   @IsDate()
   createdAt: Date;
 
-  @ApiProperty({ description: 'Last update date', example: '2023-01-01T00:00:00Z' })
+  @ApiProperty({
+    description: 'Last update date',
+    example: '2023-01-01T00:00:00Z',
+  })
   @IsDate()
   updatedAt: Date;
 }
 
 export class GetArtistLocationsParams {
   @ApiProperty({ description: 'Artist ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  artistId: number;
+  artistId: string;
 }
 
 export class DeleteArtistLocationParams {
   @ApiProperty({ description: 'Location ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Artist ID', example: 1 })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  artistId: number;
+  artistId: string;
 }

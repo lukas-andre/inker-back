@@ -11,7 +11,7 @@ export class MetaTagDto {
   @IsNumber()
   @Transform(value => (value ? value : ''))
   @Expose()
-  readonly id?: number;
+  readonly id?: string;
 
   @ApiProperty({
     description: 'tag name',

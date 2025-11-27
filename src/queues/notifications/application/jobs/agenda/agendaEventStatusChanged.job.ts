@@ -1,8 +1,8 @@
-import { AgendaEventProvider } from '../../../../../agenda/infrastructure/providers/agendaEvent.provider';
-import { QuotationProvider } from '../../../../../agenda/infrastructure/providers/quotation.provider';
-import { ArtistProvider } from '../../../../../artists/infrastructure/database/artist.provider';
-import { CustomerProvider } from '../../../../../customers/infrastructure/providers/customer.provider';
-import { ArtistLocationProvider } from '../../../../../locations/infrastructure/database/artistLocation.provider';
+import { AgendaEventRepository } from '../../../../../agenda/infrastructure/repositories/agendaEvent.repository';
+import { QuotationRepository } from '../../../../../agenda/infrastructure/repositories/quotation.provider';
+import { ArtistRepository } from '../../../../../artists/infrastructure/repositories/artist.repository';
+import { CustomerRepository } from '../../../../../customers/infrastructure/providers/customer.repository';
+import { ArtistLocationRepository } from '../../../../../locations/infrastructure/database/artistLocation.repository';
 import { EmailNotificationService } from '../../../../../notifications/services/email/email.notification';
 import { AgendaEventStatusChangedType } from '../../../../../notifications/services/email/schemas/email';
 import { NotificationStorageService } from '../../../../../notifications/services/notification.storage';
@@ -13,11 +13,11 @@ import { NotificationJob } from '../notification.job';
 export class AgendaEventStatusChangedJob extends NotificationJob {
   constructor(
     emailNotificationService: EmailNotificationService,
-    agendaEventProvider: AgendaEventProvider,
-    artistProvider: ArtistProvider,
-    customerProvider: CustomerProvider,
-    locationProvider: ArtistLocationProvider,
-    quotationProvider: QuotationProvider,
+    agendaEventProvider: AgendaEventRepository,
+    artistProvider: ArtistRepository,
+    customerProvider: CustomerRepository,
+    locationProvider: ArtistLocationRepository,
+    quotationProvider: QuotationRepository,
     pushNotificationService: PushNotificationService,
     notificationStorageService: NotificationStorageService,
   ) {
@@ -29,7 +29,7 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
       locationProvider,
       quotationProvider,
       pushNotificationService,
-      notificationStorageService
+      notificationStorageService,
     );
   }
 
@@ -51,8 +51,10 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
 
     // Build notification title and message
     const title = `Appointment Status: ${this.getStatusDisplayName(status)}`;
-    const notificationMessage = message || `Your appointment status is now ${this.getStatusDisplayName(status)}`;
-    
+    const notificationMessage =
+      message ||
+      `Your appointment status is now ${this.getStatusDisplayName(status)}`;
+
     // Store notification for customer in database
     await this.notificationStorageService.storeNotification(
       customer.userId,
@@ -70,7 +72,9 @@ export class AgendaEventStatusChangedJob extends NotificationJob {
     await this.notificationStorageService.storeNotification(
       artist.userId,
       `Appointment Status Updated`,
-      `Appointment with ${customer.firstName} is now ${this.getStatusDisplayName(status)}`,
+      `Appointment with ${
+        customer.firstName
+      } is now ${this.getStatusDisplayName(status)}`,
       'EVENT_STATUS_CHANGED',
       {
         eventId,

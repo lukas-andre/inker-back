@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
-import { InitialPermissionsProvider } from '../../infrastructure/providers/initialPermissions.service';
+import { InitialPermissionsRepository } from '../../infrastructure/repositories/initialPermissions.repository';
 
 @Injectable()
 export class InitPermissionsUseCase {
   constructor(
-    private readonly permissionsProvider: InitialPermissionsProvider,
+    private readonly permissionsRepository: InitialPermissionsRepository,
   ) {}
 
   async execute() {
-    return this.permissionsProvider.initPermissions();
+    return this.permissionsRepository.initPermissions();
   }
 }
